@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">My F-Zone</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="message_button_desc">Message Button</string>
+    <string name="list_button_desc">List Button</string>
+    <string name="account_button_desc">Account Button</string>
 </resources>
