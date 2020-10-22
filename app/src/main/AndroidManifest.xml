@@ -30,10 +30,11 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".MapsActivity"
+            android:name=".screens.MapsActivity"
+            android:theme="@style/MapTheme"
             android:label="@string/title_activity_maps" />
         <activity
-            android:name=".SplashScreen"
+            android:name=".screens.SplashScreen"
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

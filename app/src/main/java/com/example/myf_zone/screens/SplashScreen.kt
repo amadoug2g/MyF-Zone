@@ -1,4 +1,4 @@
-package com.example.myf_zone
+package com.example.myf_zone.screens
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -10,7 +10,7 @@ class SplashScreen : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val delay: Long = 1000
+        val delay: Long = 100
 
         Timer().schedule(delay) {
             changeActivity()
