@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">My F-Zone</string>
+    <string name="input_lastName_hint">Last name</string>
+    <string name="input_password_hint">Password</string>
+    <string name="input_mail_hint">Email address</string>
+    <string name="input_firstName_hint">First name</string>
+    <string name="input_mail_helper">Enter your email address</string>
+    <string name="become_coach">Become Coach</string>
+    <string name="login_coach">Login</string>
+    <string name="no_account_string">You don\'t have an account?</string>
+    <string name="input_mdp_helper">Enter a password</string>
+    <string name="input_firstName_helper">Enter your first name</string>
+    <string name="input_lastName_helper">Enter your last name</string>
+    <string name="input_mdp_helper_login">Enter your password</string>
+</resources>

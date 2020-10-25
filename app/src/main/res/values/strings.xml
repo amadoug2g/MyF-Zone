@@ -1,7 +1,20 @@
 <resources>
     <string name="app_name">My F-Zone</string>
-    <string name="title_activity_maps">Map</string>
-    <string name="message_button_desc">Message Button</string>
-    <string name="list_button_desc">List Button</string>
-    <string name="account_button_desc">Account Button</string>
+    <string name="title_activity_maps" translatable="false">Map</string>
+    <string name="message_button_desc" translatable="false">Message Button</string>
+    <string name="list_button_desc" translatable="false">List Button</string>
+    <string name="account_button_desc" translatable="false">Account Button</string>
+    <string name="input_mail_hint">Adresse mail</string>
+    <string name="input_password_hint">Mot de passe</string>
+    <string name="input_lastName_hint">Nom</string>
+    <string name="input_firstName_hint">Prénom</string>
+    <string name="input_mail_helper">Entrez votre adresse mail</string>
+    <string name="input_mdp_helper">Entrez un mot de passe</string>
+    <string name="input_mdp_helper_login">Entrez votre mot de passe</string>
+    <string name="input_firstName_helper">Entrez votre prénom</string>
+    <string name="input_lastName_helper">Entrez votre nom</string>
+    <string name="become_coach">Devenir Coach</string>
+    <string name="login_coach">Connexion</string>
+    <string name="no_account_string">Vous n\'avez pas de compte ?</string>
+    <string name="empty_string" translatable="false"> </string>
 </resources>
