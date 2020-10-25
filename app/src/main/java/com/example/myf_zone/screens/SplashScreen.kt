@@ -18,7 +18,7 @@ class SplashScreen : AppCompatActivity() {
     }
 
     private fun changeActivity(){
-        startActivity<MapsActivity>()
+        startActivity<MapAccountScreen>()
         finish()
     }
 }
