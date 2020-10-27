@@ -1,24 +1,33 @@
 package com.example.myf_zone.fragments
 
+import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
 import com.example.myf_zone.R
-import com.google.android.gms.maps.CameraUpdateFactory
+import com.example.myf_zone.util.MapsUtil
+import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import kotlinx.android.synthetic.main.fragment_maps.*
 import kotlinx.android.synthetic.main.fragment_maps.view.*
+import org.jetbrains.anko.support.v4.toast
 
-class MapsFragment : Fragment() {
+class MapsFragment : Fragment(),
+    GoogleMap.OnMarkerClickListener,
+    GoogleMap.OnMapClickListener {
+
+    private val TAG = MapsFragment::class.java.simpleName
+
+    private val markerList: MutableList<Marker> = mutableListOf()
 
     private val callback = OnMapReadyCallback { googleMap ->
         /**
@@ -30,15 +39,62 @@ class MapsFragment : Fragment() {
          * install it inside the SupportMapFragment. This method will only be triggered once the
          * user has installed Google Play services and returned to the app.
          */
-        val sydney = LatLng(48.0, 2.0)
-        val pierrefitte = LatLng(48.9679, 2.3641)
-//        googleMap.addMarker(MarkerOptions().position(sydney).title("Marker near Paris"))
-        val pfmark = googleMap.addMarker(
-            MarkerOptions()
-                .position(pierrefitte)
-                .title("Pierrefitte")
+
+        //Markers
+        val markerOptionsPFFC = MarkerOptions()
+            .position(LatLng(48.9679, 2.3641))
+            .title("Pierrefiette")
+            .icon(
+                BitmapDescriptorFactory.fromBitmap(
+                    BitmapFactory.decodeResource(requireContext().resources, R.mipmap.ic_pffc_logo)
+                )
+            )
+
+        val markerOptionsFC93 = MarkerOptions()
+            .position(LatLng(48.9096, 2.4397))
+            .title("Bobigny")
+            .icon(
+                BitmapDescriptorFactory.fromBitmap(
+                    BitmapFactory.decodeResource(requireContext().resources, R.mipmap.ic_fc93_logo)
+                )
+            )
+
+        MapsUtil.addItem(
+            markerList,
+            MapsUtil.placeMarkerOnMap(googleMap, markerOptionsPFFC),
+            MapsUtil.placeMarkerOnMap(googleMap, markerOptionsFC93)
         )
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+
+        MapsUtil.initializeMap(
+            googleMap,
+            this,
+            this,
+            markerList, cardView_detail
+        )
+
+        toast("Zoom level: " + googleMap.cameraPosition.zoom)
+    }
+
+    override fun onMarkerClick(marker: Marker): Boolean {
+
+        if (marker.title == "Pierrefiette")
+            MapsUtil.getMarkerDetails(
+                marker,
+                cardView_detail,
+                cardView_clubName,
+                cardView_clubImage,
+                requireContext(),
+                R.drawable.pffc
+            )
+        else MapsUtil.getMarkerDetails(
+            marker,
+            cardView_detail,
+            cardView_clubName,
+            cardView_clubImage,
+            requireContext(),
+            R.drawable.fc93
+        )
+        return true
     }
 
     override fun onCreateView(
@@ -50,7 +106,6 @@ class MapsFragment : Fragment() {
         (activity as AppCompatActivity).supportActionBar?.hide()
 
         fragmentInflater.account_button.setOnClickListener {
-            Log.d("SignUpFragment", "Clicked")
             Navigation
                 .findNavController(fragmentInflater)
                 .navigate(R.id.mapsToLogin)
@@ -64,7 +119,7 @@ class MapsFragment : Fragment() {
         mapFragment?.getMapAsync(callback)
     }
 
-    private fun getMarkerDetail(marker: Marker, name: TextView) {
-        name.text = marker.title
+    override fun onMapClick(p0: LatLng?) {
+        cardView_detail.visibility = View.GONE
     }
 }
