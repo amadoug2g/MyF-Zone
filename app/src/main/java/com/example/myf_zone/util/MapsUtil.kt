@@ -7,27 +7,18 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.example.myf_zone.R
 import com.example.myf_zone.model.event.Event
-import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.card.MaterialCardView
+import java.net.URL
+
 
 object MapsUtil {
 
     private val TAG = MapsUtil::class.java.simpleName
-
-    private lateinit var map: GoogleMap
-    private lateinit var markerOptions: GoogleMapOptions
-
-    fun placeMarkerOnMap(map: GoogleMap, markerOptions: MarkerOptions): Marker {
-        val marker: Marker = map.addMarker(markerOptions)
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(markerOptions.position, 11f))
-        return marker
-    }
 
     fun initializeMap(
         map: GoogleMap,
@@ -36,85 +27,115 @@ object MapsUtil {
         markerList: MutableList<Marker>,
         cardView: MaterialCardView
     ) {
-        val position = LatLng(48.8550, 2.3452)
-
-        map.uiSettings.isZoomControlsEnabled = true
-        map.uiSettings.isCompassEnabled = true
-        map.uiSettings.isMapToolbarEnabled = true
-        map.uiSettings.isMyLocationButtonEnabled = true
-
-        hideMarkers(markerList)
-
-        map.setOnMarkerClickListener(onMarkerClickListener)
-        map.setOnMapClickListener(onMapClickListener)
-        map.setMaxZoomPreference(16f)
-        map.setMinZoomPreference(5f)
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 10f))
-        map.setOnCameraMoveListener {
-            if (map.cameraPosition.zoom > 11) {
-                showMarkers(markerList)
-            } else {
-                hideMarkers(markerList)
-                cardView.visibility = View.GONE
-            }
+        setMapUIControls(map)
+        if (map.cameraPosition.zoom > 10.5) {
+            showMarkers(markerList)
+        } else {
+            hideMarkers(markerList)
+            cardView.visibility = View.GONE
         }
+        setMapListeners(map, onMarkerClickListener, onMapClickListener, markerList, cardView)
+
+        val position = LatLng(48.8550, 2.3452)
+//        map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 10f))
     }
 
-    fun placeMarkerOnMapFromOptions(map: GoogleMap, marker: Marker, markerOptions: MarkerOptions) {
-        map.addMarker(
-            markerOptions
-                .position(markerOptions.position)
-                .title(markerOptions.title)
-        )
-
-//        markerOptions.icon
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(markerOptions.position, 11f))
+    fun placeEventOnMap(
+        map: GoogleMap,
+        event: Event,
+        context: Context,
+        drawable: Any = ""
+    ): Marker {
+        val marker: Marker = map.addMarker(setEventMarkerOptions(event, context))
+        if (drawable is Int)
+            marker.tag = drawable
+        if (drawable is String)
+            marker.tag = setMarkerType(event)
+        return marker
     }
 
-    fun setMarkerFromEvent() {
-
+    //Working with real events
+    fun placeEventOnMapFinal(map: GoogleMap, event: Event, context: Context): Marker {
+        val marker: Marker = map.addMarker(setEventMarkerOptions(event, context))
+        marker.tag = event.owner.clubLogo
+        return marker
     }
 
-    fun placeEventOnMap(event: Event, context: Context) {
-//        val markerOptions = MarkerOptions().position(location)
-//        map.addMarker(markerOptions)
-
-        val markerOptions = MarkerOptions()
-            .position(LatLng(event.lat, event.lng))
-            .title(event.title)
-            .icon(
-                BitmapDescriptorFactory.fromBitmap(
-                    BitmapFactory.decodeResource(context.resources, R.mipmap.ic_fc93_logo)
-                )
-            )
-
-//        markerOptions.icon
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(markerOptions.position, 11f))
+    fun getEventImage(imageView: ImageView, event: Event) {
+        val clubLogo = event.owner.clubLogo
+        val url = URL(clubLogo)
+        val bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream())
+        imageView.setImageBitmap(bmp)
     }
 
     fun getMarkerDetails(
         marker: Marker,
         cardView: MaterialCardView,
         title: TextView,
+        description: TextView,
         image: ImageView,
-        context: Context,
-        drawable: Int
+        context: Context
     ) {
         cardView.visibility = View.VISIBLE
         title.text = marker.title
-//        val bitImage : Bitmap?
-
-//        image.setImageBitmap(markerOptions.icon.)
-        image.setImageBitmap(BitmapFactory.decodeResource(context.resources, drawable))
-    }
-
-    fun clearMapOnZoom() {
-        this.map.clear()
+        description.text = marker.snippet
+        image.setImageBitmap(BitmapFactory.decodeResource(context.resources, marker.tag as Int))
+//        getEventImage(image, event)
     }
 
     fun addItem(list: MutableList<Marker>, vararg item: Marker) {
         for (i in item) {
             list.add(i)
+        }
+    }
+
+    private fun setMarkerType(event: Event): Int {
+        var result: Int = R.mipmap.ic_football_ball_icon_001
+        when (event.type) {
+            "Friendly" -> result = R.mipmap.ic_football_ball_icon_002
+            "Tournament" -> result = R.mipmap.ic_football__trophy_icon_002
+            "Plateau" -> result = R.mipmap.ic_football_field_icon_002
+        }
+        return result
+    }
+
+    private fun setEventMarkerOptions(event: Event, context: Context): MarkerOptions {
+        return MarkerOptions()
+            .position(LatLng(event.lat, event.lng))
+            .title(event.owner.clubAcronym)
+            .snippet(event.title)
+            .icon(
+                BitmapDescriptorFactory.fromBitmap(
+                    BitmapFactory.decodeResource(context.resources, setMarkerType(event))
+                )
+            )
+    }
+
+    private fun setMapUIControls(map: GoogleMap) {
+        map.uiSettings.isZoomControlsEnabled = true
+        map.uiSettings.isCompassEnabled = true
+        map.uiSettings.isMapToolbarEnabled = true
+        map.uiSettings.isMyLocationButtonEnabled = true
+    }
+
+    private fun setMapListeners(
+        map: GoogleMap,
+        onMarkerClickListener: GoogleMap.OnMarkerClickListener,
+        onMapClickListener: GoogleMap.OnMapClickListener,
+        markerList: MutableList<Marker>,
+        cardView: MaterialCardView
+    ) {
+        map.setOnMarkerClickListener(onMarkerClickListener)
+        map.setOnMapClickListener(onMapClickListener)
+        map.setMaxZoomPreference(16f)
+        map.setMinZoomPreference(5f)
+        map.setOnCameraMoveListener {
+            if (map.cameraPosition.zoom > 10.5) {
+                showMarkers(markerList)
+            } else {
+                hideMarkers(markerList)
+                cardView.visibility = View.GONE
+            }
         }
     }
 
@@ -129,4 +150,5 @@ object MapsUtil {
             i.isVisible = true
         }
     }
+
 }

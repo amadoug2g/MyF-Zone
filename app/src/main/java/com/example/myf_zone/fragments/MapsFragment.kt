@@ -1,6 +1,5 @@
 package com.example.myf_zone.fragments
 
-import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,17 +8,17 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
 import com.example.myf_zone.R
+import com.example.myf_zone.model.event.Event
+import com.example.myf_zone.model.event.EventParticipation
 import com.example.myf_zone.util.MapsUtil
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
 import kotlinx.android.synthetic.main.fragment_maps.*
 import kotlinx.android.synthetic.main.fragment_maps.view.*
-import org.jetbrains.anko.support.v4.toast
+import java.util.*
 
 class MapsFragment : Fragment(),
     GoogleMap.OnMarkerClickListener,
@@ -40,29 +39,70 @@ class MapsFragment : Fragment(),
          * user has installed Google Play services and returned to the app.
          */
 
-        //Markers
-        val markerOptionsPFFC = MarkerOptions()
-            .position(LatLng(48.9679, 2.3641))
-            .title("Pierrefiette")
-            .icon(
-                BitmapDescriptorFactory.fromBitmap(
-                    BitmapFactory.decodeResource(requireContext().resources, R.mipmap.ic_pffc_logo)
-                )
-            )
+        //Event Markers
+        val eventOwner01 = EventParticipation(
+            "",
+            "PSG",
+            "coachID",
+            "Full Name",
+            "sportID",
+            "Football",
+            "categoryID",
+            "U21",
+            "subCategoryID",
+            "Regional"
+        )
 
-        val markerOptionsFC93 = MarkerOptions()
-            .position(LatLng(48.9096, 2.4397))
-            .title("Bobigny")
-            .icon(
-                BitmapDescriptorFactory.fromBitmap(
-                    BitmapFactory.decodeResource(requireContext().resources, R.mipmap.ic_fc93_logo)
-                )
-            )
+        val eventOwner02 = EventParticipation(
+            "",
+            "Pierrefiette FC",
+            "coachID",
+            "Full Name",
+            "sportID",
+            "Football",
+            "categoryID",
+            "U21",
+            "subCategoryID",
+            "Regional"
+        )
+
+        val eventOwner03 = EventParticipation(
+            "",
+            "Bobigny FC",
+            "coachID",
+            "Full Name",
+            "sportID",
+            "Football",
+            "categoryID",
+            "U21",
+            "subCategoryID",
+            "Regional"
+        )
+
+        val eventParticipant = EventParticipation()
+
+        val participantList = mutableListOf<EventParticipation>(eventParticipant)
+
+        val event01 = Event(
+            "Match Amical - U21", eventOwner01.clubAcronym, "Friendly", 8, Date(0),
+            "address", 48.8414, 2.2530, Date(0), eventOwner01, participantList
+        )
+
+        val event02 = Event(
+            "Plateau - U9", eventOwner02.clubAcronym, "Plateau", 6, Date(0),
+            "address", 48.9679, 2.3641, Date(0), eventOwner02, participantList
+        )
+
+        val event03 = Event(
+            "Tournoi - U16", eventOwner03.clubAcronym, "Tournament", 8, Date(0),
+            "address", 48.9096, 2.4397, Date(0), eventOwner03, participantList
+        )
 
         MapsUtil.addItem(
             markerList,
-            MapsUtil.placeMarkerOnMap(googleMap, markerOptionsPFFC),
-            MapsUtil.placeMarkerOnMap(googleMap, markerOptionsFC93)
+            MapsUtil.placeEventOnMap(googleMap, event01, requireContext()),
+            MapsUtil.placeEventOnMap(googleMap, event02, requireContext(), R.mipmap.ic_pffc_logo),
+            MapsUtil.placeEventOnMap(googleMap, event03, requireContext(), R.mipmap.ic_fc93_logo)
         )
 
         MapsUtil.initializeMap(
@@ -71,29 +111,19 @@ class MapsFragment : Fragment(),
             this,
             markerList, cardView_detail
         )
-
-        toast("Zoom level: " + googleMap.cameraPosition.zoom)
     }
 
     override fun onMarkerClick(marker: Marker): Boolean {
 
-        if (marker.title == "Pierrefiette")
-            MapsUtil.getMarkerDetails(
-                marker,
-                cardView_detail,
-                cardView_clubName,
-                cardView_clubImage,
-                requireContext(),
-                R.drawable.pffc
-            )
-        else MapsUtil.getMarkerDetails(
+        MapsUtil.getMarkerDetails(
             marker,
             cardView_detail,
             cardView_clubName,
+            cardView_clubDesc,
             cardView_clubImage,
-            requireContext(),
-            R.drawable.fc93
+            requireContext()
         )
+
         return true
     }
 
