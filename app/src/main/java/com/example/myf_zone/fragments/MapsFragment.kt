@@ -1,10 +1,12 @@
 package com.example.myf_zone.fragments
 
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
 import com.example.myf_zone.R
@@ -18,12 +20,13 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import kotlinx.android.synthetic.main.fragment_maps.*
 import kotlinx.android.synthetic.main.fragment_maps.view.*
+import org.jetbrains.anko.sdk27.coroutines.onClick
+import org.jetbrains.anko.support.v4.toast
 import java.util.*
 
 class MapsFragment : Fragment(),
     GoogleMap.OnMarkerClickListener,
     GoogleMap.OnMapClickListener {
-
     private val TAG = MapsFragment::class.java.simpleName
 
     private val markerList: MutableList<Marker> = mutableListOf()
@@ -39,7 +42,7 @@ class MapsFragment : Fragment(),
          * user has installed Google Play services and returned to the app.
          */
 
-        //Event Markers
+        //Event Markers Data
         val eventOwner01 = EventParticipation(
             "",
             "PSG",
@@ -80,7 +83,6 @@ class MapsFragment : Fragment(),
         )
 
         val eventParticipant = EventParticipation()
-
         val participantList = mutableListOf<EventParticipation>(eventParticipant)
 
         val event01 = Event(
@@ -98,6 +100,12 @@ class MapsFragment : Fragment(),
             "address", 48.9096, 2.4397, Date(0), eventOwner03, participantList
         )
 
+        val eventList = mutableListOf<Event>()
+
+        eventList.add(event01)
+        eventList.add(event02)
+        eventList.add(event03)
+
         MapsUtil.addItem(
             markerList,
             MapsUtil.placeEventOnMap(googleMap, event01, requireContext()),
@@ -105,16 +113,40 @@ class MapsFragment : Fragment(),
             MapsUtil.placeEventOnMap(googleMap, event03, requireContext(), R.mipmap.ic_fc93_logo)
         )
 
+        MapsUtil.addItemEvent(event01, event02, event03)
+
         MapsUtil.initializeMap(
             googleMap,
             this,
             this,
             markerList, cardView_detail
         )
+
+        list_button.onClick {
+            toast("Zoom: " + googleMap.cameraPosition.zoom)
+        }
+
+//        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
+//        setUpMapRequest()
+    }
+
+    private fun setUpMapRequest() {
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                android.Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
+                LOCATION_PERMISSION_REQUEST_CODE
+            )
+            return
+        }
     }
 
     override fun onMarkerClick(marker: Marker): Boolean {
-
+//        MapsUtil.zoomOnMarker(this.googleMap, marker.position)
         MapsUtil.getMarkerDetails(
             marker,
             cardView_detail,
@@ -151,5 +183,9 @@ class MapsFragment : Fragment(),
 
     override fun onMapClick(p0: LatLng?) {
         cardView_detail.visibility = View.GONE
+    }
+
+    companion object {
+        private const val LOCATION_PERMISSION_REQUEST_CODE = 1
     }
 }

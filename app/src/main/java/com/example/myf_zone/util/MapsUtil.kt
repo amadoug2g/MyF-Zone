@@ -7,6 +7,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.example.myf_zone.R
 import com.example.myf_zone.model.event.Event
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
@@ -28,16 +29,21 @@ object MapsUtil {
         cardView: MaterialCardView
     ) {
         setMapUIControls(map)
-        if (map.cameraPosition.zoom > 10.5) {
+        if (map.cameraPosition.zoom > 9) {
             showMarkers(markerList)
         } else {
             hideMarkers(markerList)
             cardView.visibility = View.GONE
         }
-        setMapListeners(map, onMarkerClickListener, onMapClickListener, markerList, cardView)
+        setMapListeners(
+            map, markerList,
+            onMarkerClickListener,
+            onMapClickListener, cardView
+        )
 
         val position = LatLng(48.8550, 2.3452)
-//        map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 10f))
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 9.5f))
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(position, 10.5f))
     }
 
     fun placeEventOnMap(
@@ -51,13 +57,6 @@ object MapsUtil {
             marker.tag = drawable
         if (drawable is String)
             marker.tag = setMarkerType(event)
-        return marker
-    }
-
-    //Working with real events
-    fun placeEventOnMapFinal(map: GoogleMap, event: Event, context: Context): Marker {
-        val marker: Marker = map.addMarker(setEventMarkerOptions(event, context))
-        marker.tag = event.owner.clubLogo
         return marker
     }
 
@@ -80,13 +79,25 @@ object MapsUtil {
         title.text = marker.title
         description.text = marker.snippet
         image.setImageBitmap(BitmapFactory.decodeResource(context.resources, marker.tag as Int))
-//        getEventImage(image, event)
     }
 
     fun addItem(list: MutableList<Marker>, vararg item: Marker) {
         for (i in item) {
             list.add(i)
         }
+    }
+
+    fun addItemEvent(vararg item: Event): MutableList<Event> {
+        val list = mutableListOf<Event>()
+        for (i in item) {
+            list.add(i)
+        }
+        return list
+    }
+
+    private fun zoomOnMarker(map: GoogleMap, position: LatLng, zoom: Float = 14f): Boolean {
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(position, zoom))
+        return true
     }
 
     private fun setMarkerType(event: Event): Int {
@@ -101,8 +112,8 @@ object MapsUtil {
 
     private fun setEventMarkerOptions(event: Event, context: Context): MarkerOptions {
         return MarkerOptions()
-            .position(LatLng(event.lat, event.lng))
-            .title(event.owner.clubAcronym)
+            .position(event.getPosition())
+            .title(event.getAcronym())
             .snippet(event.title)
             .icon(
                 BitmapDescriptorFactory.fromBitmap(
@@ -120,17 +131,28 @@ object MapsUtil {
 
     private fun setMapListeners(
         map: GoogleMap,
+        markerList: MutableList<Marker>,
         onMarkerClickListener: GoogleMap.OnMarkerClickListener,
         onMapClickListener: GoogleMap.OnMapClickListener,
-        markerList: MutableList<Marker>,
         cardView: MaterialCardView
     ) {
         map.setOnMarkerClickListener(onMarkerClickListener)
+//        map.setOnMarkerClickListener {
+//            getMarkerDetails(
+//                marker,
+//                cardView_detail,
+//                cardView_clubName,
+//                cardView_clubDesc,
+//                cardView_clubImage,
+//                requireContext()
+//            )
+//            zoomOnMarker(map, it.position)
+//        }
         map.setOnMapClickListener(onMapClickListener)
         map.setMaxZoomPreference(16f)
         map.setMinZoomPreference(5f)
         map.setOnCameraMoveListener {
-            if (map.cameraPosition.zoom > 10.5) {
+            if (map.cameraPosition.zoom > 9) {
                 showMarkers(markerList)
             } else {
                 hideMarkers(markerList)
@@ -150,5 +172,4 @@ object MapsUtil {
             i.isVisible = true
         }
     }
-
 }

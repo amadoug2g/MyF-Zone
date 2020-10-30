@@ -1,5 +1,6 @@
 package com.example.myf_zone.model.event
 
+import com.google.android.gms.maps.model.LatLng
 import java.util.*
 
 data class Event(
@@ -28,4 +29,12 @@ data class Event(
         EventParticipation(),
         mutableListOf()
     )
+
+    fun getPosition(): LatLng {
+        return LatLng(lat, lng)
+    }
+
+    fun getAcronym(): String {
+        return this.owner.clubAcronym
+    }
 }

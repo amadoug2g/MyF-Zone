@@ -41,6 +41,7 @@ dependencies {
 
     //maps
     implementation 'com.google.android.gms:play-services-location:17.1.0'
+    implementation 'com.google.maps.android:maps-utils-ktx:2.2.0'
 
     //anko
     implementation "org.jetbrains.anko:anko:0.10.8"
