@@ -2,11 +2,14 @@ package com.example.myf_zone.util
 
 import android.content.Context
 import android.graphics.BitmapFactory
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import com.example.myf_zone.R
 import com.example.myf_zone.model.event.Event
+import com.example.myf_zone.model.event.EventParticipation
+import com.example.myf_zone.util.FirebaseUtil.getEvents
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -14,7 +17,9 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.card.MaterialCardView
+import com.google.firebase.firestore.DocumentSnapshot
 import java.net.URL
+import java.util.*
 
 
 object MapsUtil {
@@ -46,18 +51,71 @@ object MapsUtil {
         map.animateCamera(CameraUpdateFactory.newLatLngZoom(position, 10.5f))
     }
 
-    fun placeEventOnMap(
+    private fun placeEventOnMap(
         map: GoogleMap,
         event: Event,
         context: Context,
         drawable: Any = ""
     ): Marker {
+        Log.d(TAG, "EVENT: ${event.title}")
         val marker: Marker = map.addMarker(setEventMarkerOptions(event, context))
         if (drawable is Int)
             marker.tag = drawable
         if (drawable is String)
             marker.tag = setMarkerType(event)
         return marker
+    }
+
+    fun placeFirestoreEvent(
+        context: Context,
+        map: GoogleMap,
+        owner: EventParticipation,
+        list: MutableList<EventParticipation>,
+        markerList: MutableList<Marker>
+    ): MutableList<Event> {
+        val task = getEvents()
+        val resultList = mutableListOf<Event>()
+        task.addOnCompleteListener {
+            if (task.isSuccessful) {
+
+                val documentList = it.result.documents
+
+                for (doc in documentList)
+                    markerList.add(
+                        placeEventOnMap(
+                            map,
+                            placeEventFromFirestoreOnMap(doc, owner, list),
+                            context
+                        )
+                    )
+            }
+        }
+        return resultList
+    }
+
+    private fun placeEventFromFirestoreOnMap(
+        doc: DocumentSnapshot,
+        owner: EventParticipation,
+        list: MutableList<EventParticipation>
+    ): Event {
+        val nbTeam = (doc["nbTeam"] as Long).toInt()
+        val date: Date = stampToDate(doc["date"] as com.google.firebase.Timestamp)
+        val createdDate: Date = stampToDate(doc["createdDate"] as com.google.firebase.Timestamp)
+
+        val newEvent = Event(
+            doc["title"] as String,
+            doc["description"] as String,
+            doc["type"] as String,
+            nbTeam,
+            date,
+            doc["address"] as String,
+            doc["lat"] as Double,
+            doc["lng"] as Double,
+            createdDate,
+            owner,
+            list
+        )
+        return newEvent
     }
 
     fun getEventImage(imageView: ImageView, event: Event) {
@@ -75,7 +133,10 @@ object MapsUtil {
         image: ImageView,
         context: Context
     ) {
-        cardView.visibility = View.VISIBLE
+        cardView.apply {
+            visibility = View.VISIBLE
+//            startAnimation(AnimationUtils.loadAnimation(context, R.anim.from_bottom))
+        }
         title.text = marker.title
         description.text = marker.snippet
         image.setImageBitmap(BitmapFactory.decodeResource(context.resources, marker.tag as Int))
@@ -87,7 +148,7 @@ object MapsUtil {
         }
     }
 
-    fun addItemEvent(vararg item: Event): MutableList<Event> {
+    private fun addItemEvent(vararg item: Event): MutableList<Event> {
         val list = mutableListOf<Event>()
         for (i in item) {
             list.add(i)
@@ -103,30 +164,33 @@ object MapsUtil {
     private fun setMarkerType(event: Event): Int {
         var result: Int = R.mipmap.ic_football_ball_icon_001
         when (event.type) {
-            "Friendly" -> result = R.mipmap.ic_football_ball_icon_002
-            "Tournament" -> result = R.mipmap.ic_football__trophy_icon_002
-            "Plateau" -> result = R.mipmap.ic_football_field_icon_002
+            "friendly" -> result = R.mipmap.ic_football_ball_icon_002
+            "tournament" -> result = R.mipmap.ic_football__trophy_icon_002
+            "plateau" -> result = R.mipmap.ic_football_field_icon_002
         }
         return result
     }
 
     private fun setEventMarkerOptions(event: Event, context: Context): MarkerOptions {
-        return MarkerOptions()
-            .position(event.getPosition())
-            .title(event.getAcronym())
-            .snippet(event.title)
-            .icon(
+        return MarkerOptions().apply {
+            position(event.getPosition())
+            title(event.getAcronym())
+            snippet(event.title)
+            icon(
                 BitmapDescriptorFactory.fromBitmap(
                     BitmapFactory.decodeResource(context.resources, setMarkerType(event))
                 )
             )
+        }
     }
 
     private fun setMapUIControls(map: GoogleMap) {
-        map.uiSettings.isZoomControlsEnabled = true
-        map.uiSettings.isCompassEnabled = true
-        map.uiSettings.isMapToolbarEnabled = true
-        map.uiSettings.isMyLocationButtonEnabled = true
+        map.uiSettings.apply {
+            isZoomControlsEnabled = true
+            isCompassEnabled = true
+            isMapToolbarEnabled = true
+            isMyLocationButtonEnabled = true
+        }
     }
 
     private fun setMapListeners(
@@ -136,7 +200,6 @@ object MapsUtil {
         onMapClickListener: GoogleMap.OnMapClickListener,
         cardView: MaterialCardView
     ) {
-        map.setOnMarkerClickListener(onMarkerClickListener)
 //        map.setOnMarkerClickListener {
 //            getMarkerDetails(
 //                marker,
@@ -148,15 +211,18 @@ object MapsUtil {
 //            )
 //            zoomOnMarker(map, it.position)
 //        }
-        map.setOnMapClickListener(onMapClickListener)
-        map.setMaxZoomPreference(16f)
-        map.setMinZoomPreference(5f)
-        map.setOnCameraMoveListener {
-            if (map.cameraPosition.zoom > 9) {
-                showMarkers(markerList)
-            } else {
-                hideMarkers(markerList)
-                cardView.visibility = View.GONE
+        map.apply {
+            setOnMarkerClickListener(onMarkerClickListener)
+            setOnMapClickListener(onMapClickListener)
+            setMaxZoomPreference(16f)
+            setMinZoomPreference(5f)
+            setOnCameraMoveListener {
+                if (map.cameraPosition.zoom > 9) {
+                    showMarkers(markerList)
+                } else {
+                    hideMarkers(markerList)
+                    cardView.visibility = View.GONE
+                }
             }
         }
     }
@@ -171,5 +237,9 @@ object MapsUtil {
         for (i in list) {
             i.isVisible = true
         }
+    }
+
+    private fun stampToDate(time: com.google.firebase.Timestamp): Date {
+        return time.toDate()
     }
 }

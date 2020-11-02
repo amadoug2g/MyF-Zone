@@ -16,4 +16,14 @@
     <string name="image_club">Image club</string>
     <string name="club_subtitle">Club subname</string>
     <string name="club_name">Club name</string>
+    <string name="hint_required">Field required</string>
+    <string name="welcome_message">Welcome</string>
+    <string name="auth_error">Failed sign in</string>
+    <string name="welcome_back_message">Welcome back</string>
+    <string name="logout">Logging out</string>
+    <string name="logout_message">Log out?</string>
+    <string name="logout_message_error">You are not signed in.</string>
+    <string name="logout_success">Log out successful</string>
+    <string name="confirm_message">OK</string>
+    <string name="cancel_message">Cancel</string>
 </resources>

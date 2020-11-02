@@ -13,10 +13,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="64dp"
+        android:layout_marginTop="128dp"
         android:layout_marginEnd="32dp"
         android:hint="@string/input_mail_hint"
-        android:transitionName="signup_email_transition"
+        android:transitionName="@string/email_trans"
         app:helperText="@string/input_mail_helper">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -36,7 +36,7 @@
         android:layout_marginTop="32dp"
         android:layout_marginEnd="32dp"
         android:hint="@string/input_password_hint"
-        android:transitionName="signup_password_transition"
+        android:transitionName="@string/password_trans"
         app:endIconMode="password_toggle"
         app:helperText="@string/input_mdp_helper_login">
 
@@ -55,7 +55,10 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="64dp"
         android:layout_marginEnd="16dp"
-        android:text="@string/login_coach" />
+        android:onClick="signInUser"
+        android:text="@string/login_coach"
+        android:transitionName="@string/button_trans"
+        tools:ignore="OnClick" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/registerText"

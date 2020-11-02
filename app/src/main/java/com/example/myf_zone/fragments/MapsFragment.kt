@@ -1,5 +1,6 @@
 package com.example.myf_zone.fragments
 
+import android.content.DialogInterface
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,19 +11,25 @@ import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
 import com.example.myf_zone.R
-import com.example.myf_zone.model.event.Event
 import com.example.myf_zone.model.event.EventParticipation
+import com.example.myf_zone.screens.MapAccountScreen
+import com.example.myf_zone.util.FirebaseUtil
+import com.example.myf_zone.util.FirebaseUtil.auth
+import com.example.myf_zone.util.FirebaseUtil.updateCurrentUser
 import com.example.myf_zone.util.MapsUtil
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.fragment_maps.*
 import kotlinx.android.synthetic.main.fragment_maps.view.*
-import org.jetbrains.anko.sdk27.coroutines.onClick
+import org.jetbrains.anko.clearTask
+import org.jetbrains.anko.newTask
+import org.jetbrains.anko.support.v4.intentFor
 import org.jetbrains.anko.support.v4.toast
-import java.util.*
 
 class MapsFragment : Fragment(),
     GoogleMap.OnMarkerClickListener,
@@ -43,33 +50,7 @@ class MapsFragment : Fragment(),
          */
 
         //Event Markers Data
-        val eventOwner01 = EventParticipation(
-            "",
-            "PSG",
-            "coachID",
-            "Full Name",
-            "sportID",
-            "Football",
-            "categoryID",
-            "U21",
-            "subCategoryID",
-            "Regional"
-        )
-
-        val eventOwner02 = EventParticipation(
-            "",
-            "Pierrefiette FC",
-            "coachID",
-            "Full Name",
-            "sportID",
-            "Football",
-            "categoryID",
-            "U21",
-            "subCategoryID",
-            "Regional"
-        )
-
-        val eventOwner03 = EventParticipation(
+        val eventOwner = EventParticipation(
             "",
             "Bobigny FC",
             "coachID",
@@ -83,37 +64,15 @@ class MapsFragment : Fragment(),
         )
 
         val eventParticipant = EventParticipation()
-        val participantList = mutableListOf<EventParticipation>(eventParticipant)
+        val participantList = mutableListOf(eventParticipant)
 
-        val event01 = Event(
-            "Match Amical - U21", eventOwner01.clubAcronym, "Friendly", 8, Date(0),
-            "address", 48.8414, 2.2530, Date(0), eventOwner01, participantList
+        MapsUtil.placeFirestoreEvent(
+            requireContext(),
+            googleMap,
+            eventOwner,
+            participantList,
+            markerList
         )
-
-        val event02 = Event(
-            "Plateau - U9", eventOwner02.clubAcronym, "Plateau", 6, Date(0),
-            "address", 48.9679, 2.3641, Date(0), eventOwner02, participantList
-        )
-
-        val event03 = Event(
-            "Tournoi - U16", eventOwner03.clubAcronym, "Tournament", 8, Date(0),
-            "address", 48.9096, 2.4397, Date(0), eventOwner03, participantList
-        )
-
-        val eventList = mutableListOf<Event>()
-
-        eventList.add(event01)
-        eventList.add(event02)
-        eventList.add(event03)
-
-        MapsUtil.addItem(
-            markerList,
-            MapsUtil.placeEventOnMap(googleMap, event01, requireContext()),
-            MapsUtil.placeEventOnMap(googleMap, event02, requireContext(), R.mipmap.ic_pffc_logo),
-            MapsUtil.placeEventOnMap(googleMap, event03, requireContext(), R.mipmap.ic_fc93_logo)
-        )
-
-        MapsUtil.addItemEvent(event01, event02, event03)
 
         MapsUtil.initializeMap(
             googleMap,
@@ -121,13 +80,91 @@ class MapsFragment : Fragment(),
             this,
             markerList, cardView_detail
         )
+    }
 
-        list_button.onClick {
-            toast("Zoom: " + googleMap.cameraPosition.zoom)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        auth = FirebaseAuth.getInstance()
+    }
+
+    override fun onMarkerClick(marker: Marker): Boolean {
+//        MapsUtil.zoomOnMarker(this.googleMap, marker.position
+        MapsUtil.getMarkerDetails(
+            marker,
+            cardView_detail,
+            cardView_clubName,
+            cardView_clubDesc,
+            cardView_clubImage,
+            requireContext()
+        )
+        return true
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val fragmentInflater = inflater.inflate(R.layout.fragment_maps, container, false)
+        (activity as AppCompatActivity).supportActionBar?.hide()
+        val currentUser = auth.currentUser
+
+        fragmentInflater.account_button.setOnClickListener {
+
+            if (currentUser == null) {
+                Navigation
+                    .findNavController(fragmentInflater)
+                    .navigate(R.id.mapsToLogin)
+            } else {
+
+                FirebaseUtil.getCurrentUser { user ->
+                    toast("Hi, ${user.firstName} ${user.lastName}")
+
+                    if (currentUser.displayName == "") {
+                        updateCurrentUser("", user.firstName, user.lastName)
+                    }
+                }
+            }
         }
 
-//        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
-//        setUpMapRequest()
+        fragmentInflater.list_button.setOnClickListener {
+            if (currentUser == null) {
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle(R.string.logout)
+                    .setMessage(R.string.logout_message_error)
+                    .setPositiveButton(R.string.cancel_message) { _: DialogInterface, _: Int ->
+                    }
+                    .show()
+            } else {
+                toast(currentUser.uid)
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle(R.string.logout)
+                    .setMessage(R.string.logout_message)
+                    .setPositiveButton(R.string.confirm_message) { _: DialogInterface, _: Int ->
+                        auth.signOut()
+                        toast(R.string.logout_success)
+                        startActivity(intentFor<MapAccountScreen>().newTask().clearTask())
+                    }
+                    .setNegativeButton(R.string.cancel_message) { _: DialogInterface, _: Int ->
+                    }
+                    .show()
+            }
+        }
+        return fragmentInflater
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
+        mapFragment?.getMapAsync(callback)
+    }
+
+    override fun onMapClick(p0: LatLng?) {
+        cardView_detail.apply {
+            visibility = View.GONE
+//            startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.to_bottom))
+        }
     }
 
     private fun setUpMapRequest() {
@@ -143,46 +180,6 @@ class MapsFragment : Fragment(),
             )
             return
         }
-    }
-
-    override fun onMarkerClick(marker: Marker): Boolean {
-//        MapsUtil.zoomOnMarker(this.googleMap, marker.position)
-        MapsUtil.getMarkerDetails(
-            marker,
-            cardView_detail,
-            cardView_clubName,
-            cardView_clubDesc,
-            cardView_clubImage,
-            requireContext()
-        )
-
-        return true
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        val fragmentInflater = inflater.inflate(R.layout.fragment_maps, container, false)
-        (activity as AppCompatActivity).supportActionBar?.hide()
-
-        fragmentInflater.account_button.setOnClickListener {
-            Navigation
-                .findNavController(fragmentInflater)
-                .navigate(R.id.mapsToLogin)
-        }
-        return fragmentInflater
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
-        mapFragment?.getMapAsync(callback)
-    }
-
-    override fun onMapClick(p0: LatLng?) {
-        cardView_detail.visibility = View.GONE
     }
 
     companion object {

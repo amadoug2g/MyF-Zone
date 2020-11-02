@@ -4,17 +4,17 @@ import com.google.android.gms.maps.model.LatLng
 import java.util.*
 
 data class Event(
-    val title: String,
-    val description: String,
-    val type: String,
-    val nbTeam: Int,
-    val date: Date,
-    val address: String,
-    val lat: Double,
-    val lng: Double,
-    val createdDate: Date,
-    val owner: EventParticipation,
-    val participants: MutableList<EventParticipation>
+    var title: String,
+    var description: String,
+    var type: String,
+    var nbTeam: Int,
+    var date: Date,
+    var address: String,
+    var lat: Double,
+    var lng: Double,
+    var createdDate: Date,
+    var owner: EventParticipation,
+    var participants: MutableList<EventParticipation>
 ) {
     constructor() : this(
         "",

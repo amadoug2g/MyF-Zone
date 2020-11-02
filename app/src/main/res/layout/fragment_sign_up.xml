@@ -17,7 +17,7 @@
         android:layout_marginTop="64dp"
         android:layout_marginEnd="32dp"
         android:hint="@string/input_mail_hint"
-        android:transitionName="signup_email_transition"
+        android:transitionName="@string/email_trans"
         app:helperText="@string/input_mail_helper">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -37,7 +37,7 @@
         android:layout_marginTop="32dp"
         android:layout_marginEnd="32dp"
         android:hint="@string/input_password_hint"
-        android:transitionName="signup_password_transition"
+        android:transitionName="@string/password_trans"
         app:endIconMode="password_toggle"
         app:helperText="@string/input_mdp_helper">
 
@@ -50,7 +50,7 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/signup_firstname_layout"
+        android:id="@+id/signup_firstName_layout"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -61,7 +61,7 @@
         app:helperText="@string/input_firstName_helper">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/signup_lastName_input"
+            android:id="@+id/signup_firstName_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textPersonName" />
@@ -69,7 +69,7 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/signup_nom_layout"
+        android:id="@+id/signup_lastName_layout"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -80,7 +80,7 @@
         app:helperText="@string/input_lastName_helper">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/signup_firstName_input"
+            android:id="@+id/signup_lastName_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textPersonName" />
@@ -94,7 +94,10 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="64dp"
         android:layout_marginEnd="16dp"
-        android:text="@string/become_coach" />
+        android:onClick="createAccount"
+        android:text="@string/become_coach"
+        android:transitionName="@string/button_trans"
+        tools:ignore="OnClick" />
 
 
 </LinearLayout>

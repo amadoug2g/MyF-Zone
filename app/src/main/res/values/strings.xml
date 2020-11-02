@@ -20,4 +20,17 @@
     <string name="image_club">Image club</string>
     <string name="club_subtitle">Sous-titre du club</string>
     <string name="club_name">Nom du club</string>
+    <string name="email_trans" translatable="false">email_transition_field</string>
+    <string name="password_trans" translatable="false">password_transition_field</string>
+    <string name="button_trans" translatable="false">button_transition</string>
+    <string name="hint_required">Champ requis</string>
+    <string name="welcome_message">Bienvenue</string>
+    <string name="welcome_back_message">Bienvenue à nouveau</string>
+    <string name="auth_error">Erreur d\'inscription</string>
+    <string name="logout">Déconnexion</string>
+    <string name="logout_message">Vous allez vous déconnecter. Continuer ?</string>
+    <string name="logout_message_error">Vous n\'êtes pas connecté.</string>
+    <string name="logout_success">Déconnexion réussie</string>
+    <string name="confirm_message">OK</string>
+    <string name="cancel_message">Annuler</string>
 </resources>
