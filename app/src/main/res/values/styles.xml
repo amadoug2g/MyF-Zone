@@ -21,7 +21,9 @@
     </style>
 
     <style name="SignUpTheme">
-        <item name="android:title">Devenir Coach</item>
+        <item name="android:title">@string/become_coach</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
     </style>
 
     <style name="map_button_style">

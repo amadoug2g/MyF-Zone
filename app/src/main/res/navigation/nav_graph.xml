@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/registration_nav"
+    app:startDestination="@id/mapsFragment">
+
+    <fragment
+        android:id="@+id/signUpFragment"
+        android:name="com.example.myf_zone.fragments.SignUpFragment"
+        android:label="@string/become_coach"
+        tools:layout="@layout/fragment_sign_up">
+        <action
+            android:id="@+id/signUpToAffiliationRequest"
+            app:destination="@id/affiliationRequestFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.example.myf_zone.fragments.LoginFragment"
+        android:label="@string/login_coach"
+        tools:layout="@layout/fragment_login">
+        <action
+            android:id="@+id/loginToSignUp"
+            app:destination="@id/signUpFragment"
+            app:enterAnim="@anim/fragment_close_enter"
+            app:exitAnim="@anim/fragment_close_exit" />
+        <action
+            android:id="@+id/loginToMaps"
+            app:destination="@id/mapsFragment" />
+        <action
+            android:id="@+id/loginToAffiliationRequest"
+            app:destination="@id/affiliationRequestFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/mapsFragment"
+        android:name="com.example.myf_zone.fragments.MapsFragment"
+        android:label="@string/title_activity_maps"
+        tools:layout="@layout/fragment_maps">
+        <action
+            android:id="@+id/mapsToLogin"
+            app:destination="@id/loginFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        <action
+            android:id="@+id/mapsToProfile"
+            app:destination="@id/profileFragment" />
+        <action
+            android:id="@+id/mapsToList"
+            app:destination="@id/listEventFragment" />
+        <action
+            android:id="@+id/mapsToMessage"
+            app:destination="@id/messageFragment"
+            app:enterAnim="@anim/fragment_fade_enter"
+            app:exitAnim="@anim/fragment_fade_exit" />
+        <action
+            android:id="@+id/mapsToAffiliationRequest"
+            app:destination="@id/affiliationRequestFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/affiliationRequestFragment"
+        android:name="com.example.myf_zone.fragments.AffiliationRequestFragment"
+        android:label="fragment_affiliation_request"
+        tools:layout="@layout/fragment_affiliation_request">
+        <action
+            android:id="@+id/affiliationRequestToAffiliationSuccess"
+            app:destination="@id/affiliationSuccessFragment" />
+        <action
+            android:id="@+id/affiliationRequestToMaps"
+            app:destination="@id/mapsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/affiliationSuccessFragment"
+        android:name="com.example.myf_zone.fragments.AffiliationSuccessFragment"
+        android:label="fragment_affiliation_success"
+        tools:layout="@layout/fragment_affiliation_success">
+        <action
+            android:id="@+id/affiliationSuccessToMaps"
+            app:destination="@id/mapsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/listEventFragment"
+        android:name="com.example.myf_zone.fragments.ListEventFragment"
+        android:label="fragment_list_event"
+        tools:layout="@layout/fragment_list_event">
+        <action
+            android:id="@+id/listToMaps"
+            app:destination="@id/mapsFragment" />
+        <action
+            android:id="@+id/listToMessage"
+            app:destination="@id/messageFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/messageFragment"
+        android:name="com.example.myf_zone.fragments.MessageFragment"
+        android:label="fragment_message"
+        tools:layout="@layout/fragment_message">
+        <action
+            android:id="@+id/messageToList"
+            app:destination="@id/listEventFragment" />
+        <action
+            android:id="@+id/messageToMaps"
+            app:destination="@id/mapsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.example.myf_zone.fragments.ProfileFragment"
+        android:label="fragment_profile"
+        tools:layout="@layout/fragment_profile">
+        <action
+            android:id="@+id/profileToMaps"
+            app:destination="@id/mapsFragment" />
+    </fragment>
+</navigation>

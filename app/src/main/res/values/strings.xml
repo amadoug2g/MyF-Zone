@@ -33,4 +33,52 @@
     <string name="logout_success">Déconnexion réussie</string>
     <string name="confirm_message">OK</string>
     <string name="cancel_message">Annuler</string>
+    <string name="menu_item_map">Carte</string>
+    <string name="menu_item_list">Liste</string>
+    <string name="menu_item_message">Message</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment fr</string>
+    <string name="affiliationTextDesc">Rentrez votre code d\'affiliation pour vous enregistrez auprès d\'un club</string>
+    <string name="affiliation_code_text">Code d\'Affiliation</string>
+    <string name="sportChoice">Sélectionnez un sport</string>
+    <string name="categoryChoice">Sélectionnez une categorie</string>
+    <string name="subCategoryChoice">Sélectionnez une sous-catégorie</string>
+    <string name="affiliationRequestTitle">Vous n\'êtes affilié à aucun club</string>
+    <string name="affiliationRequestComment">a reçu votre demande d\'affiliation et vous répondra prochainement</string>
+    <string name="laterTextButton">Plus tard</string>
+    <string name="affiliate">S\'affilier</string>
+    <string name="affiliation_club_acronym">Acronyme du Club</string>
+    <string name="affiliation_request_success_text">Demande d\'affiliation réussie !</string>
+    <string name="profileUserPosition">Entraineur de Football</string>
+    <string name="profileCategory">U19 - Élite</string>
+    <string name="calendar">Calendrier</string>
+    <string name="activate_notifications">Activer les notifications</string>
+    <string name="my_info">Mes informations</string>
+    <string name="profile_name">Prénom Nom</string>
+    <string name="profile_email">Adresse mail</string>
+    <string name="my_events">Mes évènements</string>
+    <string name="calender_of_events">Calendrier des Évènements</string>
+    <string name="message_page">Page de Message</string>
+
+    <string-array name="sportList">
+        <item>@string/sportChoice</item>
+        <item>Football</item>
+    </string-array>
+    <string-array name="categoryList">
+        <item>@string/categoryChoice</item>
+        <item>U09</item>
+        <item>U13</item>
+        <item>U16</item>
+        <item>U19</item>
+        <item>U21</item>
+        <item>Senior</item>
+    </string-array>
+    <string-array name="subCategoryList">
+        <item>@string/subCategoryChoice</item>
+        <item>Loisir</item>
+        <item>Élite</item>
+        <item>District</item>
+        <item>Régional</item>
+        <item>National</item>
+    </string-array>
 </resources>

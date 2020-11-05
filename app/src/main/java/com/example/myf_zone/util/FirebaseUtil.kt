@@ -1,6 +1,7 @@
 package com.example.myf_zone.util
 
 import android.util.Log
+import com.example.myf_zone.model.club.Club
 import com.example.myf_zone.model.coach.Coach
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
@@ -77,4 +78,15 @@ object FirebaseUtil {
             }
         }
     }
+
+    fun getSportList() {}
+
+    fun getCategoryList() {}
+
+    fun getSubCategoryList() {}
+
+    fun getClubAffiliationCode() {}
+
+    fun sendRequestToClub(club: Club, affiliationCode: String) {}
+
 }

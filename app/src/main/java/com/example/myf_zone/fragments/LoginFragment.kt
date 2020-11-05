@@ -12,6 +12,8 @@ import androidx.navigation.fragment.FragmentNavigator
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.transition.TransitionInflater
 import com.example.myf_zone.R
+import com.google.android.material.bottomappbar.BottomAppBar
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.fragment_login.*
 import kotlinx.android.synthetic.main.fragment_login.view.*
 import kotlinx.android.synthetic.main.fragment_sign_up.*
@@ -30,6 +32,12 @@ class LoginFragment : Fragment() {
             setDisplayHomeAsUpEnabled(true)
         }
         setHasOptionsMenu(true)
+
+        val navBar: BottomAppBar = requireActivity().findViewById(R.id.bottomBar)
+        val fabButton: FloatingActionButton = requireActivity().findViewById(R.id.fabMain)
+        navBar.visibility = View.GONE
+        fabButton.visibility = View.GONE
+
     }
 
     override fun onCreateView(

@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".fragments.LoginFragment">
+    tools:context=".fragments.AffiliationRequestFragment">
 
     <ProgressBar
         android:id="@+id/loginProgressBar"
@@ -18,77 +17,80 @@
         android:indeterminateTint="@color/colorPrimary"
         android:visibility="invisible" />
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/login_email_layout"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="match_parent"
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="128dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="32dp"
-        android:hint="@string/input_mail_hint"
-        android:transitionName="@string/email_trans"
-        app:helperText="@string/input_mail_helper">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/login_email_input"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textEmailAddress" />
-
-    </com.google.android.material.textfield.TextInputLayout>
+        android:text="@string/affiliationTextDesc"
+        android:textSize="16sp" />
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/login_password_layout"
+        android:id="@+id/affiliationCodeLayout"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginTop="32dp"
         android:layout_marginEnd="32dp"
-        android:hint="@string/input_password_hint"
-        android:transitionName="@string/password_trans"
-        app:endIconMode="password_toggle"
-        app:helperText="@string/input_mdp_helper_login">
+        android:hint="@string/affiliation_code_text">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/login_password_input"
+            android:id="@+id/affiliationCodeInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textPassword" />
+            android:inputType="text" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
+    <androidx.appcompat.widget.AppCompatSpinner
+        android:id="@+id/sportSpinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="32dp"
+        android:entries="@array/sportList" />
+
+    <androidx.appcompat.widget.AppCompatSpinner
+        android:id="@+id/categorySpinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="32dp"
+        android:entries="@array/categoryList" />
+
+    <androidx.appcompat.widget.AppCompatSpinner
+        android:id="@+id/subCategorySpinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="32dp"
+        android:entries="@array/subCategoryList" />
+
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/login_button"
+        android:id="@+id/affiliateButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="64dp"
         android:layout_marginEnd="16dp"
-        android:onClick="signInUser"
-        android:text="@string/login_coach"
-        android:transitionName="@string/button_trans"
-        tools:ignore="OnClick" />
-
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/registerText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="64dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="64dp"
-        android:text="@string/no_account_string"
+        android:text="@string/affiliate"
         android:textAlignment="center" />
 
+
     <TextView
-        android:id="@+id/loginRegister"
+        android:id="@+id/affiliationLaterAffiliate"
         style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="64dp"
-        android:layout_marginTop="-16dp"
+        android:layout_marginTop="0dp"
         android:layout_marginEnd="64dp"
-        android:text="@string/become_coach" />
+        android:text="@string/laterTextButton"
+        android:textColor="@color/colorDiscreet" />
 
 </LinearLayout>

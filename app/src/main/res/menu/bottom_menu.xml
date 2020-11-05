@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/listEventFragment"
+        android:icon="@drawable/ic_list"
+        android:title="@string/menu_item_list"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/mapsFragment"
+        android:icon="@drawable/ic_map"
+        android:title="@string/menu_item_map"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/messageFragment"
+        android:icon="@drawable/ic_message"
+        android:title="@string/menu_item_message"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/placeholder"
+        android:title=""
+        app:showAsAction="never" />
+</menu>

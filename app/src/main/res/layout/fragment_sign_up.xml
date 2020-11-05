@@ -7,6 +7,16 @@
     android:orientation="vertical"
     tools:context=".fragments.SignUpFragment">
 
+    <ProgressBar
+        android:id="@+id/signUpProgressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="0dp"
+        android:indeterminate="true"
+        android:indeterminateBehavior="cycle"
+        android:indeterminateTint="@color/colorPrimary"
+        android:visibility="invisible" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/signup_email_layout"

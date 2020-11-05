@@ -12,7 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
 import com.example.myf_zone.R
 import com.example.myf_zone.model.event.EventParticipation
-import com.example.myf_zone.screens.MapAccountScreen
+import com.example.myf_zone.screens.MainScreen
 import com.example.myf_zone.util.FirebaseUtil
 import com.example.myf_zone.util.FirebaseUtil.auth
 import com.example.myf_zone.util.FirebaseUtil.updateCurrentUser
@@ -22,7 +22,9 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
+import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.fragment_maps.*
 import kotlinx.android.synthetic.main.fragment_maps.view.*
@@ -66,13 +68,13 @@ class MapsFragment : Fragment(),
         val eventParticipant = EventParticipation()
         val participantList = mutableListOf(eventParticipant)
 
-        MapsUtil.placeFirestoreEvent(
-            requireContext(),
-            googleMap,
-            eventOwner,
-            participantList,
-            markerList
-        )
+//        MapsUtil.placeFirestoreEvent(
+//            requireContext(),
+//            googleMap,
+//            eventOwner,
+//            participantList,
+//            markerList
+//        )
 
         MapsUtil.initializeMap(
             googleMap,
@@ -110,6 +112,11 @@ class MapsFragment : Fragment(),
         (activity as AppCompatActivity).supportActionBar?.hide()
         val currentUser = auth.currentUser
 
+        val navBar: BottomAppBar = requireActivity().findViewById(R.id.bottomBar)
+        val fabButton: FloatingActionButton = requireActivity().findViewById(R.id.fabMain)
+        navBar.visibility = View.VISIBLE
+        fabButton.visibility = View.VISIBLE
+
         fragmentInflater.account_button.setOnClickListener {
 
             if (currentUser == null) {
@@ -133,7 +140,7 @@ class MapsFragment : Fragment(),
                 MaterialAlertDialogBuilder(requireContext())
                     .setTitle(R.string.logout)
                     .setMessage(R.string.logout_message_error)
-                    .setPositiveButton(R.string.cancel_message) { _: DialogInterface, _: Int ->
+                    .setPositiveButton(R.string.confirm_message) { _: DialogInterface, _: Int ->
                     }
                     .show()
             } else {
@@ -144,13 +151,20 @@ class MapsFragment : Fragment(),
                     .setPositiveButton(R.string.confirm_message) { _: DialogInterface, _: Int ->
                         auth.signOut()
                         toast(R.string.logout_success)
-                        startActivity(intentFor<MapAccountScreen>().newTask().clearTask())
+                        startActivity(intentFor<MainScreen>().newTask().clearTask())
                     }
                     .setNegativeButton(R.string.cancel_message) { _: DialogInterface, _: Int ->
                     }
                     .show()
             }
         }
+
+        fragmentInflater.message_button.setOnClickListener {
+            Navigation
+                .findNavController(fragmentInflater)
+                .navigate(R.id.mapsToList)
+        }
+
         return fragmentInflater
     }
 

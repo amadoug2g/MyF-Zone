@@ -34,21 +34,12 @@ object MapsUtil {
         cardView: MaterialCardView
     ) {
         setMapUIControls(map)
-        if (map.cameraPosition.zoom > 9) {
-            showMarkers(markerList)
-        } else {
-            hideMarkers(markerList)
-            cardView.visibility = View.GONE
-        }
+        mapStartPosition(map, markerList, cardView)
         setMapListeners(
             map, markerList,
             onMarkerClickListener,
             onMapClickListener, cardView
         )
-
-        val position = LatLng(48.8550, 2.3452)
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 9.5f))
-        map.animateCamera(CameraUpdateFactory.newLatLngZoom(position, 10.5f))
     }
 
     private fun placeEventOnMap(
@@ -186,7 +177,7 @@ object MapsUtil {
 
     private fun setMapUIControls(map: GoogleMap) {
         map.uiSettings.apply {
-            isZoomControlsEnabled = true
+//            isZoomControlsEnabled = true
             isCompassEnabled = true
             isMapToolbarEnabled = true
             isMyLocationButtonEnabled = true
@@ -225,6 +216,23 @@ object MapsUtil {
                 }
             }
         }
+    }
+
+    private fun mapStartPosition(
+        map: GoogleMap,
+        markerList: MutableList<Marker>,
+        cardView: MaterialCardView
+    ) {
+        if (map.cameraPosition.zoom > 9) {
+            showMarkers(markerList)
+        } else {
+            hideMarkers(markerList)
+            cardView.visibility = View.GONE
+        }
+
+        val position = LatLng(48.8550, 2.3452)
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 9.5f))
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(position, 10.5f))
     }
 
     private fun hideMarkers(list: MutableList<Marker>) {
