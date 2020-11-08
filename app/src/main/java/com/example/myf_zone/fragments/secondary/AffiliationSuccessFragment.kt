@@ -1,4 +1,4 @@
-package com.example.myf_zone.fragments
+package com.example.myf_zone.fragments.secondary
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,18 +8,26 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
 import com.example.myf_zone.R
-import kotlinx.android.synthetic.main.fragment_affiliation_request.view.*
+import kotlinx.android.synthetic.main.fragment_affiliation_success.view.*
 
-class AffiliationRequestFragment : Fragment() {
+class AffiliationSuccessFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         (activity as AppCompatActivity).supportActionBar?.apply {
             show()
-            setTitle(R.string.affiliationRequestTitle)
+            setTitle(R.string.affiliation_text)
+            setHomeButtonEnabled(true)
+            setDisplayHomeAsUpEnabled(false)
         }
     }
+
+    override fun onDetach() {
+        super.onDetach()
+        (activity as AppCompatActivity).supportActionBar?.setTitle(R.string.affiliationRequestTitle)
+    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -27,20 +35,13 @@ class AffiliationRequestFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val fragmentInflater =
-            inflater.inflate(R.layout.fragment_affiliation_request, container, false)
+            inflater.inflate(R.layout.fragment_affiliation_success, container, false)
 
-        fragmentInflater.affiliationLaterAffiliate.setOnClickListener {
-
-            Navigation
-                .findNavController(fragmentInflater)
-                .navigate(R.id.affiliationRequestToMaps)
-        }
-
-        fragmentInflater.affiliateButton.setOnClickListener {
+        fragmentInflater.affiliationLaterNotifications.setOnClickListener {
 
             Navigation
                 .findNavController(fragmentInflater)
-                .navigate(R.id.affiliationRequestToAffiliationSuccess)
+                .navigate(R.id.affiliationSuccessToMaps)
         }
 
         return fragmentInflater

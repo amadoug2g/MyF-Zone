@@ -1,4 +1,4 @@
-package com.example.myf_zone.fragments
+package com.example.myf_zone.fragments.secondary
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,16 +8,18 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
 import com.example.myf_zone.R
-import kotlinx.android.synthetic.main.fragment_affiliation_success.view.*
+import kotlinx.android.synthetic.main.fragment_affiliation_request.view.*
 
-class AffiliationSuccessFragment : Fragment() {
+class AffiliationRequestFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         (activity as AppCompatActivity).supportActionBar?.apply {
             show()
-            setTitle(R.string.affiliation_request_success_text)
+            setTitle(R.string.affiliation_text)
+            setHomeButtonEnabled(false)
+            setDisplayHomeAsUpEnabled(false)
         }
     }
 
@@ -27,13 +29,20 @@ class AffiliationSuccessFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val fragmentInflater =
-            inflater.inflate(R.layout.fragment_affiliation_success, container, false)
+            inflater.inflate(R.layout.fragment_affiliation_request, container, false)
 
-        fragmentInflater.affiliationLaterNotifications.setOnClickListener {
+        fragmentInflater.affiliationLaterAffiliate.setOnClickListener {
 
             Navigation
                 .findNavController(fragmentInflater)
-                .navigate(R.id.affiliationSuccessToMaps)
+                .navigate(R.id.affiliationRequestToMaps)
+        }
+
+        fragmentInflater.affiliateButton.setOnClickListener {
+
+            Navigation
+                .findNavController(fragmentInflater)
+                .navigate(R.id.affiliationRequestToAffiliationSuccess)
         }
 
         return fragmentInflater

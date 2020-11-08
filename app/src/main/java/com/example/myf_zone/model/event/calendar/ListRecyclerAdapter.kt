@@ -1,11 +1,12 @@
-package com.example.myf_zone
+package com.example.myf_zone.model.event.calendar
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.myf_zone.model.event.EventSection
+import com.example.myf_zone.R
+import kotlinx.android.synthetic.main.event_section_row.view.*
 
 class ListRecyclerAdapter(private val sectionList: MutableList<EventSection>) :
     RecyclerView.Adapter<ListRecyclerAdapter.ViewHolder>() {
@@ -13,7 +14,9 @@ class ListRecyclerAdapter(private val sectionList: MutableList<EventSection>) :
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         val view = layoutInflater.inflate(R.layout.event_section_row, parent, false)
-        return ViewHolder(view)
+        return ViewHolder(
+            view
+        )
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -22,11 +25,11 @@ class ListRecyclerAdapter(private val sectionList: MutableList<EventSection>) :
         val text = section.getSectionName()
         val list = section.getSectionList()
 
-        holder.textView.text = text
-        val childRecyclerAdapter = ChildRecyclerAdapter(list)
-        holder.recyclerView!!.adapter = childRecyclerAdapter
+        holder.itemView.sectionNameTextView.text = text
 
-
+        val childRecyclerAdapter =
+            ChildRecyclerAdapter(list)
+        holder.itemView.childRecyclerView.adapter = childRecyclerAdapter
     }
 
     override fun getItemCount(): Int {
@@ -34,12 +37,7 @@ class ListRecyclerAdapter(private val sectionList: MutableList<EventSection>) :
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-
-        var textView = view.findViewById<TextView>(R.id.sectionTextView)
-        var recyclerView = view.findViewById<RecyclerView>(R.id.parentRecyclerView)
-
-//        var title: TextView = view.findViewById(R.id.title)
-//        var year: TextView = view.findViewById(R.id.year)
-//        var genre: TextView = view.findViewById(R.id.genre)
+        var textView: TextView = view.sectionNameTextView
+        var childRecyclerView: RecyclerView = view.childRecyclerView
     }
 }

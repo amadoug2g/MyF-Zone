@@ -1,14 +1,16 @@
-package com.example.myf_zone.fragments
+package com.example.myf_zone.fragments.primary
 
 import android.content.DialogInterface
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
 import androidx.navigation.Navigation
 import com.example.myf_zone.R
 import com.example.myf_zone.model.event.EventParticipation
@@ -22,9 +24,7 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
-import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.fragment_maps.*
 import kotlinx.android.synthetic.main.fragment_maps.view.*
@@ -32,6 +32,7 @@ import org.jetbrains.anko.clearTask
 import org.jetbrains.anko.newTask
 import org.jetbrains.anko.support.v4.intentFor
 import org.jetbrains.anko.support.v4.toast
+
 
 class MapsFragment : Fragment(),
     GoogleMap.OnMarkerClickListener,
@@ -86,6 +87,7 @@ class MapsFragment : Fragment(),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d(TAG, "onCREATE")
 
         auth = FirebaseAuth.getInstance()
     }
@@ -110,21 +112,15 @@ class MapsFragment : Fragment(),
     ): View? {
         val fragmentInflater = inflater.inflate(R.layout.fragment_maps, container, false)
         (activity as AppCompatActivity).supportActionBar?.hide()
+
         val currentUser = auth.currentUser
 
-        val navBar: BottomAppBar = requireActivity().findViewById(R.id.bottomBar)
-        val fabButton: FloatingActionButton = requireActivity().findViewById(R.id.fabMain)
-        navBar.visibility = View.VISIBLE
-        fabButton.visibility = View.VISIBLE
-
         fragmentInflater.account_button.setOnClickListener {
-
             if (currentUser == null) {
                 Navigation
                     .findNavController(fragmentInflater)
                     .navigate(R.id.mapsToLogin)
             } else {
-
                 FirebaseUtil.getCurrentUser { user ->
                     toast("Hi, ${user.firstName} ${user.lastName}")
 
@@ -132,6 +128,10 @@ class MapsFragment : Fragment(),
                         updateCurrentUser("", user.firstName, user.lastName)
                     }
                 }
+
+                Navigation
+                    .findNavController(fragmentInflater)
+                    .navigate(R.id.mapsToProfile)
             }
         }
 
@@ -159,12 +159,6 @@ class MapsFragment : Fragment(),
             }
         }
 
-        fragmentInflater.message_button.setOnClickListener {
-            Navigation
-                .findNavController(fragmentInflater)
-                .navigate(R.id.mapsToList)
-        }
-
         return fragmentInflater
     }
 
@@ -181,6 +175,7 @@ class MapsFragment : Fragment(),
         }
     }
 
+
     private fun setUpMapRequest() {
         if (ActivityCompat.checkSelfPermission(
                 requireContext(),
@@ -194,6 +189,15 @@ class MapsFragment : Fragment(),
             )
             return
         }
+    }
+
+    private fun openFragment(fragment: Fragment, extras: Bundle? = null): Boolean {
+        val fragmentTransaction: FragmentTransaction = parentFragmentManager.beginTransaction()
+        fragmentTransaction.replace(R.id.fragmentNavHost, fragment, null)
+        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+        fragmentTransaction.addToBackStack(null)
+        fragmentTransaction.commit()
+        return true
     }
 
     companion object {

@@ -1,4 +1,4 @@
-package com.example.myf_zone.fragments
+package com.example.myf_zone.fragments.secondary
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,13 +7,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.FragmentNavigator
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.transition.TransitionInflater
 import com.example.myf_zone.R
-import com.google.android.material.bottomappbar.BottomAppBar
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.fragment_login.*
 import kotlinx.android.synthetic.main.fragment_login.view.*
 import kotlinx.android.synthetic.main.fragment_sign_up.*
@@ -32,12 +31,6 @@ class LoginFragment : Fragment() {
             setDisplayHomeAsUpEnabled(true)
         }
         setHasOptionsMenu(true)
-
-        val navBar: BottomAppBar = requireActivity().findViewById(R.id.bottomBar)
-        val fabButton: FloatingActionButton = requireActivity().findViewById(R.id.fabMain)
-        navBar.visibility = View.GONE
-        fabButton.visibility = View.GONE
-
     }
 
     override fun onCreateView(
@@ -58,6 +51,7 @@ class LoginFragment : Fragment() {
             Navigation
                 .findNavController(fragmentInflater)
                 .navigate(R.id.loginToSignUp, null, null, extras)
+//            openFragment(SignUpFragment())
 
             sharedElementEnterTransition = TransitionInflater.from(requireContext())
                 .inflateTransition(R.transition.change_image_transform)
@@ -83,5 +77,14 @@ class LoginFragment : Fragment() {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun openFragment(fragment: Fragment, extras: Bundle? = null): Boolean {
+        val fragmentTransaction: FragmentTransaction = parentFragmentManager.beginTransaction()
+        fragmentTransaction.replace(R.id.fragmentNavHost, fragment, null)
+        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+        fragmentTransaction.addToBackStack(null)
+        fragmentTransaction.commit()
+        return true
     }
 }

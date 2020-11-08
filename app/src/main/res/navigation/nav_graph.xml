@@ -2,12 +2,39 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/registration_nav"
+    android:id="@+id/fragmentNavHost"
     app:startDestination="@id/mapsFragment">
+
+    <action
+        android:id="@+id/globalToList"
+        app:destination="@id/listEventFragment"
+        app:launchSingleTop="true"
+        app:popEnterAnim="@anim/fragment_fade_enter"
+        app:popExitAnim="@anim/fragment_fade_exit"
+        app:popUpTo="@id/fragmentNavHost"
+        app:popUpToInclusive="true" />
+
+    <action
+        android:id="@+id/globalToMaps"
+        app:destination="@id/mapsFragment"
+        app:launchSingleTop="true"
+        app:popEnterAnim="@android:anim/fade_in"
+        app:popExitAnim="@android:anim/fade_out"
+        app:popUpTo="@id/fragmentNavHost"
+        app:popUpToInclusive="true" />
+
+    <action
+        android:id="@+id/globalToMessage"
+        app:destination="@id/messageFragment"
+        app:launchSingleTop="true"
+        app:popEnterAnim="@anim/sd_scale_fade_and_translate_in"
+        app:popExitAnim="@anim/sd_scale_fade_and_translate_out"
+        app:popUpTo="@id/fragmentNavHost"
+        app:popUpToInclusive="true" />
 
     <fragment
         android:id="@+id/signUpFragment"
-        android:name="com.example.myf_zone.fragments.SignUpFragment"
+        android:name="com.example.myf_zone.fragments.secondary.SignUpFragment"
         android:label="@string/become_coach"
         tools:layout="@layout/fragment_sign_up">
         <action
@@ -16,7 +43,7 @@
     </fragment>
     <fragment
         android:id="@+id/loginFragment"
-        android:name="com.example.myf_zone.fragments.LoginFragment"
+        android:name="com.example.myf_zone.fragments.secondary.LoginFragment"
         android:label="@string/login_coach"
         tools:layout="@layout/fragment_login">
         <action
@@ -33,7 +60,7 @@
     </fragment>
     <fragment
         android:id="@+id/mapsFragment"
-        android:name="com.example.myf_zone.fragments.MapsFragment"
+        android:name="com.example.myf_zone.fragments.primary.MapsFragment"
         android:label="@string/title_activity_maps"
         tools:layout="@layout/fragment_maps">
         <action
@@ -47,20 +74,12 @@
             android:id="@+id/mapsToProfile"
             app:destination="@id/profileFragment" />
         <action
-            android:id="@+id/mapsToList"
-            app:destination="@id/listEventFragment" />
-        <action
-            android:id="@+id/mapsToMessage"
-            app:destination="@id/messageFragment"
-            app:enterAnim="@anim/fragment_fade_enter"
-            app:exitAnim="@anim/fragment_fade_exit" />
-        <action
             android:id="@+id/mapsToAffiliationRequest"
             app:destination="@id/affiliationRequestFragment" />
     </fragment>
     <fragment
         android:id="@+id/affiliationRequestFragment"
-        android:name="com.example.myf_zone.fragments.AffiliationRequestFragment"
+        android:name="com.example.myf_zone.fragments.secondary.AffiliationRequestFragment"
         android:label="fragment_affiliation_request"
         tools:layout="@layout/fragment_affiliation_request">
         <action
@@ -72,7 +91,7 @@
     </fragment>
     <fragment
         android:id="@+id/affiliationSuccessFragment"
-        android:name="com.example.myf_zone.fragments.AffiliationSuccessFragment"
+        android:name="com.example.myf_zone.fragments.secondary.AffiliationSuccessFragment"
         android:label="fragment_affiliation_success"
         tools:layout="@layout/fragment_affiliation_success">
         <action
@@ -81,31 +100,19 @@
     </fragment>
     <fragment
         android:id="@+id/listEventFragment"
-        android:name="com.example.myf_zone.fragments.ListEventFragment"
+        android:name="com.example.myf_zone.fragments.primary.ListEventFragment"
         android:label="fragment_list_event"
         tools:layout="@layout/fragment_list_event">
-        <action
-            android:id="@+id/listToMaps"
-            app:destination="@id/mapsFragment" />
-        <action
-            android:id="@+id/listToMessage"
-            app:destination="@id/messageFragment" />
     </fragment>
     <fragment
         android:id="@+id/messageFragment"
-        android:name="com.example.myf_zone.fragments.MessageFragment"
+        android:name="com.example.myf_zone.fragments.primary.MessageFragment"
         android:label="fragment_message"
         tools:layout="@layout/fragment_message">
-        <action
-            android:id="@+id/messageToList"
-            app:destination="@id/listEventFragment" />
-        <action
-            android:id="@+id/messageToMaps"
-            app:destination="@id/mapsFragment" />
     </fragment>
     <fragment
         android:id="@+id/profileFragment"
-        android:name="com.example.myf_zone.fragments.ProfileFragment"
+        android:name="com.example.myf_zone.fragments.secondary.ProfileFragment"
         android:label="fragment_profile"
         tools:layout="@layout/fragment_profile">
         <action

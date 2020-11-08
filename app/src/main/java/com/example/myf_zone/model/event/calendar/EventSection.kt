@@ -1,4 +1,4 @@
-package com.example.myf_zone.model.event
+package com.example.myf_zone.model.event.calendar
 
 data class EventSection(
     private val sectionName: String,

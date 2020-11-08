@@ -36,6 +36,7 @@
     <string name="menu_item_map">Carte</string>
     <string name="menu_item_list">Liste</string>
     <string name="menu_item_message">Message</string>
+    <string name="menu_item_calendar">Calendrier</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment fr</string>
     <string name="affiliationTextDesc">Rentrez votre code d\'affiliation pour vous enregistrez auprès d\'un club</string>
@@ -49,6 +50,7 @@
     <string name="affiliate">S\'affilier</string>
     <string name="affiliation_club_acronym">Acronyme du Club</string>
     <string name="affiliation_request_success_text">Demande d\'affiliation réussie !</string>
+    <string name="affiliation_text">Affiliation à un club</string>
     <string name="profileUserPosition">Entraineur de Football</string>
     <string name="profileCategory">U19 - Élite</string>
     <string name="calendar">Calendrier</string>
@@ -59,6 +61,10 @@
     <string name="my_events">Mes évènements</string>
     <string name="calender_of_events">Calendrier des Évènements</string>
     <string name="message_page">Page de Message</string>
+    <string name="enter_a_text">Enter a text</string>
+    <string name="close_app">Fermer l\'application ?</string>
+    <string name="exit_application">Vous êtes sur le point de quitter My F-Zone.</string>
+    <string name="exit_text">Quitter</string>
 
     <string-array name="sportList">
         <item>@string/sportChoice</item>

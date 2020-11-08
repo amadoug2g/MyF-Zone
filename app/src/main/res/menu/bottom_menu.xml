@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/listEventFragment"
-        android:icon="@drawable/ic_list"
-        android:title="@string/menu_item_list"
+        android:icon="@drawable/ic_calendar"
+        android:title="@string/menu_item_calendar"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/mapsFragment"
@@ -18,6 +18,6 @@
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/placeholder"
-        android:title=""
+        android:title="@string/empty_string"
         app:showAsAction="never" />
 </menu>
