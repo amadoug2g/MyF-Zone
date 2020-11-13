@@ -1,11 +1,11 @@
 package com.example.myf_zone.model.sport
 
 data class Sport(
-    val name: String,
-    val categories: MutableList<Category>
+    var id: String,
+    var name: String,
+    var rank: Int
 ) {
     constructor() : this(
-        "",
-        mutableListOf()
+        "", "", 0
     )
 }

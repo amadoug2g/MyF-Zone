@@ -7,7 +7,7 @@
     tools:context=".fragments.secondary.AffiliationRequestFragment">
 
     <ProgressBar
-        android:id="@+id/loginProgressBar"
+        android:id="@+id/affiliationProgressBar"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -51,6 +51,7 @@
         android:layout_marginStart="32dp"
         android:layout_marginTop="32dp"
         android:layout_marginEnd="32dp"
+        android:spinnerMode="dialog"
         android:entries="@array/sportList" />
 
     <androidx.appcompat.widget.AppCompatSpinner
@@ -60,6 +61,7 @@
         android:layout_marginStart="32dp"
         android:layout_marginTop="32dp"
         android:layout_marginEnd="32dp"
+        android:spinnerMode="dialog"
         android:entries="@array/categoryList" />
 
     <androidx.appcompat.widget.AppCompatSpinner
@@ -69,6 +71,8 @@
         android:layout_marginStart="32dp"
         android:layout_marginTop="32dp"
         android:layout_marginEnd="32dp"
+        android:spinnerMode="dialog"
+        android:visibility="gone"
         android:entries="@array/subCategoryList" />
 
     <com.google.android.material.button.MaterialButton
@@ -78,6 +82,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="64dp"
         android:layout_marginEnd="16dp"
+        android:enabled="false"
         android:text="@string/affiliate"
         android:textAlignment="center" />
 

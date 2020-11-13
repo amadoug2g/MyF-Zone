@@ -6,10 +6,10 @@ import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import com.example.myf_zone.R
 import com.example.myf_zone.model.event.Event
-import com.example.myf_zone.model.event.EventParticipation
-import com.example.myf_zone.util.FirebaseUtil.getEvents
+import com.example.myf_zone.model.event.EventParticipant
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -17,7 +17,9 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.card.MaterialCardView
+import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.ktx.toObject
 import java.net.URL
 import java.util.*
 
@@ -53,32 +55,37 @@ object MapsUtil {
         if (drawable is Int)
             marker.tag = drawable
         if (drawable is String)
-            marker.tag = setMarkerType(event)
+            marker.tag = event.eventTypeImage
         return marker
     }
 
     fun placeFirestoreEvent(
         context: Context,
         map: GoogleMap,
-        owner: EventParticipation,
-        list: MutableList<EventParticipation>,
+        owner: EventParticipant,
+        list: MutableList<EventParticipant>,
         markerList: MutableList<Marker>
     ): MutableList<Event> {
-        val task = getEvents()
+        val task = StorageUtil.getEvents()
         val resultList = mutableListOf<Event>()
+        var newEvent: Event
         task.addOnCompleteListener {
             if (task.isSuccessful) {
 
                 val documentList = it.result.documents
 
-                for (doc in documentList)
-                    markerList.add(
-                        placeEventOnMap(
-                            map,
-                            placeEventFromFirestoreOnMap(doc, owner, list),
-                            context
-                        )
-                    )
+                for (doc in documentList) {
+                    Toast.makeText(context, doc["title"].toString(), Toast.LENGTH_SHORT).show()
+
+//                    newEvent = placeEventFromFirestoreOnMap(doc, owner, list)
+//                    markerList.add(
+//                        placeEventOnMap(
+//                            map,
+//                            newEvent,
+//                            context
+//                        )
+//                    )
+                }
             }
         }
         return resultList
@@ -86,27 +93,35 @@ object MapsUtil {
 
     private fun placeEventFromFirestoreOnMap(
         doc: DocumentSnapshot,
-        owner: EventParticipation,
-        list: MutableList<EventParticipation>
+        owner: EventParticipant,
+        list: MutableList<EventParticipant>
     ): Event {
-        val nbTeam = (doc["nbTeam"] as Long).toInt()
-        val date: Date = stampToDate(doc["date"] as com.google.firebase.Timestamp)
-        val createdDate: Date = stampToDate(doc["createdDate"] as com.google.firebase.Timestamp)
 
-        val newEvent = Event(
-            doc["title"] as String,
-            doc["description"] as String,
-            doc["type"] as String,
-            nbTeam,
-            date,
-            doc["address"] as String,
-            doc["lat"] as Double,
-            doc["lng"] as Double,
-            createdDate,
-            owner,
-            list
-        )
-        return newEvent
+        val event = doc.toObject<Event>()!!
+        event.owner = owner
+        event.participants = list
+
+        Log.d(TAG, "Event ID is ${doc.id}")
+
+        return event
+
+//        val nbTeam = (doc["nbTeam"] as Long).toInt()
+//        val date: Date = stampToDate(doc["date"] as Timestamp)
+//        val createdDate: Date = stampToDate(doc["createdDate"] as Timestamp)
+//
+//        return Event(
+//            doc["title"] as String,
+//            doc["description"] as String,
+//            doc["type"] as String,
+//            nbTeam,
+//            date,
+//            doc["address"] as String,
+//            doc["lat"] as Double,
+//            doc["lng"] as Double,
+//            createdDate,
+//            owner,
+//            list
+//        )
     }
 
     fun getEventImage(imageView: ImageView, event: Event) {
@@ -133,6 +148,22 @@ object MapsUtil {
         image.setImageBitmap(BitmapFactory.decodeResource(context.resources, marker.tag as Int))
     }
 
+    fun getEventMarkerDetails(
+        event: Event,
+        cardView: MaterialCardView,
+        title: TextView,
+        description: TextView,
+        image: ImageView
+    ) {
+        cardView.apply {
+            visibility = View.VISIBLE
+//            startAnimation(AnimationUtils.loadAnimation(context, R.anim.from_bottom))
+        }
+        title.text = event.title
+        description.text = event.description
+        image.setImageResource(setMarkerType(event))
+    }
+
     fun addItem(list: MutableList<Marker>, vararg item: Marker) {
         for (i in item) {
             list.add(i)
@@ -152,7 +183,7 @@ object MapsUtil {
         return true
     }
 
-    private fun setMarkerType(event: Event): Int {
+    fun setMarkerType(event: Event): Int {
         var result: Int = R.mipmap.ic_football_ball_icon_001
         when (event.type) {
             "friendly" -> result = R.mipmap.ic_football_ball_icon_002
@@ -247,7 +278,7 @@ object MapsUtil {
         }
     }
 
-    private fun stampToDate(time: com.google.firebase.Timestamp): Date {
+    private fun stampToDate(time: Timestamp): Date {
         return time.toDate()
     }
 }

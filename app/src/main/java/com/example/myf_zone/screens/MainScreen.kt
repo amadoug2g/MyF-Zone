@@ -1,13 +1,18 @@
 package com.example.myf_zone.screens
 
+import android.app.Activity
+import android.content.Context
 import android.content.DialogInterface
 import android.content.res.ColorStateList
+import android.graphics.Rect
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.MotionEvent
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -22,14 +27,13 @@ import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.userProfileChangeRequest
 import kotlinx.android.synthetic.main.activity_main_screen.*
+import kotlinx.android.synthetic.main.fragment_affiliation_request.*
 import kotlinx.android.synthetic.main.fragment_login.*
 import kotlinx.android.synthetic.main.fragment_sign_up.*
-import org.jetbrains.anko.clearTask
-import org.jetbrains.anko.intentFor
-import org.jetbrains.anko.newTask
 import org.jetbrains.anko.toast
 import java.util.*
 
@@ -59,8 +63,6 @@ class MainScreen : AppCompatActivity(),
         bottomNavBar.apply {
             background = null
             setOnNavigationItemSelectedListener(this@MainScreen)
-            selectedItemId = R.id.mapsFragment
-            navController.popBackStack()
             getMenu().getItem(3).isEnabled = false
         }
         return super.onPrepareOptionsMenu(menu)
@@ -173,6 +175,36 @@ class MainScreen : AppCompatActivity(),
         }
     }
 
+    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+        if (ev!!.action == MotionEvent.ACTION_DOWN) {
+            val v: View? = currentFocus
+            if (v is TextInputEditText) {
+                val outRect = Rect()
+                v.getGlobalVisibleRect(outRect)
+                if (!outRect.contains(ev.rawX.toInt(), ev.rawY.toInt())) {
+                    if (currentFocus != null) {
+                        val imm =
+                            getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                        imm.hideSoftInputFromWindow(currentFocus!!.windowToken, 0)
+                    }
+                    hideKeyboard()
+                    v.clearFocus()
+                }
+            }
+        }
+        return super.dispatchTouchEvent(ev)
+    }
+
+    private fun Activity.hideKeyboard() {
+        hideKeyboard(currentFocus ?: View(this))
+    }
+
+    private fun Context.hideKeyboard(view: View) {
+        val inputMethodManager =
+            getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
+    }
+
     fun createAccount(view: View) {
         val email = signup_email_input.text.toString()
         val password = signup_password_input.text.toString()
@@ -190,8 +222,7 @@ class MainScreen : AppCompatActivity(),
                             val user = auth.currentUser
                             val id = user!!.uid
                             val coach = Coach(id, email, firstName, lastName, time)
-                            val welcomeMsg = R.string.welcome_message
-                            addUserToDB(coach, id)
+                            FirebaseUtil.addUserToDB(coach, id)
 
                             val profileUpdates = userProfileChangeRequest {
                                 displayName = "$firstName $lastName"
@@ -205,9 +236,15 @@ class MainScreen : AppCompatActivity(),
                                         Log.d(TAG, "An error occurred: ${it.exception.toString()}")
                                     }
                                 }
-                            toast("$welcomeMsg, ${user.displayName}")
+                            toast(getString(R.string.account_creation_msg))
 //                            startActivity(intentFor<MainScreen>().newTask().clearTask())
-                            navController.navigate(R.id.signUpToAffiliationRequest)
+                            navController.navigate(R.id.globalToAffiliationRequest)
+                            supportActionBar!!.apply {
+                                show()
+                                setTitle(R.string.affiliation_text)
+                                setHomeButtonEnabled(true)
+                                setDisplayHomeAsUpEnabled(true)
+                            }
                         } else {
                             Log.d(TAG, "signInUserWithEmail:failed: " + task.exception)
                             MaterialAlertDialogBuilder(this)
@@ -223,7 +260,6 @@ class MainScreen : AppCompatActivity(),
 
             }
         }
-
         hideProgressBar(signUpProgressBar)
     }
 
@@ -241,12 +277,23 @@ class MainScreen : AppCompatActivity(),
                             val user = auth.currentUser
                             val welcomeBackMsg = R.string.welcome_back_message.toString()
                             toast(welcomeBackMsg + ", ${user!!.displayName}")
-                            startActivity(intentFor<MainScreen>().newTask().clearTask())
+//                            startActivity(intentFor<MainScreen>().newTask().clearTask())
+                            navController.navigate(R.id.globalToMaps)
+                        } else {
+                            Log.d(TAG, "signInUserWithEmail:failed: " + task.exception)
+                            MaterialAlertDialogBuilder(this)
+                                .setTitle(R.string.auth_error)
+                                .setMessage(task.exception?.localizedMessage.toString())
+                                .setPositiveButton("OK") { _: DialogInterface, _: Int ->
+                                }
+                                .show()
                         }
                     }
             }
-        }
+            false -> {
 
+            }
+        }
         hideProgressBar(loginProgressBar)
     }
 
@@ -262,33 +309,17 @@ class MainScreen : AppCompatActivity(),
         }
     }
 
-    private fun fieldToCoach(coach: Coach): HashMap<String, Any?> {
-        return hashMapOf(
-            "mail" to coach.mail,
-            "firstName" to coach.firstName,
-            "lastName" to coach.lastName,
-            "id" to coach.id,
-            "createdDate" to coach.createdDate
-        )
-    }
+    private fun resetFields() {
 
-    private fun addUserToDB(coach: Coach, id: String) {
-        // Access a Cloud Firestore instance from your Activity
+        login_email_layout.error = null
+        login_password_layout.error = null
 
-        val user = fieldToCoach(coach)
+        signup_email_layout.error = null
+        signup_password_layout.error = null
+        signup_firstName_layout.error = null
+        signup_lastName_layout.error = null
 
-        FirebaseUtil.db.collection(FirebaseUtil.coachPath)
-            .document(id)
-            .set(user)
-            .addOnSuccessListener {
-                Log.d(TAG, "Document added successfully")
-            }
-            .addOnFailureListener {
-                Log.d(TAG, "Document added failed")
-            }
-            .addOnCompleteListener {
-                Log.d(TAG, "Document added completed")
-            }
+        affiliationCodeLayout.error = null
     }
 
     private fun validateForm(function: String): Boolean {
@@ -296,7 +327,10 @@ class MainScreen : AppCompatActivity(),
 
         when (function) {
             "login" -> {
+
                 val email = login_email_input.text.toString()
+                val password = login_password_input.text.toString()
+
                 if (TextUtils.isEmpty(email)) {
                     login_email_layout.error = getString(R.string.hint_required)
                     valid = false
@@ -304,7 +338,6 @@ class MainScreen : AppCompatActivity(),
                     login_email_layout.error = null
                 }
 
-                val password = login_password_input.text.toString()
                 if (TextUtils.isEmpty(password)) {
                     login_password_layout.error = getString(R.string.hint_required)
                     valid = false
@@ -314,7 +347,12 @@ class MainScreen : AppCompatActivity(),
             }
 
             "signUp" -> {
+
                 val email = signup_email_input.text.toString()
+                val password = signup_password_input.text.toString()
+                val firstName = signup_firstName_input.text.toString()
+                val lastName = signup_lastName_input.text.toString()
+
                 if (TextUtils.isEmpty(email)) {
                     signup_email_layout.error = getString(R.string.hint_required)
                     valid = false
@@ -322,7 +360,6 @@ class MainScreen : AppCompatActivity(),
                     signup_email_layout.error = null
                 }
 
-                val password = signup_password_input.text.toString()
                 if (TextUtils.isEmpty(password)) {
                     signup_password_layout.error = getString(R.string.hint_required)
                     valid = false
@@ -330,7 +367,6 @@ class MainScreen : AppCompatActivity(),
                     signup_password_layout.error = null
                 }
 
-                val firstName = signup_firstName_input.text.toString()
                 if (TextUtils.isEmpty(firstName)) {
                     signup_firstName_layout.error = getString(R.string.hint_required)
                     valid = false
@@ -338,12 +374,41 @@ class MainScreen : AppCompatActivity(),
                     signup_firstName_layout.error = null
                 }
 
-                val lastName = signup_lastName_input.text.toString()
                 if (TextUtils.isEmpty(lastName)) {
                     signup_lastName_layout.error = getString(R.string.hint_required)
                     valid = false
                 } else {
                     signup_lastName_layout.error = null
+                }
+            }
+
+            "affiliation" -> {
+
+                val affiliationCode = affiliationCodeInput.text.toString()
+                val affiliationSport = sportSpinner.selectedItem.toString()
+                val affiliationCategory = categorySpinner.selectedItem.toString()
+                val affiliationSubCategory = subCategorySpinner.selectedItem.toString()
+
+                if (TextUtils.isEmpty(affiliationCode)) {
+                    login_email_layout.error = getString(R.string.hint_required)
+                    valid = false
+                } else {
+                    login_email_layout.error = null
+                }
+
+                if (affiliationSport == R.string.sportChoice.toString()) {
+                    toast(getString(R.string.sport_select_prompt))
+                    valid = false
+                }
+
+                if (affiliationCategory == R.string.sportChoice.toString()) {
+                    toast(getString(R.string.category_select_prompt))
+                    valid = false
+                }
+
+                if (affiliationSubCategory == R.string.sportChoice.toString()) {
+                    toast(getString(R.string.subCategory_select_prompt))
+                    valid = false
                 }
             }
         }
@@ -354,6 +419,4 @@ class MainScreen : AppCompatActivity(),
     private fun navigateToFragment(destination: Int) {
         navController.navigate(destination)
     }
-
-
 }

@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/fragmentNavHost"
-    app:startDestination="@id/mapsFragment">
+    app:startDestination="@id/listEventFragment">
 
     <action
         android:id="@+id/globalToList"
@@ -30,6 +30,15 @@
         app:popEnterAnim="@anim/sd_scale_fade_and_translate_in"
         app:popExitAnim="@anim/sd_scale_fade_and_translate_out"
         app:popUpTo="@id/fragmentNavHost"
+        app:popUpToInclusive="true" />
+
+    <action
+        android:id="@+id/globalToAffiliationRequest"
+        app:destination="@id/affiliationRequestFragment"
+        app:launchSingleTop="true"
+        app:popEnterAnim="@android:anim/fade_in"
+        app:popExitAnim="@android:anim/fade_out"
+        app:popUpTo="@id/mapsFragment"
         app:popUpToInclusive="true" />
 
     <fragment
@@ -84,7 +93,11 @@
         tools:layout="@layout/fragment_affiliation_request">
         <action
             android:id="@+id/affiliationRequestToAffiliationSuccess"
-            app:destination="@id/affiliationSuccessFragment" />
+            app:destination="@id/affiliationSuccessFragment">
+            <argument
+                android:name="clubId"
+                android:defaultValue="Default value" />
+        </action>
         <action
             android:id="@+id/affiliationRequestToMaps"
             app:destination="@id/mapsFragment" />
@@ -97,6 +110,9 @@
         <action
             android:id="@+id/affiliationSuccessToMaps"
             app:destination="@id/mapsFragment" />
+        <argument
+            android:name="clubId"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/listEventFragment"

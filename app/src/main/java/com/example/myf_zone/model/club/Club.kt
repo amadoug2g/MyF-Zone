@@ -1,17 +1,14 @@
 package com.example.myf_zone.model.club
 
-import java.util.*
-
 data class Club(
-    val name: String,
-    val acronym: String,
-    val logo: String,
-    val affiliationCode: String,
-    val address: String,
-    val lat: Double,
-    val lng: Double,
-    val createDate: Date,
-    val affiliationRequests: MutableList<AffiliationRequest>
+    var id: String,
+    var name: String,
+    var acronym: String,
+    var logo: String,
+    var affiliationCode: String,
+    var address: String,
+    var lat: Double,
+    var lng: Double
 ) {
     constructor() : this(
         "",
@@ -19,9 +16,8 @@ data class Club(
         "",
         "",
         "",
+        "",
         0.0,
-        0.0,
-        Date(0),
-        mutableListOf()
+        0.0
     )
 }

@@ -1,16 +1,17 @@
 package com.example.myf_zone.util
 
 import android.util.Log
-import com.example.myf_zone.model.club.Club
+import com.example.myf_zone.model.club.AffiliationRequest
+import com.example.myf_zone.model.coach.ClubAffiliation
 import com.example.myf_zone.model.coach.Coach
-import com.google.android.gms.tasks.Task
+import com.example.myf_zone.util.StorageUtil.coachPath
+import com.example.myf_zone.util.StorageUtil.db
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.userProfileChangeRequest
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.QuerySnapshot
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.firestore.ktx.toObject
+import java.util.*
 
 object FirebaseUtil {
     private val TAG = FirebaseUtil::class.java.simpleName
@@ -18,13 +19,6 @@ object FirebaseUtil {
     private val firestoreInstance: FirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
 
     lateinit var auth: FirebaseAuth
-
-    val db = Firebase.firestore
-
-    val coachPath = "Env/Staging/Coach"
-    val clubPath = "Env/Staging/Club"
-    val eventPath = "Env/Staging/Event"
-    val sportPath = "Env/Staging/Sport"
 
     private val currentUserDocRef: DocumentReference
         get() = firestoreInstance.document(
@@ -35,8 +29,17 @@ object FirebaseUtil {
     fun getCurrentUser(onComplete: (Coach) -> Unit) {
         currentUserDocRef.get()
             .addOnSuccessListener {
-                it.toObject(Coach::class.java)?.let { it1 -> onComplete(it1) }
-                Log.d(TAG, "User retrieved")
+                it.toObject<Coach>()?.let { it1 -> onComplete(it1) }
+//                Log.d(TAG, "User retrieved")
+            }
+    }
+
+    fun getCurrentClub(onComplete: (ClubAffiliation) -> Unit) {
+        currentUserDocRef.collection("ClubAffiliation").get()
+            .addOnSuccessListener {
+                val club = it.documents[0]
+                club.toObject<ClubAffiliation>()?.let { it1 -> onComplete(it1) }
+//                Log.d(TAG, "Club Affiliation retrieved")
             }
     }
 
@@ -67,26 +70,71 @@ object FirebaseUtil {
         currentUserDocRef.update(coachFields)
     }
 
-    fun getEvents(): Task<QuerySnapshot> {
-        val docRef = db.collection(eventPath)
+    fun addUserToDB(coach: Coach, id: String) {
+        val user = fieldToCoach(coach)
 
-        return docRef.get().addOnCompleteListener {
+        db.collection(coachPath)
+            .document(id)
+            .set(user)
+            .addOnSuccessListener {
+                Log.d(TAG, "Document added successfully")
+            }
+            .addOnFailureListener {
+                Log.d(TAG, "Document added failed")
+            }
+            .addOnCompleteListener {
+                Log.d(TAG, "Document added completed")
+            }
+    }
+
+    private fun fieldToCoach(coach: Coach): HashMap<String, Any?> {
+        return hashMapOf(
+            "mail" to coach.mail,
+            "firstName" to coach.firstName,
+            "lastName" to coach.lastName,
+            "id" to coach.id,
+            "createdDate" to coach.createdDate
+        )
+    }
+
+    fun addAffiliationUser(affiliation: ClubAffiliation) {
+        Log.d(TAG, "Adding ${affiliation.categoryName} as affiliation")
+        val currentUser = auth.currentUser
+
+        db.collection(coachPath)
+            .document(currentUser!!.uid)
+            .collection("ClubAffiliation")
+            .add(affiliation)
+            .addOnSuccessListener {
+                Log.d(TAG, "Club affiliation added successfully")
+            }
+            .addOnFailureListener {
+                Log.d(TAG, "Club affiliation added failed")
+            }
+            .addOnCompleteListener {
+                Log.d(TAG, "Club affiliation added completed")
+            }
+    }
+
+    fun userAffiliationStatus(myCallback: (Boolean) -> Unit) {
+        val affiliationPath = currentUserDocRef.collection("ClubAffiliation")
+
+        affiliationPath.get().addOnCompleteListener {
             if (it.isSuccessful) {
-                Log.d(TAG, "Successfully retrieved")
-            } else {
-                Log.d(TAG, "An error occurred: ${it.exception.toString()}")
+                val documents = it.result.documents
+
+                val result = documents.size > 0
+
+                myCallback(result)
             }
         }
     }
 
-    fun getSportList() {}
+    fun updateAffiliationStatus() {
 
-    fun getCategoryList() {}
+    }
 
-    fun getSubCategoryList() {}
-
-    fun getClubAffiliationCode() {}
-
-    fun sendRequestToClub(club: Club, affiliationCode: String) {}
-
+    fun checkRequestStatus(affiliationRequest: AffiliationRequest): Boolean {
+        return (affiliationRequest.status == "validate")
+    }
 }

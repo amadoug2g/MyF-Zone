@@ -13,15 +13,18 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.navigation.Navigation
 import com.example.myf_zone.R
-import com.example.myf_zone.model.event.EventParticipation
+import com.example.myf_zone.model.event.Event
+import com.example.myf_zone.model.event.EventParticipant
 import com.example.myf_zone.screens.MainScreen
 import com.example.myf_zone.util.FirebaseUtil
 import com.example.myf_zone.util.FirebaseUtil.auth
 import com.example.myf_zone.util.FirebaseUtil.updateCurrentUser
+import com.example.myf_zone.util.FirebaseUtil.userAffiliationStatus
 import com.example.myf_zone.util.MapsUtil
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -30,6 +33,7 @@ import kotlinx.android.synthetic.main.fragment_maps.*
 import kotlinx.android.synthetic.main.fragment_maps.view.*
 import org.jetbrains.anko.clearTask
 import org.jetbrains.anko.newTask
+import org.jetbrains.anko.support.v4.defaultSharedPreferences
 import org.jetbrains.anko.support.v4.intentFor
 import org.jetbrains.anko.support.v4.toast
 
@@ -38,6 +42,10 @@ class MapsFragment : Fragment(),
     GoogleMap.OnMarkerClickListener,
     GoogleMap.OnMapClickListener {
     private val TAG = MapsFragment::class.java.simpleName
+
+    companion object {
+        private const val LOCATION_PERMISSION_REQUEST_CODE = 1
+    }
 
     private val markerList: MutableList<Marker> = mutableListOf()
 
@@ -53,7 +61,7 @@ class MapsFragment : Fragment(),
          */
 
         //Event Markers Data
-        val eventOwner = EventParticipation(
+        val eventOwner = EventParticipant(
             "",
             "Bobigny FC",
             "coachID",
@@ -63,10 +71,11 @@ class MapsFragment : Fragment(),
             "categoryID",
             "U21",
             "subCategoryID",
-            "Regional"
+            "Regional",
+            ""
         )
 
-        val eventParticipant = EventParticipation()
+        val eventParticipant = EventParticipant()
         val participantList = mutableListOf(eventParticipant)
 
 //        MapsUtil.placeFirestoreEvent(
@@ -90,6 +99,22 @@ class MapsFragment : Fragment(),
         Log.d(TAG, "onCREATE")
 
         auth = FirebaseAuth.getInstance()
+
+//        getEventList()
+
+//        for (i in globalEventList)
+//            Log.d("FirebaseUtil..", i.owner.clubAcronym)
+//        Log.d("FirebaseUtil..", globalEventList.toString())
+    }
+
+    fun setEventDetails(event: Event) {
+        cardView_detail.apply {
+            visibility = View.VISIBLE
+//            startAnimation(AnimationUtils.loadAnimation(context, R.anim.from_bottom))
+        }
+        cardView_clubName.text = event.title
+        cardView_clubDesc.text = event.description
+        cardView_clubImage.setImageResource(MapsUtil.setMarkerType(event))
     }
 
     override fun onMarkerClick(marker: Marker): Boolean {
@@ -117,21 +142,40 @@ class MapsFragment : Fragment(),
 
         fragmentInflater.account_button.setOnClickListener {
             if (currentUser == null) {
-                Navigation
-                    .findNavController(fragmentInflater)
-                    .navigate(R.id.mapsToLogin)
+                navigate(R.id.mapsToLogin)
             } else {
                 FirebaseUtil.getCurrentUser { user ->
-                    toast("Hi, ${user.firstName} ${user.lastName}")
+//                    toast("Hi, ${user.firstName} ${user.lastName}")
 
                     if (currentUser.displayName == "") {
                         updateCurrentUser("", user.firstName, user.lastName)
                     }
                 }
 
-                Navigation
-                    .findNavController(fragmentInflater)
-                    .navigate(R.id.mapsToProfile)
+//                StorageUtil.getCategoryList()
+
+                userAffiliationStatus {
+                    when (it) {
+                        true -> {
+                            toast("Vous êtes affilié")
+
+                            navigate(R.id.mapsToProfile)
+                        }
+                        false -> {
+                            toast("Vous n'êtes pas affilié")
+
+                            (activity as AppCompatActivity).supportActionBar?.apply {
+                                show()
+                                setTitle(R.string.affiliation_text)
+                                setHomeButtonEnabled(true)
+                                setDisplayHomeAsUpEnabled(true)
+                            }
+
+                            navigate(R.id.mapsToAffiliationRequest)
+                        }
+                    }
+                }
+
             }
         }
 
@@ -175,6 +219,13 @@ class MapsFragment : Fragment(),
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        val cameraPosition: CameraPosition
+        val position: LatLng
+
+        val sharedPreferences = defaultSharedPreferences
+    }
 
     private fun setUpMapRequest() {
         if (ActivityCompat.checkSelfPermission(
@@ -200,7 +251,9 @@ class MapsFragment : Fragment(),
         return true
     }
 
-    companion object {
-        private const val LOCATION_PERMISSION_REQUEST_CODE = 1
+    private fun navigate(destination: Int) {
+        Navigation
+            .findNavController(this.requireView())
+            .navigate(destination)
     }
 }

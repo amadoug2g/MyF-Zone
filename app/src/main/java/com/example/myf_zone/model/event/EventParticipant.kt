@@ -1,18 +1,17 @@
-package com.example.myf_zone.model.coach
+package com.example.myf_zone.model.event
 
-import java.util.*
-
-data class ClubAffiliation(
-    var clubId: String,
-    var clubAcronym: String,
+data class EventParticipant(
     var clubLogo: String,
+    var clubAcronym: String,
+    var coachId: String,
+    var coachFullName: String,
     var sportId: String,
     var sportName: String,
     var categoryId: String,
     var categoryName: String,
     var subCategoryId: String,
     var subCategoryName: String,
-    var createDate: Date
+    var status: String
 ) {
     constructor() : this(
         "",
@@ -24,6 +23,7 @@ data class ClubAffiliation(
         "",
         "",
         "",
-        Date(0)
+        "",
+        ""
     )
 }

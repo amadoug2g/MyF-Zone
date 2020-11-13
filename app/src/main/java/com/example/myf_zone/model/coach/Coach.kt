@@ -3,13 +3,13 @@ package com.example.myf_zone.model.coach
 import java.util.*
 
 data class Coach(
-    val id: String,
-    val mail: String,
-    val firstName: String,
-    val lastName: String,
+    var id: String,
+    var mail: String,
+    var firstName: String,
+    var lastName: String,
 //    val description: String,
 //    val devices: MutableList<String>,
-    val createdDate: Date
+    var createdDate: Date
 //    val affiliations: MutableList<ClubAffiliation>,
 //    val chats: MutableList<Chat>
 ) {

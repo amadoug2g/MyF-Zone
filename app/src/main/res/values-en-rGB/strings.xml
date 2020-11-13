@@ -37,13 +37,13 @@
     <string name="categoryChoice">Choose a category</string>
     <string name="subCategoryChoice">Choose a sub-category</string>
     <string name="affiliationRequestTitle">You aren\'t affiliated to any club yet</string>
-    <string name="affiliationRequestComment">did receive your request and will answer you soon</string>
+    <string name="affiliationRequestComment">This club received your application for membership and will answer you shortly</string>
     <string name="laterTextButton">Maybe later</string>
     <string name="affiliate">Affiliate</string>
     <string name="affiliation_club_acronym">Club Acronym</string>
     <string name="affiliation_request_success_text">Affiliation request success!</string>
-    <string name="affiliation_text">Affiliation to a club</string>
-    <string name="profileUserPosition">Football Coach</string>
+    <string name="affiliation_text">Club Membership</string>
+    <string name="profileUserPosition">Coach</string>
     <string name="profileCategory">U19 - Élite</string>
     <string name="calendar">Calendar</string>
     <string name="activate_notifications">Activate notifications</string>
@@ -57,4 +57,14 @@
     <string name="close_app">Exit?</string>
     <string name="exit_application">You are about to exit My F-Zone.</string>
     <string name="exit_text">Exit</string>
+    <string name="profile_firstName">First</string>
+    <string name="profile_lastName">Last</string>
+    <string name="profile_page">Profile</string>
+    <string name="sport_select_prompt">Select a sport to proceed</string>
+    <string name="category_select_prompt">Select a category to proceed</string>
+    <string name="subCategory_select_prompt">Select a sub-category to proceed</string>
+    <string name="affiliation_error">Affiliation error</string>
+    <string name="affiliation_404">This affiliation code is not associated to any club</string>
+    <string name="textView">TextView</string>
+    <string name="account_creation_msg">Account successfully created</string>
 </resources>

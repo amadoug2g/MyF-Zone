@@ -45,13 +45,13 @@
     <string name="categoryChoice">Sélectionnez une categorie</string>
     <string name="subCategoryChoice">Sélectionnez une sous-catégorie</string>
     <string name="affiliationRequestTitle">Vous n\'êtes affilié à aucun club</string>
-    <string name="affiliationRequestComment">a reçu votre demande d\'affiliation et vous répondra prochainement</string>
+    <string name="affiliationRequestComment">Ce club a bien reçu votre demande d\'affiliation et vous répondra prochainement</string>
     <string name="laterTextButton">Plus tard</string>
     <string name="affiliate">S\'affilier</string>
     <string name="affiliation_club_acronym">Acronyme du Club</string>
     <string name="affiliation_request_success_text">Demande d\'affiliation réussie !</string>
-    <string name="affiliation_text">Affiliation à un club</string>
-    <string name="profileUserPosition">Entraineur de Football</string>
+    <string name="affiliation_text">Demande d\'affiliation</string>
+    <string name="profileUserPosition">Entraineur</string>
     <string name="profileCategory">U19 - Élite</string>
     <string name="calendar">Calendrier</string>
     <string name="activate_notifications">Activer les notifications</string>
@@ -65,26 +65,37 @@
     <string name="close_app">Fermer l\'application ?</string>
     <string name="exit_application">Vous êtes sur le point de quitter My F-Zone.</string>
     <string name="exit_text">Quitter</string>
+    <string name="profile_firstName">Prénom</string>
+    <string name="profile_lastName">Nom</string>
+    <string name="profile_page">Profil</string>
+    <string name="sport_select_prompt">Veuillez sélectionner un sport</string>
+    <string name="category_select_prompt">Veuillez sélectionner une catégorie</string>
+    <string name="subCategory_select_prompt">Veuillez sélectionner une sous-catégorie</string>
+    <string name="affiliation_error">Failed affiliation attempt</string>
+    <string name="affiliation_404">Le code d\'affiliation entré n\'est associé à aucun club</string>
+    <string name="textView">TextView</string>
+    <string name="account_creation_msg">Création de compte réussie</string>
 
     <string-array name="sportList">
-        <item>@string/sportChoice</item>
-        <item>Football</item>
+        <item>Foot</item>
     </string-array>
     <string-array name="categoryList">
         <item>@string/categoryChoice</item>
-        <item>U09</item>
-        <item>U13</item>
-        <item>U16</item>
+        <!--        <item>U09</item>-->
+        <!--        <item>U13</item>-->
+        <!--        <item>U16</item>-->
         <item>U19</item>
         <item>U21</item>
         <item>Senior</item>
     </string-array>
     <string-array name="subCategoryList">
         <item>@string/subCategoryChoice</item>
-        <item>Loisir</item>
-        <item>Élite</item>
-        <item>District</item>
-        <item>Régional</item>
-        <item>National</item>
+        <!--        <item>Loisir</item>-->
+        <!--        <item>Elite</item>-->
+        <!--        <item>Amateur</item>-->
+        <!--        <item>Pro</item>-->
+        <!--        <item>District</item>-->
+        <!--        <item>Régional</item>-->
+        <!--        <item>National</item>-->
     </string-array>
 </resources>

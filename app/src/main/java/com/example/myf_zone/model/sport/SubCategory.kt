@@ -1,7 +1,9 @@
 package com.example.myf_zone.model.sport
 
 data class SubCategory(
-    val name: String
+    var id: String,
+    var name: String,
+    var rank: Int
 ) {
-    constructor() : this("")
+    constructor() : this("", "", 0)
 }

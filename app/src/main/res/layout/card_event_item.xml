@@ -5,12 +5,11 @@
     android:layout_height="match_parent">
 
     <com.google.android.material.card.MaterialCardView
-        android:id="@+id/cardView_detail"
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:layout_alignParentBottom="true"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginBottom="16dp"
         android:clickable="true"
         android:focusable="true"
@@ -23,7 +22,6 @@
             android:layout_height="wrap_content">
 
             <ImageView
-                android:id="@+id/cardView_clubImage"
                 android:layout_width="80dp"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
@@ -35,12 +33,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginStart="8dp"
-                android:layout_toEndOf="@+id/cardView_clubImage"
                 android:orientation="vertical"
                 android:padding="4dp">
 
                 <TextView
-                    android:id="@+id/cardView_clubName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/club_name"
@@ -48,7 +44,6 @@
                     android:textSize="24sp" />
 
                 <TextView
-                    android:id="@+id/cardView_clubDesc"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
