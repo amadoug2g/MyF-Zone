@@ -1,4 +1,4 @@
-package com.example.myf_zone.util
+package com.example.myf_zone.util.event
 
 import android.content.Context
 import android.graphics.BitmapFactory
@@ -10,6 +10,7 @@ import android.widget.Toast
 import com.example.myf_zone.R
 import com.example.myf_zone.model.event.Event
 import com.example.myf_zone.model.event.EventParticipant
+import com.example.myf_zone.util.event.EventUtil.getEvents
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -36,7 +37,11 @@ object MapsUtil {
         cardView: MaterialCardView
     ) {
         setMapUIControls(map)
-        mapStartPosition(map, markerList, cardView)
+        mapStartPosition(
+            map,
+            markerList,
+            cardView
+        )
         setMapListeners(
             map, markerList,
             onMarkerClickListener,
@@ -51,7 +56,12 @@ object MapsUtil {
         drawable: Any = ""
     ): Marker {
         Log.d(TAG, "EVENT: ${event.title}")
-        val marker: Marker = map.addMarker(setEventMarkerOptions(event, context))
+        val marker: Marker = map.addMarker(
+            setEventMarkerOptions(
+                event,
+                context
+            )
+        )
         if (drawable is Int)
             marker.tag = drawable
         if (drawable is String)
@@ -66,7 +76,7 @@ object MapsUtil {
         list: MutableList<EventParticipant>,
         markerList: MutableList<Marker>
     ): MutableList<Event> {
-        val task = StorageUtil.getEvents()
+        val task = getEvents()
         val resultList = mutableListOf<Event>()
         var newEvent: Event
         task.addOnCompleteListener {
@@ -161,7 +171,11 @@ object MapsUtil {
         }
         title.text = event.title
         description.text = event.description
-        image.setImageResource(setMarkerType(event))
+        image.setImageResource(
+            setMarkerType(
+                event
+            )
+        )
     }
 
     fun addItem(list: MutableList<Marker>, vararg item: Marker) {
@@ -200,7 +214,12 @@ object MapsUtil {
             snippet(event.title)
             icon(
                 BitmapDescriptorFactory.fromBitmap(
-                    BitmapFactory.decodeResource(context.resources, setMarkerType(event))
+                    BitmapFactory.decodeResource(
+                        context.resources,
+                        setMarkerType(
+                            event
+                        )
+                    )
                 )
             )
         }
@@ -240,9 +259,13 @@ object MapsUtil {
             setMinZoomPreference(5f)
             setOnCameraMoveListener {
                 if (map.cameraPosition.zoom > 9) {
-                    showMarkers(markerList)
+                    showMarkers(
+                        markerList
+                    )
                 } else {
-                    hideMarkers(markerList)
+                    hideMarkers(
+                        markerList
+                    )
                     cardView.visibility = View.GONE
                 }
             }

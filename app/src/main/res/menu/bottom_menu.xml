@@ -2,22 +2,23 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/listEventFragment"
+        android:id="@+id/calendar"
         android:icon="@drawable/ic_calendar"
         android:title="@string/menu_item_calendar"
         app:showAsAction="ifRoom" />
     <item
-        android:id="@+id/mapsFragment"
+        android:id="@+id/map"
         android:icon="@drawable/ic_map"
         android:title="@string/menu_item_map"
         app:showAsAction="ifRoom" />
     <item
-        android:id="@+id/messageFragment"
+        android:id="@+id/message"
         android:icon="@drawable/ic_message"
         android:title="@string/menu_item_message"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/placeholder"
         android:title="@string/empty_string"
+        android:enabled="false"
         app:showAsAction="never" />
 </menu>

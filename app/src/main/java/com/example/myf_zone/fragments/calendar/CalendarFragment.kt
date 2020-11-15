@@ -1,4 +1,4 @@
-package com.example.myf_zone.fragments.primary
+package com.example.myf_zone.fragments.calendar
 
 import android.os.Bundle
 import android.util.Log
@@ -12,14 +12,14 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.myf_zone.R
 import com.example.myf_zone.model.event.calendar.EventSection
 import com.example.myf_zone.model.event.calendar.ListRecyclerAdapter
-import kotlinx.android.synthetic.main.fragment_list_event.*
-import kotlinx.android.synthetic.main.fragment_list_event.view.*
+import kotlinx.android.synthetic.main.fragment_calendar.*
+import kotlinx.android.synthetic.main.fragment_calendar.view.*
 import java.util.*
 import kotlin.concurrent.schedule
 
 
-class ListEventFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
-    private val TAG = ListEventFragment::class.java.simpleName
+class CalendarFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
+    private val TAG = CalendarFragment::class.java.simpleName
 
     var eventList = mutableListOf<EventSection>()
 
@@ -35,7 +35,7 @@ class ListEventFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        val fragmentInflater = inflater.inflate(R.layout.fragment_list_event, container, false)
+        val fragmentInflater = inflater.inflate(R.layout.fragment_calendar, container, false)
 
         val recyclerView = fragmentInflater.parentRecyclerView
         val swipeRefreshLayout = fragmentInflater.swipeRefreshLayout

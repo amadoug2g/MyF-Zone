@@ -1,4 +1,4 @@
-package com.example.myf_zone.fragments.secondary
+package com.example.myf_zone.fragments.maps
 
 import android.os.Bundle
 import android.util.Log
@@ -9,10 +9,10 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.myf_zone.R
-import com.example.myf_zone.util.FirebaseUtil
-import com.example.myf_zone.util.FirebaseUtil.auth
-import com.example.myf_zone.util.FirebaseUtil.getCurrentClub
-import com.example.myf_zone.util.FirebaseUtil.getCurrentUser
+import com.example.myf_zone.util.user.UserAccount.auth
+import com.example.myf_zone.util.user.UserAccount.getCurrentClub
+import com.example.myf_zone.util.user.UserAccount.getCurrentUser
+import com.example.myf_zone.util.user.UserAccount.updateCurrentUser
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.fragment_profile.*
 import kotlinx.android.synthetic.main.fragment_profile.view.*
@@ -62,7 +62,7 @@ class ProfileFragment : Fragment() {
 
 
             if (currentUser!!.displayName == "") {
-                FirebaseUtil.updateCurrentUser("", user.firstName, user.lastName)
+                updateCurrentUser("", user.firstName, user.lastName)
             }
         }
 

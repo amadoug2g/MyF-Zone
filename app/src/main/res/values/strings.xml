@@ -60,7 +60,7 @@
     <string name="profile_email">Adresse mail</string>
     <string name="my_events">Mes évènements</string>
     <string name="calender_of_events">Calendrier des Évènements</string>
-    <string name="message_page">Page de Message</string>
+    <string name="message_page">Message</string>
     <string name="enter_a_text">Enter a text</string>
     <string name="close_app">Fermer l\'application ?</string>
     <string name="exit_application">Vous êtes sur le point de quitter My F-Zone.</string>
@@ -75,6 +75,8 @@
     <string name="affiliation_404">Le code d\'affiliation entré n\'est associé à aucun club</string>
     <string name="textView">TextView</string>
     <string name="account_creation_msg">Création de compte réussie</string>
+    <string name="exit_message">Appuyez une nouvelle fois sur RETOUR  pour quitter l\'application</string>
+    <string name="login_message">Connexion réussie</string>
 
     <string-array name="sportList">
         <item>Foot</item>
@@ -85,7 +87,7 @@
         <!--        <item>U13</item>-->
         <!--        <item>U16</item>-->
         <item>U19</item>
-        <item>U21</item>
+        <!--        <item>U21</item>-->
         <item>Senior</item>
     </string-array>
     <string-array name="subCategoryList">

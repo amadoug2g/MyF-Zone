@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/calendar"
+    android:label="@string/calendar"
+    app:startDestination="@+id/calendarFragment"
+    tools:ignore="UnusedNavigation">
+
+    <fragment
+        android:id="@+id/calendarFragment"
+        android:name="com.example.myf_zone.fragments.calendar.CalendarFragment"
+        android:label="fragment_calendar"
+        tools:layout="@layout/fragment_calendar" />
+</navigation>

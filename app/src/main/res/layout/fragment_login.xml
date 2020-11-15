@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        tools:context=".fragments.secondary.LoginFragment">
+        tools:context=".fragments.maps.LoginFragment">
 
         <ProgressBar
             android:id="@+id/loginProgressBar"
@@ -73,7 +73,6 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="64dp"
             android:layout_marginEnd="16dp"
-            android:onClick="signInUser"
             android:text="@string/login_coach"
             android:transitionName="@string/button_trans"
             tools:ignore="OnClick" />

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.primary.ListEventFragment">
+    tools:context=".fragments.calendar.CalendarFragment">
 
     <!--  refers to the entire list view,
       containing the events sorted by date -->

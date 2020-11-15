@@ -1,22 +1,19 @@
-package com.example.myf_zone.fragments.secondary
+package com.example.myf_zone.fragments.maps
 
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import com.example.myf_zone.R
-import com.example.myf_zone.util.StorageUtil.getClubFromCode
+import com.example.myf_zone.util.user.AffiliationForm.queryClubFromCode
 import kotlinx.android.synthetic.main.fragment_affiliation_success.*
 import kotlinx.android.synthetic.main.fragment_affiliation_success.view.*
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class AffiliationSuccessFragment : Fragment() {
     private val TAG = AffiliationSuccessFragment::class.java.simpleName
@@ -25,26 +22,12 @@ class AffiliationSuccessFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d(TAG, "onCREATE")
-
-        (activity as AppCompatActivity).supportActionBar?.apply {
-            show()
-            setTitle(R.string.affiliation_text)
-            setHomeButtonEnabled(false)
-            setDisplayHomeAsUpEnabled(false)
-        }
 
         arguments?.let {
             clubId = it.getString("clubId")
             Log.d(TAG, "onCREATE: $clubId")
         }
     }
-
-    override fun onDetach() {
-        super.onDetach()
-        (activity as AppCompatActivity).supportActionBar?.setTitle(R.string.affiliationRequestTitle)
-    }
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -54,11 +37,10 @@ class AffiliationSuccessFragment : Fragment() {
         val fragmentInflater =
             inflater.inflate(R.layout.fragment_affiliation_success, container, false)
 
-        fragmentInflater.affiliationLaterNotifications.setOnClickListener {
+        fragmentInflater.affiliationActivateNotifications.isEnabled = false
 
-            Navigation
-                .findNavController(fragmentInflater)
-                .navigate(R.id.affiliationSuccessToMaps)
+        fragmentInflater.affiliationLaterNotifications.setOnClickListener {
+            findNavController().navigate(R.id.globalToMaps)
         }
 
         return fragmentInflater
@@ -69,14 +51,11 @@ class AffiliationSuccessFragment : Fragment() {
         Log.d(TAG, clubId.toString())
 
         try {
+            CoroutineScope(Main).launch {
+                val club = queryClubFromCode(clubId!!)!!
 
-            CoroutineScope(Dispatchers.IO).launch {
-                val club = getClubFromCode(clubId!!)
-
-                withContext(Main) {
 //                affiliationClubImage.setImageResource(0) //club.logo
-                    affiliationClubName.text = club.acronym
-                }
+                affiliationClubName.text = club.acronym
 
                 Log.d(TAG, club.toString())
             }

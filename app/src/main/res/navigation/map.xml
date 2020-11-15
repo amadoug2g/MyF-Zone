@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/map"
+    android:label="@string/title_activity_maps"
+    app:startDestination="@id/mapsFragment"
+    tools:ignore="UnusedNavigation">
+
+    <action
+        android:id="@+id/globalToMaps"
+        app:destination="@id/mapsFragment"
+        app:launchSingleTop="true"
+        app:popUpTo="@id/mapsFragment"
+        app:popUpToInclusive="true" />
+
+    <action
+        android:id="@+id/globalToAffiliationRequest"
+        app:destination="@id/affiliationRequestFragment"
+        app:launchSingleTop="true"
+        app:popUpTo="@id/affiliationRequestFragment"
+        app:popUpToInclusive="true" />
+
+    <action
+        android:id="@+id/globalToAffiliationSuccess"
+        app:destination="@id/affiliationSuccessFragment"
+        app:launchSingleTop="true"
+        app:popUpTo="@id/affiliationSuccessFragment"
+        app:popUpToInclusive="true" />
+
+    <fragment
+        android:id="@+id/mapsFragment"
+        android:name="com.example.myf_zone.fragments.maps.MapsFragment"
+        android:label="@string/title_activity_maps"
+        tools:layout="@layout/fragment_maps">
+        <action
+            android:id="@+id/mapsToLogin"
+            app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/mapsToProfile"
+            app:destination="@id/profileFragment" />
+        <action
+            android:id="@+id/mapsToAffiliationRequest"
+            app:destination="@id/affiliationRequestFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.example.myf_zone.fragments.maps.LoginFragment"
+        android:label="@string/login_coach">
+        <action
+            android:id="@+id/loginToSignUp"
+            app:destination="@id/signUpFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/signUpFragment"
+        android:name="com.example.myf_zone.fragments.maps.SignUpFragment"
+        android:label="@string/become_coach" />
+    <fragment
+        android:id="@+id/affiliationRequestFragment"
+        android:name="com.example.myf_zone.fragments.maps.AffiliationRequestFragment"
+        android:label="@string/affiliation_text"
+        tools:layout="@layout/fragment_affiliation_request">
+        <action
+            android:id="@+id/affiliationRequestToAffiliationSuccess"
+            app:destination="@id/affiliationSuccessFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/affiliationSuccessFragment"
+        android:name="com.example.myf_zone.fragments.maps.AffiliationSuccessFragment"
+        android:label="@string/affiliation_text"
+        tools:layout="@layout/fragment_affiliation_success" />
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.example.myf_zone.fragments.maps.ProfileFragment"
+        android:label="@string/profile_page"
+        tools:layout="@layout/fragment_profile" />
+</navigation>

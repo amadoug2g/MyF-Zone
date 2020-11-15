@@ -1,4 +1,4 @@
-package com.example.myf_zone.fragments.primary
+package com.example.myf_zone.fragments.message
 
 import android.os.Bundle
 import android.text.Editable

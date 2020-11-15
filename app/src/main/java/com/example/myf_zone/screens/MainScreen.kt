@@ -9,20 +9,23 @@ import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
 import android.view.Menu
-import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupActionBarWithNavController
 import com.example.myf_zone.R
 import com.example.myf_zone.model.coach.Coach
-import com.example.myf_zone.util.FirebaseUtil
-import com.example.myf_zone.util.FirebaseUtil.auth
+import com.example.myf_zone.setupWithNavController
+import com.example.myf_zone.util.user.UserAccount.addUserToDB
+import com.example.myf_zone.util.user.UserAccount.auth
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -31,26 +34,29 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.userProfileChangeRequest
 import kotlinx.android.synthetic.main.activity_main_screen.*
-import kotlinx.android.synthetic.main.fragment_affiliation_request.*
 import kotlinx.android.synthetic.main.fragment_login.*
 import kotlinx.android.synthetic.main.fragment_sign_up.*
 import org.jetbrains.anko.toast
 import java.util.*
+import kotlin.concurrent.schedule
 
 
-class MainScreen : AppCompatActivity(),
-    BottomNavigationView.OnNavigationItemSelectedListener,
-    BottomNavigationView.OnNavigationItemReselectedListener,
-    NavController.OnDestinationChangedListener {
+class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListener {
 
     private val TAG = MainScreen::class.java.simpleName
+    private var doubleBackToExitPressedOnce = false
 
     lateinit var navController: NavController
+    private var currentNavController: LiveData<NavController>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_screen)
         Log.d(TAG, "onCREATE")
+
+        if (savedInstanceState == null) {
+            setupBottomNavigationBar()
+        }
 
         auth = FirebaseAuth.getInstance()
 
@@ -59,62 +65,29 @@ class MainScreen : AppCompatActivity(),
         navController = navHostFragment.navController
     }
 
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        setupBottomNavigationBar()
+    }
+
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
         bottomNavBar.apply {
             background = null
-            setOnNavigationItemSelectedListener(this@MainScreen)
-            getMenu().getItem(3).isEnabled = false
         }
         return super.onPrepareOptionsMenu(menu)
     }
 
-    override fun onResume() {
-        super.onResume()
-        navController.addOnDestinationChangedListener(this)
-    }
-
-    override fun onPause() {
-        navController.removeOnDestinationChangedListener(this)
-        super.onPause()
-    }
-
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.mapsFragment -> {
-                if (navController.currentDestination!!.id != item.itemId)
-                    navigateToFragment(R.id.globalToMaps)
-            }
-
-            R.id.listEventFragment -> {
-                navigateToFragment(R.id.globalToList)
-            }
-
-            R.id.messageFragment -> {
-                navigateToFragment(R.id.globalToMessage)
-            }
-        }
-        return true
-    }
-
-    override fun onNavigationItemReselected(item: MenuItem) {
-        when (item.itemId) {
-            R.id.mapsFragment, R.id.listEventFragment, R.id.messageFragment -> {
-                toast("reselected")
-            }
-        }
-    }
-
     override fun onBackPressed() {
-        if (!navController.popBackStack()) {
-            MaterialAlertDialogBuilder(this)
-                .setTitle(getString(R.string.close_app))
-                .setMessage(getString(R.string.exit_application))
-                .setPositiveButton(getString(R.string.exit_text)) { _: DialogInterface, _: Int ->
-                    super.onBackPressed()
-                }
-                .setNegativeButton(R.string.cancel_message) { _: DialogInterface, _: Int ->
-                }
-                .show()
+        if (doubleBackToExitPressedOnce || supportFragmentManager.backStackEntryCount != 0) {
+            super.onBackPressed()
+            return
+        }
+        this.doubleBackToExitPressedOnce = true
+        toast(getString(R.string.exit_message))
+
+        val delay: Long = 2000
+        Timer().schedule(delay) {
+            doubleBackToExitPressedOnce = false
         }
     }
 
@@ -127,6 +100,8 @@ class MainScreen : AppCompatActivity(),
         val fabButton: FloatingActionButton = this.findViewById(R.id.fabMain)
         when (destination.id) {
             R.id.mapsFragment -> {
+                window.enterTransition = null
+
                 navBar.visibility = View.VISIBLE
                 fabButton.visibility = View.VISIBLE
 
@@ -137,6 +112,10 @@ class MainScreen : AppCompatActivity(),
                         R.color.colorAccent
                     )
                 )
+
+                supportActionBar!!.apply {
+                    hide()
+                }
 
                 bottomBar.hideOnScroll = false
             }
@@ -153,8 +132,12 @@ class MainScreen : AppCompatActivity(),
                 )
 
                 bottomBar.hideOnScroll = false
+
+                supportActionBar!!.apply {
+                    hide()
+                }
             }
-            R.id.listEventFragment -> {
+            R.id.calendarFragment -> {
                 navBar.visibility = View.VISIBLE
                 fabButton.visibility = View.VISIBLE
 
@@ -167,8 +150,17 @@ class MainScreen : AppCompatActivity(),
                 )
 
                 bottomBar.hideOnScroll = true
+
+                supportActionBar!!.apply {
+                    hide()
+                }
             }
             else -> {
+
+                supportActionBar!!.apply {
+                    show()
+                }
+
                 navBar.visibility = View.GONE
                 fabButton.visibility = View.GONE
             }
@@ -193,6 +185,31 @@ class MainScreen : AppCompatActivity(),
             }
         }
         return super.dispatchTouchEvent(ev)
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        return currentNavController?.value?.navigateUp() ?: false
+    }
+
+    private fun setupBottomNavigationBar() {
+        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavBar)
+
+        val navGraphIds = listOf(R.navigation.calendar, R.navigation.map, R.navigation.message)
+
+        // Setup the bottom navigation view with a list of navigation graphs
+        val controller = bottomNavigationView.setupWithNavController(
+            navGraphIds = navGraphIds,
+            fragmentManager = supportFragmentManager,
+            containerId = R.id.fragmentNavHost,
+            intent = intent
+        )
+
+        // Whenever the selected controller changes, setup the action bar.
+        controller.observe(this, Observer { navController ->
+            setupActionBarWithNavController(navController)
+            navController.addOnDestinationChangedListener(this)
+        })
+        currentNavController = controller
     }
 
     private fun Activity.hideKeyboard() {
@@ -222,7 +239,7 @@ class MainScreen : AppCompatActivity(),
                             val user = auth.currentUser
                             val id = user!!.uid
                             val coach = Coach(id, email, firstName, lastName, time)
-                            FirebaseUtil.addUserToDB(coach, id)
+                            addUserToDB(coach, id)
 
                             val profileUpdates = userProfileChangeRequest {
                                 displayName = "$firstName $lastName"
@@ -238,6 +255,7 @@ class MainScreen : AppCompatActivity(),
                                 }
                             toast(getString(R.string.account_creation_msg))
 //                            startActivity(intentFor<MainScreen>().newTask().clearTask())
+//                            navController.navigate(R.id.signUpToAffiliationRequest)
                             navController.navigate(R.id.globalToAffiliationRequest)
                             supportActionBar!!.apply {
                                 show()
@@ -278,7 +296,7 @@ class MainScreen : AppCompatActivity(),
                             val welcomeBackMsg = R.string.welcome_back_message.toString()
                             toast(welcomeBackMsg + ", ${user!!.displayName}")
 //                            startActivity(intentFor<MainScreen>().newTask().clearTask())
-                            navController.navigate(R.id.globalToMaps)
+//                            navController.navigate(R.id.globalToMaps)
                         } else {
                             Log.d(TAG, "signInUserWithEmail:failed: " + task.exception)
                             MaterialAlertDialogBuilder(this)
@@ -307,19 +325,6 @@ class MainScreen : AppCompatActivity(),
         progressBar.apply {
             visibility = View.GONE
         }
-    }
-
-    private fun resetFields() {
-
-        login_email_layout.error = null
-        login_password_layout.error = null
-
-        signup_email_layout.error = null
-        signup_password_layout.error = null
-        signup_firstName_layout.error = null
-        signup_lastName_layout.error = null
-
-        affiliationCodeLayout.error = null
     }
 
     private fun validateForm(function: String): Boolean {
@@ -381,42 +386,12 @@ class MainScreen : AppCompatActivity(),
                     signup_lastName_layout.error = null
                 }
             }
-
-            "affiliation" -> {
-
-                val affiliationCode = affiliationCodeInput.text.toString()
-                val affiliationSport = sportSpinner.selectedItem.toString()
-                val affiliationCategory = categorySpinner.selectedItem.toString()
-                val affiliationSubCategory = subCategorySpinner.selectedItem.toString()
-
-                if (TextUtils.isEmpty(affiliationCode)) {
-                    login_email_layout.error = getString(R.string.hint_required)
-                    valid = false
-                } else {
-                    login_email_layout.error = null
-                }
-
-                if (affiliationSport == R.string.sportChoice.toString()) {
-                    toast(getString(R.string.sport_select_prompt))
-                    valid = false
-                }
-
-                if (affiliationCategory == R.string.sportChoice.toString()) {
-                    toast(getString(R.string.category_select_prompt))
-                    valid = false
-                }
-
-                if (affiliationSubCategory == R.string.sportChoice.toString()) {
-                    toast(getString(R.string.subCategory_select_prompt))
-                    valid = false
-                }
-            }
         }
 
         return valid
     }
 
     private fun navigateToFragment(destination: Int) {
-        navController.navigate(destination)
+//        navController.navigate(destination)
     }
 }

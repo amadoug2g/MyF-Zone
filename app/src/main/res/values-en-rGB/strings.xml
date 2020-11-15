@@ -52,7 +52,7 @@
     <string name="profile_email">Email address</string>
     <string name="my_events">My events</string>
     <string name="calender_of_events">Calendar of Events</string>
-    <string name="message_page">Message page</string>
+    <string name="message_page">Message</string>
     <string name="enter_a_text">Enter a text</string>
     <string name="close_app">Exit?</string>
     <string name="exit_application">You are about to exit My F-Zone.</string>
@@ -67,4 +67,6 @@
     <string name="affiliation_404">This affiliation code is not associated to any club</string>
     <string name="textView">TextView</string>
     <string name="account_creation_msg">Account successfully created</string>
+    <string name="exit_message">Please click BACK again to exit</string>
+    <string name="login_message">Sign in successful</string>
 </resources>

@@ -1,11 +1,10 @@
-package com.example.myf_zone.util
+package com.example.myf_zone.util.user
 
 import android.util.Log
-import com.example.myf_zone.model.club.AffiliationRequest
 import com.example.myf_zone.model.coach.ClubAffiliation
 import com.example.myf_zone.model.coach.Coach
-import com.example.myf_zone.util.StorageUtil.coachPath
-import com.example.myf_zone.util.StorageUtil.db
+import com.example.myf_zone.util.Constants.COACH_PATH
+import com.example.myf_zone.util.Constants.DB
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.userProfileChangeRequest
 import com.google.firebase.firestore.DocumentReference
@@ -13,16 +12,16 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
 import java.util.*
 
-object FirebaseUtil {
-    private val TAG = FirebaseUtil::class.java.simpleName
+object UserAccount {
+    private val TAG = UserAccount::class.java.simpleName
 
     private val firestoreInstance: FirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
 
     lateinit var auth: FirebaseAuth
 
-    private val currentUserDocRef: DocumentReference
+    val currentUserDocRef: DocumentReference
         get() = firestoreInstance.document(
-            coachPath + "/${FirebaseAuth.getInstance().currentUser?.uid
+            COACH_PATH + "/${FirebaseAuth.getInstance().currentUser?.uid
                 ?: throw NullPointerException("UID is null")}"
         )
 
@@ -73,7 +72,7 @@ object FirebaseUtil {
     fun addUserToDB(coach: Coach, id: String) {
         val user = fieldToCoach(coach)
 
-        db.collection(coachPath)
+        DB.collection(COACH_PATH)
             .document(id)
             .set(user)
             .addOnSuccessListener {
@@ -97,44 +96,4 @@ object FirebaseUtil {
         )
     }
 
-    fun addAffiliationUser(affiliation: ClubAffiliation) {
-        Log.d(TAG, "Adding ${affiliation.categoryName} as affiliation")
-        val currentUser = auth.currentUser
-
-        db.collection(coachPath)
-            .document(currentUser!!.uid)
-            .collection("ClubAffiliation")
-            .add(affiliation)
-            .addOnSuccessListener {
-                Log.d(TAG, "Club affiliation added successfully")
-            }
-            .addOnFailureListener {
-                Log.d(TAG, "Club affiliation added failed")
-            }
-            .addOnCompleteListener {
-                Log.d(TAG, "Club affiliation added completed")
-            }
-    }
-
-    fun userAffiliationStatus(myCallback: (Boolean) -> Unit) {
-        val affiliationPath = currentUserDocRef.collection("ClubAffiliation")
-
-        affiliationPath.get().addOnCompleteListener {
-            if (it.isSuccessful) {
-                val documents = it.result.documents
-
-                val result = documents.size > 0
-
-                myCallback(result)
-            }
-        }
-    }
-
-    fun updateAffiliationStatus() {
-
-    }
-
-    fun checkRequestStatus(affiliationRequest: AffiliationRequest): Boolean {
-        return (affiliationRequest.status == "validate")
-    }
 }

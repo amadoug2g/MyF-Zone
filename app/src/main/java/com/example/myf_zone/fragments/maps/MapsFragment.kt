@@ -1,4 +1,4 @@
-package com.example.myf_zone.fragments.primary
+package com.example.myf_zone.fragments.maps
 
 import android.content.DialogInterface
 import android.content.pm.PackageManager
@@ -10,21 +10,19 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
-import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import com.example.myf_zone.R
 import com.example.myf_zone.model.event.Event
 import com.example.myf_zone.model.event.EventParticipant
 import com.example.myf_zone.screens.MainScreen
-import com.example.myf_zone.util.FirebaseUtil
-import com.example.myf_zone.util.FirebaseUtil.auth
-import com.example.myf_zone.util.FirebaseUtil.updateCurrentUser
-import com.example.myf_zone.util.FirebaseUtil.userAffiliationStatus
-import com.example.myf_zone.util.MapsUtil
+import com.example.myf_zone.util.event.MapsUtil
+import com.example.myf_zone.util.user.UserAccount.auth
+import com.example.myf_zone.util.user.UserAccount.getCurrentUser
+import com.example.myf_zone.util.user.UserAccount.updateCurrentUser
+import com.example.myf_zone.util.user.UserAffiliation.userAffiliationStatus
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -33,7 +31,6 @@ import kotlinx.android.synthetic.main.fragment_maps.*
 import kotlinx.android.synthetic.main.fragment_maps.view.*
 import org.jetbrains.anko.clearTask
 import org.jetbrains.anko.newTask
-import org.jetbrains.anko.support.v4.defaultSharedPreferences
 import org.jetbrains.anko.support.v4.intentFor
 import org.jetbrains.anko.support.v4.toast
 
@@ -42,6 +39,8 @@ class MapsFragment : Fragment(),
     GoogleMap.OnMarkerClickListener,
     GoogleMap.OnMapClickListener {
     private val TAG = MapsFragment::class.java.simpleName
+
+    private var mapInitialized = false
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
@@ -86,12 +85,16 @@ class MapsFragment : Fragment(),
 //            markerList
 //        )
 
-        MapsUtil.initializeMap(
-            googleMap,
-            this,
-            this,
-            markerList, cardView_detail
-        )
+        if (!mapInitialized) {
+            MapsUtil.initializeMap(
+                googleMap,
+                this,
+                this,
+                markerList, cardView_detail
+            )
+
+            mapInitialized = true
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -99,12 +102,6 @@ class MapsFragment : Fragment(),
         Log.d(TAG, "onCREATE")
 
         auth = FirebaseAuth.getInstance()
-
-//        getEventList()
-
-//        for (i in globalEventList)
-//            Log.d("FirebaseUtil..", i.owner.clubAcronym)
-//        Log.d("FirebaseUtil..", globalEventList.toString())
     }
 
     fun setEventDetails(event: Event) {
@@ -136,7 +133,9 @@ class MapsFragment : Fragment(),
         savedInstanceState: Bundle?
     ): View? {
         val fragmentInflater = inflater.inflate(R.layout.fragment_maps, container, false)
-        (activity as AppCompatActivity).supportActionBar?.hide()
+
+        fragmentInflater.account_button.background = null
+        fragmentInflater.list_button.background = null
 
         val currentUser = auth.currentUser
 
@@ -144,7 +143,7 @@ class MapsFragment : Fragment(),
             if (currentUser == null) {
                 navigate(R.id.mapsToLogin)
             } else {
-                FirebaseUtil.getCurrentUser { user ->
+                getCurrentUser { user ->
 //                    toast("Hi, ${user.firstName} ${user.lastName}")
 
                     if (currentUser.displayName == "") {
@@ -157,7 +156,7 @@ class MapsFragment : Fragment(),
                 userAffiliationStatus {
                     when (it) {
                         true -> {
-                            toast("Vous êtes affilié")
+//                            toast("Vous êtes affilié")
 
                             navigate(R.id.mapsToProfile)
                         }
@@ -170,7 +169,6 @@ class MapsFragment : Fragment(),
                                 setHomeButtonEnabled(true)
                                 setDisplayHomeAsUpEnabled(true)
                             }
-
                             navigate(R.id.mapsToAffiliationRequest)
                         }
                     }
@@ -219,14 +217,6 @@ class MapsFragment : Fragment(),
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        val cameraPosition: CameraPosition
-        val position: LatLng
-
-        val sharedPreferences = defaultSharedPreferences
-    }
-
     private fun setUpMapRequest() {
         if (ActivityCompat.checkSelfPermission(
                 requireContext(),
@@ -242,18 +232,7 @@ class MapsFragment : Fragment(),
         }
     }
 
-    private fun openFragment(fragment: Fragment, extras: Bundle? = null): Boolean {
-        val fragmentTransaction: FragmentTransaction = parentFragmentManager.beginTransaction()
-        fragmentTransaction.replace(R.id.fragmentNavHost, fragment, null)
-        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-        fragmentTransaction.addToBackStack(null)
-        fragmentTransaction.commit()
-        return true
-    }
-
     private fun navigate(destination: Int) {
-        Navigation
-            .findNavController(this.requireView())
-            .navigate(destination)
+        findNavController().navigate(destination)
     }
 }
