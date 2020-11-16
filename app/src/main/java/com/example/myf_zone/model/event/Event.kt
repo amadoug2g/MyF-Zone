@@ -5,6 +5,7 @@ import com.google.android.gms.maps.model.LatLng
 import java.util.*
 
 data class Event(
+    var id: String,
     var title: String,
     var description: String,
     var type: String,
@@ -18,6 +19,7 @@ data class Event(
     var participants: MutableList<EventParticipant>
 ) {
     constructor() : this(
+        "",
         "",
         "",
         "",

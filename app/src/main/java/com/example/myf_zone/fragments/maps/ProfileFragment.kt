@@ -3,11 +3,10 @@ package com.example.myf_zone.fragments.maps
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import com.bumptech.glide.Glide
 import com.example.myf_zone.R
 import com.example.myf_zone.util.user.UserAccount.auth
 import com.example.myf_zone.util.user.UserAccount.getCurrentClub
@@ -23,13 +22,6 @@ class ProfileFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCREATE")
-        (activity as AppCompatActivity).supportActionBar?.apply {
-            show()
-            setTitle(R.string.profile_page)
-            setHomeButtonEnabled(true)
-            setDisplayHomeAsUpEnabled(true)
-        }
-        setHasOptionsMenu(true)
 
         auth = FirebaseAuth.getInstance()
     }
@@ -49,16 +41,22 @@ class ProfileFragment : Fragment() {
             fragmentInflater.profileEmail.text = user.mail
 
             getCurrentClub {
-                profileClubImage
+                Glide.with(requireActivity()).apply {
+                    load(it.clubLogo)
+                        .placeholder(R.drawable.ic_account)
+                        .centerCrop()
+                        .into(profileClubImage)
+                }
+
+//                toast(it.clubLogo)
                 profileClubName.text = it.clubAcronym
                 val clubPosition = profilePosition.text.toString() + " - ${it.sportName}"
                 profilePosition.text = clubPosition
-                var clubCategory = it.categoryName
-                if (it.subCategoryName.isNotEmpty())
-                    clubCategory += " - ${it.subCategoryName}"
-                profileCategory_subCategory.text = clubCategory
+//                var clubCategory = it.categoryName
+//                if (it.subCategoryName.isNotEmpty())
+//                    clubCategory += " - ${it.subCategoryName}"
+//                profileCategory_subCategory.text = clubCategory
             }
-
 
 
             if (currentUser!!.displayName == "") {
@@ -67,14 +65,5 @@ class ProfileFragment : Fragment() {
         }
 
         return fragmentInflater
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            android.R.id.home -> {
-                activity?.onBackPressed()
-            }
-        }
-        return super.onOptionsItemSelected(item)
     }
 }

@@ -46,7 +46,11 @@ object EventUtil {
         getEventsByDate()!!
     }
 
-    private suspend fun getEventsByDate(): MutableList<Event>? {
+    fun getEventFromId() {
+
+    }
+
+    suspend fun getEventsByDate(): MutableList<Event>? {
         val docRef = DB.collection(EVENT_PATH).orderBy("date")
 
         return try {
@@ -83,9 +87,7 @@ object EventUtil {
                 .collection("Owner")
 
         return try {
-            val owner = docRef.get().await().documents[0].toObject<EventParticipant>()!!
-            Log.d(TAG, "Club Acronym Inside Function: ${owner.clubAcronym}")
-            owner
+            docRef.get().await().documents[0].toObject<EventParticipant>()!!
         } catch (e: Exception) {
             Log.e(TAG, e.toString())
             null
@@ -93,7 +95,10 @@ object EventUtil {
     }
 
     private suspend fun getParticipantsFromEvent(eventId: String): MutableList<EventParticipant>? {
-        val docRef = DB.collection(EVENT_PATH).document(eventId).collection("Participants")
+        val docRef =
+            DB.collection(EVENT_PATH)
+                .document(eventId)
+                .collection("Participants")
 
         return try {
             val participationList = mutableListOf<EventParticipant>()

@@ -65,4 +65,13 @@ object ClubUtil {
             null
         }
     }
+
+    fun getClubById(clubId: String, onComplete: (Club) -> Unit) {
+        DB.collection(CLUB_PATH)
+            .document(clubId).get()
+            .addOnSuccessListener {
+                it.toObject<Club>()?.let { it1 -> onComplete(it1) }
+//                Log.d(TAG, "Club retrieved")
+            }
+    }
 }

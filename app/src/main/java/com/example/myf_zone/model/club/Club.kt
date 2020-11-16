@@ -1,5 +1,7 @@
 package com.example.myf_zone.model.club
 
+import com.google.android.gms.maps.model.LatLng
+
 data class Club(
     var id: String,
     var name: String,
@@ -20,4 +22,8 @@ data class Club(
         0.0,
         0.0
     )
+
+    fun getPosition(): LatLng {
+        return LatLng(lat, lng)
+    }
 }

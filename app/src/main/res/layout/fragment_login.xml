@@ -4,9 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:clickable="true"
-    android:focusable="true"
-    android:focusableInTouchMode="true">
+    android:layout_marginTop="?android:attr/actionBarSize">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -30,6 +28,7 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:startIconDrawable="@drawable/ic_email"
             android:layout_marginStart="32dp"
             android:layout_marginTop="128dp"
             android:layout_marginEnd="32dp"
@@ -74,8 +73,7 @@
             android:layout_marginTop="64dp"
             android:layout_marginEnd="16dp"
             android:text="@string/login_coach"
-            android:transitionName="@string/button_trans"
-            tools:ignore="OnClick" />
+            android:transitionName="@string/button_trans" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/registerText"

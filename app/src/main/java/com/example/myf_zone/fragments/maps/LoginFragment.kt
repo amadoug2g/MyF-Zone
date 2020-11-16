@@ -31,7 +31,6 @@ class LoginFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val fragmentInflater = inflater.inflate(R.layout.fragment_login, container, false)
-//        (activity as AppCompatActivity).supportActionBar?.setTitle(R.string.login_coach)
 
         fragmentInflater.loginRegister.setOnClickListener {
 
@@ -47,10 +46,6 @@ class LoginFragment : Fragment() {
             sharedElementEnterTransition = TransitionInflater.from(requireContext())
                 .inflateTransition(R.transition.change_image_transform)
         }
-
-//        fragmentInflater.login_button.setOnClickListener {
-//            signInUser()
-//        }
 
         return fragmentInflater
     }

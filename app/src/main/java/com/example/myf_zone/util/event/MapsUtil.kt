@@ -6,11 +6,11 @@ import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import com.example.myf_zone.R
+import com.example.myf_zone.model.coach.ClubAffiliation
 import com.example.myf_zone.model.event.Event
-import com.example.myf_zone.model.event.EventParticipant
-import com.example.myf_zone.util.event.EventUtil.getEvents
+import com.example.myf_zone.util.club.ClubUtil.getClubById
+import com.example.myf_zone.util.event.EventUtil.getEventsByDate
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -19,8 +19,6 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.card.MaterialCardView
 import com.google.firebase.Timestamp
-import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.ktx.toObject
 import java.net.URL
 import java.util.*
 
@@ -49,89 +47,43 @@ object MapsUtil {
         )
     }
 
-    private fun placeEventOnMap(
-        map: GoogleMap,
-        event: Event,
-        context: Context,
-        drawable: Any = ""
-    ): Marker {
-        Log.d(TAG, "EVENT: ${event.title}")
-        val marker: Marker = map.addMarker(
-            setEventMarkerOptions(
-                event,
-                context
-            )
-        )
-        if (drawable is Int)
-            marker.tag = drawable
-        if (drawable is String)
-            marker.tag = event.eventTypeImage
-        return marker
-    }
+    suspend fun placeEventsOnMap(map: GoogleMap, context: Context): MutableList<Event>? {
+        return try {
+            val eventList = getEventsByDate()
 
-    fun placeFirestoreEvent(
-        context: Context,
-        map: GoogleMap,
-        owner: EventParticipant,
-        list: MutableList<EventParticipant>,
-        markerList: MutableList<Marker>
-    ): MutableList<Event> {
-        val task = getEvents()
-        val resultList = mutableListOf<Event>()
-        var newEvent: Event
-        task.addOnCompleteListener {
-            if (task.isSuccessful) {
-
-                val documentList = it.result.documents
-
-                for (doc in documentList) {
-                    Toast.makeText(context, doc["title"].toString(), Toast.LENGTH_SHORT).show()
-
-//                    newEvent = placeEventFromFirestoreOnMap(doc, owner, list)
-//                    markerList.add(
-//                        placeEventOnMap(
-//                            map,
-//                            newEvent,
-//                            context
-//                        )
-//                    )
+            if (!eventList.isNullOrEmpty()) {
+                for (event in eventList) {
+                    val markerOptions = setEventMarkerOptions(event, context)
+                    map.addMarker(markerOptions).tag = event.id
                 }
+
+                eventList
+            } else {
+                Log.d(TAG, "List is null or empty: $eventList")
+                null
             }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in getEventsByDate(): $e")
+            null
         }
-        return resultList
     }
 
-    private fun placeEventFromFirestoreOnMap(
-        doc: DocumentSnapshot,
-        owner: EventParticipant,
-        list: MutableList<EventParticipant>
-    ): Event {
-
-        val event = doc.toObject<Event>()!!
-        event.owner = owner
-        event.participants = list
-
-        Log.d(TAG, "Event ID is ${doc.id}")
-
-        return event
-
-//        val nbTeam = (doc["nbTeam"] as Long).toInt()
-//        val date: Date = stampToDate(doc["date"] as Timestamp)
-//        val createdDate: Date = stampToDate(doc["createdDate"] as Timestamp)
-//
-//        return Event(
-//            doc["title"] as String,
-//            doc["description"] as String,
-//            doc["type"] as String,
-//            nbTeam,
-//            date,
-//            doc["address"] as String,
-//            doc["lat"] as Double,
-//            doc["lng"] as Double,
-//            createdDate,
-//            owner,
-//            list
-//        )
+    fun placeUserClub(clubAffiliation: ClubAffiliation, map: GoogleMap, context: Context) {
+        try {
+            getClubById(clubAffiliation.clubId) {
+                val markerOptions = MarkerOptions().apply {
+                    position(it.getPosition())
+                    title(it.acronym)
+//                    snippet(event.title)
+//                    icon(BitmapDescriptorFactory
+//                        .fromBitmap(BitmapFactory
+//                            .decodeResource(context.resources, setMarkerType(event))))
+                }
+                map.addMarker(markerOptions)
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in placeUserClub: $e")
+        }
     }
 
     fun getEventImage(imageView: ImageView, event: Event) {
@@ -153,9 +105,10 @@ object MapsUtil {
             visibility = View.VISIBLE
 //            startAnimation(AnimationUtils.loadAnimation(context, R.anim.from_bottom))
         }
+//        val event =
         title.text = marker.title
         description.text = marker.snippet
-        image.setImageBitmap(BitmapFactory.decodeResource(context.resources, marker.tag as Int))
+//        image.setImageBitmap(BitmapFactory.decodeResource(context.resources, marker.tag as Int))
     }
 
     fun getEventMarkerDetails(
@@ -213,14 +166,11 @@ object MapsUtil {
             title(event.getAcronym())
             snippet(event.title)
             icon(
-                BitmapDescriptorFactory.fromBitmap(
-                    BitmapFactory.decodeResource(
-                        context.resources,
-                        setMarkerType(
-                            event
-                        )
+                BitmapDescriptorFactory
+                    .fromBitmap(
+                        BitmapFactory
+                            .decodeResource(context.resources, setMarkerType(event))
                     )
-                )
             )
         }
     }

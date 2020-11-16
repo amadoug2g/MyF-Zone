@@ -16,6 +16,7 @@ import com.example.myf_zone.model.event.Event
 import com.example.myf_zone.model.event.EventParticipant
 import com.example.myf_zone.screens.MainScreen
 import com.example.myf_zone.util.event.MapsUtil
+import com.example.myf_zone.util.user.UserAccount
 import com.example.myf_zone.util.user.UserAccount.auth
 import com.example.myf_zone.util.user.UserAccount.getCurrentUser
 import com.example.myf_zone.util.user.UserAccount.updateCurrentUser
@@ -58,6 +59,19 @@ class MapsFragment : Fragment(),
          * install it inside the SupportMapFragment. This method will only be triggered once the
          * user has installed Google Play services and returned to the app.
          */
+
+        userAffiliationStatus {
+            when (it) {
+                true -> {
+                    UserAccount.getCurrentClub { clubAffiliation ->
+                        MapsUtil.placeUserClub(clubAffiliation, googleMap, requireContext())
+                    }
+                }
+                false -> {
+
+                }
+            }
+        }
 
         //Event Markers Data
         val eventOwner = EventParticipant(

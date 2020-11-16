@@ -10,8 +10,8 @@ data class ClubAffiliation(
     var sportName: String,
     var categoryId: String,
     var categoryName: String,
-    var subCategoryId: String,
-    var subCategoryName: String,
+//    var subCategoryId: String,
+//    var subCategoryName: String,
     var createDate: Date
 ) {
     constructor() : this(
@@ -22,8 +22,8 @@ data class ClubAffiliation(
         "",
         "",
         "",
-        "",
-        "",
+//        "",
+//        "",
         Date(0)
     )
 }

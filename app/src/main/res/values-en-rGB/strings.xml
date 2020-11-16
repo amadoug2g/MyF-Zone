@@ -20,8 +20,8 @@
     <string name="welcome_message">Welcome</string>
     <string name="auth_error">Failed sign in</string>
     <string name="welcome_back_message">Welcome back</string>
-    <string name="logout">Logging out</string>
-    <string name="logout_message">Log out?</string>
+    <string name="logout">Sign out</string>
+    <string name="logout_message">You are about to sign out.</string>
     <string name="logout_message_error">You are not signed in.</string>
     <string name="logout_success">Log out successful</string>
     <string name="confirm_message">OK</string>

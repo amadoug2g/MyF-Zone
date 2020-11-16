@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:layout_marginTop="?android:attr/actionBarSize"
     tools:context=".fragments.maps.ProfileFragment">
 
     <ImageView
@@ -11,8 +12,7 @@
         android:layout_width="150dp"
         android:layout_height="150dp"
         android:layout_gravity="center"
-        android:contentDescription="@string/image_club"
-        android:src="@drawable/pffc" />
+        android:contentDescription="@string/image_club" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/profileClubName"
