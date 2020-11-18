@@ -1,5 +1,7 @@
 package com.example.myf_zone.util.user
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.util.Log
 import com.example.myf_zone.model.coach.ClubAffiliation
 import com.example.myf_zone.model.coach.Coach
@@ -10,12 +12,21 @@ import com.google.firebase.auth.ktx.userProfileChangeRequest
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
+import com.google.firebase.storage.FirebaseStorage
+import com.squareup.picasso.Picasso
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
+import java.net.URL
 import java.util.*
+
 
 object UserAccount {
     private val TAG = UserAccount::class.java.simpleName
 
     private val firestoreInstance: FirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
+
+    private val storageInstance: FirebaseStorage by lazy { FirebaseStorage.getInstance() }
 
     lateinit var auth: FirebaseAuth
 
@@ -40,6 +51,22 @@ object UserAccount {
                 club.toObject<ClubAffiliation>()?.let { it1 -> onComplete(it1) }
 //                Log.d(TAG, "Club Affiliation retrieved")
             }
+    }
+
+    fun pathToReference(path: String) =
+        storageInstance.getReference(path.removePrefix("gs://myf-zone.appspot.com"))
+
+    fun getImageClub(path: String): Bitmap? = runBlocking {
+        withContext(IO) {
+            Picasso.get().load(path).get()
+        }
+    }
+
+    fun getImageClubURL(path: String): Bitmap? = runBlocking {
+        withContext(IO) {
+            val url = URL(path)
+            BitmapFactory.decodeStream(url.openConnection().getInputStream())
+        }
     }
 
     fun updateCurrentUser(

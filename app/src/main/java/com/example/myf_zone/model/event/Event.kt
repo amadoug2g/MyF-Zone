@@ -15,7 +15,7 @@ data class Event(
     var lat: Double,
     var lng: Double,
     var createdDate: Date,
-    var owner: EventParticipant,
+    var owner: EventOwner,
     var participants: MutableList<EventParticipant>
 ) {
     constructor() : this(
@@ -29,7 +29,7 @@ data class Event(
         0.0,
         0.0,
         Date(0),
-        EventParticipant(),
+        EventOwner(),
         mutableListOf()
     )
 
@@ -41,13 +41,16 @@ data class Event(
         return owner.clubAcronym
     }
 
-    private var eventTypeString: String
+    var eventTypeString: String
         get() {
             var result = ""
             when (type) {
                 "friendly" -> result = "Match amical"
                 "tournament" -> result = "Tournoi"
                 "plateau" -> result = "Plateau"
+//                "friendly" -> result = Resources.getSystem().getString(R.string.friendly_event)
+//                "tournament" -> result = Resources.getSystem().getString(R.string.tournament_event)
+//                "plateau" -> result = Resources.getSystem().getString(R.string.plateau_event)
             }
             return result
         }

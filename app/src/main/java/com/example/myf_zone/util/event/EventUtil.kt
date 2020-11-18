@@ -2,53 +2,40 @@ package com.example.myf_zone.util.event
 
 import android.util.Log
 import com.example.myf_zone.model.event.Event
+import com.example.myf_zone.model.event.EventOwner
 import com.example.myf_zone.model.event.EventParticipant
 import com.example.myf_zone.util.Constants.DB
 import com.example.myf_zone.util.Constants.EVENT_PATH
-import com.google.android.gms.tasks.Task
 import com.google.firebase.Timestamp
-import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.toObject
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 import java.util.*
 
 object EventUtil {
     private val TAG = EventUtil::class.java.simpleName
 
-    fun getEvents(): Task<QuerySnapshot> {
-        val docRef = DB.collection(EVENT_PATH)
+//    var globalEventList = mutableListOf<Event>()
 
-        return docRef.get().addOnCompleteListener {
-            if (it.isSuccessful) {
-                Log.d(TAG, "Successfully retrieved [getEvents()]")
-            } else {
-                Log.d(TAG, "An error occurred: ${it.exception.toString()}")
+    fun getEventFromId(eventId: String, onComplete: (Event) -> Unit) {
+        DB.collection(EVENT_PATH)
+            .document(eventId).get()
+            .addOnSuccessListener {
+                it.toObject<Event>()?.let { it1 -> onComplete(it1) }
             }
-        }
     }
 
-    fun getEventList() {
-        CoroutineScope(IO).launch {
-            val x = getEventsByDate()
-            for (i in x!!) {
-                Log.d(TAG, "Inside Loop: ${i.owner.clubAcronym}")
+    fun getEventById(eventId: String, onComplete: (Event) -> Unit) {
+        DB.collection(EVENT_PATH)
+            .document(eventId).get()
+            .addOnSuccessListener {
+                it.toObject<Event>()?.let { it1 -> onComplete(it1) }
+//                Log.d(TAG, "Club retrieved")
             }
-
-            Log.d(TAG, x.toString())
-        }
     }
 
-    val eventList: MutableList<Event> = runBlocking {
-        getEventsByDate()!!
-    }
-
-    fun getEventFromId() {
-
-    }
+//    val globalEventList: MutableList<Event> = runBlocking {
+//        getEventsByDate()!!
+//    }
 
     suspend fun getEventsByDate(): MutableList<Event>? {
         val docRef = DB.collection(EVENT_PATH).orderBy("date")
@@ -71,8 +58,10 @@ object EventUtil {
                 eventToAdd.participants = participantList!!
 
                 eventList.add(eventToAdd)
+//                Log.d(TAG,"Event list: $eventToAdd")
             }
 
+//            Log.d(TAG,"Event list: $eventList")
             eventList
         } catch (e: Exception) {
             Log.e(TAG, e.toString())
@@ -80,14 +69,14 @@ object EventUtil {
         }
     }
 
-    private suspend fun getOwnerFromEvent(eventId: String): EventParticipant? {
+    suspend fun getOwnerFromEvent(eventId: String): EventOwner? {
         val docRef =
             DB.collection(EVENT_PATH)
                 .document(eventId)
                 .collection("Owner")
 
         return try {
-            docRef.get().await().documents[0].toObject<EventParticipant>()!!
+            docRef.get().await().documents[0].toObject<EventOwner>()!!
         } catch (e: Exception) {
             Log.e(TAG, e.toString())
             null
@@ -110,14 +99,6 @@ object EventUtil {
         } catch (e: Exception) {
             Log.e(TAG, e.toString())
             null
-        }
-    }
-
-    private fun addItem(list: MutableList<Event>, vararg item: Event) {
-        for (i in item) {
-            if (!list.contains(i)) {
-                list.add(i)
-            }
         }
     }
 

@@ -42,6 +42,9 @@
         <action
             android:id="@+id/mapsToAffiliationRequest"
             app:destination="@id/affiliationRequestFragment" />
+        <action
+            android:id="@+id/mapsToEventDetails"
+            app:destination="@id/eventDetailsFragment" />
     </fragment>
     <fragment
         android:id="@+id/loginFragment"
@@ -74,4 +77,9 @@
         android:name="com.example.myf_zone.fragments.maps.ProfileFragment"
         android:label="@string/profile_page"
         tools:layout="@layout/fragment_profile" />
+    <fragment
+        android:id="@+id/eventDetailsFragment"
+        android:name="com.example.myf_zone.fragments.maps.EventDetailsFragment"
+        android:label="fragment_event_details"
+        tools:layout="@layout/fragment_event_details_friendly" />
 </navigation>

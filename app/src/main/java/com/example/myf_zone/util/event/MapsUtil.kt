@@ -10,6 +10,7 @@ import com.example.myf_zone.R
 import com.example.myf_zone.model.coach.ClubAffiliation
 import com.example.myf_zone.model.event.Event
 import com.example.myf_zone.util.club.ClubUtil.getClubById
+import com.example.myf_zone.util.event.EventUtil.getEventById
 import com.example.myf_zone.util.event.EventUtil.getEventsByDate
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -51,12 +52,18 @@ object MapsUtil {
         return try {
             val eventList = getEventsByDate()
 
+//            if (globalEventList == eventList) {
+//
+//            }
+
             if (!eventList.isNullOrEmpty()) {
                 for (event in eventList) {
                     val markerOptions = setEventMarkerOptions(event, context)
                     map.addMarker(markerOptions).tag = event.id
+                    Log.d(TAG, "Marker is: ${event.id}")
                 }
 
+//                Log.d(TAG, "Event List: $eventList")
                 eventList
             } else {
                 Log.d(TAG, "List is null or empty: $eventList")
@@ -71,15 +78,20 @@ object MapsUtil {
     fun placeUserClub(clubAffiliation: ClubAffiliation, map: GoogleMap, context: Context) {
         try {
             getClubById(clubAffiliation.clubId) {
+
+//                CoroutineScope(Main).launch {
+//                    val bitmap = getImageClub(it.logo)!!
                 val markerOptions = MarkerOptions().apply {
                     position(it.getPosition())
                     title(it.acronym)
-//                    snippet(event.title)
+//                        icon(BitmapDescriptorFactory.fromBitmap(bitmap))
+                    snippet(it.name)
 //                    icon(BitmapDescriptorFactory
 //                        .fromBitmap(BitmapFactory
 //                            .decodeResource(context.resources, setMarkerType(event))))
                 }
-                map.addMarker(markerOptions)
+                map.addMarker(markerOptions).tag = null//.setIcon(getImageClub(it.logo)!!)
+//                }
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error in placeUserClub: $e")
@@ -93,56 +105,68 @@ object MapsUtil {
         imageView.setImageBitmap(bmp)
     }
 
-    fun getMarkerDetails(
+    fun getCardDetail(
         marker: Marker,
         cardView: MaterialCardView,
         title: TextView,
         description: TextView,
         image: ImageView,
-        context: Context
+        tag: TextView
     ) {
-        cardView.apply {
-            visibility = View.VISIBLE
-//            startAnimation(AnimationUtils.loadAnimation(context, R.anim.from_bottom))
+        Log.d(TAG, "Marker Id is: ${marker.tag}")
+        when (marker.tag) {
+            null -> {
+                cardView.visibility = View.GONE
+                tag.text = null
+            }
+            else -> {
+                getEventMarkerDetails(
+                    marker,
+                    cardView,
+                    title,
+                    description,
+                    image,
+                    tag
+                )
+                tag.text = marker.tag as String
+            }
         }
-//        val event =
-        title.text = marker.title
-        description.text = marker.snippet
-//        image.setImageBitmap(BitmapFactory.decodeResource(context.resources, marker.tag as Int))
     }
 
-    fun getEventMarkerDetails(
-        event: Event,
+    private fun getEventMarkerDetails(
+        marker: Marker,
         cardView: MaterialCardView,
         title: TextView,
         description: TextView,
-        image: ImageView
+        image: ImageView,
+        tag: TextView
     ) {
         cardView.apply {
             visibility = View.VISIBLE
 //            startAnimation(AnimationUtils.loadAnimation(context, R.anim.from_bottom))
         }
-        title.text = event.title
-        description.text = event.description
-        image.setImageResource(
-            setMarkerType(
-                event
-            )
-        )
-    }
 
-    fun addItem(list: MutableList<Marker>, vararg item: Marker) {
-        for (i in item) {
-            list.add(i)
-        }
-    }
+        title.text = (R.string.loading).toString()
+        description.text = (R.string.loading).toString()
+//        image.setImageResource(R.mipmap.ic_football_ball_icon_001)
 
-    private fun addItemEvent(vararg item: Event): MutableList<Event> {
-        val list = mutableListOf<Event>()
-        for (i in item) {
-            list.add(i)
+        try {
+            getEventById(marker.tag as String) { event ->
+                title.text = event.title
+                description.text = event.description
+                image.setImageResource(
+                    setMarkerType(
+                        event
+                    )
+                )
+                Log.d(TAG, "Marker Title is: ${event.title}")
+                Log.d(TAG, "Marker Description is: ${event.description}")
+//                Log.d(TAG, "Marker Type is: ${setMarkerType(event)}")
+            }
+            tag.text = marker.tag as String
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in getEventFromId: $e")
         }
-        return list
     }
 
     private fun zoomOnMarker(map: GoogleMap, position: LatLng, zoom: Float = 14f): Boolean {
@@ -184,7 +208,7 @@ object MapsUtil {
         }
     }
 
-    private fun setMapListeners(
+    fun setMapListeners(
         map: GoogleMap,
         markerList: MutableList<Marker>,
         onMarkerClickListener: GoogleMap.OnMarkerClickListener,

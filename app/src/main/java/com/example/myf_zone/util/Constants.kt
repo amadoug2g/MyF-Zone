@@ -13,6 +13,4 @@ object Constants {
     const val EVENT_PATH = "Env/Staging/Event"
     const val SPORT_PATH = "Env/Staging/Sport"
 
-    const val SPORT_MODEL = "com.example.myf_zone.model.sport.Sport"
-
 }

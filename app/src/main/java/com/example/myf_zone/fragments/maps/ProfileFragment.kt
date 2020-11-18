@@ -6,15 +6,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.bumptech.glide.Glide
 import com.example.myf_zone.R
+import com.example.myf_zone.glide.GlideApp
 import com.example.myf_zone.util.user.UserAccount.auth
 import com.example.myf_zone.util.user.UserAccount.getCurrentClub
 import com.example.myf_zone.util.user.UserAccount.getCurrentUser
+import com.example.myf_zone.util.user.UserAccount.pathToReference
 import com.example.myf_zone.util.user.UserAccount.updateCurrentUser
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.fragment_profile.*
 import kotlinx.android.synthetic.main.fragment_profile.view.*
+import org.jetbrains.anko.support.v4.toast
 
 class ProfileFragment : Fragment() {
     private val TAG = ProfileFragment::class.java.simpleName
@@ -41,14 +43,17 @@ class ProfileFragment : Fragment() {
             fragmentInflater.profileEmail.text = user.mail
 
             getCurrentClub {
-                Glide.with(requireActivity()).apply {
-                    load(it.clubLogo)
-                        .placeholder(R.drawable.ic_account)
-                        .centerCrop()
-                        .into(profileClubImage)
+                try {
+                    GlideApp.with(this).apply {
+                        load(pathToReference(it.clubLogo))
+                            .placeholder(R.drawable.ic_account)
+                            .centerCrop()
+                            .into(profileClubImage)
+                    }
+                } catch (e: Exception) {
+                    toast("Image could not load: $e")
                 }
-
-//                toast(it.clubLogo)
+//                toast("${pathToReference(it.clubLogo)}")
                 profileClubName.text = it.clubAcronym
                 val clubPosition = profilePosition.text.toString() + " - ${it.sportName}"
                 profilePosition.text = clubPosition

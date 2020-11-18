@@ -9,15 +9,13 @@ import kotlin.concurrent.schedule
 class SplashScreen : AppCompatActivity() {
     private val TAG = SplashScreen::class.java.simpleName
 
+//    var globalEventList = mutableListOf<Event>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-//        CoroutineScope(IO).launch {
-//            val sportList = getSportList()
-//            val sportId = getSportId(sportList[0].name)
 //
-//            val categoryList = CategoryUtil.strGetCategoryList(sportId)
-//            Log.d("SportUtil", "Category list:  $categoryList")
+//        CoroutineScope(IO).launch {
+//            globalEventList = getEventsByDate()!!
 //        }
 
 

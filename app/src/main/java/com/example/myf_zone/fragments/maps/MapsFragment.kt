@@ -9,15 +9,20 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import com.example.myf_zone.R
 import com.example.myf_zone.model.event.Event
-import com.example.myf_zone.model.event.EventParticipant
 import com.example.myf_zone.screens.MainScreen
 import com.example.myf_zone.util.event.MapsUtil
-import com.example.myf_zone.util.user.UserAccount
+import com.example.myf_zone.util.event.MapsUtil.getCardDetail
+import com.example.myf_zone.util.event.MapsUtil.placeEventsOnMap
+import com.example.myf_zone.util.event.MapsUtil.placeUserClub
+import com.example.myf_zone.util.event.MapsUtil.setMapListeners
 import com.example.myf_zone.util.user.UserAccount.auth
+import com.example.myf_zone.util.user.UserAccount.getCurrentClub
 import com.example.myf_zone.util.user.UserAccount.getCurrentUser
 import com.example.myf_zone.util.user.UserAccount.updateCurrentUser
 import com.example.myf_zone.util.user.UserAffiliation.userAffiliationStatus
@@ -28,8 +33,12 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.android.synthetic.main.fragment_maps.*
+import kotlinx.android.synthetic.main.card_event_item.*
+import kotlinx.android.synthetic.main.card_event_item.view.*
 import kotlinx.android.synthetic.main.fragment_maps.view.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.launch
 import org.jetbrains.anko.clearTask
 import org.jetbrains.anko.newTask
 import org.jetbrains.anko.support.v4.intentFor
@@ -63,8 +72,8 @@ class MapsFragment : Fragment(),
         userAffiliationStatus {
             when (it) {
                 true -> {
-                    UserAccount.getCurrentClub { clubAffiliation ->
-                        MapsUtil.placeUserClub(clubAffiliation, googleMap, requireContext())
+                    getCurrentClub { clubAffiliation ->
+                        placeUserClub(clubAffiliation, googleMap, requireContext())
                     }
                 }
                 false -> {
@@ -73,31 +82,6 @@ class MapsFragment : Fragment(),
             }
         }
 
-        //Event Markers Data
-        val eventOwner = EventParticipant(
-            "",
-            "Bobigny FC",
-            "coachID",
-            "Full Name",
-            "sportID",
-            "Football",
-            "categoryID",
-            "U21",
-            "subCategoryID",
-            "Regional",
-            ""
-        )
-
-        val eventParticipant = EventParticipant()
-        val participantList = mutableListOf(eventParticipant)
-
-//        MapsUtil.placeFirestoreEvent(
-//            requireContext(),
-//            googleMap,
-//            eventOwner,
-//            participantList,
-//            markerList
-//        )
 
         if (!mapInitialized) {
             MapsUtil.initializeMap(
@@ -109,6 +93,12 @@ class MapsFragment : Fragment(),
 
             mapInitialized = true
         }
+
+        setMapListeners(googleMap, markerList, this, this, cardView_detail)
+
+        CoroutineScope(Main).launch {
+            placeEventsOnMap(googleMap, requireContext())
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -116,29 +106,6 @@ class MapsFragment : Fragment(),
         Log.d(TAG, "onCREATE")
 
         auth = FirebaseAuth.getInstance()
-    }
-
-    fun setEventDetails(event: Event) {
-        cardView_detail.apply {
-            visibility = View.VISIBLE
-//            startAnimation(AnimationUtils.loadAnimation(context, R.anim.from_bottom))
-        }
-        cardView_clubName.text = event.title
-        cardView_clubDesc.text = event.description
-        cardView_clubImage.setImageResource(MapsUtil.setMarkerType(event))
-    }
-
-    override fun onMarkerClick(marker: Marker): Boolean {
-//        MapsUtil.zoomOnMarker(this.googleMap, marker.position
-        MapsUtil.getMarkerDetails(
-            marker,
-            cardView_detail,
-            cardView_clubName,
-            cardView_clubDesc,
-            cardView_clubImage,
-            requireContext()
-        )
-        return true
     }
 
     override fun onCreateView(
@@ -215,6 +182,19 @@ class MapsFragment : Fragment(),
             }
         }
 
+        fragmentInflater.cardView_detail.setOnClickListener {
+
+            when (cardView_tag.text) {
+                null -> {
+                    toast("clicked smth else")
+                }
+                else -> {
+                    val bundle = bundleOf("eventId" to cardView_tag.text)
+                    navigate(R.id.mapsToEventDetails, bundle)
+                }
+            }
+        }
+
         return fragmentInflater
     }
 
@@ -224,11 +204,44 @@ class MapsFragment : Fragment(),
         mapFragment?.getMapAsync(callback)
     }
 
+    override fun onMarkerClick(marker: Marker): Boolean {
+//        MapsUtil.zoomOnMarker(this.googleMap, marker.position
+        getCardDetail(
+            marker,
+            cardView_detail,
+            cardView_clubName,
+            cardView_clubDesc,
+            cardView_clubImage,
+            cardView_tag
+        )
+        return true
+    }
+
     override fun onMapClick(p0: LatLng?) {
         cardView_detail.apply {
             visibility = View.GONE
 //            startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.to_bottom))
         }
+    }
+
+    private fun navigate(destination: Int) {
+        findNavController().navigate(destination)
+    }
+
+    private fun navigate(destination: Int, extra: Bundle? = null) {
+        Navigation
+            .findNavController(this.requireView())
+            .navigate(destination, extra)
+    }
+
+    private fun setEventDetails(event: Event) {
+        cardView_detail.apply {
+            visibility = View.VISIBLE
+//            startAnimation(AnimationUtils.loadAnimation(context, R.anim.from_bottom))
+        }
+        cardView_clubName.text = event.title
+        cardView_clubDesc.text = event.description
+        cardView_clubImage.setImageResource(MapsUtil.setMarkerType(event))
     }
 
     private fun setUpMapRequest() {
@@ -244,9 +257,5 @@ class MapsFragment : Fragment(),
             )
             return
         }
-    }
-
-    private fun navigate(destination: Int) {
-        findNavController().navigate(destination)
     }
 }
