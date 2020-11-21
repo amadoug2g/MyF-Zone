@@ -3,6 +3,7 @@ package com.example.myf_zone.util.user
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
+import com.example.myf_zone.model.club.Club
 import com.example.myf_zone.model.coach.ClubAffiliation
 import com.example.myf_zone.model.coach.Coach
 import com.example.myf_zone.util.Constants.COACH_PATH
@@ -16,6 +17,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.net.URL
 import java.util.*
@@ -33,7 +35,7 @@ object UserAccount {
     val currentUserDocRef: DocumentReference
         get() = firestoreInstance.document(
             COACH_PATH + "/${FirebaseAuth.getInstance().currentUser?.uid
-                ?: throw NullPointerException("UID is null")}"
+                ?: throw NullPointerException("You are not connected")}"
         )
 
     fun getCurrentUser(onComplete: (Coach) -> Unit) {
@@ -43,6 +45,37 @@ object UserAccount {
 //                Log.d(TAG, "User retrieved")
             }
     }
+
+    private suspend fun getGlobalUser(): Coach? {
+        val docRef = currentUserDocRef
+
+        return try {
+            docRef.get().await().toObject<Coach>()!!
+        } catch (e: Exception) {
+            Log.e(TAG, "e")
+            null
+        }
+    }
+
+    private suspend fun getGlobalUserClub(): Club? {
+        val docRef =
+            currentUserDocRef.collection("ClubAffiliation")
+
+        return try {
+            docRef.get().await().documents[0].toObject<Club>()!!
+        } catch (e: Exception) {
+            Log.e(TAG, "e")
+            null
+        }
+    }
+
+//    val globalUser: Coach = runBlocking {
+//        getGlobalUser()!!
+//    }
+//
+//    val globalUserClub: Club = runBlocking {
+//        getGlobalUserClub()!!
+//    }
 
     fun getCurrentClub(onComplete: (ClubAffiliation) -> Unit) {
         currentUserDocRef.collection("ClubAffiliation").get()

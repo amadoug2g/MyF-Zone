@@ -47,6 +47,11 @@ class AffiliationRequestFragment : Fragment() {
         val fragmentInflater =
             inflater.inflate(R.layout.fragment_affiliation_request, container, false)
 
+//        (activity as AppCompatActivity).supportActionBar?.apply {
+//            setDisplayHomeAsUpEnabled(false)
+//            setHomeButtonEnabled(false)
+//        }
+
         fragmentInflater.affiliationLaterAffiliate.setOnClickListener {
             navigate(R.id.globalToMaps)
         }
@@ -64,7 +69,12 @@ class AffiliationRequestFragment : Fragment() {
                     Log.d(TAG, "form is valid")
                     if (queryIsCodeRegistered(affiliationCode)) {
                         Log.d(TAG, "code is valid")
-                        affiliationProcess(affiliationCode, affiliationSport, affiliationCategory)
+                        affiliationProcess(
+                            affiliationCode,
+                            affiliationSport,
+                            affiliationCategory,
+                            affiliationSubCategory
+                        )
 
                         Log.d(
                             TAG,

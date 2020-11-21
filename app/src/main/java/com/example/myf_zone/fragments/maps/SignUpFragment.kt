@@ -62,7 +62,7 @@ class SignUpFragment : Fragment() {
         val password = signup_password_input.text.toString()
         val firstName = signup_firstName_input.text.toString()
         val lastName = signup_lastName_input.text.toString()
-        val time: Date = Calendar.getInstance().time
+        val time = Calendar.getInstance().time
 
         showProgressBar(signUpProgressBar)
 
@@ -89,7 +89,8 @@ class SignUpFragment : Fragment() {
                                     }
                                 }
                             toast(getString(R.string.account_creation_msg))
-                            findNavController().navigate(R.id.globalToAffiliationRequest)
+                            resetFields()
+                            navigate(R.id.globalToAffiliationRequest)
                         } else {
                             Log.d(TAG, "signInUserWithEmail:failed: " + task.exception)
                             MaterialAlertDialogBuilder(requireContext())
@@ -105,6 +106,7 @@ class SignUpFragment : Fragment() {
 
             }
         }
+
         hideProgressBar(signUpProgressBar)
     }
 
@@ -152,6 +154,10 @@ class SignUpFragment : Fragment() {
         }
 
         return valid
+    }
+
+    private fun navigate(destination: Int) {
+        findNavController().navigate(destination)
     }
 
     private fun showProgressBar(progressBar: ProgressBar) {

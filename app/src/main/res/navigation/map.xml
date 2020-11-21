@@ -80,6 +80,6 @@
     <fragment
         android:id="@+id/eventDetailsFragment"
         android:name="com.example.myf_zone.fragments.maps.EventDetailsFragment"
-        android:label="fragment_event_details"
+        android:label="@string/empty_string"
         tools:layout="@layout/fragment_event_details_friendly" />
 </navigation>

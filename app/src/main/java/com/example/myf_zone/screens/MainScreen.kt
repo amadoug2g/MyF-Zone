@@ -16,6 +16,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.example.myf_zone.R
@@ -23,6 +24,8 @@ import com.example.myf_zone.setupWithNavController
 import com.example.myf_zone.util.user.UserAccount.auth
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.datepicker.CalendarConstraints
+import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
@@ -104,6 +107,36 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
                     )
                 )
 
+                val builder = MaterialDatePicker.Builder.dateRangePicker()
+                val validator: CalendarConstraints.DateValidator
+                val now = Calendar.getInstance()
+                val constraints = CalendarConstraints.Builder().apply {
+                    setStart(now.timeInMillis)
+                    setOpenAt(now.timeInMillis)
+                }
+
+                builder.apply {
+                    setTitleText("Sélectionnez une période")
+                    setSelection(androidx.core.util.Pair(now.timeInMillis, now.timeInMillis))
+                    setCalendarConstraints(constraints.build())
+                    setTheme(R.style.ThemeOverlay_MaterialComponents_MaterialCalendar)
+                }
+
+                val filter = builder.build()
+
+                fabMain.setOnClickListener {
+                    filter.show(supportFragmentManager, "Event Range Picker")
+                }
+
+                filter.addOnNegativeButtonClickListener {
+
+                }
+
+                filter.addOnPositiveButtonClickListener {
+                    toast("date selected: from ${it} to ${it.second}")
+                }
+
+
                 supportActionBar!!.apply {
                     hide()
                 }
@@ -122,6 +155,10 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
                     )
                 )
 
+                fabMain.setOnClickListener {
+                    toast("new message creation")
+                }
+
                 bottomBar.hideOnScroll = false
 
                 supportActionBar!!.apply {
@@ -139,6 +176,12 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
                         R.color.colorAccent
                     )
                 )
+
+                fabMain.setOnClickListener {
+                    navController.navigate(R.id.calendarToEventCreation)
+                }
+
+//                onBackPressed()
 
                 bottomBar.hideOnScroll = true
 
@@ -213,4 +256,7 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
         inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
+    private fun navigate(destination: Int) {
+        findNavController(fabMain.id).navigate(destination)
+    }
 }

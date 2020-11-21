@@ -10,6 +10,15 @@
     <fragment
         android:id="@+id/calendarFragment"
         android:name="com.example.myf_zone.fragments.calendar.CalendarFragment"
-        android:label="fragment_calendar"
-        tools:layout="@layout/fragment_calendar" />
+        android:label="@string/calendar"
+        tools:layout="@layout/fragment_calendar">
+        <action
+            android:id="@+id/calendarToEventCreation"
+            app:destination="@id/eventCreationFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/eventCreationFragment"
+        android:name="com.example.myf_zone.fragments.calendar.EventCreationFragment"
+        android:label="@string/new_event"
+        tools:layout="@layout/fragment_event_creation" />
 </navigation>

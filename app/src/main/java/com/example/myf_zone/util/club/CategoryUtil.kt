@@ -51,12 +51,18 @@ object CategoryUtil {
         }
     }
 
-    fun getCategoryId(sportId: String, category: String): String = runBlocking {
+    fun getCategoryId(sportId: String, category: String?): String? = runBlocking {
         withContext(IO) {
-            queryCategoryId(
-                sportId,
-                category
-            )!!
+            try {
+                queryCategoryId(
+                    sportId,
+                    category!!
+                )
+            } catch (e: Exception) {
+                Log.d(TAG, "Error in getCategoryId", e)
+                null
+            }
+
         }
     }
 

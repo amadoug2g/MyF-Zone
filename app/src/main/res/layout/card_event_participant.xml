@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:showIn="@layout/fragment_event_details_friendly">
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
     <com.google.android.material.card.MaterialCardView
-        android:id="@+id/event_detail_CardView_title"
+        android:id="@+id/event_detail_CardView_participant"
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:layout_marginStart="16dp"
@@ -26,18 +24,18 @@
             android:layout_height="wrap_content">
 
             <ImageView
-                android:id="@+id/event_detail_owner_image"
+                android:id="@+id/event_detail_participant_image"
                 android:layout_width="70dp"
                 android:layout_height="70dp"
                 android:layout_centerVertical="true"
                 android:layout_margin="8dp"
-                android:contentDescription="@string/image_club"
+                android:contentDescription="@string/participant_image"
                 android:src="@drawable/pffc" />
 
             <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toEndOf="@+id/event_detail_owner_image">
+                android:layout_toEndOf="@+id/event_detail_participant_image">
 
                 <LinearLayout
                     android:id="@+id/event_detail_owner_info"
@@ -51,7 +49,7 @@
                         android:id="@+id/event_detail_owner_club"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Organisateur - MBH "
+                        android:text="@string/participant_title"
                         android:textColor="@android:color/black"
                         android:textSize="18sp" />
 
@@ -60,7 +58,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
-                        android:text="Jose Mourinho"
+                        android:text="@string/participant_name"
                         android:textColor="@android:color/darker_gray"
                         android:textSize="16sp" />
 
@@ -72,23 +70,33 @@
                     android:layout_alignParentEnd="true"
                     android:layout_margin="8dp">
 
-                    <!--                    <ImageView-->
-                    <!--                        android:id="@+id/notificationDotOwner"-->
-                    <!--                        android:layout_width="wrap_content"-->
-                    <!--                        android:layout_height="wrap_content"-->
-                    <!--                        android:layout_alignParentEnd="true"-->
-                    <!--                        android:background="@drawable/notification_dot_green"-->
-                    <!--                        android:contentDescription="@string/notification_dot" />-->
-
                     <ImageView
+                        android:id="@+id/notificationDotOwner"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:background="@drawable/notification_dot_blue"
+                        android:contentDescription="@string/notification_dot" />
+
+                    <ImageButton
+                        android:id="@+id/cancel_participation"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentBottom="true"
                         android:layout_marginStart="4dp"
                         android:layout_marginEnd="4dp"
                         android:layout_marginBottom="16dp"
-                        android:contentDescription="Quick Message"
-                        android:src="@drawable/ic_message" />
+                        android:background="@color/colorTransparent"
+                        android:clickable="true"
+                        android:contentDescription="@string/cancel_participation"
+                        android:focusable="true"
+                        android:src="@drawable/ic_remove" />
+
+                    <TextView
+                        android:id="@+id/event_detail_id"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:visibility="gone" />
 
                 </RelativeLayout>
 

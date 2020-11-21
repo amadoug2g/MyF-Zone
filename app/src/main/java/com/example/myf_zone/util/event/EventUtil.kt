@@ -6,6 +6,8 @@ import com.example.myf_zone.model.event.EventOwner
 import com.example.myf_zone.model.event.EventParticipant
 import com.example.myf_zone.util.Constants.DB
 import com.example.myf_zone.util.Constants.EVENT_PATH
+import com.example.myf_zone.util.user.UserAccount
+import com.example.myf_zone.util.user.UserAccount.getCurrentUser
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.ktx.toObject
 import kotlinx.coroutines.tasks.await
@@ -13,6 +15,8 @@ import java.util.*
 
 object EventUtil {
     private val TAG = EventUtil::class.java.simpleName
+
+    private val currentUser = UserAccount.auth.currentUser
 
 //    var globalEventList = mutableListOf<Event>()
 
@@ -29,7 +33,7 @@ object EventUtil {
             .document(eventId).get()
             .addOnSuccessListener {
                 it.toObject<Event>()?.let { it1 -> onComplete(it1) }
-//                Log.d(TAG, "Club retrieved")
+//                Log.d(TAG, "Event retrieved")
             }
     }
 
@@ -58,10 +62,8 @@ object EventUtil {
                 eventToAdd.participants = participantList!!
 
                 eventList.add(eventToAdd)
-//                Log.d(TAG,"Event list: $eventToAdd")
             }
 
-//            Log.d(TAG,"Event list: $eventList")
             eventList
         } catch (e: Exception) {
             Log.e(TAG, e.toString())
@@ -87,7 +89,7 @@ object EventUtil {
         val docRef =
             DB.collection(EVENT_PATH)
                 .document(eventId)
-                .collection("Participants")
+                .collection("Participant")
 
         return try {
             val participationList = mutableListOf<EventParticipant>()
@@ -96,6 +98,160 @@ object EventUtil {
                 participationList.add(doc.toObject()!!)
 
             participationList
+        } catch (e: Exception) {
+            Log.e(TAG, e.toString())
+            null
+        }
+    }
+
+    fun addParticipant(eventId: String, participant: EventParticipant) {
+        getCurrentUser {
+            DB.collection(EVENT_PATH)
+                .document(eventId)
+                .collection("Participant").document(it.id)
+                .set(participant)
+                .addOnSuccessListener {
+                    Log.d(TAG, "Participant added successfully")
+                }
+                .addOnFailureListener {
+                    Log.d(TAG, "Participant added failed")
+                }
+                .addOnCompleteListener {
+                    Log.d(TAG, "Participant added completed")
+                }
+        }
+    }
+
+    fun removeParticipant(eventId: String) {
+        val currentUser = UserAccount.auth.currentUser!!
+
+        val path = DB.collection(EVENT_PATH)
+            .document(eventId)
+            .collection("Participant")
+            .document(currentUser.uid)
+
+        Log.d(TAG, "Path is: ${path.path}")
+
+        DB.collection(EVENT_PATH)
+            .document(eventId)
+            .collection("Participant")
+            .document(currentUser.uid)
+            .delete()
+            .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully deleted!") }
+            .addOnFailureListener { e -> Log.w(TAG, "Error deleting document", e) }
+            .addOnCompleteListener { Log.d(TAG, "Deletion completed") }
+    }
+
+    //pending - validate - rejected
+    fun getParticipantStatus() {}
+
+    suspend fun getParticipantCount(eventId: String): Int? {
+        return try {
+            getParticipantsFromEvent(eventId)?.size
+        } catch (e: Exception) {
+            Log.d(TAG, "Error in getParticipantCount: $e")
+            null
+        }
+    }
+
+//    suspend fun eventComplete(eventId: String): Boolean{
+//        val place: Int = getEventFromId(eventId) {event ->
+//            val accepted = getValidParticipantCount(eventId)!!
+//            if (accepted == event.nbTeam)
+//
+//        }
+//    }
+
+    suspend fun getValidParticipantCount(eventId: String): Int? {
+        return try {
+            var result = 0
+            for (item in getParticipantsFromEvent(eventId)!!) {
+                if (item.status == "validate")
+                    result++
+            }
+
+            result
+        } catch (e: Exception) {
+            Log.d(TAG, "Error in getParticipantCount: $e")
+            null
+        }
+    }
+
+    suspend fun getPendingParticipantCount(eventId: String): Int? {
+        return try {
+            var result = 0
+            for (item in getParticipantsFromEvent(eventId)!!) {
+                if (item.status == "pending")
+                    result++
+            }
+
+            result
+        } catch (e: Exception) {
+            Log.d(TAG, "Error in getParticipantCount: $e")
+            null
+        }
+    }
+
+    suspend fun getRefusedParticipantCount(eventId: String): Int? {
+        return try {
+            var result = 0
+            for (item in getParticipantsFromEvent(eventId)!!) {
+                if (item.status == "refused")
+                    result++
+            }
+
+            result
+        } catch (e: Exception) {
+            Log.d(TAG, "Error in getParticipantCount: $e")
+            null
+        }
+    }
+
+    fun createEvent(event: Event) {
+        DB.collection(EVENT_PATH)
+            .add(event)
+            .addOnSuccessListener {
+                Log.d(TAG, "Participant added successfully")
+            }
+            .addOnFailureListener {
+                Log.d(TAG, "Participant added failed")
+            }
+            .addOnCompleteListener {
+                Log.d(TAG, "Participant added completed")
+            }
+    }
+
+    fun updateEvent(event: Event) {
+        DB.collection(EVENT_PATH)
+            .document(event.id)
+            .set(event)
+            .addOnSuccessListener {
+                Log.d(TAG, "Participant added successfully")
+            }
+            .addOnFailureListener {
+                Log.d(TAG, "Participant added failed")
+            }
+            .addOnCompleteListener {
+                Log.d(TAG, "Participant added completed")
+            }
+    }
+
+    suspend fun checkUserParticipation(eventId: String): Boolean? {
+        val participantList =
+            getParticipantsFromEvent(
+                eventId
+            )!!
+
+        val currentUser = UserAccount.auth.currentUser!!
+
+        return try {
+            val idList = mutableListOf<String>()
+            for (item in participantList)
+                idList.add(item.coachId)
+
+            Log.d(TAG, idList.toString())
+            Log.d(TAG, "User ID is: ${currentUser.uid}")
+            idList.contains(currentUser.uid)
         } catch (e: Exception) {
             Log.e(TAG, e.toString())
             null

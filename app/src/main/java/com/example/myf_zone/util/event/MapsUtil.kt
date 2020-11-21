@@ -113,24 +113,29 @@ object MapsUtil {
         image: ImageView,
         tag: TextView
     ) {
-        Log.d(TAG, "Marker Id is: ${marker.tag}")
-        when (marker.tag) {
-            null -> {
-                cardView.visibility = View.GONE
-                tag.text = null
+        try {
+            Log.d(TAG, "Marker Id is: ${marker.tag}")
+            when (marker.tag) {
+                null -> {
+                    cardView.visibility = View.GONE
+                    tag.text = null
+                }
+                else -> {
+                    getEventMarkerDetails(
+                        marker,
+                        cardView,
+                        title,
+                        description,
+                        image,
+                        tag
+                    )
+                    tag.text = marker.tag as String
+                }
             }
-            else -> {
-                getEventMarkerDetails(
-                    marker,
-                    cardView,
-                    title,
-                    description,
-                    image,
-                    tag
-                )
-                tag.text = marker.tag as String
-            }
+        } catch (e: Exception) {
+            Log.d(TAG, "an error occurred: $e")
         }
+
     }
 
     private fun getEventMarkerDetails(
@@ -159,9 +164,7 @@ object MapsUtil {
                         event
                     )
                 )
-                Log.d(TAG, "Marker Title is: ${event.title}")
-                Log.d(TAG, "Marker Description is: ${event.description}")
-//                Log.d(TAG, "Marker Type is: ${setMarkerType(event)}")
+                Log.d(TAG, "Marker Title is: $event")
             }
             tag.text = marker.tag as String
         } catch (e: Exception) {

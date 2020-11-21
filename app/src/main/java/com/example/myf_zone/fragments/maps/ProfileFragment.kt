@@ -37,6 +37,10 @@ class ProfileFragment : Fragment() {
 
         val currentUser = auth.currentUser
 
+//        if (globalUser == null) {
+//            toast("Not connected")
+//        }
+
         getCurrentUser { user ->
             fragmentInflater.profile_firstName.text = user.firstName
             fragmentInflater.profile_lastName.text = user.lastName
@@ -57,10 +61,17 @@ class ProfileFragment : Fragment() {
                 profileClubName.text = it.clubAcronym
                 val clubPosition = profilePosition.text.toString() + " - ${it.sportName}"
                 profilePosition.text = clubPosition
-//                var clubCategory = it.categoryName
-//                if (it.subCategoryName.isNotEmpty())
-//                    clubCategory += " - ${it.subCategoryName}"
-//                profileCategory_subCategory.text = clubCategory
+                var clubCategory = it.categoryName
+                if (it.categoryName!!.isNotEmpty()) {
+                    if (it.subCategoryName!!.isNotEmpty()) {
+                        clubCategory += " - ${it.subCategoryName}"
+                        profileCategory_subCategory.text = clubCategory
+                    } else {
+                        profileCategory_subCategory.text = clubCategory
+                    }
+                } else {
+                    profileCategory_subCategory.text = ""
+                }
             }
 
 

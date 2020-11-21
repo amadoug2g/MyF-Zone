@@ -11,11 +11,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        tools:context=".fragments.maps.EventCreationFragment">
+        tools:context=".fragments.calendar.EventCreationFragment">
 
         <ProgressBar
             android:id="@+id/progressBar"
             style="?android:attr/progressBarStyleHorizontal"
+            android:visibility="invisible"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
@@ -31,7 +32,7 @@
                 android:id="@+id/event_create_title_input"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Titre"
+                android:hint="@string/event_title"
                 android:inputType="text" />
 
 
@@ -49,7 +50,7 @@
                 android:id="@+id/event_create_desc_input"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Description"
+                android:hint="@string/event_description"
                 android:inputType="text" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -79,27 +80,65 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp">
 
-            <TextView
-                android:id="@+id/event_day_picker"
-                style="@style/Widget.MaterialComponents.Button.TextButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="32dp"
-                android:layout_marginEnd="32dp"
-                android:layout_weight="1"
-                android:text="12/04/2020"
-                android:textSize="18sp" />
 
-            <TextView
-                android:id="@+id/event_time_picker"
-                style="@style/Widget.MaterialComponents.Button.TextButton"
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/event_day_picker"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="32dp"
-                android:layout_marginEnd="32dp"
                 android:layout_weight="1"
-                android:text="1:00 pm"
-                android:textSize="18sp" />
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:text="Date" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/event_time_picker"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:text="Heure" />
+
+            <!--            -->
+            <!--            <LinearLayout-->
+            <!--                android:layout_width="match_parent"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:layout_marginStart="4dp"-->
+            <!--                android:layout_marginEnd="4dp"-->
+            <!--                android:layout_weight="1"-->
+            <!--                android:orientation="vertical">-->
+            <!--                <TextView-->
+            <!--                    android:id="@+id/event_day_picker"-->
+            <!--                    style="@style/Widget.MaterialComponents.Button.TextButton"-->
+            <!--                    android:layout_width="match_parent"-->
+            <!--                    android:layout_height="0dp"-->
+            <!--                    android:layout_marginStart="32dp"-->
+            <!--                    android:layout_marginEnd="32dp"-->
+            <!--                    android:layout_weight="1"-->
+            <!--                    android:text="12/04/2020"-->
+            <!--                    android:textSize="18sp"-->
+            <!--                    android:layout_gravity="center"/>-->
+            <!--            </LinearLayout>-->
+
+            <!--            <LinearLayout-->
+            <!--                android:layout_width="match_parent"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:layout_marginStart="4dp"-->
+            <!--                android:layout_marginEnd="4dp"-->
+            <!--                android:layout_weight="1"-->
+            <!--                android:orientation="vertical">-->
+            <!--                <TextView-->
+            <!--                    android:id="@+id/event_time_picker"-->
+            <!--                    style="@style/Widget.MaterialComponents.Button.TextButton"-->
+            <!--                    android:layout_width="match_parent"-->
+            <!--                    android:layout_height="0dp"-->
+            <!--                    android:layout_marginStart="32dp"-->
+            <!--                    android:layout_marginEnd="32dp"-->
+            <!--                    android:layout_weight="2"-->
+            <!--                    android:text="1:00 pm"-->
+            <!--                    android:textSize="18sp" />-->
+            <!--            </LinearLayout>-->
+
 
         </LinearLayout>
 
@@ -121,7 +160,7 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/login_button"
+            android:id="@+id/event_create_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"

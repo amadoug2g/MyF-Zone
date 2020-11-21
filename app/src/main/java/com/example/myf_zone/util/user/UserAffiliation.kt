@@ -7,6 +7,7 @@ import com.example.myf_zone.util.Constants.COACH_PATH
 import com.example.myf_zone.util.Constants.DB
 import com.example.myf_zone.util.user.UserAccount.auth
 import com.example.myf_zone.util.user.UserAccount.currentUserDocRef
+import kotlinx.coroutines.tasks.await
 
 object UserAffiliation {
     private val TAG = UserAffiliation::class.java.simpleName
@@ -44,9 +45,18 @@ object UserAffiliation {
         }
     }
 
-    fun updateAffiliationStatus() {
+    suspend fun affiliationStatus(): Boolean? {
+        val affiliationPath = currentUserDocRef.collection("ClubAffiliation")
 
+        return try {
+            affiliationPath.get().await().documents.size > 0
+        } catch (e: Exception) {
+            Log.d(TAG, "e")
+            false
+        }
     }
+
+    fun updateAffiliationStatus() {}
 
     fun checkRequestStatus(affiliationRequest: AffiliationRequest): Boolean {
         return (affiliationRequest.status == "validate")

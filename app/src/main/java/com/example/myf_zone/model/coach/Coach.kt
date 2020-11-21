@@ -20,4 +20,8 @@ data class Coach(
         "",
         Date(0)
     )
+
+    fun getName(): String {
+        return "$firstName $lastName"
+    }
 }

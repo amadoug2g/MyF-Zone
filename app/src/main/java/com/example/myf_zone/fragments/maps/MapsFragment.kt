@@ -25,6 +25,7 @@ import com.example.myf_zone.util.user.UserAccount.auth
 import com.example.myf_zone.util.user.UserAccount.getCurrentClub
 import com.example.myf_zone.util.user.UserAccount.getCurrentUser
 import com.example.myf_zone.util.user.UserAccount.updateCurrentUser
+import com.example.myf_zone.util.user.UserAffiliation.affiliationStatus
 import com.example.myf_zone.util.user.UserAffiliation.userAffiliationStatus
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -69,19 +70,22 @@ class MapsFragment : Fragment(),
          * user has installed Google Play services and returned to the app.
          */
 
-        userAffiliationStatus {
-            when (it) {
-                true -> {
-                    getCurrentClub { clubAffiliation ->
-                        placeUserClub(clubAffiliation, googleMap, requireContext())
+        CoroutineScope(Main).launch {
+            try {
+                when (affiliationStatus()!!) {
+                    true -> {
+                        getCurrentClub { clubAffiliation ->
+                            placeUserClub(clubAffiliation, googleMap, requireContext())
+                        }
+                    }
+                    false -> {
+
                     }
                 }
-                false -> {
-
-                }
+            } catch (e: Exception) {
+                Log.d(TAG, "Error: $e")
             }
         }
-
 
         if (!mapInitialized) {
             MapsUtil.initializeMap(
@@ -97,8 +101,9 @@ class MapsFragment : Fragment(),
         setMapListeners(googleMap, markerList, this, this, cardView_detail)
 
         CoroutineScope(Main).launch {
-            placeEventsOnMap(googleMap, requireContext())
+            Log.d(TAG, placeEventsOnMap(googleMap, requireContext()).toString())
         }
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -132,8 +137,6 @@ class MapsFragment : Fragment(),
                     }
                 }
 
-//                StorageUtil.getCategoryList()
-
                 userAffiliationStatus {
                     when (it) {
                         true -> {
@@ -154,7 +157,6 @@ class MapsFragment : Fragment(),
                         }
                     }
                 }
-
             }
         }
 

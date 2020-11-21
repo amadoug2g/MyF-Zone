@@ -60,14 +60,19 @@ object SubCategoryUtil {
         }
     }
 
-    fun getSubCategoryId(sportId: String, categoryId: String, subCategory: String): String =
+    fun getSubCategoryId(sportId: String, categoryId: String, subCategory: String?): String? =
         runBlocking {
             withContext(IO) {
-                querySubCategoryId(
-                    sportId,
-                    categoryId,
-                    subCategory
-                )!!
+                try {
+                    querySubCategoryId(
+                        sportId,
+                        categoryId,
+                        subCategory!!
+                    )!!
+                } catch (e: Exception) {
+                    Log.d(TAG, "Error in getSubCategoryId", e)
+                    null
+                }
             }
         }
 
