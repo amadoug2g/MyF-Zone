@@ -32,6 +32,7 @@
     <string name="logout_message_error">Vous n\'êtes pas connecté.</string>
     <string name="logout_success">Déconnexion réussie</string>
     <string name="confirm_message">OK</string>
+    <string name="confirmation_message">Confirmer</string>
     <string name="cancel_message">Annuler</string>
     <string name="menu_item_map">Carte</string>
     <string name="menu_item_list">Liste</string>
@@ -100,6 +101,15 @@
     <string name="select_range_text">Sélectionnez une période</string>
     <string name="no_participant_msg">Il n\'y a aucun participant dans cet évènement</string>
     <string name="new_event_error_msg">Vous devez être connecté et affilié à un club pour pouvoir créer un évènement</string>
+    <string name="adresse_field">Adresse</string>
+    <string name="edit_event">Éditer l\'évènement</string>
+    <string name="delete_event">Supprimer l\'évènement</string>
+    <string name="delete_txt">Supprimer</string>
+    <string name="delete_event_confirmation">Vous êtes sur le point de supprimer cet évènement. Continuer ?</string>
+    <string name="edit_event_confirmation">Vous allez modifier l\'évènement. Continuer ?</string>
+    <string name="enter_address_hint">Rentrez une adresse</string>
+    <string name="edit_txt">Éditer</string>
+    <string name="date_required">Veuillez rentrer une date</string>
 
     <string-array name="sportList">
         <item>Foot</item>

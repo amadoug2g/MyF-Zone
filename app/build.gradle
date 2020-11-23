@@ -10,7 +10,7 @@ android {
     buildToolsVersion "30.0.0"
 
     defaultConfig {
-        applicationId "com.example.myf_zone"
+        applicationId "mfz.myfzone_sport.myf_zone"
         minSdkVersion 21
         targetSdkVersion 30
         versionCode 1

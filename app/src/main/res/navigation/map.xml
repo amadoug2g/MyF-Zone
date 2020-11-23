@@ -30,7 +30,7 @@
 
     <fragment
         android:id="@+id/mapsFragment"
-        android:name="com.example.myf_zone.fragments.maps.MapsFragment"
+        android:name="mfz.myfzone_sport.myf_zone.fragments.maps.MapsFragment"
         android:label="@string/title_activity_maps"
         tools:layout="@layout/fragment_maps">
         <action
@@ -48,7 +48,7 @@
     </fragment>
     <fragment
         android:id="@+id/loginFragment"
-        android:name="com.example.myf_zone.fragments.maps.LoginFragment"
+        android:name="mfz.myfzone_sport.myf_zone.fragments.maps.LoginFragment"
         android:label="@string/login_coach">
         <action
             android:id="@+id/loginToSignUp"
@@ -56,11 +56,11 @@
     </fragment>
     <fragment
         android:id="@+id/signUpFragment"
-        android:name="com.example.myf_zone.fragments.maps.SignUpFragment"
+        android:name="mfz.myfzone_sport.myf_zone.fragments.maps.SignUpFragment"
         android:label="@string/become_coach" />
     <fragment
         android:id="@+id/affiliationRequestFragment"
-        android:name="com.example.myf_zone.fragments.maps.AffiliationRequestFragment"
+        android:name="mfz.myfzone_sport.myf_zone.fragments.maps.AffiliationRequestFragment"
         android:label="@string/affiliation_text"
         tools:layout="@layout/fragment_affiliation_request">
         <action
@@ -69,17 +69,29 @@
     </fragment>
     <fragment
         android:id="@+id/affiliationSuccessFragment"
-        android:name="com.example.myf_zone.fragments.maps.AffiliationSuccessFragment"
+        android:name="mfz.myfzone_sport.myf_zone.fragments.maps.AffiliationSuccessFragment"
         android:label="@string/affiliation_text"
         tools:layout="@layout/fragment_affiliation_success" />
     <fragment
         android:id="@+id/profileFragment"
-        android:name="com.example.myf_zone.fragments.maps.ProfileFragment"
+        android:name="mfz.myfzone_sport.myf_zone.fragments.maps.ProfileFragment"
         android:label="@string/profile_page"
-        tools:layout="@layout/fragment_profile" />
+        tools:layout="@layout/fragment_profile">
+        <action
+            android:id="@+id/profileToEventDetails"
+            app:destination="@id/eventDetailsFragment" />
+    </fragment>
     <fragment
         android:id="@+id/eventDetailsFragment"
-        android:name="com.example.myf_zone.fragments.maps.EventDetailsFragment"
+        android:name="mfz.myfzone_sport.myf_zone.fragments.maps.EventDetailsFragment"
         android:label="@string/empty_string"
-        tools:layout="@layout/fragment_event_details_friendly" />
+        tools:layout="@layout/fragment_event_details_friendly">
+        <action
+            android:id="@+id/eventDetailsToEventEdit"
+            app:destination="@id/eventEditFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/eventEditFragment"
+        android:name="mfz.myfzone_sport.myf_zone.fragments.maps.EventEditFragment"
+        android:label="@string/edit_txt" />
 </navigation>

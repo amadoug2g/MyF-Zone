@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.myf_zone">
+    package="mfz.myfzone_sport.myf_zone">
 
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
@@ -33,10 +33,12 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".screens.MainScreen"
+            android:name="mfz.myfzone_sport.myf_zone.screens.MainScreen"
+            android:configChanges="orientation|keyboardHidden"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".screens.SplashScreen"
+            android:name="mfz.myfzone_sport.myf_zone.screens.SplashScreen"
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

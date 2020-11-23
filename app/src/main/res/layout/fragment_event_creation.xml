@@ -24,9 +24,13 @@
             android:id="@+id/event_create_title_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginStart="32dp"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_marginTop="32dp"
-            android:layout_marginEnd="32dp">
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            app:counterEnabled="true"
+            app:counterMaxLength="20"
+            app:endIconMode="clear_text">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/event_create_title_input"
@@ -42,9 +46,13 @@
             android:id="@+id/event_create_desc_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_marginTop="32dp"
-            android:layout_marginEnd="32dp">
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            app:counterEnabled="true"
+            app:counterMaxLength="50"
+            app:endIconMode="clear_text">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/event_create_desc_input"
@@ -56,7 +64,7 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <androidx.appcompat.widget.AppCompatSpinner
-            android:id="@+id/typeSpinner"
+            android:id="@+id/event_create_typeSpinner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
@@ -66,7 +74,7 @@
             android:spinnerMode="dialog" />
 
         <androidx.appcompat.widget.AppCompatSpinner
-            android:id="@+id/teamSpinner"
+            android:id="@+id/event_create_teamSpinner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
@@ -82,7 +90,7 @@
 
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/event_day_picker"
+                android:id="@+id/event_create_day_picker"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -91,7 +99,7 @@
                 android:text="Date" />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/event_time_picker"
+                android:id="@+id/event_create_time_picker"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -99,63 +107,25 @@
                 android:layout_marginEnd="16dp"
                 android:text="Heure" />
 
-            <!--            -->
-            <!--            <LinearLayout-->
-            <!--                android:layout_width="match_parent"-->
-            <!--                android:layout_height="wrap_content"-->
-            <!--                android:layout_marginStart="4dp"-->
-            <!--                android:layout_marginEnd="4dp"-->
-            <!--                android:layout_weight="1"-->
-            <!--                android:orientation="vertical">-->
-            <!--                <TextView-->
-            <!--                    android:id="@+id/event_day_picker"-->
-            <!--                    style="@style/Widget.MaterialComponents.Button.TextButton"-->
-            <!--                    android:layout_width="match_parent"-->
-            <!--                    android:layout_height="0dp"-->
-            <!--                    android:layout_marginStart="32dp"-->
-            <!--                    android:layout_marginEnd="32dp"-->
-            <!--                    android:layout_weight="1"-->
-            <!--                    android:text="12/04/2020"-->
-            <!--                    android:textSize="18sp"-->
-            <!--                    android:layout_gravity="center"/>-->
-            <!--            </LinearLayout>-->
-
-            <!--            <LinearLayout-->
-            <!--                android:layout_width="match_parent"-->
-            <!--                android:layout_height="wrap_content"-->
-            <!--                android:layout_marginStart="4dp"-->
-            <!--                android:layout_marginEnd="4dp"-->
-            <!--                android:layout_weight="1"-->
-            <!--                android:orientation="vertical">-->
-            <!--                <TextView-->
-            <!--                    android:id="@+id/event_time_picker"-->
-            <!--                    style="@style/Widget.MaterialComponents.Button.TextButton"-->
-            <!--                    android:layout_width="match_parent"-->
-            <!--                    android:layout_height="0dp"-->
-            <!--                    android:layout_marginStart="32dp"-->
-            <!--                    android:layout_marginEnd="32dp"-->
-            <!--                    android:layout_weight="2"-->
-            <!--                    android:text="1:00 pm"-->
-            <!--                    android:textSize="18sp" />-->
-            <!--            </LinearLayout>-->
-
-
         </LinearLayout>
 
-
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/event_create_address_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="32dp"
             android:layout_marginEnd="16dp"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             app:startIconDrawable="@drawable/ic_marker">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/event_create_address_input"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Adresse"
-                android:inputType="textPostalAddress" />
+                android:focusable="false"
+                android:hint="@string/adresse_field"
+                android:inputType="none" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -166,7 +136,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="32dp"
             android:layout_marginEnd="16dp"
-            android:text="Confirmer" />
+            android:text="@string/confirmation_message" />
 
     </LinearLayout>
 

@@ -25,6 +25,7 @@
     <string name="logout_message_error">You are not signed in.</string>
     <string name="logout_success">Log out successful</string>
     <string name="confirm_message">OK</string>
+    <string name="confirmation_message">Confirm</string>
     <string name="cancel_message">Cancel</string>
     <string name="menu_item_map">Map</string>
     <string name="menu_item_list">List</string>
@@ -92,4 +93,13 @@
     <string name="select_range_text">Select range</string>
     <string name="no_participant_msg">There is no participant in this event</string>
     <string name="new_event_error_msg">You must be logged in and affiliated to a club to be able to create an event</string>
+    <string name="adresse_field">Address</string>
+    <string name="edit_event">Edit Event</string>
+    <string name="delete_event">Delete Event</string>
+    <string name="delete_txt">Delete</string>
+    <string name="delete_event_confirmation">You are about to delete this event. Proceed?</string>
+    <string name="edit_event_confirmation">You are about to edit this event. Proceed?</string>
+    <string name="enter_address_hint">Enter an address</string>
+    <string name="edit_txt">Edit</string>
+    <string name="date_required">Please enter a date</string>
 </resources>

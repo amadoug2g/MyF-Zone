@@ -9,7 +9,7 @@
 
     <fragment
         android:id="@+id/messageFragment"
-        android:name="com.example.myf_zone.fragments.message.MessageFragment"
+        android:name="mfz.myfzone_sport.myf_zone.fragments.message.MessageFragment"
         android:label="fragment_message"
         tools:layout="@layout/fragment_message" />
 </navigation>
