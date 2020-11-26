@@ -15,8 +15,6 @@ import mfz.myfzone_sport.myf_zone.util.club.CategoryUtil.getCategoryId
 import mfz.myfzone_sport.myf_zone.util.club.ClubUtil.queryClubList
 import mfz.myfzone_sport.myf_zone.util.club.SportUtil.getSportId
 import mfz.myfzone_sport.myf_zone.util.club.SubCategoryUtil.getSubCategoryId
-import mfz.myfzone_sport.myf_zone.util.user.UserAffiliation.addAffiliationUser
-import mfz.myfzone_sport.myf_zone.util.user.UserAffiliation.checkRequestStatus
 import java.util.*
 
 object AffiliationForm {
@@ -47,34 +45,36 @@ object AffiliationForm {
                 if (!categoryID.isNullOrEmpty()) {
                     categoryName = affiliationCategory
                     categoryId = categoryID
-                    if (!subCategoryID.isNullOrEmpty()) {
-                        subCategoryId = subCategoryID
-                        subCategoryName = affiliationSubCategory
-                    }
+
+                }
+                if (!subCategoryID.isNullOrEmpty()) {
+                    subCategoryId = subCategoryID
+                    subCategoryName = affiliationSubCategory
                 }
                 createDate = Calendar.getInstance().time
             }
 
             val affiliationRequest = AffiliationRequest().apply {
                 coachId = currentUser.uid
-                coachFullName = currentUser.displayName!!
+                coachFullname = currentUser.displayName!!
                 sportName = affiliationSport
                 sportId = sportID
-                if (!affiliationCategory.isNullOrEmpty()) {
+                if (!categoryID.isNullOrEmpty()) {
                     categoryName = affiliationCategory
                     categoryId = categoryID
-                    if (!affiliationSubCategory.isNullOrEmpty()) {
-                        subCategoryId = subCategoryID
-                        subCategoryName = affiliationSubCategory
-                    }
+                }
+                if (!subCategoryID.isNullOrEmpty()) {
+                    subCategoryId = subCategoryID
+                    subCategoryName = affiliationSubCategory
                 }
                 status = "validate"
             }
 
-            sendRequestToClub(clubPartner.id, affiliationRequest)
+            sendRequestToClub(clubPartner.id, fieldToAffiliationRequest(affiliationRequest))
 
-            if (checkRequestStatus(affiliationRequest))
-                addAffiliationUser(clubAffiliation)
+//            if (checkRequestStatus(affiliationRequest))
+//                addAffiliationUser(fieldToClubAffiliation(clubAffiliation))
+
         }
     }
 
@@ -96,25 +96,43 @@ object AffiliationForm {
         return null
     }
 
-    fun isCodeRegistered(code: String): Boolean = runBlocking {
-        withContext(IO) {
-            queryIsCodeRegistered(
-                code
-            )
-        }
-    }
-
     fun queryIsCodeRegistered(code: String): Boolean {
         val club =
             getClubFromCode(code)
         return (club is Club)
     }
 
+
+    private fun fieldToAffiliationRequest(
+        affiliationRequest: AffiliationRequest
+    ): HashMap<String, Any?> {
+        val result: HashMap<String, Any?> = hashMapOf(
+            "coachId" to affiliationRequest.coachId,
+            "coachFullName" to affiliationRequest.coachFullname,
+            "sportId" to affiliationRequest.sportId,
+            "sportName" to affiliationRequest.sportName,
+            "status" to affiliationRequest.status
+        )
+
+        if (!affiliationRequest.categoryId.isNullOrEmpty() && !affiliationRequest.categoryName.isNullOrEmpty()) {
+            result["categoryId"] = affiliationRequest.categoryId
+            result["categoryName"] = affiliationRequest.categoryName
+        }
+
+        if (!affiliationRequest.subCategoryId.isNullOrEmpty() && !affiliationRequest.subCategoryName.isNullOrEmpty()) {
+            result["subCategoryId"] = affiliationRequest.subCategoryId
+            result["subCategoryName"] = affiliationRequest.subCategoryName
+        }
+
+        return result
+    }
+
     private fun sendRequestToClub(
         clubId: String,
-        affiliationRequest: AffiliationRequest,
+        affiliationRequest: HashMap<String, Any?>,
         removeListener: Boolean = false
     ) {
+
         val docRef = DB.collection(CLUB_PATH)
             .document(clubId)
             .collection("AffiliationRequest")

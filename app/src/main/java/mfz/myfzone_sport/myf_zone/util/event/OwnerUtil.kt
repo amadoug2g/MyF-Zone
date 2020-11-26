@@ -7,9 +7,12 @@ import kotlinx.coroutines.tasks.await
 import mfz.myfzone_sport.myf_zone.model.event.Event
 import mfz.myfzone_sport.myf_zone.model.event.EventOwner
 import mfz.myfzone_sport.myf_zone.model.event.EventParticipant
+import mfz.myfzone_sport.myf_zone.util.Constants
 import mfz.myfzone_sport.myf_zone.util.Constants.DB
 import mfz.myfzone_sport.myf_zone.util.Constants.EVENT_PATH
 import mfz.myfzone_sport.myf_zone.util.event.EventUtil.getEventsByDate
+import mfz.myfzone_sport.myf_zone.util.user.UserAccount.auth
+import mfz.myfzone_sport.myf_zone.util.user.UserAccount.getClubUser
 import mfz.myfzone_sport.myf_zone.util.user.UserAccount.getCurrentUser
 
 object OwnerUtil {
@@ -24,16 +27,17 @@ object OwnerUtil {
         return try {
             docRef.get().await().documents[0].toObject<EventOwner>()!!
         } catch (e: Exception) {
-            Log.e(TAG, e.toString())
+            Log.e(TAG, "Error in getOwnerFromEvent: $e")
             null
         }
     }
 
     fun addOwnerToEvent(eventId: String, owner: EventOwner) {
         val docRef = DB.collection(EVENT_PATH).document(eventId)
+        val newOwner = fieldToOwner(owner)
 
         docRef.collection("Owner").document(owner.coachId)
-            .set(owner)
+            .set(newOwner)
             .addOnSuccessListener {
                 Log.d(TAG, "Owner added successfully")
             }
@@ -45,16 +49,57 @@ object OwnerUtil {
             }
     }
 
-    suspend fun deleteOwner(eventId: String) {
-        val owner =
-            getOwnerFromEvent(
-                eventId
-            )!!
+    private fun fieldToOwner(
+        owner: EventOwner
+    ): HashMap<String, Any?> {
+
+        val result: HashMap<String, Any?> = hashMapOf(
+            "clubLogo" to owner.clubLogo,
+            "clubAcronym" to owner.clubAcronym,
+            "coachId" to owner.coachId,
+            "coachFullname" to owner.coachFullname,
+            "sportId" to owner.sportId,
+            "sportName" to owner.sportName
+        )
+
+        if (owner.categoryId.isNotEmpty() && owner.categoryName.isNotEmpty()) {
+            Log.d(TAG, "Owner cat\n Id is: ${owner.categoryId}.\n Name is: ${owner.categoryName}.")
+            result["categoryId"] = owner.categoryId
+            result["categoryName"] = owner.categoryName
+        }
+
+        if (owner.subCategoryId.isNotEmpty() && owner.subCategoryName.isNotEmpty()) {
+            Log.d(TAG, "Owner cat\n Id is: ${owner.categoryId}.\n Name is: ${owner.categoryName}.")
+            result["subCategoryId"] = owner.subCategoryId
+            result["subCategoryName"] = owner.subCategoryName
+        }
+
+        return result
+    }
+
+    fun deleteOwner(eventId: String) {
+        val currentUser = auth.currentUser
 
         DB.collection(EVENT_PATH)
             .document(eventId)
             .collection("Owner")
-            .document(owner.coachId)
+            .document(currentUser!!.uid)
+            .delete()
+            .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully deleted!") }
+            .addOnFailureListener { e -> Log.w(TAG, "Error deleting document", e) }
+            .addOnCompleteListener { Log.d(TAG, "Deletion completed") }
+    }
+
+    suspend fun deleteEventForOwner(eventId: String) {
+        val currentUser = auth.currentUser
+        val club = getClubUser()
+
+        DB.collection(Constants.COACH_PATH)
+            .document(currentUser!!.uid)
+            .collection("ClubAffiliation")
+            .document(club!!.clubId)
+            .collection("CoachEvent")
+            .document(eventId)
             .delete()
             .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully deleted!") }
             .addOnFailureListener { e -> Log.w(TAG, "Error deleting document", e) }

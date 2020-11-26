@@ -4,18 +4,16 @@ import android.util.Log
 import kotlinx.coroutines.tasks.await
 import mfz.myfzone_sport.myf_zone.model.club.AffiliationRequest
 import mfz.myfzone_sport.myf_zone.model.coach.ClubAffiliation
-import mfz.myfzone_sport.myf_zone.model.coach.Coach
 import mfz.myfzone_sport.myf_zone.util.Constants.COACH_PATH
 import mfz.myfzone_sport.myf_zone.util.Constants.DB
 import mfz.myfzone_sport.myf_zone.util.user.UserAccount.auth
 import mfz.myfzone_sport.myf_zone.util.user.UserAccount.currentUserDocRef
-import java.util.*
 
 object UserAffiliation {
     private val TAG = UserAffiliation::class.java.simpleName
 
-    fun addAffiliationUser(affiliation: ClubAffiliation) {
-        Log.d(TAG, "Adding ${affiliation.categoryName} as affiliation")
+    fun addAffiliationUser(affiliation: HashMap<String, Any?>) {
+        Log.d("AffiliationForm", "affiliation hmap! $affiliation")
         val currentUser = auth.currentUser
 
         DB.collection(COACH_PATH)
@@ -33,58 +31,27 @@ object UserAffiliation {
             }
     }
 
-
-    fun addUserToDB(coach: Coach, id: String) {
-//        val user = fieldToCoach(coach)
-//
-//        DB.collection(COACH_PATH)
-//            .document(id)
-//            .set(user, SetOptions.merge())
-//            .addOnSuccessListener {
-//                Log.d(UserAccount.TAG, "Document added successfully")
-//            }
-//            .addOnFailureListener {
-//                Log.d(UserAccount.TAG, "Document added failed")
-//            }
-//            .addOnCompleteListener {
-//                Log.d(UserAccount.TAG, "Document added completed")
-//            }
-    }
-
-    private fun fieldToClubAffiliationComplete(clubAffiliation: ClubAffiliation): HashMap<String, Any?> {
-        return hashMapOf(
-            "clubAcronym" to clubAffiliation.clubAcronym,
-            "clubLogo" to clubAffiliation.clubLogo,
-            "sportId" to clubAffiliation.sportId,
-            "sportName" to clubAffiliation.sportName,
-            "categoryId" to clubAffiliation.categoryId,
-            "categoryName" to clubAffiliation.categoryName,
-            "subCategoryId" to clubAffiliation.subCategoryId,
-            "subCategoryName" to clubAffiliation.subCategoryName,
-            "createDate" to clubAffiliation.createDate
-        )
-    }
-
-    private fun fieldToClubAffiliationNoCategory(clubAffiliation: ClubAffiliation): HashMap<String, Any?> {
-        return hashMapOf(
+    fun fieldToClubAffiliation(clubAffiliation: ClubAffiliation): HashMap<String, Any?> {
+        val result: HashMap<String, Any?> = hashMapOf(
+            "clubId" to clubAffiliation.clubId,
             "clubAcronym" to clubAffiliation.clubAcronym,
             "clubLogo" to clubAffiliation.clubLogo,
             "sportId" to clubAffiliation.sportId,
             "sportName" to clubAffiliation.sportName,
             "createDate" to clubAffiliation.createDate
         )
-    }
 
-    private fun fieldToClubAffiliationNoSubCategory(clubAffiliation: ClubAffiliation): HashMap<String, Any?> {
-        return hashMapOf(
-            "clubAcronym" to clubAffiliation.clubAcronym,
-            "clubLogo" to clubAffiliation.clubLogo,
-            "sportId" to clubAffiliation.sportId,
-            "sportName" to clubAffiliation.sportName,
-            "categoryId" to clubAffiliation.categoryId,
-            "categoryName" to clubAffiliation.categoryName,
-            "createDate" to clubAffiliation.createDate
-        )
+        if (!clubAffiliation.categoryId.isNullOrEmpty() && !clubAffiliation.categoryName.isNullOrEmpty()) {
+            result["categoryId"] = clubAffiliation.categoryId
+            result["categoryName"] = clubAffiliation.categoryName
+        }
+
+        if (!clubAffiliation.subCategoryId.isNullOrEmpty() && !clubAffiliation.subCategoryName.isNullOrEmpty()) {
+            result["subCategoryId"] = clubAffiliation.subCategoryId
+            result["subCategoryName"] = clubAffiliation.subCategoryName
+        }
+
+        return result
     }
 
     fun userAffiliationStatus(myCallback: (Boolean) -> Unit) {
@@ -107,7 +74,7 @@ object UserAffiliation {
         return try {
             affiliationPath.get().await().documents.size > 0
         } catch (e: Exception) {
-            Log.d(TAG, "e")
+            Log.d(TAG, "$e")
             false
         }
     }

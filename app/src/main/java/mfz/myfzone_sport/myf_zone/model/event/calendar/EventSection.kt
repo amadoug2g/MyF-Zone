@@ -1,8 +1,10 @@
 package mfz.myfzone_sport.myf_zone.model.event.calendar
 
+import mfz.myfzone_sport.myf_zone.model.event.EventCalendar
+
 data class EventSection(
     private val sectionName: String,
-    private val sectionList: MutableList<String>
+    private val sectionList: MutableList<EventCalendar>
 ) {
     constructor() : this("", mutableListOf())
 
@@ -10,7 +12,11 @@ data class EventSection(
         return sectionName
     }
 
-    fun getSectionList(): MutableList<String> {
+    fun getSectionList(): MutableList<EventCalendar> {
         return sectionList
+    }
+
+    override fun toString(): String {
+        return "$sectionName - $sectionList"
     }
 }

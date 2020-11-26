@@ -10,6 +10,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import mfz.myfzone_sport.myf_zone.util.event.EventUtil.markerItemList
+import mfz.myfzone_sport.myf_zone.util.event.MapsUtil.showMarkerItem
 
 fun BottomNavigationView.setupWithNavController(
     navGraphIds: List<Int>,
@@ -96,7 +98,7 @@ fun BottomNavigationView.setupWithNavController(
         }
     }
 
-//    setupItemReselected(graphIdToTagMap, fragmentManager)
+    setupItemReselected(graphIdToTagMap, fragmentManager)
 
     setupDeepLinks(navGraphIds, fragmentManager, containerId, intent)
 
@@ -152,6 +154,12 @@ private fun BottomNavigationView.setupItemReselected(
         navController.popBackStack(
             navController.graph.startDestination, false
         )
+
+        if (item.title == "Map")
+            showMarkerItem(markerItemList!!)
+
+        if (item.title == "Carte")
+            showMarkerItem(markerItemList!!)
     }
 }
 

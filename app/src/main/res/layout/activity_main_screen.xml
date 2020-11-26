@@ -16,7 +16,7 @@
     <com.google.android.material.bottomappbar.BottomAppBar
         android:id="@+id/bottomBar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="56dp"
         app:fabAlignmentMode="end"
         android:layout_gravity="bottom"
         android:backgroundTint="@color/colorPrimary">
@@ -24,7 +24,7 @@
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottomNavBar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="56dp"
             android:background="@color/colorPrimary"
             app:itemIconTint="@color/nav_items_color"
             app:itemTextColor="@color/nav_items_color"

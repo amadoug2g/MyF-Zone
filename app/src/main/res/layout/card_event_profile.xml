@@ -28,7 +28,10 @@
                 android:layout_width="70dp"
                 android:layout_height="70dp"
                 android:layout_centerVertical="true"
-                android:layout_margin="8dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="4dp"
+                android:layout_marginBottom="8dp"
                 android:contentDescription="@string/image_club"
                 android:src="@drawable/pffc" />
 
@@ -41,7 +44,7 @@
                     android:id="@+id/event_detail_owner_info"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:layout_margin="8dp"
+                    android:layout_margin="6dp"
                     android:orientation="vertical"
                     android:padding="4dp">
 
@@ -70,13 +73,13 @@
                     android:layout_alignParentEnd="true"
                     android:layout_margin="8dp">
 
-                    <!--                    <ImageView-->
-                    <!--                        android:id="@+id/notificationDotOwner"-->
-                    <!--                        android:layout_width="wrap_content"-->
-                    <!--                        android:layout_height="wrap_content"-->
-                    <!--                        android:layout_alignParentEnd="true"-->
-                    <!--                        android:background="@drawable/notification_dot_green"-->
-                    <!--                        android:contentDescription="@string/notification_dot" />-->
+                    <ImageView
+                        android:id="@+id/notificationDotOwner"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:background="@drawable/notification_dot_green"
+                        android:contentDescription="@string/notification_dot" />
 
                     <!--                <ImageView-->
                     <!--                    android:id="@+id/owner_message_icon"-->

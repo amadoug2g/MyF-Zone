@@ -2,6 +2,11 @@ package mfz.myfzone_sport.myf_zone.screens
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.launch
+import mfz.myfzone_sport.myf_zone.util.event.EventUtil.getEventsByDate
+import mfz.myfzone_sport.myf_zone.util.event.EventUtil.globalEventList
 import org.jetbrains.anko.startActivity
 import java.util.*
 import kotlin.concurrent.schedule
@@ -13,10 +18,10 @@ class SplashScreen : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//
-//        CoroutineScope(IO).launch {
-//            globalEventList = getEventsByDate()!!
-//        }
+
+        CoroutineScope(IO).launch {
+            globalEventList = getEventsByDate()!!
+        }
 
 
         val delay: Long = 100

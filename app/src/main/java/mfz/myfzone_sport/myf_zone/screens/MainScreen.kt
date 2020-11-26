@@ -28,7 +28,12 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_main_screen.*
 import mfz.myfzone_sport.myf_zone.R
+import mfz.myfzone_sport.myf_zone.model.event.MarkerItem
 import mfz.myfzone_sport.myf_zone.setupWithNavController
+import mfz.myfzone_sport.myf_zone.util.event.EventUtil.globalEventList
+import mfz.myfzone_sport.myf_zone.util.event.EventUtil.markerItemList
+import mfz.myfzone_sport.myf_zone.util.event.MapsUtil.hideMarkerItem
+import mfz.myfzone_sport.myf_zone.util.event.MapsUtil.showMarkerItem
 import mfz.myfzone_sport.myf_zone.util.user.UserAccount.auth
 import mfz.myfzone_sport.myf_zone.util.user.UserAffiliation
 import org.jetbrains.anko.toast
@@ -127,7 +132,12 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
 
                 builder.apply {
                     setTitleText("Sélectionnez une période")
-                    setSelection(androidx.core.util.Pair(now.timeInMillis, now.timeInMillis))
+                    setSelection(
+                        androidx.core.util.Pair(
+                            now.timeInMillis,
+                            now.timeInMillis + (604800000)
+                        )
+                    )
                     setCalendarConstraints(constraints.build())
                     setTheme(R.style.ThemeOverlay_MaterialComponents_MaterialCalendar)
                 }
@@ -143,9 +153,28 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
                 }
 
                 filter.addOnPositiveButtonClickListener {
-                    toast("date selected: from ${it} to ${it.second}")
-                }
+                    builder.apply {
+                        setSelection(androidx.core.util.Pair(it.first, it.second))
+                    }
 
+                    val filteredEventListToShow = mutableListOf<MarkerItem>()
+                    val filteredEventListToHide = mutableListOf<MarkerItem>()
+
+                    if (!globalEventList.isNullOrEmpty() && !markerItemList.isNullOrEmpty()) {
+                        for (item in markerItemList!!) {
+                            val inRange = item.day > it.first!! && item.day < it.second!!
+                            if (inRange) {
+                                filteredEventListToShow.add(item)
+                                Log.d(TAG, "Show: $item")
+                            } else {
+                                filteredEventListToHide.add(item)
+                                Log.d(TAG, "Hide: $item")
+                            }
+                        }
+                        showMarkerItem(filteredEventListToShow)
+                        hideMarkerItem(filteredEventListToHide)
+                    }
+                }
 
                 supportActionBar!!.apply {
                     hide()
@@ -205,7 +234,7 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
 
 //                onBackPressed()
 
-                bottomBar.hideOnScroll = true
+//                bottomBar.hideOnScroll = true
 
                 supportActionBar!!.apply {
                     hide()

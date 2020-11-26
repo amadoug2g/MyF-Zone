@@ -18,10 +18,15 @@ import com.google.android.libraries.places.widget.Autocomplete
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import kotlinx.android.synthetic.main.fragment_event_creation.*
 import kotlinx.android.synthetic.main.fragment_event_creation.view.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import mfz.myfzone_sport.myf_zone.R
 import mfz.myfzone_sport.myf_zone.model.event.Event
 import mfz.myfzone_sport.myf_zone.model.event.EventOwner
 import mfz.myfzone_sport.myf_zone.util.event.EventUtil
+import mfz.myfzone_sport.myf_zone.util.event.EventUtil.getEventsByDate
+import mfz.myfzone_sport.myf_zone.util.event.EventUtil.globalEventList
 import mfz.myfzone_sport.myf_zone.util.user.UserAccount.auth
 import mfz.myfzone_sport.myf_zone.util.user.UserAccount.getCurrentClub
 import mfz.myfzone_sport.myf_zone.util.user.UserAccount.getCurrentUser
@@ -31,36 +36,18 @@ import org.jetbrains.anko.support.v4.toast
 import java.text.SimpleDateFormat
 import java.util.*
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [EventCreationFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class EventCreationFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private val TAG = EventCreationFragment::class.java.simpleName
-    private var param1: String? = null
-    private var param2: String? = null
+    companion object {
+        private val TAG = EventCreationFragment::class.java.simpleName
 
-    private val currentUser = auth.currentUser
-    private var eventDay1: String? = null
-    private var eventDay2: String? = null
-    private var eventTime: String? = null
-    private var eventDate: String? = null
-    private var eventPlace: Place? = null
-    private val AUTOCOMPLETE_REQUEST_CODE = 1
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
+        private val currentUser = auth.currentUser
+        private var eventDay1: String? = null
+        private var eventDay2: String? = null
+        private var eventTime: String? = null
+        private var eventDate: String? = null
+        private var eventPlace: Place? = null
+        private const val AUTOCOMPLETE_REQUEST_CODE = 1
     }
 
     override fun onCreateView(
@@ -214,6 +201,11 @@ class EventCreationFragment : Fragment() {
                 try {
                     EventUtil.createEvent(newEvent, eventOwner)
                     toast("Event successfully created")
+
+                    CoroutineScope(Dispatchers.IO).launch {
+                        globalEventList = getEventsByDate()!!
+                    }
+
                     requireActivity().onBackPressed()
                 } catch (e: Exception) {
                     toast("Error: $e")
@@ -247,12 +239,12 @@ class EventCreationFragment : Fragment() {
 
         val dateListener = DatePickerDialog(
             requireContext(),
-            DatePickerDialog.OnDateSetListener { datePicker, y, m, d ->
+            { _, y, m, d ->
                 cal.set(Calendar.DAY_OF_MONTH, d)
                 cal.set(Calendar.MONTH, m)
                 cal.set(Calendar.YEAR, y)
                 event_create_day_picker.text =
-                    SimpleDateFormat("dd/MM/Y", Locale.FRANCE).format(cal.time)
+                    SimpleDateFormat("dd/MM/y", Locale.FRANCE).format(cal.time)
                 eventDay1 = SimpleDateFormat("E MMM dd", Locale.ENGLISH).format(cal.time)
                 eventDay2 = SimpleDateFormat("z yyyy", Locale.ENGLISH).format(cal.time)
             },
@@ -260,13 +252,13 @@ class EventCreationFragment : Fragment() {
             month,
             day
         )
-        dateListener.datePicker.minDate = cal.timeInMillis - 1000
+        dateListener.datePicker.minDate = cal.timeInMillis
         dateListener.show()
     }
 
     private fun selectTime() {
         val cal = Calendar.getInstance()
-        val timeListener = TimePickerDialog.OnTimeSetListener { timePicker, hour, minute ->
+        val timeListener = TimePickerDialog.OnTimeSetListener { _, hour, minute ->
             cal.set(Calendar.HOUR_OF_DAY, hour)
             cal.set(Calendar.MINUTE, minute)
             event_create_time_picker.text =
@@ -330,25 +322,5 @@ class EventCreationFragment : Fragment() {
         }
 
         return valid
-    }
-
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment EventCreationFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            EventCreationFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
     }
 }

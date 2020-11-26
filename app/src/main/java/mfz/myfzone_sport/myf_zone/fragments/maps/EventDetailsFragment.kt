@@ -110,6 +110,18 @@ class EventDetailsFragment : Fragment() {
                 params.height = 320 * itemCount
                 event_detail_participant_list.layoutParams = params
 
+                try {
+                    getEventById(eventId!!) { event ->
+                        CoroutineScope(Main).launch {
+                            val participantCpt = getValidParticipantCount(event.id) ?: "?"
+                            val teamCpt = "$participantCpt/${event.nbTeam}"
+                            event_detail_nbTeam.text = teamCpt
+                        }
+                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error in onDataChanged: $e")
+                }
+
                 //Participate Btn visibility
                 try {
                     userAffiliationStatus {
@@ -287,12 +299,9 @@ class EventDetailsFragment : Fragment() {
         event_detail_participant_list.layoutManager = LinearLayoutManager(requireContext())
         event_detail_participant_list.adapter = adapter
         event_detail_participant_list.isNestedScrollingEnabled = false
-//        val decor = DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
-//        event_detail_participant_list.addItemDecoration(decor)
-
 
         try {
-            val formatEventDay = SimpleDateFormat("dd MMM Y", Locale.FRANCE)
+            val formatEventDay = SimpleDateFormat("dd MMM y", Locale.FRANCE)
             val formatEventHour = SimpleDateFormat("HH:mm", Locale.FRANCE)
             val formatDate = SimpleDateFormat("E MMM dd HH:mm:ss z yyyy", Locale.ENGLISH)
             CoroutineScope(Main).launch {
@@ -401,8 +410,9 @@ class EventDetailsFragment : Fragment() {
         return super.onOptionsItemSelected(item)
     }
 
-    fun View.snack(message: String, duration: Int = Snackbar.LENGTH_LONG) {
-        Snackbar.make(this, message, duration).show()
+    fun View.snack(message: String, duration: Int = Snackbar.LENGTH_SHORT) {
+        val msg = Snackbar.make(this, message, duration)
+        msg.show()
     }
 
     private suspend fun ownerFields(eventId: String) {
@@ -435,7 +445,7 @@ class EventDetailsFragment : Fragment() {
                                                             getParticipantsFromEvent(eventId)!!
                                                         val selected = participants[pos]
                                                         acceptParticipant(eventId, selected)
-                                                        event_detail_imageView.snack("Accepted")
+//                                                        event_detail_imageView.snack("Accepted")
                                                     }
                                                 }
 

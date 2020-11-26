@@ -7,14 +7,19 @@ import com.google.firebase.firestore.ktx.toObject
 import kotlinx.coroutines.tasks.await
 import mfz.myfzone_sport.myf_zone.model.event.Event
 import mfz.myfzone_sport.myf_zone.model.event.EventOwner
+import mfz.myfzone_sport.myf_zone.model.event.MarkerItem
+import mfz.myfzone_sport.myf_zone.util.Constants.COACH_PATH
 import mfz.myfzone_sport.myf_zone.util.Constants.DB
 import mfz.myfzone_sport.myf_zone.util.Constants.EVENT_PATH
 import mfz.myfzone_sport.myf_zone.util.event.OwnerUtil.addOwnerToEvent
+import mfz.myfzone_sport.myf_zone.util.event.OwnerUtil.deleteEventForOwner
 import mfz.myfzone_sport.myf_zone.util.event.OwnerUtil.deleteOwner
 import mfz.myfzone_sport.myf_zone.util.event.OwnerUtil.getOwnerFromEvent
 import mfz.myfzone_sport.myf_zone.util.event.ParticipantUtil.deleteParticipants
 import mfz.myfzone_sport.myf_zone.util.event.ParticipantUtil.getParticipantsFromEvent
 import mfz.myfzone_sport.myf_zone.util.user.UserAccount
+import mfz.myfzone_sport.myf_zone.util.user.UserAccount.getCurrentClub
+import mfz.myfzone_sport.myf_zone.util.user.UserAccount.getCurrentUser
 import java.util.*
 
 object EventUtil {
@@ -22,6 +27,7 @@ object EventUtil {
 
     var globalEventList: MutableList<Event>? = null
     var globalCoachEventList: MutableList<Event>? = null
+    var markerItemList: MutableList<MarkerItem>? = mutableListOf()
 
     fun getEventById(eventId: String, onComplete: (Event) -> Unit) {
         DB.collection(EVENT_PATH)
@@ -79,11 +85,59 @@ object EventUtil {
             }
 
         addOwnerToEvent(event.id, owner)
+        addEventToUser(newEvent, event.id)
+    }
+
+    private fun addEventToUser(event: HashMap<String, Any?>, id: String) {
+        getCurrentUser { coach ->
+            getCurrentClub { club ->
+                DB.collection(COACH_PATH)
+                    .document(coach.id)
+                    .collection("ClubAffiliation")
+                    .document(club.clubId)
+                    .collection("CoachEvent")
+                    .document(id).set(event)
+                    .addOnSuccessListener {
+                        Log.d(TAG, "Event added to user successfully")
+                    }
+                    .addOnFailureListener {
+                        Log.d(TAG, "Event adding to user failed")
+                    }
+                    .addOnCompleteListener {
+                        Log.d(TAG, "Event adding to user completed")
+                    }
+            }
+        }
+    }
+
+    suspend fun getEventsByUser(coachId: String, clubId: String): MutableList<Event>? {
+        return try {
+            val eventList = mutableListOf<Event>()
+
+            val docRef =
+                DB.collection(COACH_PATH)
+                    .document(coachId)
+                    .collection("ClubAffiliation")
+                    .document(clubId)
+                    .collection("CoachEvent")
+
+            val documents = docRef.get().await().documents
+            for (doc in documents) {
+                eventList.add(doc.toObject()!!)
+            }
+
+            eventList
+        } catch (e: Exception) {
+            Log.d(TAG, "Error: $e")
+            null
+        }
+
     }
 
     suspend fun deleteEvent(eventId: String) {
         deleteParticipants(eventId)
         deleteOwner(eventId)
+        deleteEventForOwner(eventId)
 
         DB.collection(EVENT_PATH)
             .document(eventId)
@@ -120,17 +174,6 @@ object EventUtil {
             "createdDate" to event.createdDate
         )
     }
-
-
-//    if (!categoryID.isNullOrEmpty()) {
-//        categoryName = affiliationCategory
-//        categoryId = categoryID
-//        if (!subCategoryID.isNullOrEmpty()) {
-//            subCategoryId = subCategoryID
-//            subCategoryName = affiliationSubCategory
-//        }
-//    }
-
 
     fun updateEvent(eventId: String, event: Event) {
         val newEvent = fieldToUpdatedEvent(event)

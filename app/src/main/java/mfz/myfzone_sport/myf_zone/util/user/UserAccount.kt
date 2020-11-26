@@ -33,10 +33,14 @@ object UserAccount {
     lateinit var auth: FirebaseAuth
 
     val currentUserDocRef: DocumentReference
-        get() = firestoreInstance.document(
-            COACH_PATH + "/${FirebaseAuth.getInstance().currentUser?.uid
-                ?: throw NullPointerException("You are not connected")}"
-        )
+        get() = firestoreInstance
+            .document(
+                COACH_PATH + "/${
+                    FirebaseAuth.getInstance().currentUser?.uid ?: throw Exception(
+                        "You are not connected"
+                    )
+                }"
+            )
 
     fun getCurrentUser(onComplete: (Coach) -> Unit) {
         currentUserDocRef.get()
@@ -69,13 +73,21 @@ object UserAccount {
         }
     }
 
-//    val globalUser: Coach = runBlocking {
-//        getGlobalUser()!!
-//    }
-//
-//    val globalUserClub: Club = runBlocking {
-//        getGlobalUserClub()!!
-//    }
+    suspend fun getClubUser(): ClubAffiliation? {
+        val currentUser = auth.currentUser
+
+        val docRef =
+            DB.collection(COACH_PATH)
+                .document(currentUser!!.uid)
+                .collection("ClubAffiliation")
+
+        return try {
+            docRef.get().await().documents[0].toObject<ClubAffiliation>()!!
+        } catch (e: Exception) {
+            Log.e(TAG, e.toString())
+            null
+        }
+    }
 
     fun getCurrentClub(onComplete: (ClubAffiliation) -> Unit) {
         currentUserDocRef.collection("ClubAffiliation").get()
@@ -84,6 +96,18 @@ object UserAccount {
                 club.toObject<ClubAffiliation>()?.let { it1 -> onComplete(it1) }
 //                Log.d(TAG, "Club Affiliation retrieved")
             }
+    }
+
+    suspend fun getCurrentClubId(): ClubAffiliation? {
+        val docRef = currentUserDocRef.collection("ClubAffiliation")
+
+        return try {
+            val documents = docRef.get().await().documents
+            val result: ClubAffiliation = documents[0].toObject()!!
+            result
+        } catch (e: Exception) {
+            null
+        }
     }
 
     fun pathToReference(path: String) =
@@ -156,5 +180,4 @@ object UserAccount {
         )
     }
 
-    fun getEventsForUser() {}
 }

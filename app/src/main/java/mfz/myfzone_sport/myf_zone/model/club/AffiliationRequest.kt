@@ -2,7 +2,7 @@ package mfz.myfzone_sport.myf_zone.model.club
 
 data class AffiliationRequest(
     var coachId: String,
-    var coachFullName: String,
+    var coachFullname: String,
     var sportId: String,
     var sportName: String,
     var categoryId: String?,

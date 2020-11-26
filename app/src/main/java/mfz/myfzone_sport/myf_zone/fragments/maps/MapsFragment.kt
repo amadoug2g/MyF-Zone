@@ -32,12 +32,10 @@ import mfz.myfzone_sport.myf_zone.model.event.Event
 import mfz.myfzone_sport.myf_zone.screens.MainScreen
 import mfz.myfzone_sport.myf_zone.util.event.MapsUtil
 import mfz.myfzone_sport.myf_zone.util.event.MapsUtil.getCardDetail
-import mfz.myfzone_sport.myf_zone.util.event.MapsUtil.hideMarkers
 import mfz.myfzone_sport.myf_zone.util.event.MapsUtil.initializeMap
 import mfz.myfzone_sport.myf_zone.util.event.MapsUtil.placeEventsOnMap
 import mfz.myfzone_sport.myf_zone.util.event.MapsUtil.placeUserClub
 import mfz.myfzone_sport.myf_zone.util.event.MapsUtil.setMapZoomPreferences
-import mfz.myfzone_sport.myf_zone.util.event.MapsUtil.showMarkers
 import mfz.myfzone_sport.myf_zone.util.user.UserAccount.auth
 import mfz.myfzone_sport.myf_zone.util.user.UserAccount.getCurrentClub
 import mfz.myfzone_sport.myf_zone.util.user.UserAccount.getCurrentUser
@@ -52,11 +50,10 @@ import org.jetbrains.anko.support.v4.toast
 
 class MapsFragment : Fragment(),
     GoogleMap.OnMapClickListener {
-    private val TAG = MapsFragment::class.java.simpleName
-
     private var mapInitialized = false
 
     companion object {
+        private val TAG = MapsFragment::class.java.simpleName
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
     }
 
@@ -100,13 +97,13 @@ class MapsFragment : Fragment(),
 
         googleMap.setOnCameraMoveListener {
             if (googleMap.cameraPosition.zoom > 9) {
-                showMarkers(
-                    markerList
-                )
+//                showMarkerItem(
+//                    markerItemList
+//                )
             } else {
-                hideMarkers(
-                    markerList
-                )
+//                hideMarkerItem(
+//                    markerItemList
+//                )
                 cardView_detail.visibility = View.GONE
             }
         }

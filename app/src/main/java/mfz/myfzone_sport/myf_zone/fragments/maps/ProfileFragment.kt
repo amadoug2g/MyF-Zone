@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import androidx.fragment.app.Fragment
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.fragment_profile.*
@@ -17,7 +18,7 @@ import kotlinx.coroutines.launch
 import mfz.myfzone_sport.myf_zone.R
 import mfz.myfzone_sport.myf_zone.glide.GlideApp
 import mfz.myfzone_sport.myf_zone.model.event.ProfileEventAdapter
-import mfz.myfzone_sport.myf_zone.util.event.EventUtil.globalCoachEventList
+import mfz.myfzone_sport.myf_zone.util.event.EventUtil.getEventsByUser
 import mfz.myfzone_sport.myf_zone.util.user.UserAccount.auth
 import mfz.myfzone_sport.myf_zone.util.user.UserAccount.getCurrentClub
 import mfz.myfzone_sport.myf_zone.util.user.UserAccount.getCurrentUser
@@ -27,6 +28,8 @@ import org.jetbrains.anko.support.v4.toast
 
 class ProfileFragment : Fragment() {
     private val TAG = ProfileFragment::class.java.simpleName
+
+    private val currentUser = auth.currentUser
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,8 +44,6 @@ class ProfileFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val fragmentInflater = inflater.inflate(R.layout.fragment_profile, container, false)
-
-        val currentUser = auth.currentUser
 
         getCurrentUser { user ->
             fragmentInflater.profile_firstName.text = user.firstName
@@ -60,7 +61,6 @@ class ProfileFragment : Fragment() {
                 } catch (e: Exception) {
                     toast("Image could not load: $e")
                 }
-//                toast("${pathToReference(it.clubLogo)}")
                 profileClubName.text = it.clubAcronym
                 val clubPosition = profilePosition.text.toString() + " - ${it.sportName}"
                 profilePosition.text = clubPosition
@@ -89,21 +89,25 @@ class ProfileFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        CoroutineScope(Main).launch {
-            showProgressBar(profileProgressBar)
-            profileEventRecycler.layoutManager = LinearLayoutManager(requireContext())
-            profileEventRecycler.setHasFixedSize(true)
+        showProgressBar(profileProgressBar)
 
+        getCurrentUser { coach ->
+            getCurrentClub { clubAffiliation ->
+                CoroutineScope(Main).launch {
+                    val coachEventList = getEventsByUser(coach.id, clubAffiliation.clubId)
 
-            if (!globalCoachEventList.isNullOrEmpty()) {
-                profileEventRecycler.adapter = ProfileEventAdapter(globalCoachEventList!!)
+                    if (!coachEventList.isNullOrEmpty()) {
+                        profileEventRecycler.layoutManager = LinearLayoutManager(requireContext())
+                        profileEventRecycler.setHasFixedSize(true)
+                        profileEventRecycler.adapter = ProfileEventAdapter(coachEventList)
+                    } else {
+                        toast(getString(R.string.no_event_msg))
+                    }
+                }
             }
-//            else {
-//                toast("List is empty")
-//            }
-
-            hideProgressBar(profileProgressBar)
         }
+
+        hideProgressBar(profileProgressBar)
     }
 
     private fun showProgressBar(progressBar: ProgressBar) {
@@ -116,5 +120,11 @@ class ProfileFragment : Fragment() {
         progressBar.apply {
             visibility = View.GONE
         }
+    }
+
+    private fun navigate(destination: Int, extra: Bundle? = null, view: View) {
+        Navigation
+            .findNavController(view)
+            .navigate(destination, extra)
     }
 }

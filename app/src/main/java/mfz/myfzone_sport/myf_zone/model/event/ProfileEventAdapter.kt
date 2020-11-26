@@ -12,8 +12,12 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import kotlinx.android.synthetic.main.card_event_profile.view.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.launch
 import mfz.myfzone_sport.myf_zone.R
 import mfz.myfzone_sport.myf_zone.glide.GlideApp
+import mfz.myfzone_sport.myf_zone.util.event.OwnerUtil.getOwnerFromEvent
 import mfz.myfzone_sport.myf_zone.util.user.UserAccount
 
 class ProfileEventAdapter(private val coachEventList: MutableList<Event>) :
@@ -29,28 +33,35 @@ class ProfileEventAdapter(private val coachEventList: MutableList<Event>) :
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val owner = coachEventList[position].owner
         val event = coachEventList[position]
-        val title =
-            holder.itemView.context.getString(R.string.owner_txt) + " - " + owner.clubAcronym + " " + owner.categoryName + " " + owner.subCategoryName
 
-        try {
-            GlideApp.with(holder.itemView.context).apply {
-                load(UserAccount.pathToReference(owner.clubLogo))
-                    .placeholder(R.drawable.ic_account)
-                    .centerCrop()
-                    .into(holder.image)
+        CoroutineScope(Main).launch {
+            val owner =
+                getOwnerFromEvent(
+                    event.id
+                )!!
+
+            val title =
+                holder.itemView.context.getString(R.string.owner_txt) + " - " + owner.clubAcronym + " " + owner.categoryName + " " + owner.subCategoryName
+
+            try {
+                GlideApp.with(holder.cardview.context).apply {
+                    load(UserAccount.pathToReference(owner.clubLogo))
+                        .placeholder(R.drawable.ic_account)
+                        .centerCrop()
+                        .into(holder.image)
+                }
+            } catch (e: Exception) {
+                Log.e("ProfileEventAdapter", "Image could not load: $e")
             }
-        } catch (e: Exception) {
-            Log.e("ProfileEventAdapter", "Image could not load: $e")
-        }
 
-        holder.title.text = title
-        holder.subtitle.text = event.eventTypeString
+            holder.title.text = title
+            holder.subtitle.text = event.eventTypeString
 
-        holder.cardview.setOnClickListener {
-            val bundle = bundleOf("eventId" to event.id)
-            navigate(R.id.profileToEventDetails, bundle, holder.itemView)
+            holder.cardview.setOnClickListener {
+                val bundle = bundleOf("eventId" to event.id)
+                navigate(R.id.profileToEventDetails, bundle, holder.itemView)
+            }
         }
     }
 
