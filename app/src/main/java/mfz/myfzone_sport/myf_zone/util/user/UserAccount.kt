@@ -20,7 +20,6 @@ import mfz.myfzone_sport.myf_zone.model.coach.Coach
 import mfz.myfzone_sport.myf_zone.util.Constants.COACH_PATH
 import mfz.myfzone_sport.myf_zone.util.Constants.DB
 import java.net.URL
-import java.util.*
 
 
 object UserAccount {
@@ -153,12 +152,12 @@ object UserAccount {
         currentUserDocRef.update(coachFields)
     }
 
+
     fun addUserToDB(coach: Coach, id: String) {
-        val user = fieldToCoach(coach)
 
         DB.collection(COACH_PATH)
             .document(id)
-            .set(user)
+            .set(coach.toMap())
             .addOnSuccessListener {
                 Log.d(TAG, "Document added successfully")
             }
@@ -169,15 +168,4 @@ object UserAccount {
                 Log.d(TAG, "Document added completed")
             }
     }
-
-    private fun fieldToCoach(coach: Coach): HashMap<String, Any?> {
-        return hashMapOf(
-            "mail" to coach.mail,
-            "firstName" to coach.firstName,
-            "lastName" to coach.lastName,
-            "id" to coach.id,
-            "createdDate" to coach.createdDate
-        )
-    }
-
 }

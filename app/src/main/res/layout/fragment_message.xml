@@ -2,24 +2,30 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
     tools:context=".fragments.message.MessageFragment">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:text="@string/message_page" />
+    <!--    <TextView-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_margin="16dp"-->
+    <!--        android:text="@string/message_page" />-->
 
-    <EditText
-        android:id="@+id/textViewMessage"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:hint="@string/enter_a_text"
-        android:importantForAutofill="no"
-        android:inputType="text"
-        android:text="@string/enter_a_text" />
+    <!--    <EditText-->
+    <!--        android:id="@+id/textViewMessage"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_margin="16dp"-->
+    <!--        android:hint="@string/enter_a_text"-->
+    <!--        android:importantForAutofill="no"-->
+    <!--        android:inputType="text"-->
+    <!--        android:text="@string/enter_a_text" />-->
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/message_user_list"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_margin="4dp" />
 
 </LinearLayout>

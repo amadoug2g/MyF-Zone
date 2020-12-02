@@ -70,10 +70,10 @@ object AffiliationForm {
                 status = "validate"
             }
 
-            sendRequestToClub(clubPartner.id, fieldToAffiliationRequest(affiliationRequest))
+            sendRequestToClub(clubPartner.id, affiliationRequest.toMap())
 
 //            if (checkRequestStatus(affiliationRequest))
-//                addAffiliationUser(fieldToClubAffiliation(clubAffiliation))
+//                addAffiliationUser(clubAffiliation)
 
         }
     }
@@ -100,31 +100,6 @@ object AffiliationForm {
         val club =
             getClubFromCode(code)
         return (club is Club)
-    }
-
-
-    private fun fieldToAffiliationRequest(
-        affiliationRequest: AffiliationRequest
-    ): HashMap<String, Any?> {
-        val result: HashMap<String, Any?> = hashMapOf(
-            "coachId" to affiliationRequest.coachId,
-            "coachFullName" to affiliationRequest.coachFullname,
-            "sportId" to affiliationRequest.sportId,
-            "sportName" to affiliationRequest.sportName,
-            "status" to affiliationRequest.status
-        )
-
-        if (!affiliationRequest.categoryId.isNullOrEmpty() && !affiliationRequest.categoryName.isNullOrEmpty()) {
-            result["categoryId"] = affiliationRequest.categoryId
-            result["categoryName"] = affiliationRequest.categoryName
-        }
-
-        if (!affiliationRequest.subCategoryId.isNullOrEmpty() && !affiliationRequest.subCategoryName.isNullOrEmpty()) {
-            result["subCategoryId"] = affiliationRequest.subCategoryId
-            result["subCategoryName"] = affiliationRequest.subCategoryName
-        }
-
-        return result
     }
 
     private fun sendRequestToClub(

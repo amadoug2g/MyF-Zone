@@ -43,14 +43,17 @@ import kotlin.concurrent.schedule
 
 class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListener {
 
-    private val TAG = MainScreen::class.java.simpleName
-    private var doubleBackToExitPressedOnce = false
+    companion object {
+        private val TAG = MainScreen::class.java.simpleName
+        lateinit var navController: NavController
 
-    lateinit var navController: NavController
-    private var currentNavController: LiveData<NavController>? = null
+        private var currentNavController: LiveData<NavController>? = null
+        private var doubleBackToExitPressedOnce = false
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setTheme(R.style.AppTheme)
         setContentView(R.layout.activity_main_screen)
         Log.d(TAG, "onCREATE")
 
@@ -59,8 +62,6 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
         }
 
         auth = FirebaseAuth.getInstance()
-
-//        bottomNavBar.setOnNavigationItemReselectedListener(this)
 
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.fragmentNavHost) as NavHostFragment
@@ -87,7 +88,7 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
                     return
                 }
 
-                this.doubleBackToExitPressedOnce = true
+                doubleBackToExitPressedOnce = true
                 toast(getString(R.string.exit_message))
 
                 val delay: Long = 2000
@@ -234,7 +235,7 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
 
 //                onBackPressed()
 
-//                bottomBar.hideOnScroll = true
+                bottomBar.hideOnScroll = true
 
                 supportActionBar!!.apply {
                     hide()

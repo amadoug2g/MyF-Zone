@@ -12,14 +12,13 @@ import mfz.myfzone_sport.myf_zone.util.user.UserAccount.currentUserDocRef
 object UserAffiliation {
     private val TAG = UserAffiliation::class.java.simpleName
 
-    fun addAffiliationUser(affiliation: HashMap<String, Any?>) {
-        Log.d("AffiliationForm", "affiliation hmap! $affiliation")
+    fun addAffiliationUser(clubAffiliation: ClubAffiliation) {
         val currentUser = auth.currentUser
 
         DB.collection(COACH_PATH)
             .document(currentUser!!.uid)
             .collection("ClubAffiliation")
-            .add(affiliation)
+            .add(clubAffiliation.toMap())
             .addOnSuccessListener {
                 Log.d(TAG, "Club affiliation added successfully")
             }
@@ -29,29 +28,6 @@ object UserAffiliation {
             .addOnCompleteListener {
                 Log.d(TAG, "Club affiliation added completed")
             }
-    }
-
-    fun fieldToClubAffiliation(clubAffiliation: ClubAffiliation): HashMap<String, Any?> {
-        val result: HashMap<String, Any?> = hashMapOf(
-            "clubId" to clubAffiliation.clubId,
-            "clubAcronym" to clubAffiliation.clubAcronym,
-            "clubLogo" to clubAffiliation.clubLogo,
-            "sportId" to clubAffiliation.sportId,
-            "sportName" to clubAffiliation.sportName,
-            "createDate" to clubAffiliation.createDate
-        )
-
-        if (!clubAffiliation.categoryId.isNullOrEmpty() && !clubAffiliation.categoryName.isNullOrEmpty()) {
-            result["categoryId"] = clubAffiliation.categoryId
-            result["categoryName"] = clubAffiliation.categoryName
-        }
-
-        if (!clubAffiliation.subCategoryId.isNullOrEmpty() && !clubAffiliation.subCategoryName.isNullOrEmpty()) {
-            result["subCategoryId"] = clubAffiliation.subCategoryId
-            result["subCategoryName"] = clubAffiliation.subCategoryName
-        }
-
-        return result
     }
 
     fun userAffiliationStatus(myCallback: (Boolean) -> Unit) {

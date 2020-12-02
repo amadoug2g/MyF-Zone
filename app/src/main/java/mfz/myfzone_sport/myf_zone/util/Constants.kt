@@ -8,9 +8,13 @@ object Constants {
     @JvmField
     val DB = Firebase.firestore
 
-    const val COACH_PATH = "Env/Staging/Coach"
-    const val CLUB_PATH = "Env/Staging/Club"
-    const val EVENT_PATH = "Env/Staging/Event"
-    const val SPORT_PATH = "Env/Staging/Sport"
+    private const val ENV_TEST = "Staging"
+    private const val ENV_PROD = "Release"
+    private const val ENV = "Staging"
+
+    const val COACH_PATH = "Env/${ENV}/Coach"
+    const val CLUB_PATH = "Env/${ENV}/Club"
+    const val EVENT_PATH = "Env/${ENV}/Event"
+    const val SPORT_PATH = "Env/${ENV}/Sport"
 
 }

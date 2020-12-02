@@ -34,10 +34,9 @@ object OwnerUtil {
 
     fun addOwnerToEvent(eventId: String, owner: EventOwner) {
         val docRef = DB.collection(EVENT_PATH).document(eventId)
-        val newOwner = fieldToOwner(owner)
 
         docRef.collection("Owner").document(owner.coachId)
-            .set(newOwner)
+            .set(owner.toMap())
             .addOnSuccessListener {
                 Log.d(TAG, "Owner added successfully")
             }
@@ -47,34 +46,6 @@ object OwnerUtil {
             .addOnCompleteListener {
                 Log.d(TAG, "Owner  adding completed")
             }
-    }
-
-    private fun fieldToOwner(
-        owner: EventOwner
-    ): HashMap<String, Any?> {
-
-        val result: HashMap<String, Any?> = hashMapOf(
-            "clubLogo" to owner.clubLogo,
-            "clubAcronym" to owner.clubAcronym,
-            "coachId" to owner.coachId,
-            "coachFullname" to owner.coachFullname,
-            "sportId" to owner.sportId,
-            "sportName" to owner.sportName
-        )
-
-        if (owner.categoryId.isNotEmpty() && owner.categoryName.isNotEmpty()) {
-            Log.d(TAG, "Owner cat\n Id is: ${owner.categoryId}.\n Name is: ${owner.categoryName}.")
-            result["categoryId"] = owner.categoryId
-            result["categoryName"] = owner.categoryName
-        }
-
-        if (owner.subCategoryId.isNotEmpty() && owner.subCategoryName.isNotEmpty()) {
-            Log.d(TAG, "Owner cat\n Id is: ${owner.categoryId}.\n Name is: ${owner.categoryName}.")
-            result["subCategoryId"] = owner.subCategoryId
-            result["subCategoryName"] = owner.subCategoryName
-        }
-
-        return result
     }
 
     fun deleteOwner(eventId: String) {

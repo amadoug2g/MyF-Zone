@@ -8,8 +8,9 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.event_section_row.view.*
 import mfz.myfzone_sport.myf_zone.R
 
-class ListRecyclerAdapter(private val sectionList: MutableList<EventSection>) :
+class ListRecyclerAdapter(private var sectionList: MutableList<EventSection>) :
     RecyclerView.Adapter<ListRecyclerAdapter.ViewHolder>() {
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -34,6 +35,11 @@ class ListRecyclerAdapter(private val sectionList: MutableList<EventSection>) :
 
     override fun getItemCount(): Int {
         return sectionList.size
+    }
+
+    fun reloadList(list: MutableList<EventSection>) {
+        sectionList = list
+        notifyDataSetChanged()
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {

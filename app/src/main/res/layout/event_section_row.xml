@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:padding="8dp"
         android:text="@string/calender_of_events"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
         android:textColor="@color/colorPrimaryDark"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"

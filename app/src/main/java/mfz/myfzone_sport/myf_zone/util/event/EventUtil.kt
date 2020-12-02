@@ -71,9 +71,7 @@ object EventUtil {
         val docRef = DB.collection(EVENT_PATH).document()
         event.id = docRef.id
 
-        val newEvent = fieldToEvent(event)
-
-        DB.collection(EVENT_PATH).document(event.id).set(newEvent)
+        DB.collection(EVENT_PATH).document(event.id).set(event.toMap())
             .addOnSuccessListener {
                 Log.d(TAG, "Event created successfully")
             }
@@ -85,7 +83,7 @@ object EventUtil {
             }
 
         addOwnerToEvent(event.id, owner)
-        addEventToUser(newEvent, event.id)
+        addEventToUser(event.toMap(), event.id)
     }
 
     private fun addEventToUser(event: HashMap<String, Any?>, id: String) {
@@ -147,42 +145,10 @@ object EventUtil {
             .addOnCompleteListener { Log.d(TAG, "Deletion completed") }
     }
 
-    private fun fieldToUpdatedEvent(event: Event): HashMap<String, Any?> {
-        return hashMapOf(
-            "title" to event.title,
-            "description" to event.description,
-            "type" to event.type,
-            "nbTeam" to event.nbTeam,
-            "date" to event.date,
-            "address" to event.address,
-            "lat" to event.lat,
-            "lng" to event.lng
-        )
-    }
-
-    private fun fieldToEvent(event: Event): HashMap<String, Any?> {
-        return hashMapOf(
-            "id" to event.id,
-            "title" to event.title,
-            "description" to event.description,
-            "type" to event.type,
-            "nbTeam" to event.nbTeam,
-            "date" to event.date,
-            "address" to event.address,
-            "lat" to event.lat,
-            "lng" to event.lng,
-            "createdDate" to event.createdDate
-        )
-    }
-
     fun updateEvent(eventId: String, event: Event) {
-        val newEvent = fieldToUpdatedEvent(event)
-
-        Log.d(TAG, "Event id is ${event.id}")
-
         DB.collection(EVENT_PATH)
             .document(eventId)
-            .set(newEvent, SetOptions.merge())
+            .set(event.updateToMap(), SetOptions.merge())
             .addOnSuccessListener {
                 Log.d(TAG, "Event updated successfully")
             }

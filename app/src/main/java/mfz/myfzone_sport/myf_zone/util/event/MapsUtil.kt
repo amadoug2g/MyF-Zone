@@ -159,11 +159,11 @@ object MapsUtil {
 
     }
 
-    fun sortedEventList(eventList: MutableList<Event>): MutableList<HashMap<String, MutableList<EventCalendar>>> {
+    private fun sortedEventList(eventList: MutableList<Event>): MutableList<HashMap<String, MutableList<EventCalendar>>> {
         val result: MutableList<Event> = eventList
         val tempList: MutableList<EventCalendar> = mutableListOf()
 
-        val formatEventDay = SimpleDateFormat("dd", Locale.FRANCE)
+        val formatEventDay = SimpleDateFormat("d", Locale.FRANCE)
         val formatEventMonth = SimpleDateFormat("MMMM", Locale.FRANCE)
         val formatEventYear = SimpleDateFormat("yyyy", Locale.FRANCE)
         val formatDate = SimpleDateFormat("E MMM dd HH:mm:ss z yyyy", Locale.ENGLISH)
@@ -225,7 +225,7 @@ object MapsUtil {
         return list
     }
 
-    fun mapToEventSection(calendarList: MutableList<HashMap<String, MutableList<EventCalendar>>>): MutableList<EventSection> {
+    private fun mapToEventSection(calendarList: MutableList<HashMap<String, MutableList<EventCalendar>>>): MutableList<EventSection> {
         val resultList = mutableListOf<EventSection>()
 
         for (item in calendarList) {
@@ -305,9 +305,10 @@ object MapsUtil {
         map.uiSettings.apply {
 //            isZoomControlsEnabled = true
             isCompassEnabled = true
-            isMapToolbarEnabled = true
+            isMapToolbarEnabled = false
             isMyLocationButtonEnabled = true
         }
+        map.setPadding(0, 0, 0, 146)
     }
 
     fun setMapZoomPreferences(

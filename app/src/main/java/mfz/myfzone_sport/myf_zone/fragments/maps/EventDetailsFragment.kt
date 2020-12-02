@@ -10,6 +10,7 @@ import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -33,6 +34,7 @@ import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
 import mfz.myfzone_sport.myf_zone.R
 import mfz.myfzone_sport.myf_zone.glide.GlideApp
+import mfz.myfzone_sport.myf_zone.model.event.Event
 import mfz.myfzone_sport.myf_zone.model.event.EventParticipant
 import mfz.myfzone_sport.myf_zone.model.event.swipe_handler.ButtonClickListener
 import mfz.myfzone_sport.myf_zone.model.event.swipe_handler.MyButton
@@ -112,7 +114,7 @@ class EventDetailsFragment : Fragment() {
 
                 try {
                     getEventById(eventId!!) { event ->
-                        CoroutineScope(Main).launch {
+                        lifecycleScope.launch {
                             val participantCpt = getValidParticipantCount(event.id) ?: "?"
                             val teamCpt = "$participantCpt/${event.nbTeam}"
                             event_detail_nbTeam.text = teamCpt
@@ -150,7 +152,7 @@ class EventDetailsFragment : Fragment() {
         }
     }
 
-    inner class ParticipantHolder(val view: View, var participant: EventParticipant? = null) :
+    inner class ParticipantHolder(val view: View) :
         RecyclerView.ViewHolder(view) {
 
         fun bind(participant: EventParticipant) {
@@ -228,7 +230,7 @@ class EventDetailsFragment : Fragment() {
                 when (it) {
                     true -> {
                         getEventById(eventId!!) { event ->
-                            CoroutineScope(Main).launch {
+                            lifecycleScope.launch {
                                 if (checkUserParticipation(event.id)!!) {
                                     participateButton.visibility = View.GONE
                                 } else {
@@ -295,89 +297,28 @@ class EventDetailsFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         Log.d(TAG, eventId.toString())
 
-        event_detail_participant_list.setHasFixedSize(false)
-        event_detail_participant_list.layoutManager = LinearLayoutManager(requireContext())
-        event_detail_participant_list.adapter = adapter
-        event_detail_participant_list.isNestedScrollingEnabled = false
+        setupRecycler()
 
         try {
-            val formatEventDay = SimpleDateFormat("dd MMM y", Locale.FRANCE)
-            val formatEventHour = SimpleDateFormat("HH:mm", Locale.FRANCE)
-            val formatDate = SimpleDateFormat("E MMM dd HH:mm:ss z yyyy", Locale.ENGLISH)
             CoroutineScope(Main).launch {
                 showProgressBar(event_detail_progressBar)
                 getEventById(eventId!!) { event ->
 
                     //Event Details
-                    val eventDay = formatEventDay.format(formatDate.parse(event.date.toString())!!)
-                    val eventHour =
-                        formatEventHour.format(formatDate.parse(event.date.toString())!!)
-                    event_detail_address.text = event.address
-                    event_detail_day.text = eventDay
-                    event_detail_hour.text = eventHour
-                    event_detail_type.text = event.eventTypeString
-                    event_detail_title.text = event.title
-                    event_detail_description.text = event.description
-                    event_detail_title.text = event.title
-                    event_detail_team.text = event.nbTeam.toString().plus(getString(R.string.teams))
-                    event_detail_imageView.setImageResource(event.eventTypeImage)
-
-                    CoroutineScope(Main).launch {
-                        val participantCpt = getValidParticipantCount(event.id) ?: "?"
-                        val teamCpt = "$participantCpt/${event.nbTeam}"
-                        event_detail_nbTeam.text = teamCpt
-                    }
-
+                    eventFields(event)
 
                     //Event Owner
                     CoroutineScope(Main).launch {
                         ownerFields(event.id)
                     }
 
-                    //Page Title
-                    (activity as AppCompatActivity).supportActionBar?.apply {
-                        title = event.eventTypeString
-                    }
-
-                    //MapView
-                    event_detail_map.onCreate(savedInstanceState)
-                    event_detail_map.onResume()
-
-                    try {
-                        MapsInitializer.initialize(context)
-                    } catch (e: Exception) {
-                        Log.d(TAG, "Error: $e")
-                    }
-
-                    event_detail_map.getMapAsync { map ->
-                        val markerOptions = MarkerOptions().apply {
-                            position(event.getPosition())
-                            snippet(event.address)
-                        }
-
-                        map.uiSettings.apply {
-                            setAllGesturesEnabled(false)
-                            isZoomControlsEnabled = false
-                            isRotateGesturesEnabled = false
-                            isScrollGesturesEnabled = false
-                            isScrollGesturesEnabledDuringRotateOrZoom = false
-                            isZoomControlsEnabled = false
-                            isTiltGesturesEnabled = false
-                        }
-                        map.addMarker(markerOptions)
-                        map.moveCamera(CameraUpdateFactory.newLatLngZoom(event.getPosition(), 14f))
-                        map.setOnMapClickListener {
-                            showMap(event.address)
-                        }
-                        map.setOnMarkerClickListener {
-                            true
-                        }
-                    }
+                    //Event Map
+                    mapView(event, savedInstanceState)
                 }
                 hideProgressBar(event_detail_progressBar)
             }
         } catch (e: Exception) {
-            Log.d(TAG, "Error: $e")
+            Log.d(TAG, "Error in onActivityCreated: $e")
         }
 
         hideProgressBar(event_detail_progressBar)
@@ -415,6 +356,57 @@ class EventDetailsFragment : Fragment() {
         msg.show()
     }
 
+    private fun setupRecycler() {
+        event_detail_participant_list.setHasFixedSize(false)
+        event_detail_participant_list.layoutManager = LinearLayoutManager(requireContext())
+        event_detail_participant_list.adapter = adapter
+        event_detail_participant_list.isNestedScrollingEnabled = false
+    }
+
+    private fun eventFields(event: Event) {
+        //Page Title
+        (activity as AppCompatActivity).supportActionBar?.apply {
+            title = getEventType(event.type)
+        }
+
+        //Event Details
+        val formatEventDay = SimpleDateFormat("dd MMM y", Locale.FRANCE)
+        val formatEventHour = SimpleDateFormat("HH:mm", Locale.FRANCE)
+        val formatDate = SimpleDateFormat("E MMM dd HH:mm:ss z yyyy", Locale.ENGLISH)
+
+        val eventDay = formatEventDay.format(formatDate.parse(event.date.toString())!!)
+        val eventHour = formatEventHour.format(formatDate.parse(event.date.toString())!!)
+
+        event_detail_address.text = event.address
+        event_detail_day.text = eventDay
+        event_detail_hour.text = eventHour
+        event_detail_type.text = getEventType(event.type)
+        event_detail_title.text = event.title
+        event_detail_description.text = event.description
+        event_detail_title.text = event.title
+        event_detail_team.text = event.nbTeam.toString().plus(getString(R.string.teams))
+        event_detail_imageView.setImageResource(event.eventTypeImage)
+
+        lifecycleScope.launch {
+            participantCount(event)
+        }
+    }
+
+    private fun getEventType(eventType: String): String {
+        return when (eventType) {
+            "friendly" -> requireContext().getString(R.string.friendly_event)
+            "tournament" -> requireContext().getString(R.string.tournament_event)
+            "plateau" -> requireContext().getString(R.string.plateau_event)
+            else -> return ""
+        }
+    }
+
+    private suspend fun participantCount(event: Event) {
+        val participantCpt = getValidParticipantCount(event.id) ?: "?"
+        val teamCpt = "$participantCpt/${event.nbTeam}"
+        event_detail_nbTeam.text = teamCpt
+    }
+
     private suspend fun ownerFields(eventId: String) {
         val owner =
             getOwnerFromEvent(eventId)!!
@@ -426,13 +418,14 @@ class EventDetailsFragment : Fragment() {
                         if (owner.coachId == coach.id) {
                             setHasOptionsMenu(true)
                             val swipe = object :
-                                SwipeHelper(requireContext(), event_detail_participant_list, 250) {
+                                SwipeHelper(requireActivity(), event_detail_participant_list, 250) {
                                 override fun instantiateMyButton(
                                     viewHolder: RecyclerView.ViewHolder,
                                     buffer: MutableList<MyButton>
                                 ) {
                                     buffer.add(
-                                        MyButton(requireContext(),
+                                        MyButton(
+                                            requireContext(),
                                             "Accept",
                                             50,
                                             R.drawable.ic_done,
@@ -489,7 +482,7 @@ class EventDetailsFragment : Fragment() {
 
 
         val title =
-            requireContext().getString(R.string.owner_txt) + " - " + owner.clubAcronym + " " + owner.categoryName + " " + owner.subCategoryName
+            "Owner" + " - " + owner.clubAcronym + " " + owner.categoryName + " " + owner.subCategoryName
         event_detail_owner_club.text = title
         event_detail_owner_name.text = owner.coachFullname
 
@@ -505,7 +498,43 @@ class EventDetailsFragment : Fragment() {
         }
     }
 
-    private fun showMap(position: String) {
+    private fun mapView(event: Event, savedInstanceState: Bundle?) {
+        event_detail_map.onCreate(savedInstanceState)
+        event_detail_map.onResume()
+
+        try {
+            MapsInitializer.initialize(context)
+        } catch (e: Exception) {
+            Log.d(TAG, "Error: $e")
+        }
+
+        event_detail_map.getMapAsync { map ->
+            val markerOptions = MarkerOptions().apply {
+                position(event.getPosition())
+                snippet(event.address)
+            }
+
+            map.uiSettings.apply {
+                setAllGesturesEnabled(false)
+                isZoomControlsEnabled = false
+                isRotateGesturesEnabled = false
+                isScrollGesturesEnabled = false
+                isScrollGesturesEnabledDuringRotateOrZoom = false
+                isZoomControlsEnabled = false
+                isTiltGesturesEnabled = false
+            }
+            map.addMarker(markerOptions)
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(event.getPosition(), 14f))
+            map.setOnMapClickListener {
+                redirectToMap(event.address)
+            }
+            map.setOnMarkerClickListener {
+                true
+            }
+        }
+    }
+
+    private fun redirectToMap(position: String) {
         val uri =
             java.lang.String.format(
                 Locale.FRANCE,

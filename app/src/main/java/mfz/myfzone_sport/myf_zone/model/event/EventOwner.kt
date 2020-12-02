@@ -24,4 +24,27 @@ data class EventOwner(
         "",
         ""
     )
+
+    fun toMap(): HashMap<String, Any?> {
+        val result: HashMap<String, Any?> = hashMapOf(
+            "clubLogo" to clubLogo,
+            "clubAcronym" to clubAcronym,
+            "coachId" to coachId,
+            "coachFullname" to coachFullname,
+            "sportId" to sportId,
+            "sportName" to sportName
+        )
+
+        if (categoryId.isNotEmpty() && categoryName.isNotEmpty()) {
+            result["categoryId"] = categoryId
+            result["categoryName"] = categoryName
+        }
+
+        if (subCategoryId.isNotEmpty() && subCategoryName.isNotEmpty()) {
+            result["subCategoryId"] = subCategoryId
+            result["subCategoryName"] = subCategoryName
+        }
+
+        return result
+    }
 }

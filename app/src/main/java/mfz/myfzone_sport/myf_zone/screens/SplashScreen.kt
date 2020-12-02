@@ -20,14 +20,12 @@ class SplashScreen : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         CoroutineScope(IO).launch {
+            val delay: Long = 0
             globalEventList = getEventsByDate()!!
-        }
 
-
-        val delay: Long = 100
-
-        Timer().schedule(delay) {
-            changeActivity()
+            Timer().schedule(delay) {
+                changeActivity()
+            }
         }
     }
 

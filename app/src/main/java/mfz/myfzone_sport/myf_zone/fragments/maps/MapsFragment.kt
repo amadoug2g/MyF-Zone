@@ -23,6 +23,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.card_event_item.*
 import kotlinx.android.synthetic.main.card_event_item.view.*
+import kotlinx.android.synthetic.main.fragment_maps.*
 import kotlinx.android.synthetic.main.fragment_maps.view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Main
@@ -113,6 +114,8 @@ class MapsFragment : Fragment(),
         setMapZoomPreferences(googleMap)
 
         CoroutineScope(Main).launch {
+            if (loadLayout != null)
+                loadLayout.visibility = View.VISIBLE
             placeEventsOnMap(googleMap, requireContext(), markerList)
 
             try {
@@ -130,6 +133,8 @@ class MapsFragment : Fragment(),
                 Log.d(TAG, "Error: $e")
             }
 
+            if (loadLayout != null)
+                loadLayout.visibility = View.INVISIBLE
         }
 
     }

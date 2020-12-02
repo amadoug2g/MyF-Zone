@@ -33,6 +33,34 @@ data class Event(
         mutableListOf()
     )
 
+    fun toMap(): HashMap<String, Any?> {
+        return hashMapOf(
+            "id" to id,
+            "title" to title,
+            "description" to description,
+            "type" to type,
+            "nbTeam" to nbTeam,
+            "date" to date,
+            "address" to address,
+            "lat" to lat,
+            "lng" to lng,
+            "createdDate" to createdDate
+        )
+    }
+
+    fun updateToMap(): HashMap<String, Any?> {
+        return hashMapOf(
+            "title" to title,
+            "description" to description,
+            "type" to type,
+            "nbTeam" to nbTeam,
+            "date" to date,
+            "address" to address,
+            "lat" to lat,
+            "lng" to lng
+        )
+    }
+
     fun getPosition(): LatLng {
         return LatLng(lat, lng)
     }
@@ -70,19 +98,6 @@ data class Event(
         }
 
     override fun toString(): String {
-
-//        return "$title - $eventTypeString, se déroulera à $address le $date"
-
-        return "Titre: $title" +
-                "\nDescription: $description" +
-                "\nType: $eventTypeString" +
-                "\nNombre d'équipe: $nbTeam" +
-                "\nDate de l'évènement: $date" +
-                "\nAdresse: $address " +
-                "\nLatitude: $lat" +
-                "\nLongitude: $lng" +
-                "\nDate de création: $createdDate" +
-                "\nOwner: $owner" +
-                "\nParticipant(s) $participants"
+        return "$title - $eventTypeString, se déroulera à $address le $date (owner: ${owner})"
     }
 }

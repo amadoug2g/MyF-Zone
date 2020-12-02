@@ -16,6 +16,10 @@ data class EventSection(
         return sectionList
     }
 
+    fun getText() {
+
+    }
+
     override fun toString(): String {
         return "$sectionName - $sectionList"
     }

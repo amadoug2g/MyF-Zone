@@ -47,11 +47,6 @@ class AffiliationRequestFragment : Fragment() {
         val fragmentInflater =
             inflater.inflate(R.layout.fragment_affiliation_request, container, false)
 
-//        (activity as AppCompatActivity).supportActionBar?.apply {
-//            setDisplayHomeAsUpEnabled(false)
-//            setHomeButtonEnabled(false)
-//        }
-
         fragmentInflater.affiliationLaterAffiliate.setOnClickListener {
             navigate(R.id.globalToMaps)
         }

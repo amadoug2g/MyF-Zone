@@ -2,6 +2,7 @@ package mfz.myfzone_sport.myf_zone.util.event
 
 import android.util.Log
 import com.google.firebase.firestore.ktx.toObject
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 import mfz.myfzone_sport.myf_zone.model.event.EventParticipant
 import mfz.myfzone_sport.myf_zone.util.Constants.DB
@@ -33,57 +34,23 @@ object ParticipantUtil {
     }
 
     fun addParticipant(eventId: String, participant: EventParticipant) {
-        val newParticipant = fieldToParticipant(participant)
 
         getCurrentUser {
             DB.collection(EVENT_PATH)
                 .document(eventId)
                 .collection("Participant").document(it.id)
-                .set(newParticipant)
+                .set(participant.toMap())
                 .addOnSuccessListener {
                     Log.d(TAG, "Participant added successfully")
                 }
                 .addOnFailureListener {
-                    Log.d(TAG, "Participant added failed")
+                    Log.e(TAG, "Participant added failed")
                 }
                 .addOnCompleteListener {
                     Log.d(TAG, "Participant added completed")
                 }
         }
-    }
 
-    private fun fieldToParticipant(
-        participant: EventParticipant
-    ): HashMap<String, Any?> {
-        val result: HashMap<String, Any?> = hashMapOf(
-            "clubLogo" to participant.clubLogo,
-            "clubAcronym" to participant.clubAcronym,
-            "coachId" to participant.coachId,
-            "coachFullname" to participant.coachFullname,
-            "sportId" to participant.sportId,
-            "sportName" to participant.sportName,
-            "status" to participant.status
-        )
-
-        if (!participant.categoryId.isNullOrEmpty() && !participant.categoryName.isNullOrEmpty()) {
-            Log.d(
-                TAG,
-                "Participant cat\n Id is: ${participant.categoryId}.\n Name is: ${participant.categoryName}."
-            )
-            result["categoryId"] = participant.categoryId
-            result["categoryName"] = participant.categoryName
-        }
-
-        if (!participant.subCategoryId.isNullOrEmpty() && !participant.subCategoryName.isNullOrEmpty()) {
-            Log.d(
-                TAG,
-                "Participant sub\n Id is: ${participant.subCategoryId}\n Name is ${participant.subCategoryName}"
-            )
-            result["subCategoryId"] = participant.subCategoryId
-            result["subCategoryName"] = participant.subCategoryName
-        }
-
-        return result
     }
 
     fun removeParticipant(eventId: String) {
@@ -140,9 +107,10 @@ object ParticipantUtil {
         }
     }
 
-    suspend fun isEventComplete(eventId: String): Boolean? {
+    private suspend fun eventComplete(eventId: String): Boolean? {
         return try {
             val validParticipant = getValidParticipantCount(eventId)
+            Log.d("EventStatus", "Event Participants?: $validParticipant")
             var result = false
             getEventById(eventId) { event ->
                 val totalTeam = event.nbTeam
@@ -162,22 +130,33 @@ object ParticipantUtil {
             }
             result
         } catch (e: Exception) {
-            Log.w(TAG, "Error in eventComplete: $e")
+            Log.e(TAG, "Error in eventComplete: $e")
+            null
+        }
+    }
+
+    fun isEventComplete(eventId: String): Boolean? = runBlocking {
+        try {
+            val result = eventComplete(eventId)
+            result
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in isEventComplete: $e")
             null
         }
     }
 
     suspend fun getValidParticipantCount(eventId: String): Int? {
+        val participantList = getParticipantsFromEvent(eventId)
         return try {
             var result = 0
-            for (item in getParticipantsFromEvent(eventId)!!) {
+            for (item in participantList!!) {
                 if (item.status == "validate")
                     result++
             }
 
             result
         } catch (e: Exception) {
-            Log.d(TAG, "Error in getParticipantCount: $e")
+            Log.e(TAG, "Error in getParticipantCount: $e")
             null
         }
     }

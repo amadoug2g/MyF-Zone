@@ -21,6 +21,16 @@ data class Coach(
         Date(0)
     )
 
+    fun toMap(): HashMap<String, Any?> {
+        return hashMapOf(
+            "mail" to mail,
+            "firstName" to firstName,
+            "lastName" to lastName,
+            "id" to id,
+            "createdDate" to createdDate
+        )
+    }
+
     fun getName(): String {
         return "$firstName $lastName"
     }

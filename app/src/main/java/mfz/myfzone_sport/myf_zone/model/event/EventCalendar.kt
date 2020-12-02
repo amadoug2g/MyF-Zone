@@ -50,6 +50,14 @@ data class EventCalendar(
             type = value
         }
 
+    fun getEvent(): String {
+        return "$title " +
+                "\n$description" +
+                "\n$eventTypeString" +
+                "\n$nbTeam" +
+                "\n$address" //+ "\n$owner" + "\n$participants"
+    }
+
     override fun toString(): String {
         return "Le $eventTypeString \"$title\" se déroulera à [$address] le $date [$month]"
     }

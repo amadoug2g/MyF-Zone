@@ -44,7 +44,7 @@
             app:destination="@id/affiliationRequestFragment" />
         <action
             android:id="@+id/mapsToEventDetails"
-            app:destination="@id/eventDetailsFragment" />
+            app:destination="@+id/event_detail" />
     </fragment>
     <fragment
         android:id="@+id/loginFragment"
@@ -74,12 +74,12 @@
         tools:layout="@layout/fragment_affiliation_success" />
     <fragment
         android:id="@+id/profileFragment"
-        android:name="mfz.myfzone_sport.myf_zone.fragments.maps.ProfileFragment"
+        android:name="mfz.myfzone_sport.myf_zone.fragments.maps.profile.ProfileFragment"
         android:label="@string/profile_page"
         tools:layout="@layout/fragment_profile">
         <action
             android:id="@+id/profileToEventDetails"
-            app:destination="@id/eventDetailsFragment" />
+            app:destination="@id/event_detail" />
     </fragment>
     <fragment
         android:id="@+id/eventDetailsFragment"
@@ -94,4 +94,5 @@
         android:id="@+id/eventEditFragment"
         android:name="mfz.myfzone_sport.myf_zone.fragments.maps.EventEditFragment"
         android:label="@string/edit_txt" />
+    <include app:graph="@navigation/event_detail" />
 </navigation>

@@ -103,4 +103,6 @@
     <string name="enter_address_hint">Enter an address</string>
     <string name="edit_txt">Edit</string>
     <string name="date_required">Please enter a date</string>
+    <string name="team_txt">Teams</string>
+    <string name="nbTeam_txt">4/16</string>
 </resources>

@@ -18,14 +18,16 @@ import mfz.myfzone_sport.myf_zone.model.event.calendar.ListRecyclerAdapter
 import mfz.myfzone_sport.myf_zone.util.event.EventUtil.getEventsByDate
 import mfz.myfzone_sport.myf_zone.util.event.EventUtil.globalEventList
 import mfz.myfzone_sport.myf_zone.util.event.MapsUtil.eventToCalendar
+import java.util.*
+import kotlin.concurrent.schedule
 
 
 class CalendarFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
     companion object {
         private val TAG = CalendarFragment::class.java.simpleName
+        var eventList = mutableListOf<EventSection>()
+        private var adapter: ListRecyclerAdapter? = null
     }
-
-    var eventList = mutableListOf<EventSection>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -34,14 +36,10 @@ class CalendarFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
         // Inflate the layout for this fragment
         val fragmentInflater = inflater.inflate(R.layout.fragment_calendar, container, false)
 
-        val recyclerView = fragmentInflater.parentRecyclerView
         val swipeRefreshLayout = fragmentInflater.swipeRefreshLayout
 
         swipeRefreshLayout.setColorSchemeResources(R.color.colorAccent)
         swipeRefreshLayout.setOnRefreshListener(this)
-
-//        val decor = DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
-//        recyclerView.addItemDecoration(decor)
 
         return fragmentInflater
     }
@@ -94,6 +92,7 @@ class CalendarFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
     }
 
     override fun onRefresh() {
+        val delay: Long = 350
         CoroutineScope(Main).launch {
             swipeRefreshLayout.isRefreshing = true
 
@@ -105,9 +104,9 @@ class CalendarFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
 //            Log.d(TAG, "$eventList")
 //            eventList.forEach { Log.d(TAG, "$it") }
 
-            swipeRefreshLayout.isRefreshing = false
+            Timer().schedule(delay) {
+                swipeRefreshLayout.isRefreshing = false
+            }
         }
     }
-
-
 }
