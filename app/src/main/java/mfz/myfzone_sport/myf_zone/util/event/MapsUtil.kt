@@ -200,7 +200,8 @@ object MapsUtil {
                 participants = event.participants
             }
 
-            tempList.add(calendar)
+            if (calendar.date > Calendar.getInstance().time)
+                tempList.add(calendar)
         }
 
         val setMonth = mutableSetOf<String>()

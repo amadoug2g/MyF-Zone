@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/profile"
+    app:startDestination="@id/profileFragment">
+
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="mfz.myfzone_sport.myf_zone.fragments.maps.profile.ProfileFragment"
+        android:label="@string/profile_page"
+        tools:layout="@layout/fragment_profile">
+        <action
+            android:id="@+id/profileToEventDetails"
+            app:destination="@id/event_detail" />
+    </fragment>
+    <include app:graph="@navigation/event_detail" />
+</navigation>

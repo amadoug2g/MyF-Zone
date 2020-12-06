@@ -26,7 +26,8 @@
     <string name="hint_required">Champ requis</string>
     <string name="welcome_message">Bienvenue</string>
     <string name="welcome_back_message">Bienvenue à nouveau</string>
-    <string name="auth_error">Erreur d\'inscription</string>
+    <string name="sign_in_error">Erreur de connexion</string>
+    <string name="sign_up_error">Erreur d\'inscription</string>
     <string name="logout">Déconnexion</string>
     <string name="logout_message">Vous allez vous déconnecter. Continuer ?</string>
     <string name="logout_message_error">Vous n\'êtes pas connecté.</string>
@@ -89,7 +90,7 @@
     <string name="participant_image">Participant Image</string>
     <string name="participate_btn_text">Je veux participer</string>
     <string name="owner_txt">Organisateur</string>
-    <string name="participate_txt">Participant</string>
+    <string name="participant_txt">Participant</string>
     <string name="cancel_participation">Retirer la participation</string>
     <string name="enter_event">Participer</string>
     <string name="enter_event_msg">Vous allez rejoindre cet évènement. Continuer ?</string>
@@ -102,17 +103,22 @@
     <string name="no_participant_msg">Il n\'y a aucun participant dans cet évènement</string>
     <string name="no_event_msg">Vous n\'avez actuellement aucun évènement</string>
     <string name="new_event_error_msg">Vous devez être connecté et affilié à un club pour pouvoir créer un évènement</string>
-    <string name="adresse_field">Adresse</string>
+    <string name="address_field">Adresse</string>
+    <string name="create_event">Créer l\'évènement</string>
     <string name="edit_event">Éditer l\'évènement</string>
     <string name="delete_event">Supprimer l\'évènement</string>
     <string name="delete_txt">Supprimer</string>
     <string name="delete_event_confirmation">Vous êtes sur le point de supprimer cet évènement. Continuer ?</string>
-    <string name="edit_event_confirmation">Vous allez modifier l\'évènement. Continuer ?</string>
+    <string name="edit_event_confirmation">Vous allez modifier cet l\'évènement. Continuer ?</string>
+    <string name="create_event_confirmation">Vous allez créer cet l\'évènement. Continuer ?</string>
     <string name="enter_address_hint">Rentrez une adresse</string>
     <string name="edit_txt">Éditer</string>
     <string name="date_required">Veuillez rentrer une date</string>
     <string name="team_txt">Équipes</string>
     <string name="nbTeam_txt">4/16</string>
+    <string name="create_txt">Créer</string>
+    <string name="quick_message">Message Direct</string>
+    <string name="event_logo">Event Logo</string>
 
     <string-array name="sportList">
         <item>Foot</item>

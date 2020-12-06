@@ -1,4 +1,4 @@
-package mfz.myfzone_sport.myf_zone.fragments.maps
+package mfz.myfzone_sport.myf_zone.fragments.maps.map
 
 import android.content.DialogInterface
 import android.content.pm.PackageManager
@@ -163,8 +163,6 @@ class MapsFragment : Fragment(),
                 navigate(R.id.mapsToLogin)
             } else {
                 getCurrentUser { user ->
-//                    toast("Hi, ${user.firstName} ${user.lastName}")
-
                     if (currentUser.displayName == "") {
                         updateCurrentUser("", user.firstName, user.lastName)
                     }

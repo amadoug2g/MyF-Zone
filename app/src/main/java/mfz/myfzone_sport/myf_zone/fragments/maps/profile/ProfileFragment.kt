@@ -5,7 +5,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ProgressBar
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -13,8 +12,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.fragment_profile.*
 import kotlinx.android.synthetic.main.fragment_profile.view.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import mfz.myfzone_sport.myf_zone.R
@@ -70,15 +67,15 @@ class ProfileFragment : Fragment() {
         viewModel.getCurrentUser().collect { state ->
             when (state) {
                 is State.Loading -> {
-                    showProgressBar(profileProgressBar)
+                    showProgressBar()
                 }
                 is State.Success -> {
-                    hideProgressBar(profileProgressBar)
+//                    hideProgressBar()
                     val user = state.data
                     binding.user = user
                 }
                 is State.Failed -> {
-                    hideProgressBar(profileProgressBar)
+                    hideProgressBar()
                     val message = "An error occurred: ${state.message}"
                     showToast(message)
                 }
@@ -90,12 +87,15 @@ class ProfileFragment : Fragment() {
         viewModel.getCurrentUserClub().collect { state ->
             when (state) {
                 is State.Loading -> {
-                    showProgressBar(profileProgressBar)
+//                    showProgressBar()
                 }
                 is State.Success -> {
-                    hideProgressBar(profileProgressBar)
+//                    hideProgressBar()
                     val club = state.data
                     binding.club = club
+                    Log.i(TAG, "subCat: .${club.subCategoryName}.")
+                    binding.profileSubCategory.text =
+                        if (club.subCategoryName.isNullOrEmpty()) "" else "- ${club.subCategoryName}"
 
                     //TODO: move getImageReference to ProfileViewModel
                     GlideApp.with(this).apply {
@@ -105,7 +105,7 @@ class ProfileFragment : Fragment() {
                     }
                 }
                 is State.Failed -> {
-                    hideProgressBar(profileProgressBar)
+                    hideProgressBar()
                     val message = "An error occurred: ${state.message}"
                     showToast(message)
                 }
@@ -117,16 +117,16 @@ class ProfileFragment : Fragment() {
         viewModel.getCurrentUserEvents().collect { state ->
             when (state) {
                 is State.Loading -> {
-                    showProgressBar(profileProgressBar)
+                    showProgressBar()
                 }
                 is State.Success -> {
-                    hideProgressBar(profileProgressBar)
                     val eventList = state.data
                     eventList.forEach { event -> loadEventOwner(event.id, eventList) }
+                    hideProgressBar()
                     setupEventRecyclerView(eventList)
                 }
                 is State.Failed -> {
-                    hideProgressBar(profileProgressBar)
+                    hideProgressBar()
                     val message = "An error occurred: ${state.message}"
                     showToast(message)
                 }
@@ -138,15 +138,15 @@ class ProfileFragment : Fragment() {
         viewModel.getEventOwner(eventId).collect { state ->
             when (state) {
                 is State.Loading -> {
-                    showProgressBar(profileProgressBar)
+                    showProgressBar()
                 }
                 is State.Success -> {
-                    hideProgressBar(profileProgressBar)
+//                    hideProgressBar()
                     val eventOwner = state.data
                     eventList.forEach { event -> event.owner = eventOwner }
                 }
                 is State.Failed -> {
-                    hideProgressBar(profileProgressBar)
+                    hideProgressBar()
                     val message = "An error occurred: ${state.message}"
                     showToast(message)
                 }
@@ -164,20 +164,33 @@ class ProfileFragment : Fragment() {
         }
     }
 
-    private fun showProgressBar(progressBar: ProgressBar) {
-        CoroutineScope(Main).launch {
-            progressBar.apply {
-                visibility = View.VISIBLE
-            }
-        }
+    private fun showProgressBar() {
+//        binding.profileProgressBar.apply {
+//            visibility = View.VISIBLE
+//        }
+
+        binding.profileShimmerLayout.startShimmer()
+        binding.profileShimmerLayout.visibility = View.VISIBLE
+        binding.profileLayout.visibility = View.GONE
     }
 
-    private fun hideProgressBar(progressBar: ProgressBar) {
-        CoroutineScope(Main).launch {
-            progressBar.apply {
-                visibility = View.GONE
-            }
-        }
+    override fun onResume() {
+        super.onResume()
+        binding.profileShimmerLayout.startShimmer()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        binding.profileShimmerLayout.stopShimmer()
+    }
+
+    private fun hideProgressBar() {
+//        binding.profileProgressBar.apply {
+//            visibility = View.GONE
+//        }
+        binding.profileShimmerLayout.stopShimmer()
+        binding.profileShimmerLayout.visibility = View.GONE
+        binding.profileLayout.visibility = View.VISIBLE
     }
 
     private fun showToast(string: String) {

@@ -233,8 +233,6 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
                     }
                 }
 
-//                onBackPressed()
-
                 bottomBar.hideOnScroll = true
 
                 supportActionBar!!.apply {

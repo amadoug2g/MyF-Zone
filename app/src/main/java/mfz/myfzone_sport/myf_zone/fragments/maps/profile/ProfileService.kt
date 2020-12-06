@@ -3,7 +3,7 @@ package mfz.myfzone_sport.myf_zone.fragments.maps.profile
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.storage.FirebaseStorage
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
@@ -13,9 +13,9 @@ import mfz.myfzone_sport.myf_zone.model.coach.ClubAffiliation
 import mfz.myfzone_sport.myf_zone.model.coach.Coach
 import mfz.myfzone_sport.myf_zone.model.event.Event
 import mfz.myfzone_sport.myf_zone.model.event.EventOwner
-import mfz.myfzone_sport.myf_zone.util.Constants
 import mfz.myfzone_sport.myf_zone.util.Constants.COACH_PATH
 import mfz.myfzone_sport.myf_zone.util.Constants.DB
+import mfz.myfzone_sport.myf_zone.util.Constants.EVENT_PATH
 
 /**
  * Created by Amadou on 02/12/2020, 14:25
@@ -39,8 +39,8 @@ object ProfileService {
 
         emit(State.success(currentUser!!))
     }.catch {
-        emit(State.failed(it.localizedMessage?.toString() ?: "1: ${it.message.toString()}"))
-    }.flowOn(Dispatchers.IO)
+        emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
+    }.flowOn(IO)
 
     fun getUserClub() = flow<State<ClubAffiliation>> {
         val userId = firebaseAuth.currentUser?.uid
@@ -54,8 +54,8 @@ object ProfileService {
 
         emit(State.success(currentUserClub!!))
     }.catch {
-        emit(State.failed(it.localizedMessage?.toString() ?: "2: ${it.message.toString()}"))
-    }.flowOn(Dispatchers.IO)
+        emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
+    }.flowOn(IO)
 
     fun getUserEventList() = flow<State<MutableList<Event>>> {
         val userId = firebaseAuth.currentUser?.uid
@@ -75,18 +75,16 @@ object ProfileService {
         val snapshot = mUserEventQuery.get().await().documents
         val userEventList = mutableListOf<Event>()
 
-        for (doc in snapshot) {
-            userEventList.add(doc.toObject()!!)
-        }
+        snapshot.forEach { userEventList.add(it.toObject()!!) }
 
         emit(State.success(userEventList))
     }.catch {
         emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
-    }.flowOn(Dispatchers.IO)
+    }.flowOn(IO)
 
     fun getOwnerFromEvent(eventId: String) = flow<State<EventOwner>> {
         val mEventOwnerQuery = DB
-            .collection(Constants.EVENT_PATH + "/${eventId}/Owner")
+            .collection(EVENT_PATH + "/${eventId}/Owner")
 
         emit(State.loading())
 
@@ -95,8 +93,8 @@ object ProfileService {
 
         emit(State.success(eventOwner!!))
     }.catch {
-        emit(State.failed(it.localizedMessage?.toString() ?: "1: ${it.message.toString()}"))
-    }.flowOn(Dispatchers.IO)
+        emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
+    }.flowOn(IO)
 
     fun getImageReference(path: String) =
         storageInstance.getReference(path.removePrefix("gs://myf-zone.appspot.com"))

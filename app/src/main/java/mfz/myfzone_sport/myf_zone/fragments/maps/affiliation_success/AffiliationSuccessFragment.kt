@@ -1,4 +1,4 @@
-package mfz.myfzone_sport.myf_zone.fragments.maps
+package mfz.myfzone_sport.myf_zone.fragments.maps.affiliation_success
 
 import android.os.Bundle
 import android.util.Log
@@ -16,9 +16,11 @@ import mfz.myfzone_sport.myf_zone.R
 import mfz.myfzone_sport.myf_zone.util.user.AffiliationForm.queryClubFromCode
 
 class AffiliationSuccessFragment : Fragment() {
-    private val TAG = AffiliationSuccessFragment::class.java.simpleName
+    companion object {
+        private val TAG = AffiliationSuccessFragment::class.java.simpleName
 
-    private var clubId: String? = null
+        private var clubId: String? = null
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

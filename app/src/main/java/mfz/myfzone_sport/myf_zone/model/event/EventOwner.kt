@@ -1,5 +1,8 @@
 package mfz.myfzone_sport.myf_zone.model.event
 
+import com.google.firebase.auth.FirebaseUser
+import mfz.myfzone_sport.myf_zone.model.coach.ClubAffiliation
+
 data class EventOwner(
     var clubLogo: String,
     var clubAcronym: String,
@@ -47,4 +50,36 @@ data class EventOwner(
 
         return result
     }
+
+    fun clubToOwner(club: ClubAffiliation, coach: FirebaseUser?): EventOwner {
+        val owner = EventOwner()
+
+        owner.apply {
+            clubLogo = club.clubLogo
+            clubAcronym = club.clubAcronym
+            coachId = coach?.uid!!
+            coachFullname = coach.displayName!!
+            sportId = club.sportId
+            sportName = club.sportName
+        }
+
+
+        if (club.categoryId!!.isNotEmpty() && club.categoryName!!.isNotEmpty()) {
+            owner.apply {
+                categoryId = club.categoryId!!
+                categoryName = club.categoryName!!
+            }
+        }
+
+        if (club.subCategoryId!!.isNotEmpty() && club.subCategoryName!!.isNotEmpty()) {
+            owner.apply {
+                subCategoryId = club.subCategoryId!!
+                subCategoryName = club.subCategoryName!!
+            }
+        }
+
+        return owner
+    }
+
+
 }

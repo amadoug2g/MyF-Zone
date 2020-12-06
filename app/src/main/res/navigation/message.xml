@@ -11,5 +11,18 @@
         android:id="@+id/messageFragment"
         android:name="mfz.myfzone_sport.myf_zone.fragments.message.MessageFragment"
         android:label="fragment_message"
-        tools:layout="@layout/fragment_message" />
+        tools:layout="@layout/fragment_message">
+        <action
+            android:id="@+id/messageToProfile"
+            app:destination="@id/profile" />
+        <action
+            android:id="@+id/messageToLogin"
+            app:destination="@id/login" />
+        <action
+            android:id="@+id/messageToAffiliationRequest"
+            app:destination="@id/affiliation_request" />
+    </fragment>
+    <include app:graph="@navigation/profile" />
+    <include app:graph="@navigation/affiliation_request" />
+    <include app:graph="@navigation/login" />
 </navigation>

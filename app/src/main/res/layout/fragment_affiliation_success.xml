@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:layout_marginTop="?android:attr/actionBarSize"
-    tools:context=".fragments.maps.AffiliationSuccessFragment">
+    tools:context=".fragments.maps.affiliation_success.AffiliationSuccessFragment">
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/affiliationClubImage"

@@ -12,7 +12,9 @@ import java.util.*
 import kotlin.concurrent.schedule
 
 class SplashScreen : AppCompatActivity() {
-    private val TAG = SplashScreen::class.java.simpleName
+    companion object {
+        private val TAG = SplashScreen::class.java.simpleName
+    }
 
 //    var globalEventList = mutableListOf<Event>()
 

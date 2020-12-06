@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/login"
+    app:startDestination="@id/loginFragment">
+
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="mfz.myfzone_sport.myf_zone.fragments.maps.login.LoginFragment"
+        android:label="@string/login_coach">
+        <action
+            android:id="@+id/loginToSignUp"
+            app:destination="@id/signUpFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/signUpFragment"
+        android:name="mfz.myfzone_sport.myf_zone.fragments.maps.sign_up.SignUpFragment"
+        android:label="@string/become_coach" />
+</navigation>

@@ -2,6 +2,7 @@ package mfz.myfzone_sport.myf_zone.model.event
 
 import com.google.android.gms.maps.model.LatLng
 import mfz.myfzone_sport.myf_zone.R
+import java.text.SimpleDateFormat
 import java.util.*
 
 data class Event(
@@ -97,7 +98,24 @@ data class Event(
             return result
         }
 
-    override fun toString(): String {
-        return "$title - $eventTypeString, se déroulera à $address le $date (owner: ${owner})"
-    }
+    val eventDateToDay: String
+        get() {
+            val formatEventDay = SimpleDateFormat("dd MMM y", Locale.FRANCE)
+            val formatDate = SimpleDateFormat("E MMM dd HH:mm:ss z yyyy", Locale.ENGLISH)
+
+            return formatEventDay.format(formatDate.parse(date.toString())!!)
+        }
+
+    val eventDateToHour: String
+        get() {
+            val formatEventHour = SimpleDateFormat("HH:mm", Locale.FRANCE)
+            val formatDate = SimpleDateFormat("E MMM dd HH:mm:ss z yyyy", Locale.ENGLISH)
+
+            return formatEventHour.format(formatDate.parse(date.toString())!!)
+        }
+
+
+//    override fun toString(): String {
+//        return "$title - $eventTypeString, se déroulera à $address le $date (owner: ${owner})"
+//    }
 }

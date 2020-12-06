@@ -1,4 +1,4 @@
-package mfz.myfzone_sport.myf_zone.fragments.maps
+package mfz.myfzone_sport.myf_zone.fragments.maps.affiliation_request
 
 import android.content.DialogInterface
 import android.os.Bundle
@@ -33,11 +33,13 @@ import mfz.myfzone_sport.myf_zone.util.user.AffiliationForm.queryIsCodeRegistere
 import org.jetbrains.anko.sdk27.coroutines.textChangedListener
 
 class AffiliationRequestFragment : Fragment() {
-    private val TAG = AffiliationRequestFragment::class.java.simpleName
+    companion object {
+        private val TAG = AffiliationRequestFragment::class.java.simpleName
 
-    private var sportFirstPass = true
-    private var categoryFirstPass = true
-    private var subCategoryFirstPass = true
+        private var sportFirstPass = true
+        private var categoryFirstPass = true
+        private var subCategoryFirstPass = true
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

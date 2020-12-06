@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/affiliation_request"
+    app:startDestination="@id/affiliationRequestFragment">
+
+    <fragment
+        android:id="@+id/affiliationRequestFragment"
+        android:name="mfz.myfzone_sport.myf_zone.fragments.maps.affiliation_request.AffiliationRequestFragment"
+        android:label="@string/affiliation_text"
+        tools:layout="@layout/fragment_affiliation_request">
+        <action
+            android:id="@+id/affiliationRequestToAffiliationSuccess"
+            app:destination="@id/affiliationSuccessFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/affiliationSuccessFragment"
+        android:name="mfz.myfzone_sport.myf_zone.fragments.maps.affiliation_success.AffiliationSuccessFragment"
+        android:label="@string/affiliation_text"
+        tools:layout="@layout/fragment_affiliation_success" />
+</navigation>

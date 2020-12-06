@@ -42,7 +42,7 @@
                     android:layout_marginEnd="4dp"
                     android:layout_marginBottom="8dp"
                     android:contentDescription="@string/image_club"
-                    android:src="@drawable/ic_account" />
+                    app:imageResource="@{event.eventTypeImage}" />
 
                 <RelativeLayout
                     android:layout_width="wrap_content"
@@ -61,7 +61,7 @@
                             android:id="@+id/cardView_clubName_profile"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@{@string/owner_txt  + ` - ` +  event.owner.clubAcronym + ` ` + event.owner.categoryName + ` ` + event.owner.subCategoryName}"
+                            android:text="@{event.eventTypeString}"
                             android:textColor="@android:color/black"
                             android:textSize="18sp" />
 

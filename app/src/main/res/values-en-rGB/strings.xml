@@ -18,7 +18,8 @@
     <string name="club_name">Club name</string>
     <string name="hint_required">Field required</string>
     <string name="welcome_message">Welcome</string>
-    <string name="auth_error">Failed sign in</string>
+    <string name="sign_in_error">Failed sign up</string>
+    <string name="sign_up_error">Failed sign in</string>
     <string name="welcome_back_message">Welcome back</string>
     <string name="logout">Sign out</string>
     <string name="logout_message">You are about to sign out.</string>
@@ -81,7 +82,7 @@
     <string name="participant_image">Participant Image</string>
     <string name="participate_btn_text">I wanna participate</string>
     <string name="owner_txt">Owner</string>
-    <string name="participate_txt">Participant</string>
+    <string name="participant_txt">Participant</string>
     <string name="cancel_participation">Cancel participation</string>
     <string name="enter_event">Participate</string>
     <string name="enter_event_msg">Join this event?</string>
@@ -94,15 +95,20 @@
     <string name="no_participant_msg">There is no participant in this event</string>
     <string name="no_event_msg">You have no event</string>
     <string name="new_event_error_msg">You must be logged in and affiliated to a club to be able to create an event</string>
-    <string name="adresse_field">Address</string>
+    <string name="address_field">Address</string>
+    <string name="create_event">Create Event</string>
     <string name="edit_event">Edit Event</string>
     <string name="delete_event">Delete Event</string>
     <string name="delete_txt">Delete</string>
     <string name="delete_event_confirmation">You are about to delete this event. Proceed?</string>
     <string name="edit_event_confirmation">You are about to edit this event. Proceed?</string>
+    <string name="create_event_confirmation">You are about to create this event. Proceed?</string>
     <string name="enter_address_hint">Enter an address</string>
     <string name="edit_txt">Edit</string>
     <string name="date_required">Please enter a date</string>
     <string name="team_txt">Teams</string>
     <string name="nbTeam_txt">4/16</string>
+    <string name="create_txt">Create</string>
+    <string name="quick_message">Direct Message</string>
+    <string name="event_logo">Event Logo</string>
 </resources>
