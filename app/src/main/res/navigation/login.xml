@@ -4,9 +4,30 @@
     android:id="@+id/login"
     app:startDestination="@id/loginFragment">
 
+    <action
+        android:id="@+id/affiliationToMaps"
+        app:destination="@id/map"
+        app:launchSingleTop="true"
+        app:popUpTo="@id/map"
+        app:popUpToInclusive="true" />
+
+    <action
+        android:id="@+id/loginToMaps"
+        app:destination="@id/map"
+        app:launchSingleTop="true"
+        app:popUpTo="@id/map"
+        app:popUpToInclusive="true" />
+
+    <action
+        android:id="@+id/signUpToMaps"
+        app:destination="@id/map"
+        app:launchSingleTop="true"
+        app:popUpTo="@id/map"
+        app:popUpToInclusive="true" />
+
     <fragment
         android:id="@+id/loginFragment"
-        android:name="mfz.myfzone_sport.myf_zone.fragments.maps.login.LoginFragment"
+        android:name="mfz.myfzone_sport.myf_zone.fragments.user_sign.login.LoginFragment"
         android:label="@string/login_coach">
         <action
             android:id="@+id/loginToSignUp"
@@ -14,6 +35,7 @@
     </fragment>
     <fragment
         android:id="@+id/signUpFragment"
-        android:name="mfz.myfzone_sport.myf_zone.fragments.maps.sign_up.SignUpFragment"
+        android:name="mfz.myfzone_sport.myf_zone.fragments.user_sign.sign_up.SignUpFragment"
         android:label="@string/become_coach" />
+
 </navigation>

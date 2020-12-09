@@ -119,6 +119,8 @@
     <string name="create_txt">Créer</string>
     <string name="quick_message">Message Direct</string>
     <string name="event_logo">Event Logo</string>
+    <string name="floating_action_button_desc">Floating Action Button</string>
+    <string name="sender_hint_msg">Nouveau message</string>
 
     <string-array name="sportList">
         <item>Foot</item>

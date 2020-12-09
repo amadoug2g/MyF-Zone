@@ -69,10 +69,7 @@ object MapsUtil {
                         markerList.add(marker)
                     }
                     globalEventList = eventList
-//                    globalCoachEventList = getUserEvent()
-//                    Log.d(TAG, "FIRST")
                     val list = sortedEventList(globalEventList!!)
-                    Log.d(TAG, "Final list is: $list")
                     eventList
                 } else {
                     Log.d(TAG, "List is null or empty: $eventList")
@@ -88,8 +85,6 @@ object MapsUtil {
                         val date = event.date.time
                         markerItemList?.add(MarkerItem(marker, date))
                     }
-                    val list = sortedEventList(globalEventList!!)
-                    Log.d(TAG, "Final list is: $list")
                     eventList
                 } else {
                     Log.d(TAG, "List is null or empty: $eventList")
@@ -154,7 +149,7 @@ object MapsUtil {
                 }
             }
         } catch (e: Exception) {
-            Log.d(TAG, "an error occurred: $e")
+            Log.d(TAG, "an error occurred in getCardDetail: $e")
         }
 
     }
@@ -200,8 +195,8 @@ object MapsUtil {
                 participants = event.participants
             }
 
-            if (calendar.date > Calendar.getInstance().time)
-                tempList.add(calendar)
+//            if (calendar.date > Calendar.getInstance().time)
+            tempList.add(calendar)
         }
 
         val setMonth = mutableSetOf<String>()

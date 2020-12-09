@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="viewModel"
+            type="mfz.myfzone_sport.myf_zone.fragments.discussion_page.DiscussionViewModel" />
+    </data>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
+        tools:context=".fragments.discussion_page.DiscussionFragment">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="bottom"
+            android:orientation="horizontal">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/senderTextBox"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_gravity="bottom"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:layout_weight="4"
+                android:background="@drawable/sender_box_background"
+                android:fitsSystemWindows="true"
+                android:hint="@string/sender_hint_msg"
+                android:paddingStart="24dp"
+                android:paddingEnd="24dp" />
+
+            <!--            <ImageView-->
+            <!--                android:id="@+id/imageSenderButton"-->
+            <!--                android:layout_width="wrap_content"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:layout_gravity="bottom"-->
+            <!--                android:layout_marginEnd="16dp"-->
+            <!--                android:layout_marginBottom="24dp"-->
+            <!--                android:clickable="true"-->
+            <!--                android:elevation="2dp"-->
+            <!--                android:fitsSystemWindows="true"-->
+            <!--                android:focusable="true"-->
+            <!--                android:src="@drawable/ic_send" />-->
+            <!--            -->
+            <!--            <androidx.appcompat.widget.AppCompatImageButton-->
+            <!--                android:layout_width="wrap_content"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:src="@drawable/ic_send"/>-->
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/imageSenderButton"
+                android:layout_width="40dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/ic_send" />
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+</layout>

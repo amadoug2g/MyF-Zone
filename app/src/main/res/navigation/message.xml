@@ -10,7 +10,7 @@
     <fragment
         android:id="@+id/messageFragment"
         android:name="mfz.myfzone_sport.myf_zone.fragments.message.MessageFragment"
-        android:label="fragment_message"
+        android:label=""
         tools:layout="@layout/fragment_message">
         <action
             android:id="@+id/messageToProfile"
@@ -21,8 +21,12 @@
         <action
             android:id="@+id/messageToAffiliationRequest"
             app:destination="@id/affiliation_request" />
+        <action
+            android:id="@+id/messageToDiscussion"
+            app:destination="@id/discussion" />
     </fragment>
     <include app:graph="@navigation/profile" />
     <include app:graph="@navigation/affiliation_request" />
     <include app:graph="@navigation/login" />
+    <include app:graph="@navigation/discussion" />
 </navigation>

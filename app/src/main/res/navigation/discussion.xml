@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/discussion"
+    app:startDestination="@id/discussionFragment">
+
+    <fragment
+        android:id="@+id/discussionFragment"
+        android:name="mfz.myfzone_sport.myf_zone.fragments.discussion_page.DiscussionFragment"
+        android:label=""
+        tools:layout="@layout/fragment_discussion" />
+</navigation>

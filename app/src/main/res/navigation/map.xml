@@ -16,9 +16,9 @@
 
     <action
         android:id="@+id/globalToAffiliationRequest"
-        app:destination="@id/affiliationRequestFragment"
+        app:destination="@id/affiliation_request"
         app:launchSingleTop="true"
-        app:popUpTo="@id/affiliationRequestFragment"
+        app:popUpTo="@id/affiliation_request"
         app:popUpToInclusive="true" />
 
     <action

@@ -106,6 +106,14 @@ data class Event(
             return formatEventDay.format(formatDate.parse(date.toString())!!)
         }
 
+    val eventDateToDayProfile: String
+        get() {
+            val formatEventDay = SimpleDateFormat("dd MMMM y", Locale.FRANCE)
+            val formatDate = SimpleDateFormat("E MMM dd HH:mm:ss z yyyy", Locale.ENGLISH)
+
+            return formatEventDay.format(formatDate.parse(date.toString())!!)
+        }
+
     val eventDateToHour: String
         get() {
             val formatEventHour = SimpleDateFormat("HH:mm", Locale.FRANCE)

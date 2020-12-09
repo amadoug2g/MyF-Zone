@@ -34,6 +34,7 @@ import mfz.myfzone_sport.myf_zone.util.event.EventUtil.globalEventList
 import mfz.myfzone_sport.myf_zone.util.event.EventUtil.markerItemList
 import mfz.myfzone_sport.myf_zone.util.event.MapsUtil.hideMarkerItem
 import mfz.myfzone_sport.myf_zone.util.event.MapsUtil.showMarkerItem
+import mfz.myfzone_sport.myf_zone.util.user.UserAccount
 import mfz.myfzone_sport.myf_zone.util.user.UserAccount.auth
 import mfz.myfzone_sport.myf_zone.util.user.UserAffiliation
 import org.jetbrains.anko.toast
@@ -66,6 +67,18 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.fragmentNavHost) as NavHostFragment
         navController = navHostFragment.navController
+//        fragmentManager.popBackStack(
+//            firstFragmentTag,
+//            FragmentManager.POP_BACK_STACK_INCLUSIVE
+//        )
+
+//        bottomNavBar.selectedItemId = R.id.map
+//        bottomNavBar.performClick()
+//
+//        val view: View = bottomNavBar.findViewById(R.id.map)
+//        view.performClick()
+//
+//        navController.popBackStack()
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
@@ -100,6 +113,7 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
             }
         } catch (e: Exception) {
             toast("Error: $e")
+            Log.e(TAG, "Error in onBackPressed")
         }
     }
 
@@ -108,7 +122,6 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
         destination: NavDestination,
         arguments: Bundle?
     ) {
-        val currentUser = auth.currentUser
         val navBar: BottomAppBar = this.findViewById(R.id.bottomBar)
         val fabButton: FloatingActionButton = this.findViewById(R.id.fabMain)
         when (destination.id) {
@@ -196,10 +209,11 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
                 )
 
                 fabMain.setOnClickListener {
+//                    accountButtonNewMessage()
                     toast("new message creation")
                 }
 
-                bottomBar.hideOnScroll = false
+                bottomBar.hideOnScroll = true
 
                 supportActionBar!!.apply {
                     hide()
@@ -218,19 +232,7 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
                 )
 
                 fabMain.setOnClickListener {
-                    navController.navigate(R.id.calendarToEventCreation)
-
-                    if (currentUser != null) {
-                        UserAffiliation.userAffiliationStatus {
-                            when (it) {
-                                true -> {
-                                }
-                                false -> {
-                                    toast(getString(R.string.new_event_error_msg))
-                                }
-                            }
-                        }
-                    }
+                    accountButtonEventCreation()
                 }
 
                 bottomBar.hideOnScroll = true
@@ -308,5 +310,54 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
 
     private fun navigate(destination: Int) {
         findNavController(fabMain.id).navigate(destination)
+    }
+
+    private fun accountButtonEventCreation() {
+        val currentUser = auth.currentUser
+        if (currentUser == null) {
+            navController.navigate(R.id.calendarToLogin)
+        } else {
+            UserAccount.getCurrentUser { user ->
+                if (currentUser.displayName == "") {
+                    UserAccount.updateCurrentUser("", user.firstName, user.lastName)
+                }
+            }
+
+            UserAffiliation.userAffiliationStatus {
+                when (it) {
+                    true -> {
+                        navController.navigate(R.id.calendarToEventCreation)
+                    }
+                    false -> {
+                        navController.navigate(R.id.calendarToAffiliationRequest)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun accountButtonNewMessage() {
+        val currentUser = auth.currentUser
+        if (currentUser == null) {
+            navController.navigate(R.id.calendarToLogin)
+        } else {
+            UserAccount.getCurrentUser { user ->
+                if (currentUser.displayName == "") {
+                    UserAccount.updateCurrentUser("", user.firstName, user.lastName)
+                }
+            }
+
+            UserAffiliation.userAffiliationStatus {
+                when (it) {
+                    true -> {
+                        toast("new message creation")
+                    }
+                    false -> {
+                        super.onPostResume()
+                        navController.navigate(R.id.calendarToAffiliationRequest)
+                    }
+                }
+            }
+        }
     }
 }

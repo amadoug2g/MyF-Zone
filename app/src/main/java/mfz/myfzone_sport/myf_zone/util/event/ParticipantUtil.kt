@@ -8,8 +8,6 @@ import mfz.myfzone_sport.myf_zone.model.event.EventParticipant
 import mfz.myfzone_sport.myf_zone.util.Constants.DB
 import mfz.myfzone_sport.myf_zone.util.Constants.EVENT_PATH
 import mfz.myfzone_sport.myf_zone.util.event.EventUtil.getEventById
-import mfz.myfzone_sport.myf_zone.util.user.UserAccount
-import mfz.myfzone_sport.myf_zone.util.user.UserAccount.getCurrentUser
 
 object ParticipantUtil {
     private val TAG = ParticipantUtil::class.java.simpleName
@@ -33,79 +31,8 @@ object ParticipantUtil {
         }
     }
 
-    fun addParticipant(eventId: String, participant: EventParticipant) {
-
-        getCurrentUser {
-            DB.collection(EVENT_PATH)
-                .document(eventId)
-                .collection("Participant").document(it.id)
-                .set(participant.toMap())
-                .addOnSuccessListener {
-                    Log.d(TAG, "Participant added successfully")
-                }
-                .addOnFailureListener {
-                    Log.e(TAG, "Participant added failed")
-                }
-                .addOnCompleteListener {
-                    Log.d(TAG, "Participant added completed")
-                }
-        }
-
-    }
-
-    fun removeParticipant(eventId: String) {
-        val currentUser = UserAccount.auth.currentUser!!
-
-        DB.collection(EVENT_PATH)
-            .document(eventId)
-            .collection("Participant")
-            .document(currentUser.uid)
-            .delete()
-            .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully deleted!") }
-            .addOnFailureListener { e -> Log.w(TAG, "Error deleting document", e) }
-            .addOnCompleteListener { Log.d(TAG, "Deletion completed") }
-    }
-
-    private fun removeParticipantById(eventId: String, coachId: String) {
-        DB.collection(EVENT_PATH)
-            .document(eventId)
-            .collection("Participant")
-            .document(coachId)
-            .delete()
-            .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully deleted!") }
-            .addOnFailureListener { e -> Log.w(TAG, "Error deleting document", e) }
-            .addOnCompleteListener { Log.d(TAG, "Deletion completed") }
-    }
-
-    suspend fun deleteParticipants(eventId: String) {
-        try {
-            val participantList =
-                getParticipantsFromEvent(
-                    eventId
-                )!!
-
-            if (!participantList.isNullOrEmpty()) {
-                for (item in participantList) {
-                    removeParticipantById(eventId, item.coachId)
-                }
-            }
-
-        } catch (e: Exception) {
-            Log.e(TAG, "Error in deleteParticipants", e)
-        }
-    }
-
     //pending - validate - rejected
     fun getParticipantStatus() {}
-
-    suspend fun getParticipantCount(eventId: String): Int? {
-        return try {
-            getParticipantsFromEvent(eventId)?.size
-        } catch (e: Exception) {
-            Log.d(TAG, "Error in getParticipantCount: $e")
-            null
-        }
-    }
 
     private suspend fun eventComplete(eventId: String): Boolean? {
         return try {

@@ -2,24 +2,14 @@ package mfz.myfzone_sport.myf_zone.util.event
 
 import android.util.Log
 import com.google.firebase.Timestamp
-import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.toObject
 import kotlinx.coroutines.tasks.await
 import mfz.myfzone_sport.myf_zone.model.event.Event
-import mfz.myfzone_sport.myf_zone.model.event.EventOwner
 import mfz.myfzone_sport.myf_zone.model.event.MarkerItem
-import mfz.myfzone_sport.myf_zone.util.Constants.COACH_PATH
 import mfz.myfzone_sport.myf_zone.util.Constants.DB
 import mfz.myfzone_sport.myf_zone.util.Constants.EVENT_PATH
-import mfz.myfzone_sport.myf_zone.util.event.OwnerUtil.addOwnerToEvent
-import mfz.myfzone_sport.myf_zone.util.event.OwnerUtil.deleteEventForOwner
-import mfz.myfzone_sport.myf_zone.util.event.OwnerUtil.deleteOwner
 import mfz.myfzone_sport.myf_zone.util.event.OwnerUtil.getOwnerFromEvent
-import mfz.myfzone_sport.myf_zone.util.event.ParticipantUtil.deleteParticipants
 import mfz.myfzone_sport.myf_zone.util.event.ParticipantUtil.getParticipantsFromEvent
-import mfz.myfzone_sport.myf_zone.util.user.UserAccount
-import mfz.myfzone_sport.myf_zone.util.user.UserAccount.getCurrentClub
-import mfz.myfzone_sport.myf_zone.util.user.UserAccount.getCurrentUser
 import java.util.*
 
 object EventUtil {
@@ -39,143 +29,32 @@ object EventUtil {
 
     suspend fun getEventsByDate(): MutableList<Event>? {
         val docRef = DB.collection(EVENT_PATH).orderBy("date")
+        val time = Calendar.getInstance().time
 
         return try {
             val eventList = mutableListOf<Event>()
             val documents = docRef.get().await().documents
             for (doc in documents) {
-                val owner =
-                    getOwnerFromEvent(
-                        doc.id
-                    )
-                val participantList =
-                    getParticipantsFromEvent(
-                        doc.id
-                    )
                 val eventToAdd: Event = doc.toObject()!!
 
-                eventToAdd.owner = owner!!
-                eventToAdd.participants = participantList!!
+                if (eventToAdd.date > time) {
+                    val owner =
+                        getOwnerFromEvent(
+                            doc.id
+                        )
+                    val participantList =
+                        getParticipantsFromEvent(
+                            doc.id
+                        )
 
-                eventList.add(eventToAdd)
+                    eventToAdd.owner = owner!!
+                    eventToAdd.participants = participantList!!
+
+                    eventList.add(eventToAdd)
+                }
             }
 
             eventList
-        } catch (e: Exception) {
-            Log.e(TAG, e.toString())
-            null
-        }
-    }
-
-    fun createEvent(event: Event, owner: EventOwner) {
-        val docRef = DB.collection(EVENT_PATH).document()
-        event.id = docRef.id
-
-        DB.collection(EVENT_PATH).document(event.id).set(event.toMap())
-            .addOnSuccessListener {
-                Log.d(TAG, "Event created successfully")
-            }
-            .addOnFailureListener {
-                Log.d(TAG, "Event creation failed")
-            }
-            .addOnCompleteListener {
-                Log.d(TAG, "Event creation completed")
-            }
-
-        addOwnerToEvent(event.id, owner)
-        addEventToUser(event.toMap(), event.id)
-    }
-
-    private fun addEventToUser(event: HashMap<String, Any?>, id: String) {
-        getCurrentUser { coach ->
-            getCurrentClub { club ->
-                DB.collection(COACH_PATH)
-                    .document(coach.id)
-                    .collection("ClubAffiliation")
-                    .document(club.clubId)
-                    .collection("CoachEvent")
-                    .document(id).set(event)
-                    .addOnSuccessListener {
-                        Log.d(TAG, "Event added to user successfully")
-                    }
-                    .addOnFailureListener {
-                        Log.d(TAG, "Event adding to user failed")
-                    }
-                    .addOnCompleteListener {
-                        Log.d(TAG, "Event adding to user completed")
-                    }
-            }
-        }
-    }
-
-    suspend fun getEventsByUser(coachId: String, clubId: String): MutableList<Event>? {
-        return try {
-            val eventList = mutableListOf<Event>()
-
-            val docRef =
-                DB.collection(COACH_PATH)
-                    .document(coachId)
-                    .collection("ClubAffiliation")
-                    .document(clubId)
-                    .collection("CoachEvent")
-
-            val documents = docRef.get().await().documents
-            for (doc in documents) {
-                eventList.add(doc.toObject()!!)
-            }
-
-            eventList
-        } catch (e: Exception) {
-            Log.d(TAG, "Error: $e")
-            null
-        }
-
-    }
-
-    suspend fun deleteEvent(eventId: String) {
-        deleteParticipants(eventId)
-        deleteOwner(eventId)
-        deleteEventForOwner(eventId)
-
-        DB.collection(EVENT_PATH)
-            .document(eventId)
-            .delete()
-            .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully deleted!") }
-            .addOnFailureListener { e -> Log.w(TAG, "Error deleting document", e) }
-            .addOnCompleteListener { Log.d(TAG, "Deletion completed") }
-    }
-
-    fun updateEvent(eventId: String, event: Event) {
-        DB.collection(EVENT_PATH)
-            .document(eventId)
-            .set(event.updateToMap(), SetOptions.merge())
-            .addOnSuccessListener {
-                Log.d(TAG, "Event updated successfully")
-            }
-            .addOnFailureListener {
-                Log.d(TAG, "Event update failed")
-            }
-            .addOnCompleteListener {
-                Log.d(TAG, "Event update complete")
-            }
-    }
-
-    suspend fun checkUserParticipation(eventId: String): Boolean? {
-        val participantList =
-            getParticipantsFromEvent(
-                eventId
-            )!!
-
-        val currentUser = UserAccount.auth.currentUser!!
-
-        return try {
-            val idList = mutableListOf<String>()
-            for (item in participantList)
-                idList.add(item.coachId)
-
-            Log.d(TAG, idList.toString())
-            Log.d(TAG, "User ID is: ${currentUser.uid}")
-            idList.contains(currentUser.uid)
         } catch (e: Exception) {
             Log.e(TAG, e.toString())
             null

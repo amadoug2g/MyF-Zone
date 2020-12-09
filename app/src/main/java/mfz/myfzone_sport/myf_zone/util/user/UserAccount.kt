@@ -14,7 +14,6 @@ import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
-import mfz.myfzone_sport.myf_zone.model.club.Club
 import mfz.myfzone_sport.myf_zone.model.coach.ClubAffiliation
 import mfz.myfzone_sport.myf_zone.model.coach.Coach
 import mfz.myfzone_sport.myf_zone.util.Constants.COACH_PATH
@@ -49,29 +48,6 @@ object UserAccount {
             }
     }
 
-    private suspend fun getGlobalUser(): Coach? {
-        val docRef = currentUserDocRef
-
-        return try {
-            docRef.get().await().toObject<Coach>()!!
-        } catch (e: Exception) {
-            Log.e(TAG, "e")
-            null
-        }
-    }
-
-    private suspend fun getGlobalUserClub(): Club? {
-        val docRef =
-            currentUserDocRef.collection("ClubAffiliation")
-
-        return try {
-            docRef.get().await().documents[0].toObject<Club>()!!
-        } catch (e: Exception) {
-            Log.e(TAG, "e")
-            null
-        }
-    }
-
     suspend fun getClubUser(): ClubAffiliation? {
         val currentUser = auth.currentUser
 
@@ -95,18 +71,6 @@ object UserAccount {
                 club.toObject<ClubAffiliation>()?.let { it1 -> onComplete(it1) }
 //                Log.d(TAG, "Club Affiliation retrieved")
             }
-    }
-
-    suspend fun getCurrentClubId(): ClubAffiliation? {
-        val docRef = currentUserDocRef.collection("ClubAffiliation")
-
-        return try {
-            val documents = docRef.get().await().documents
-            val result: ClubAffiliation = documents[0].toObject()!!
-            result
-        } catch (e: Exception) {
-            null
-        }
     }
 
     fun pathToReference(path: String) =
@@ -152,20 +116,4 @@ object UserAccount {
         currentUserDocRef.update(coachFields)
     }
 
-
-    fun addUserToDB(coach: Coach, id: String) {
-
-        DB.collection(COACH_PATH)
-            .document(id)
-            .set(coach.toMap())
-            .addOnSuccessListener {
-                Log.d(TAG, "Document added successfully")
-            }
-            .addOnFailureListener {
-                Log.d(TAG, "Document added failed")
-            }
-            .addOnCompleteListener {
-                Log.d(TAG, "Document added completed")
-            }
-    }
 }

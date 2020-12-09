@@ -111,4 +111,6 @@
     <string name="create_txt">Create</string>
     <string name="quick_message">Direct Message</string>
     <string name="event_logo">Event Logo</string>
+    <string name="floating_action_button_desc">Floating Action Button</string>
+    <string name="sender_hint_msg">Text message</string>
 </resources>

@@ -1,102 +1,106 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:layout_marginTop="?android:attr/actionBarSize"
-    tools:context=".fragments.maps.affiliation_request.AffiliationRequestFragment">
 
-    <ProgressBar
-        android:id="@+id/affiliationProgressBar"
-        style="?android:attr/progressBarStyleHorizontal"
+<layout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="0dp"
-        android:indeterminate="true"
-        android:indeterminateBehavior="cycle"
-        android:indeterminateTint="@color/colorPrimary"
-        android:visibility="invisible" />
+        android:layout_height="match_parent"
+        android:layout_marginTop="?android:attr/actionBarSize"
+        android:orientation="vertical"
+        tools:context=".fragments.affiliation.affiliation_request.AffiliationRequestFragment">
 
-    <com.google.android.material.textview.MaterialTextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="32dp"
-        android:text="@string/affiliationTextDesc"
-        android:textSize="16sp" />
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/affiliationCodeLayout"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="32dp"
-        android:hint="@string/affiliation_code_text">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/affiliationCodeInput"
+        <ProgressBar
+            android:id="@+id/affiliationProgressBar"
+            style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="text" />
+            android:layout_marginTop="0dp"
+            android:indeterminate="true"
+            android:indeterminateBehavior="cycle"
+            android:indeterminateTint="@color/colorPrimary"
+            android:visibility="invisible" />
 
-    </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="32dp"
+            android:text="@string/affiliationTextDesc"
+            android:textSize="16sp" />
 
-    <androidx.appcompat.widget.AppCompatSpinner
-        android:id="@+id/sportSpinner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="32dp"
-        android:spinnerMode="dialog"
-        android:entries="@array/sportList" />
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/affiliationCodeLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="32dp"
+            android:hint="@string/affiliation_code_text">
 
-    <androidx.appcompat.widget.AppCompatSpinner
-        android:id="@+id/categorySpinner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="32dp"
-        android:spinnerMode="dialog"
-        android:entries="@array/categoryList" />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/affiliationCodeInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text" />
 
-    <androidx.appcompat.widget.AppCompatSpinner
-        android:id="@+id/subCategorySpinner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="32dp"
-        android:spinnerMode="dialog"
-        android:visibility="gone"
-        android:entries="@array/subCategoryList" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/affiliateButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="64dp"
-        android:layout_marginEnd="16dp"
-        android:enabled="false"
-        android:text="@string/affiliate"
-        android:textAlignment="center" />
+        <androidx.appcompat.widget.AppCompatSpinner
+            android:id="@+id/sportSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="32dp"
+            android:entries="@array/sportList"
+            android:spinnerMode="dialog" />
+
+        <androidx.appcompat.widget.AppCompatSpinner
+            android:id="@+id/categorySpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="32dp"
+            android:entries="@array/categoryList"
+            android:spinnerMode="dialog" />
+
+        <androidx.appcompat.widget.AppCompatSpinner
+            android:id="@+id/subCategorySpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="32dp"
+            android:entries="@array/subCategoryList"
+            android:spinnerMode="dialog"
+            android:visibility="gone" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/affiliateButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="64dp"
+            android:layout_marginEnd="16dp"
+            android:enabled="false"
+            android:text="@string/affiliate"
+            android:textAlignment="center" />
 
 
-    <TextView
-        android:id="@+id/affiliationLaterAffiliate"
-        style="@style/Widget.MaterialComponents.Button.TextButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="64dp"
-        android:layout_marginTop="0dp"
-        android:layout_marginEnd="64dp"
-        android:text="@string/laterTextButton"
-        android:textColor="@color/colorDiscreet" />
+        <TextView
+            android:id="@+id/affiliationLaterAffiliate"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="64dp"
+            android:layout_marginTop="0dp"
+            android:layout_marginEnd="64dp"
+            android:text="@string/laterTextButton"
+            android:textColor="@color/colorDiscreet" />
 
-</LinearLayout>
+    </LinearLayout>
+</layout>

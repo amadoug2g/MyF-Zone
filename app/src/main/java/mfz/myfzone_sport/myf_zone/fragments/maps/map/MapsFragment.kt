@@ -10,7 +10,9 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.os.bundleOf
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -22,13 +24,9 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.card_event_item.*
-import kotlinx.android.synthetic.main.card_event_item.view.*
-import kotlinx.android.synthetic.main.fragment_maps.*
-import kotlinx.android.synthetic.main.fragment_maps.view.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
 import mfz.myfzone_sport.myf_zone.R
+import mfz.myfzone_sport.myf_zone.databinding.FragmentMapsBinding
 import mfz.myfzone_sport.myf_zone.model.event.Event
 import mfz.myfzone_sport.myf_zone.screens.MainScreen
 import mfz.myfzone_sport.myf_zone.util.event.MapsUtil
@@ -56,6 +54,9 @@ class MapsFragment : Fragment(),
     companion object {
         private val TAG = MapsFragment::class.java.simpleName
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
+
+        private lateinit var binding: FragmentMapsBinding
+        private lateinit var viewModel: MapsViewModel
     }
 
     private val markerList: MutableList<Marker> = mutableListOf()
@@ -72,7 +73,7 @@ class MapsFragment : Fragment(),
          */
 
         if (!mapInitialized) {
-            CoroutineScope(Main).launch {
+            lifecycleScope.launch {
                 initializeMap(
                     googleMap,
                     markerList, cardView_detail
@@ -113,9 +114,9 @@ class MapsFragment : Fragment(),
 
         setMapZoomPreferences(googleMap)
 
-        CoroutineScope(Main).launch {
-            if (loadLayout != null)
-                loadLayout.visibility = View.VISIBLE
+        lifecycleScope.launch {
+//            if (loadLayout != null)
+            binding.loadLayout.visibility = View.VISIBLE
             placeEventsOnMap(googleMap, requireContext(), markerList)
 
             try {
@@ -133,8 +134,8 @@ class MapsFragment : Fragment(),
                 Log.d(TAG, "Error: $e")
             }
 
-            if (loadLayout != null)
-                loadLayout.visibility = View.INVISIBLE
+//            if (loadLayout != null)
+            binding.loadLayout.visibility = View.INVISIBLE
         }
 
     }
@@ -150,15 +151,22 @@ class MapsFragment : Fragment(),
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
+        binding = DataBindingUtil.inflate(
+            inflater,
+            R.layout.fragment_maps,
+            container,
+            false
+        )
+
         val fragmentInflater = inflater.inflate(R.layout.fragment_maps, container, false)
 
-        fragmentInflater.account_button.background = null
-        fragmentInflater.list_button.background = null
+        binding.accountButton.background = null
+        binding.listButton.background = null
 
         val currentUser = auth.currentUser
 
-        fragmentInflater.account_button.setOnClickListener {
+        binding.accountButton.setOnClickListener {
             if (currentUser == null) {
                 navigate(R.id.mapsToLogin)
             } else {
@@ -191,7 +199,7 @@ class MapsFragment : Fragment(),
             }
         }
 
-        fragmentInflater.list_button.setOnClickListener {
+        binding.listButton.setOnClickListener {
             if (currentUser == null) {
                 MaterialAlertDialogBuilder(requireContext())
                     .setTitle(R.string.logout)
@@ -215,8 +223,7 @@ class MapsFragment : Fragment(),
             }
         }
 
-        fragmentInflater.cardView_detail.setOnClickListener {
-
+        binding.cardEventDetail.cardViewDetail.setOnClickListener {
             when (cardView_tag.text) {
                 null -> {
                     toast("clicked smth else")
@@ -228,7 +235,7 @@ class MapsFragment : Fragment(),
             }
         }
 
-        return fragmentInflater
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

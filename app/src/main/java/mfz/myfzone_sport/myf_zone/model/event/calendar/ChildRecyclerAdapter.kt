@@ -15,7 +15,6 @@ import kotlinx.android.synthetic.main.card_event_profile.view.*
 import mfz.myfzone_sport.myf_zone.R
 import mfz.myfzone_sport.myf_zone.glide.GlideApp
 import mfz.myfzone_sport.myf_zone.model.event.EventCalendar
-import mfz.myfzone_sport.myf_zone.util.user.UserAccount
 
 class ChildRecyclerAdapter(private val items: MutableList<EventCalendar>) :
     RecyclerView.Adapter<ChildRecyclerAdapter.ViewHolder>() {
@@ -52,7 +51,7 @@ class ChildRecyclerAdapter(private val items: MutableList<EventCalendar>) :
 
             try {
                 GlideApp.with(itemView.context).apply {
-                    load(UserAccount.pathToReference(eventCalendar.owner.clubLogo))
+                    load(eventCalendar.eventTypeImage)
                         .placeholder(R.drawable.ic_account)
                         .centerCrop()
                         .into(itemView.cardView_clubImage_profile)
@@ -97,8 +96,8 @@ class ChildRecyclerAdapter(private val items: MutableList<EventCalendar>) :
             val participantTitle =
                 "$participate - ${eventCalendar.owner.clubAcronym} ${eventCalendar.owner.categoryName} ${eventCalendar.owner.subCategoryName}"
 
-            itemView.cardView_clubName_profile.text = participantTitle
-            itemView.cardView_clubDesc_profile.text = eventCalendar.owner.coachFullname
+            itemView.cardView_clubName_profile.text = eventCalendar.eventTypeString
+            itemView.cardView_clubDesc_profile.text = eventCalendar.title
         }
     }
 

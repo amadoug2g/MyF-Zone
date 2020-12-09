@@ -7,15 +7,19 @@
 
     <fragment
         android:id="@+id/eventDetailsFragment"
-        android:name="mfz.myfzone_sport.myf_zone.fragments.event_details.EventDetailsFragment"
+        android:name="mfz.myfzone_sport.myf_zone.fragments.event.event_details.EventDetailsFragment"
         android:label=""
         tools:layout="@layout/fragment_event_details">
         <action
             android:id="@+id/eventDetailsToEventEdit"
             app:destination="@id/eventEditFragment" />
+        <action
+            android:id="@+id/eventDetailsToDiscussion"
+            app:destination="@id/discussion" />
     </fragment>
     <fragment
         android:id="@+id/eventEditFragment"
-        android:name="mfz.myfzone_sport.myf_zone.fragments.maps.event_edit.EventEditFragment"
+        android:name="mfz.myfzone_sport.myf_zone.fragments.event.event_edit.EventEditFragment"
         android:label="@string/edit_txt" />
+    <include app:graph="@navigation/discussion" />
 </navigation>

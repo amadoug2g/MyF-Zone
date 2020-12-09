@@ -1,5 +1,7 @@
 package mfz.myfzone_sport.myf_zone.model.event
 
+import mfz.myfzone_sport.myf_zone.R
+import java.text.SimpleDateFormat
 import java.util.*
 
 data class EventCalendar(
@@ -50,6 +52,17 @@ data class EventCalendar(
             type = value
         }
 
+    val eventTypeImage: Int
+        get() {
+            var result: Int = R.mipmap.ic_football_ball_icon_001
+            when (type) {
+                "friendly" -> result = R.mipmap.ic_football_ball_icon_002
+                "tournament" -> result = R.mipmap.ic_football__trophy_icon_002
+                "plateau" -> result = R.mipmap.ic_football_field_icon_002
+            }
+            return result
+        }
+
     fun getEvent(): String {
         return "$title " +
                 "\n$description" +
@@ -57,6 +70,14 @@ data class EventCalendar(
                 "\n$nbTeam" +
                 "\n$address" //+ "\n$owner" + "\n$participants"
     }
+
+    val eventDateToDayProfile: String
+        get() {
+            val formatEventDay = SimpleDateFormat("dd MMMM y", Locale.FRANCE)
+            val formatDate = SimpleDateFormat("E MMM dd HH:mm:ss z yyyy", Locale.ENGLISH)
+
+            return formatEventDay.format(formatDate.parse(date.toString())!!)
+        }
 
     override fun toString(): String {
         return "Le $eventTypeString \"$title\" se déroulera à [$address] le $date [$month]"
