@@ -119,7 +119,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="0dp"
                             android:layout_weight="1"
-                            android:text="@{`1/` + event.nbTeam}"
+                            android:text="@{viewModel.participantList != null ? viewModel.getValidParticipantCount(viewModel.participantList) + `/` + event.nbTeam : `0` + `/` + event.nbTeam}"
                             android:textAlignment="textEnd"
                             android:textSize="16sp"
                             android:textStyle="normal" />

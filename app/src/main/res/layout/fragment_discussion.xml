@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".fragments.discussion_page.DiscussionFragment">
 
     <data>
 
@@ -10,63 +13,69 @@
             type="mfz.myfzone_sport.myf_zone.fragments.discussion_page.DiscussionViewModel" />
     </data>
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
+    <!--        android:fitsSystemWindows="true"-->
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fitsSystemWindows="true"
-        tools:context=".fragments.discussion_page.DiscussionFragment">
+        android:background="@color/colorTransparentMessage"
+        android:windowSoftInputMode="adjustResize">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="bottom"
-            android:orientation="horizontal">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewMessages"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@id/relativeLayoutMessages"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <RelativeLayout
+            android:id="@+id/relativeLayoutMessages"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fabSendImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:contentDescription="@string/text_image_button"
+                android:src="@drawable/ic_image"
+                android:tint="?attr/colorPrimaryDark"
+                app:fabSize="mini" />
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/senderTextBox"
-                android:layout_width="0dp"
-                android:layout_height="40dp"
-                android:layout_gravity="bottom"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
-                android:layout_weight="4"
-                android:background="@drawable/sender_box_background"
-                android:fitsSystemWindows="true"
-                android:hint="@string/sender_hint_msg"
-                android:paddingStart="24dp"
-                android:paddingEnd="24dp" />
-
-            <!--            <ImageView-->
-            <!--                android:id="@+id/imageSenderButton"-->
-            <!--                android:layout_width="wrap_content"-->
-            <!--                android:layout_height="wrap_content"-->
-            <!--                android:layout_gravity="bottom"-->
-            <!--                android:layout_marginEnd="16dp"-->
-            <!--                android:layout_marginBottom="24dp"-->
-            <!--                android:clickable="true"-->
-            <!--                android:elevation="2dp"-->
-            <!--                android:fitsSystemWindows="true"-->
-            <!--                android:focusable="true"-->
-            <!--                android:src="@drawable/ic_send" />-->
-            <!--            -->
-            <!--            <androidx.appcompat.widget.AppCompatImageButton-->
-            <!--                android:layout_width="wrap_content"-->
-            <!--                android:layout_height="wrap_content"-->
-            <!--                android:src="@drawable/ic_send"/>-->
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/imageSenderButton"
-                android:layout_width="40dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
-                android:background="@drawable/ic_send" />
-        </LinearLayout>
+                android:layout_centerVertical="true"
+                android:background="@drawable/sender_box_background"
+                android:layout_toEndOf="@id/fabSendImage"
+                android:elevation="2dp"
+                android:hint="@string/sender_hint_msg"
+                android:padding="8dp" />
 
+            <ImageView
+                android:id="@+id/imageSenderButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="24dp"
+                android:elevation="2dp"
+                app:srcCompat="@drawable/ic_send" />
 
-    </LinearLayout>
+        </RelativeLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

@@ -10,6 +10,7 @@ import com.google.firebase.firestore.CollectionReference
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import mfz.myfzone_sport.myf_zone.model.State
+import mfz.myfzone_sport.myf_zone.model.chat.Chat
 import mfz.myfzone_sport.myf_zone.model.coach.Coach
 import mfz.myfzone_sport.myf_zone.util.Constants.COACH_PATH
 
@@ -34,6 +35,10 @@ class MessageViewModel : ViewModel() {
     val coach: LiveData<Coach>
         get() = _coach
 
+    private val _coachChat = MutableLiveData<Chat>()
+    val coachChat: LiveData<Chat>
+        get() = _coachChat
+
     private val _query = MutableLiveData<CollectionReference>()
     val query: LiveData<CollectionReference>
         get() = _query
@@ -48,8 +53,9 @@ class MessageViewModel : ViewModel() {
     }
 
     private fun getQuery(): CollectionReference {
+        val currentUser = FirebaseAuth.getInstance().currentUser
         return MessageService.fireStoreInstance
-            .collection(COACH_PATH)
+            .collection(COACH_PATH + "/${currentUser?.uid}/Chat")
     }
 
     private fun checkUserSignedIn(): Boolean {
@@ -76,6 +82,27 @@ class MessageViewModel : ViewModel() {
             }
         }
     }
+
+    fun getChatCoach(coachId: String) = MessageService.getChatCoach(coachId)
+
+    suspend fun assignCoachChat(coachId: String) {
+        getChatCoach(coachId).collect { state ->
+            when (state) {
+                is State.Loading -> {
+//                    showProgressBar()
+                }
+                is State.Success -> {
+                    _coachChat.value = state.data
+                }
+                is State.Failed -> {
+//                    hideProgressBar()
+                    val message = "An error occurred: ${state.message}"
+                    Log.i("EventDetailsViewModel", message)
+                }
+            }
+        }
+    }
+
 
     private fun affiliationStatus() = MessageService.checkAffiliationStatus()
 

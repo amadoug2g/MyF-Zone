@@ -38,6 +38,8 @@ class DiscussionViewModel : ViewModel() {
 
     val isTextEmpty = MutableLiveData<Boolean>()
 
+    val isUserTyping = MutableLiveData<Boolean>()
+
     var textMessage = MutableLiveData<String>()
 
     init {
@@ -124,5 +126,13 @@ class DiscussionViewModel : ViewModel() {
                 }
             }
         }
+    }
+
+    fun typeStart() {
+        isUserTyping.value = true
+    }
+
+    fun typeStop() {
+        isUserTyping.value = false
     }
 }

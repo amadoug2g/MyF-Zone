@@ -215,12 +215,13 @@ object EventDetailsService {
         emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
     }.flowOn(IO)
 
-    fun getValidParticipantCount(participantList: MutableList<EventParticipant>): Int {
+    fun getValidParticipantCount(participantList: MutableList<EventParticipant>): String {
         var validParticipant = 0
 
-        participantList.forEach { if (it.status == "validate") validParticipant++ }
+        if (!participantList.isNullOrEmpty())
+            participantList.forEach { if (it.status == "validate") validParticipant++ }
 
-        return validParticipant
+        return validParticipant.toString()
     }
 
     fun deleteEvent(eventId: String, club: ClubAffiliation) = flow<State<Boolean>> {

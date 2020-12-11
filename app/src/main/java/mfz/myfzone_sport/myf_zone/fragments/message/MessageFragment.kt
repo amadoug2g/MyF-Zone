@@ -17,19 +17,22 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
+import com.google.firebase.firestore.Query
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import mfz.myfzone_sport.myf_zone.R
 import mfz.myfzone_sport.myf_zone.databinding.CardMessageCoachBinding
 import mfz.myfzone_sport.myf_zone.databinding.FragmentMessageBinding
+import mfz.myfzone_sport.myf_zone.fragments.message.MessageService.getImageReference
+import mfz.myfzone_sport.myf_zone.glide.GlideApp
 import mfz.myfzone_sport.myf_zone.model.State
-import mfz.myfzone_sport.myf_zone.model.coach.Coach
+import mfz.myfzone_sport.myf_zone.model.chat.Chat
 import org.jetbrains.anko.support.v4.toast
 
 class MessageFragment : Fragment() {
     companion object {
         private val TAG = MessageFragment::class.java.simpleName
-        private var adapter: FirestoreRecyclerAdapter<Coach, CoachHolder>? = null
+        private var adapter: FirestoreRecyclerAdapter<Chat, ChatHolder>? = null
 
         private lateinit var binding: FragmentMessageBinding
         private lateinit var viewModel: MessageViewModel
@@ -45,53 +48,62 @@ class MessageFragment : Fragment() {
             viewModel.checkUserAffiliationStatus()
         }
 
-        val recyclerOptions = FirestoreRecyclerOptions.Builder<Coach>()
-            .setQuery(viewModel.query.value!!/*.orderBy("date")*/, Coach::class.java)
+        val recyclerOptions = FirestoreRecyclerOptions.Builder<Chat>()
+            .setQuery(
+                viewModel.query.value!!.orderBy("updatedDate", Query.Direction.DESCENDING),
+                Chat::class.java
+            )
             .setLifecycleOwner(this)
             .build()
 
         adapter = object :
-            FirestoreRecyclerAdapter<Coach, CoachHolder>(recyclerOptions) {
-            override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CoachHolder {
-                return CoachHolder.from(parent)
+            FirestoreRecyclerAdapter<Chat, ChatHolder>(recyclerOptions) {
+            override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChatHolder {
+                return ChatHolder.from(parent)
             }
 
-            override fun onBindViewHolder(holder: CoachHolder, position: Int, model: Coach) {
+            override fun onBindViewHolder(holder: ChatHolder, position: Int, model: Chat) {
                 holder.bind(model)
+            }
+
+            override fun onDataChanged() {
+                super.onDataChanged()
+                binding.messageChatList.visibility =
+                    if (itemCount == 0) View.VISIBLE else View.GONE
+
+                val params = binding.messageUserList.layoutParams
+                params.height = 320 * itemCount
+                binding.messageUserList.layoutParams = params
             }
 
         }
     }
 
-    class CoachHolder(val binding: CardMessageCoachBinding) :
+    class ChatHolder(val binding: CardMessageCoachBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(coach: Coach) {
+        fun bind(chat: Chat) {
             with(binding) {
-                binding.coach = coach
 
-//                try {
-//                    val dotBg = if (viewModel.isUserSignedIn.value!!) {
-//                        if (viewModel.isUserAffiliated.value!!) {
-//                            R.drawable.notification_dot_green
-//                        } else {
-//                            R.drawable.notification_dot_blue
-//                        }
-//                    } else {
-//                        R.drawable.notification_dot_red
-//                    }
-//                    binding.notificationDotOwner.setImageResource(dotBg)
-//                } catch (e: Exception) {
-//                    Log.e("CoachHolder", "Notification Dot could not load: $e")
-//                }
+                binding.chat = chat
 
-                binding.messageCardViewTitle.setOnClickListener { userConversation(coach) }
+                try {
+                    GlideApp.with(itemView).apply {
+                        load(getImageReference(chat.clubLogo))
+                            .placeholder(R.drawable.ic_account)
+                            .centerCrop()
+                            .into(binding.messageCoachImage)
+                    }
+                } catch (e: Exception) {
+                    Log.e("CoachHolder", "Image could not load: $e")
+                }
+
+                binding.messageCardViewTitle.setOnClickListener { userConversation(chat) }
             }
         }
 
-        private fun userConversation(coach: Coach) {
-            Log.d(TAG, "clicked ${coach.firstName}")
-            val bundle = bundleOf("coachId" to coach.id)
+        private fun userConversation(chat: Chat) {
+            val bundle = bundleOf("coachId" to chat.coachId)
             navigate(R.id.messageToDiscussion, bundle)
         }
 
@@ -102,10 +114,10 @@ class MessageFragment : Fragment() {
         }
 
         companion object {
-            fun from(parent: ViewGroup): CoachHolder {
+            fun from(parent: ViewGroup): ChatHolder {
                 val layoutInflater = LayoutInflater.from(parent.context)
                 val binding = CardMessageCoachBinding.inflate(layoutInflater, parent, false)
-                return CoachHolder(binding)
+                return ChatHolder(binding)
             }
         }
     }
@@ -123,7 +135,7 @@ class MessageFragment : Fragment() {
 
         binding.apply {
             lifecycleOwner = this@MessageFragment
-//            setupRecyclerParameters()
+            setupRecyclerParameters()
             executePendingBindings()
         }
 

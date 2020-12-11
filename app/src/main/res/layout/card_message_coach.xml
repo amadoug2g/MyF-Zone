@@ -4,8 +4,8 @@
     <data>
 
         <variable
-            name="coach"
-            type="mfz.myfzone_sport.myf_zone.model.coach.Coach" />
+            name="chat"
+            type="mfz.myfzone_sport.myf_zone.model.chat.Chat" />
     </data>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -58,20 +58,22 @@
                             android:id="@+id/message_coach_name"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@{coach.getName}"
+                            android:text="@{chat.fullname}"
                             android:textColor="@android:color/black"
                             android:textSize="18sp" />
 
                         <TextView
-                            android:id="@+id/message_coach_date"
+                            android:id="@+id/message_coach_lastMessage"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
-                            android:text="@{coach.createdDate.toLocaleString()}"
+                            android:layout_marginTop="12dp"
+                            android:text="@{chat.lastMessage}"
                             android:textColor="@android:color/darker_gray"
                             android:textSize="16sp" />
 
                     </LinearLayout>
+
 
                     <RelativeLayout
                         android:layout_width="40dp"
@@ -85,19 +87,20 @@
                             android:layout_height="wrap_content"
                             android:layout_alignParentEnd="true"
                             android:contentDescription="@string/notification_dot" />
-
-                        <!--                        <ImageView-->
-                        <!--                            android:id="@+id/owner_message_icon"-->
-                        <!--                            android:layout_width="wrap_content"-->
-                        <!--                            android:layout_height="wrap_content"-->
-                        <!--                            android:layout_alignParentBottom="true"-->
-                        <!--                            android:layout_marginStart="4dp"-->
-                        <!--                            android:layout_marginEnd="4dp"-->
-                        <!--                            android:layout_marginBottom="16dp"-->
-                        <!--                            android:contentDescription="@string/quick_message"-->
-                        <!--                            android:src="@drawable/ic_message" />-->
-
                     </RelativeLayout>
+
+                    <TextView
+                        android:id="@+id/message_coach_lastMessageDate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentBottom="true"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginBottom="16dp"
+                        android:text="@{chat.chatDate}"
+                        android:textColor="@android:color/darker_gray"
+                        android:textSize="14sp" />
 
                 </RelativeLayout>
 

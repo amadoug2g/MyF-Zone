@@ -43,13 +43,13 @@ class EventEditViewModel : ViewModel() {
 
     fun getEventTypeToDisplay(event: Event): Int {
         return when (event.type) {
-            "Match Amical" -> {
+            "friendly" -> {
                 0
             }
-            "Plateau" -> {
+            "plateau" -> {
                 1
             }
-            "Tournoi" -> {
+            "tournament" -> {
                 2
             }
             else -> {

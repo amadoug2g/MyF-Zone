@@ -106,7 +106,7 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="16dp"
                     android:layout_weight="1"
-                    android:text="Date" />
+                    android:text="@string/event_creation_date_btn" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/event_create_time_picker"
@@ -115,7 +115,7 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="16dp"
                     android:layout_weight="1"
-                    android:text="Heure" />
+                    android:text="@string/event_creation_time_btn" />
 
             </LinearLayout>
 

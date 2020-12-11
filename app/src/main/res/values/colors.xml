@@ -6,5 +6,6 @@
     <color name="colorDiscreet">#B9B9B9</color>
     <color name="colorShimmer">#DDDDDD</color>
     <color name="colorTransparent">#88FFFFFF</color>
+    <color name="colorTransparentMessage">#EEEEEE</color>
     <color name="colorCoral">#FF7F50</color>
 </resources>

@@ -3,11 +3,9 @@ package mfz.myfzone_sport.myf_zone.screens
 import android.app.Activity
 import android.content.Context
 import android.content.res.ColorStateList
-import android.graphics.Rect
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
-import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
@@ -24,7 +22,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_main_screen.*
 import mfz.myfzone_sport.myf_zone.R
@@ -252,26 +249,26 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
             }
         }
     }
-
-    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
-        if (ev!!.action == MotionEvent.ACTION_DOWN) {
-            val v: View? = currentFocus
-            if (v is TextInputEditText) {
-                val outRect = Rect()
-                v.getGlobalVisibleRect(outRect)
-                if (!outRect.contains(ev.rawX.toInt(), ev.rawY.toInt())) {
-                    if (currentFocus != null) {
-                        val imm =
-                            getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                        imm.hideSoftInputFromWindow(currentFocus!!.windowToken, 0)
-                    }
-                    hideKeyboard()
-                    v.clearFocus()
-                }
-            }
-        }
-        return super.dispatchTouchEvent(ev)
-    }
+//
+//    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+//        if (ev!!.action == MotionEvent.ACTION_DOWN) {
+//            val v: View? = currentFocus
+//            if (v is TextInputEditText) {
+//                val outRect = Rect()
+//                v.getGlobalVisibleRect(outRect)
+//                if (!outRect.contains(ev.rawX.toInt(), ev.rawY.toInt())) {
+//                    if (currentFocus != null) {
+//                        val imm =
+//                            getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+//                        imm.hideSoftInputFromWindow(currentFocus!!.windowToken, 0)
+//                    }
+//                    hideKeyboard()
+//                    v.clearFocus()
+//                }
+//            }
+//        }
+//        return super.dispatchTouchEvent(ev)
+//    }
 
     override fun onSupportNavigateUp(): Boolean {
         return currentNavController?.value?.navigateUp() ?: false

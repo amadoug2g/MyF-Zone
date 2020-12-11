@@ -41,7 +41,6 @@ import mfz.myfzone_sport.myf_zone.model.event.EventParticipant
 import mfz.myfzone_sport.myf_zone.model.event.swipe_handler.ButtonClickListener
 import mfz.myfzone_sport.myf_zone.model.event.swipe_handler.MyButton
 import mfz.myfzone_sport.myf_zone.model.event.swipe_handler.SwipeHelper
-import mfz.myfzone_sport.myf_zone.util.user.UserAccount
 import org.jetbrains.anko.support.v4.toast
 import java.util.*
 
@@ -142,7 +141,7 @@ class EventDetailsFragment : Fragment() {
 
                 try {
                     GlideApp.with(itemView).apply {
-                        load(UserAccount.pathToReference(participant.clubLogo))
+                        load(getImageReference(participant.clubLogo))
                             .placeholder(R.drawable.ic_account)
                             .centerCrop()
                             .into(binding.eventDetailParticipantImage)
@@ -459,7 +458,7 @@ class EventDetailsFragment : Fragment() {
                     //Event Map
                     mapView(event, savedInstanceState)
 
-                    participantCount()
+//                    participantCount()
 
                     hideProgressBar()
                 }
@@ -499,6 +498,7 @@ class EventDetailsFragment : Fragment() {
                                     lifecycleScope.launch {
                                         acceptParticipant(viewModel.participantList.value!![pos])
                                     }
+//                                    participantCount()
                                 }
                             })
                     )
@@ -515,6 +515,7 @@ class EventDetailsFragment : Fragment() {
                                     lifecycleScope.launch {
                                         refuseParticipant(viewModel.participantList.value!![pos])
                                     }
+//                                    participantCount()
                                 }
                             })
                     )

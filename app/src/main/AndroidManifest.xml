@@ -36,8 +36,7 @@
         <activity
             android:name="mfz.myfzone_sport.myf_zone.screens.MainScreen"
             android:configChanges="orientation|keyboardHidden"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize|adjustPan" />
+            android:screenOrientation="portrait" />
         <activity
             android:name="mfz.myfzone_sport.myf_zone.screens.SplashScreen"
             android:theme="@style/SplashTheme">

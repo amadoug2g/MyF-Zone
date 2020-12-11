@@ -97,7 +97,6 @@ class ProfileFragment : Fragment() {
                     binding.profileSubCategory.text =
                         if (club.subCategoryName.isNullOrEmpty()) "" else "- ${club.subCategoryName}"
 
-                    //TODO: move getImageReference to ProfileViewModel
                     GlideApp.with(this).apply {
                         load(getImageReference(club.clubLogo))
                             .centerCrop()

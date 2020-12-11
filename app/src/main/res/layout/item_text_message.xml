@@ -1,6 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <data>
+
+        <variable
+            name="message"
+            type="mfz.myfzone_sport.myf_zone.model.chat.Message" />
+    </data>
+
+    <FrameLayout xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp">
+
+        <RelativeLayout
+            android:id="@+id/message_root"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:background="@drawable/round_rect_primary">
+
+            <TextView
+                android:id="@+id/textViewMessageText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxWidth="250dp"
+                android:minWidth="120dp"
+                android:paddingStart="8dp"
+                android:paddingTop="4dp"
+                android:paddingEnd="8dp"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Body1"
+                tools:text="@{message.text}" />
+
+            <TextView
+                android:id="@+id/textViewMessageTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/textViewMessageText"
+                android:layout_alignEnd="@id/textViewMessageText"
+                android:layout_marginEnd="8dp"
+                android:textSize="12sp"
+                tools:text="@{message.messageDate}" />
+        </RelativeLayout>
+    </FrameLayout>
+</layout>
+

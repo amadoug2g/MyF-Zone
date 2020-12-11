@@ -179,7 +179,8 @@ class EventCreationFragment : Fragment() {
                     createNewEvent()
                     addOwnerToEvent(owner)
                     addEventToUser(owner, club)
-                    ("Event successfully created").toast()
+                    (getString(R.string.event_created)).toast()
+                    resetFields()
                     requireActivity().onBackPressed()
                 }
                 is State.Failed -> {
@@ -189,6 +190,15 @@ class EventCreationFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun resetFields() {
+        binding.eventCreateTitleInput.setText("")
+        binding.eventCreateDescInput.setText("")
+        binding.eventCreateTypeSpinner.setSelection(0)
+        binding.eventCreateTeamSpinner.setSelection(0)
+        setStartDate()
+        binding.eventCreateAddressInput.setText("")
     }
 
     private suspend fun createNewEvent() {

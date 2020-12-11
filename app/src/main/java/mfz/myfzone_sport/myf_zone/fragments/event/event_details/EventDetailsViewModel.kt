@@ -89,7 +89,7 @@ class EventDetailsViewModel : ViewModel() {
         return (currentUser != null)
     }
 
-    fun checkIsUserOwner(): Boolean {
+    private fun checkIsUserOwner(): Boolean {
         val currentUser = FirebaseAuth.getInstance().currentUser
         val result = owner.value?.coachId == currentUser?.uid
         _isUserOwner.value = result

@@ -1,10 +1,11 @@
 package mfz.myfzone_sport.myf_zone.fragments.discussion_page
 
+import android.content.Context
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
-import com.google.firebase.firestore.ktx.toObject
+import com.google.firebase.firestore.SetOptions
 import com.xwray.groupie.kotlinandroidextensions.Item
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.flow.catch
@@ -14,6 +15,7 @@ import kotlinx.coroutines.tasks.await
 import mfz.myfzone_sport.myf_zone.model.State
 import mfz.myfzone_sport.myf_zone.model.chat.Chat
 import mfz.myfzone_sport.myf_zone.model.chat.Message
+import mfz.myfzone_sport.myf_zone.model.chat.TextMessageItem
 import mfz.myfzone_sport.myf_zone.model.coach.ClubAffiliation
 import mfz.myfzone_sport.myf_zone.model.coach.Coach
 import mfz.myfzone_sport.myf_zone.util.Constants.COACH_PATH
@@ -28,10 +30,9 @@ import java.util.*
  */
 
 object DiscussionService {
+    private val TAG = DiscussionService::class.java.simpleName
     private val firebaseAuth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
     private val fireStoreInstance: FirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
-
-    private val chatChannelsConnectionRef = fireStoreInstance.collection(COACH_PATH + "Chat")
 
     fun getCurrentUser() = flow<State<Coach>> {
         val userId = firebaseAuth.currentUser?.uid
@@ -83,7 +84,7 @@ object DiscussionService {
         emit(coach!!)
     }
 
-    fun getOrCreateChatChannel(
+    fun getOrCreateChat(
         coach: Coach,
         coachClub: ClubAffiliation,
         other: Coach,
@@ -121,11 +122,9 @@ object DiscussionService {
                 }
 
                 mUserChatQuery
-//            .collection("Message").document()
                     .set(newUserChat.toMap())
 
                 mOtherUserChatQuery
-//            .collection("Message").document()
                     .set(newOtherChat.toMap())
             } else {
                 Log.i("DiscussionService", "Document already exists")
@@ -157,33 +156,88 @@ object DiscussionService {
         }
     }
 
-    fun sendChatMessage() {
+    fun sendChatMessage(
+        coach: Coach,
+        coachClub: ClubAffiliation,
+        other: Coach,
+        message: String
+    ) {
+        val time = Calendar.getInstance().time
+        val mUserChatQuery = DB
+            .document(COACH_PATH + "/${coach.id}/Chat/${other.id}")
 
+        val mOtherUserChatQuery = DB
+            .document(COACH_PATH + "/${other.id}/Chat/${coach.id}")
+
+        val messageId = mUserChatQuery.collection("Message").document().id
+
+        val updatedChat = hashMapOf(
+            "isTyping" to false,
+            "lastMessage" to message,
+            "unread" to false,
+            "updatedDate" to time
+        )
+
+        mUserChatQuery
+            .set(updatedChat, SetOptions.merge())
+
+        mOtherUserChatQuery
+            .set(updatedChat, SetOptions.merge())
+
+        val newMessage = Message().apply {
+            id = messageId
+            senderId = coach.id
+            senderName = coach.getName()
+            senderClubLogo = coachClub.clubLogo
+            text = message
+            createdDate = time
+        }
+
+
+        val messageUserPath =
+            mUserChatQuery
+                .collection("Message")
+                .document(messageId)
+
+        messageUserPath.set(newMessage.toMap())
+
+        val messageOtherPath =
+            mOtherUserChatQuery
+                .collection("Message")
+                .document(messageId)
+
+        messageOtherPath.set(newMessage.toMap())
     }
 
     fun addChatMessageListener(
         otherId: String,
+        context: Context,
         onListen: (List<Item>) -> Unit
-    ): ListenerRegistration {
+    ): ListenerRegistration? {
         val userId = firebaseAuth.currentUser?.uid
 
         val mUserChatQuery = DB
             .document(COACH_PATH + "/${userId}/Chat/${otherId}")
+        return try {
+            mUserChatQuery
+                .collection("/Message").orderBy("createdDate")
+                .addSnapshotListener { value, error ->
+                    if (error != null) {
+                        Log.e("DiscussionService", "Error in addChatMessageListener", error)
+                        return@addSnapshotListener
+                    }
 
-        return mUserChatQuery
-            .collection("Message").orderBy("createdDate")
-            .addSnapshotListener { value, error ->
-                if (error != null) {
-                    Log.e("DiscussionService", "Error in addChatMessageListener", error)
-                    return@addSnapshotListener
+                    val items = mutableListOf<Item>()
+                    value?.documents?.forEach {
+                        items.add(TextMessageItem(it.toObject(Message::class.java)!!, context))
+                    }
+
+                    onListen(items)
                 }
-
-                val items = mutableListOf<Item>()
-                value?.documents?.forEach { Log.i("DiscussionService", "item is $it") }
-                value?.documents?.forEach { items.add(it.toObject()!!) }
-
-                onListen(items)
-            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in addChatMessageListener: ${e.localizedMessage}")
+            null
+        }
     }
 
 }
