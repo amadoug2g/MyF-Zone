@@ -1,5 +1,6 @@
 package mfz.myfzone_sport.myf_zone.fragments.user_sign.login
 
+import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
 import android.text.TextUtils
@@ -7,6 +8,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -16,8 +18,6 @@ import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.transition.TransitionInflater
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import kotlinx.android.synthetic.main.fragment_login.*
-import kotlinx.android.synthetic.main.fragment_login.view.*
 import kotlinx.android.synthetic.main.fragment_sign_up.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -34,6 +34,7 @@ class LoginFragment : Fragment() {
         private lateinit var binding: FragmentLoginBinding
     }
 
+    //region Override Methods
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -83,6 +84,12 @@ class LoginFragment : Fragment() {
             .addSharedElement(sign_up_button, "button_transition")
             .build()
     }
+
+    override fun onStop() {
+        super.onStop()
+        binding.loginEmailInput.hideKeyboard()
+    }
+    //endregion
 
     private suspend fun signInUser() {
         viewModel.signInUser(
@@ -154,6 +161,7 @@ class LoginFragment : Fragment() {
         return valid
     }
 
+    //region Loading
     private fun showProgressBar() {
         binding.loginProgressBar.apply {
             visibility = View.VISIBLE
@@ -165,8 +173,18 @@ class LoginFragment : Fragment() {
             visibility = View.GONE
         }
     }
+    //endregion
 
+    //region View Methods
+    private fun View.hideKeyboard() {
+        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(windowToken, 0)
+    }
+    //endregion
+
+    //region Navigation
     private fun navigate(destination: Int, extra: FragmentNavigator.Extras? = null) {
         findNavController().navigate(destination, null, null, extra)
     }
+    //endregion
 }

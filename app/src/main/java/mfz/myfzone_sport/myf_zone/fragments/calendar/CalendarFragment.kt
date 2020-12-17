@@ -1,4 +1,4 @@
-package mfz.myfzone_sport.myf_zone.fragments.calendar.calendar
+package mfz.myfzone_sport.myf_zone.fragments.calendar
 
 import android.content.Context
 import android.net.ConnectivityManager
@@ -20,11 +20,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
 import mfz.myfzone_sport.myf_zone.R
+import mfz.myfzone_sport.myf_zone.fragments.calendar.CalendarService.eventToCalendar
+import mfz.myfzone_sport.myf_zone.fragments.calendar.CalendarService.getEventsByDate
+import mfz.myfzone_sport.myf_zone.fragments.calendar.CalendarService.globalEventList
 import mfz.myfzone_sport.myf_zone.model.event.calendar.EventSection
 import mfz.myfzone_sport.myf_zone.model.event.calendar.ListRecyclerAdapter
-import mfz.myfzone_sport.myf_zone.util.event.EventUtil.getEventsByDate
-import mfz.myfzone_sport.myf_zone.util.event.EventUtil.globalEventList
-import mfz.myfzone_sport.myf_zone.util.event.MapsUtil.eventToCalendar
 import mfz.myfzone_sport.myf_zone.util.user.UserAccount
 import mfz.myfzone_sport.myf_zone.util.user.UserAccount.auth
 import mfz.myfzone_sport.myf_zone.util.user.UserAffiliation
@@ -54,11 +54,6 @@ class CalendarFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
         val fragmentInflater = inflater.inflate(R.layout.fragment_calendar, container, false)
 
         val swipeRefreshLayout = fragmentInflater.swipeRefreshLayout
-
-        fragmentInflater.account_button.background = null
-        fragmentInflater.account_button.setOnClickListener {
-            accountButton()
-        }
 
 //        isOnline(requireContext())
 //        checkCo()
@@ -212,7 +207,6 @@ class CalendarFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
         } else {
             cm?.run {
                 val all = cm.allNetworks
-                val all2 = cm.isDefaultNetworkActive
                 Log.i("Internet", "list? ${all.size}")
 
                 cm.activeNetworkInfo?.run {

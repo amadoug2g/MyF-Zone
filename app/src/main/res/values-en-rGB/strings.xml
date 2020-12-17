@@ -118,4 +118,10 @@
     <string name="event_creation_date_btn">Date</string>
     <string name="event_creation_time_btn">Time</string>
     <string name="event_created">Event successfully created</string>
+    <string name="event_deleted">Event successfully deleted</string>
+    <string name="user_not_affiliated">You are not affiliated</string>
+    <string name="select_filter_period">Select Range</string>
+    <string name="filter_text">Filter</string>
+    <string name="no_event_found">No event in this range</string>
+    <string name="event_in_range">events in this range</string>
 </resources>

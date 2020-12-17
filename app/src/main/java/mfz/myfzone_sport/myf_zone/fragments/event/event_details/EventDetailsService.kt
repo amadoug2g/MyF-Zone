@@ -9,6 +9,7 @@ import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.tasks.await
@@ -30,6 +31,8 @@ import mfz.myfzone_sport.myf_zone.util.Constants.EVENT_PATH
  */
 
 object EventDetailsService {
+    private val TAG = EventDetailsService::class.java.simpleName
+
     private val firebaseAuth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
     private val storageInstance: FirebaseStorage by lazy { FirebaseStorage.getInstance() }
     val fireStoreInstance: FirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
@@ -208,39 +211,137 @@ object EventDetailsService {
         val snapshot = mParticipantListQuery.get().await().documents
         val participantList = mutableListOf<EventParticipant>()
         snapshot.forEach { participantList.add(it.toObject()!!) }
-        Log.i("Discussion", "List: $participantList")
 
         participantList.forEach { if (it.coachId == userId) emit(State.success(true)) }
     }.catch {
         emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
     }.flowOn(IO)
 
-    fun getValidParticipantCount(participantList: MutableList<EventParticipant>): String {
-        var validParticipant = 0
+    suspend fun getValidParticipantCount(eventId: String): String {
+        val participantList = getParticipantsFromEvent(eventId)
+        return try {
+            when (participantList.isNullOrEmpty()) {
+                true -> {
+                    "0"
+                }
+                false -> {
+                    var result = 0
+                    for (item in participantList) {
+                        if (item.status == "validate")
+                            result++
+                    }
 
-        if (!participantList.isNullOrEmpty())
-            participantList.forEach { if (it.status == "validate") validParticipant++ }
-
-        return validParticipant.toString()
+                    result.toString()
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in getValidParticipantCount: $e")
+            "?"
+        }
     }
 
-    fun deleteEvent(eventId: String, club: ClubAffiliation) = flow<State<Boolean>> {
-        val mEventQuery = DB.document(EVENT_PATH + "/${eventId}")
+    private suspend fun getParticipantsFromEvent(eventId: String): MutableList<EventParticipant>? {
+        val docRef =
+            DB.collection(EVENT_PATH)
+                .document(eventId)
+                .collection("Participant")
+
+        return try {
+            val participationList = mutableListOf<EventParticipant>()
+            val documents = docRef.get().await().documents
+            for (doc in documents)
+                participationList.add(doc.toObject()!!)
+
+            participationList
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in getParticipantsFromEvent: $e")
+            null
+        }
+    }
+
+    fun deleteAllEvent(eventId: String, club: ClubAffiliation) = flow<State<Boolean>> {
+        val userId = firebaseAuth.currentUser?.uid
 
         emit(State.loading())
 
-        mEventQuery.delete().await()
+        val mEventQuery = DB.document(EVENT_PATH + "/${eventId}")
+        val mParticipantListQuery = DB.collection(EVENT_PATH + "/${eventId}/Participant")
+        val mOwnerQuery = DB.document(EVENT_PATH + "/${eventId}/Owner/${userId}")
+        val mOwnerEventQuery =
+            DB.document(COACH_PATH + "/${userId}/ClubAffiliation/${club.clubId}/CoachEvent/${eventId}")
+
+        Log.i("EventDetailsService", "Event Path: ${mEventQuery.path}")
+        Log.d(TAG, "deleteEventForOwner path: ${mOwnerEventQuery.path}")
+        Log.d(TAG, "deleteEventForOwner path id: ${mOwnerEventQuery.id}")
+        Log.d(TAG, "deleteEventForOwner get: ${mOwnerEventQuery.get()}")
+
+        val snapshot = mParticipantListQuery.get().await().documents
+        val participantList = mutableListOf<EventParticipant>()
+        snapshot.forEach { participantList.add(it.toObject()!!) }
+        if (participantList.isNotEmpty()) {
+            participantList.forEach {
+                deleteParticipant(eventId, it.coachId).collect { state ->
+                    when (state) {
+                        is State.Loading -> {
+                        }
+                        is State.Success -> {
+                        }
+                        is State.Failed -> {
+                        }
+                    }
+                }
+            }
+        }
+
+        mOwnerEventQuery.delete()
+
+        mOwnerQuery.delete()
+
+        mEventQuery.delete()
 
         emit(State.success(true))
-
-        deleteParticipants(eventId)
-        deleteOwner(eventId)
-        deleteEventForOwner(eventId, club)
     }.catch {
         emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
     }.flowOn(IO)
 
-    private fun deleteParticipants(eventId: String) = flow<State<Boolean>> {
+    fun deleteEvent(eventId: String, club: ClubAffiliation) = flow<State<Boolean>> {
+        val userId = firebaseAuth.currentUser?.uid
+
+        emit(State.loading())
+
+        val mEventQuery = DB.document(EVENT_PATH + "/${eventId}")
+        val mParticipantListQuery = DB.collection(EVENT_PATH + "/${eventId}/Participant")
+        val mOwnerQuery = DB.document(EVENT_PATH + "/${eventId}/Owner/${userId}")
+        val mOwnerEventQuery =
+            DB.document(COACH_PATH + "/${userId}/ClubAffiliation/${club.clubId}/CoachEvent/${eventId}")
+
+        mParticipantListQuery.get().addOnSuccessListener { querySnapshot ->
+            if (querySnapshot.documents.size > 0) {
+                val participantList = mutableListOf<EventParticipant>()
+
+                querySnapshot.forEach { participant ->
+                    participantList.add(participant.toObject())
+                }
+
+                participantList.forEach { coach ->
+                    val mParticipantQuery =
+                        DB.document(EVENT_PATH + "/${eventId}/Participant/${coach.coachId}")
+                    mParticipantQuery.delete()
+                }
+
+            } else return@addOnSuccessListener
+        }
+
+        mOwnerQuery.delete()
+        mEventQuery.delete()
+        mOwnerEventQuery.delete()
+
+        emit(State.success(true))
+    }.catch {
+        emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
+    }.flowOn(IO)
+
+    fun deleteParticipants(eventId: String) = flow<State<Boolean>> {
         val mParticipantListQuery = DB.collection(EVENT_PATH + "/${eventId}/Participant")
 
         emit(State.loading())
@@ -250,48 +351,65 @@ object EventDetailsService {
         snapshot.forEach { participantList.add(it.toObject()!!) }
 
         if (participantList.isNotEmpty()) {
-            participantList.forEach { refuseParticipant(eventId, it.coachId) }
-            emit(State.success(true))
+            participantList.forEach {
+                deleteParticipant(eventId, it.coachId).collect { state ->
+                    when (state) {
+                        is State.Loading -> {
+                        }
+                        is State.Success -> {
+                        }
+                        is State.Failed -> {
+                        }
+                    }
+                }
+            }
         }
+        emit(State.success(true))
     }.catch {
         emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
     }.flowOn(IO)
 
-    private fun refuseParticipant(eventId: String, coachId: String) = flow<State<Boolean>> {
+    private fun deleteParticipant(eventId: String, coachId: String) = flow<State<Boolean>> {
         val mParticipantQuery = DB.document(EVENT_PATH + "/${eventId}/Participant/${coachId}")
 
         emit(State.loading())
 
-        mParticipantQuery.delete().await()
+        mParticipantQuery.delete()
 
         emit(State.success(true))
     }.catch {
         emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
     }.flowOn(IO)
 
-    private fun deleteOwner(eventId: String) = flow<State<Boolean>> {
+    fun deleteOwner(eventId: String) = flow<State<Boolean>> {
         val userId = firebaseAuth.currentUser?.uid
 
         val mOwnerQuery = DB.document(EVENT_PATH + "/${eventId}/Owner/${userId}")
 
         emit(State.loading())
 
-        mOwnerQuery.delete().await()
+        mOwnerQuery.delete()
 
         emit(State.success(true))
     }.catch {
         emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
     }.flowOn(IO)
 
-    private fun deleteEventForOwner(eventId: String, club: ClubAffiliation) = flow<State<Boolean>> {
+    fun deleteEventForOwner(eventId: String, club: ClubAffiliation) = flow<State<Boolean>> {
         val userId = firebaseAuth.currentUser?.uid
+
+        Log.d(TAG, "deleteEventForOwner id: $userId")
 
         val mOwnerEventQuery =
             DB.document(COACH_PATH + "/${userId}/ClubAffiliation/${club.clubId}/CoachEvent/${eventId}")
 
+        Log.d(TAG, "deleteEventForOwner path: ${mOwnerEventQuery.path}")
+        Log.d(TAG, "deleteEventForOwner path id: ${mOwnerEventQuery.id}")
+        Log.d(TAG, "deleteEventForOwner get: ${mOwnerEventQuery.get()}")
+
         emit(State.loading())
 
-        mOwnerEventQuery.delete().await()
+        mOwnerEventQuery.delete()
 
         emit(State.success(true))
     }.catch {

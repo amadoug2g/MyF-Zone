@@ -25,6 +25,9 @@ import mfz.myfzone_sport.myf_zone.util.Constants.EVENT_PATH
  */
 
 class EventDetailsViewModel : ViewModel() {
+    private val TAG = EventDetailsViewModel::class.java.simpleName
+
+    //region variable declaration
     private val _event = MutableLiveData<Event>()
     val event: LiveData<Event>
         get() = _event
@@ -68,6 +71,7 @@ class EventDetailsViewModel : ViewModel() {
         get() = _isUserParticipant
 
     val eventId = MutableLiveData<String>()
+    //endregion variable declaration
 
     init {
         _isUserSignedIn.value = checkUserSignedIn()
@@ -119,7 +123,7 @@ class EventDetailsViewModel : ViewModel() {
                 }
                 is State.Failed -> {
 //                    hideProgressBar()
-                    val message = "An error occurred: ${state.message}"
+                    val message = "An error occurred [in assignUser]: ${state.message}"
                     Log.i("EventDetailsViewModel", message)
                 }
             }
@@ -137,8 +141,8 @@ class EventDetailsViewModel : ViewModel() {
                 }
                 is State.Failed -> {
 //                    hideProgressBar()
-                    val message = "An error occurred: ${state.message}"
-                    Log.i("EventDetailsViewModel", message)
+                    val message = "An error occurred [in assignParticipants]: ${state.message}"
+                    Log.i(TAG, message)
                 }
             }
         }
@@ -157,7 +161,7 @@ class EventDetailsViewModel : ViewModel() {
                 }
                 is State.Failed -> {
 //                    hideProgressBar()
-                    val message = "An error occurred: ${state.message}"
+                    val message = "An error occurred [in assignEvent]: ${state.message}"
                     Log.i("EventDetailsViewModel", message)
                 }
             }
@@ -177,7 +181,7 @@ class EventDetailsViewModel : ViewModel() {
                 }
                 is State.Failed -> {
 //                    hideProgressBar()
-                    val message = "An error occurred: ${state.message}"
+                    val message = "An error occurred [in assignClub]: ${state.message}"
                     Log.i("EventDetailsViewModel", message)
                 }
             }
@@ -198,7 +202,7 @@ class EventDetailsViewModel : ViewModel() {
                 }
                 is State.Failed -> {
 //                    hideProgressBar()
-                    val message = "An error occurred: ${state.message}"
+                    val message = "An error occurred [in assignOwner]: ${state.message}"
                     Log.i("EventDetailsViewModel", message)
                 }
             }
@@ -215,11 +219,12 @@ class EventDetailsViewModel : ViewModel() {
                 }
                 is State.Success -> {
 //                    hideProgressBar()
-                    _isUserAffiliated.value = true
+                    _isUserAffiliated.value = state.data
                 }
                 is State.Failed -> {
                     _isUserAffiliated.value = false
-                    val message = "An error occurred: ${state.message}"
+                    val message =
+                        "An error occurred [in checkUserAffiliationStatus]: ${state.message}"
                     Log.i("EventDetailsViewModel", message)
 //                    hideProgressBar()
                 }
@@ -242,7 +247,8 @@ class EventDetailsViewModel : ViewModel() {
                 }
                 is State.Failed -> {
                     _isUserParticipating.value = false
-                    val message = "An error occurred: ${state.message}"
+                    val message =
+                        "An error occurred [in checkParticipationStatus]: ${state.message}"
                     Log.i("EventDetailsViewModel", message)
 //                    hideProgressBar()
                 }
@@ -250,36 +256,90 @@ class EventDetailsViewModel : ViewModel() {
         }
     }
 
-    fun getValidParticipantCount(participantList: MutableList<EventParticipant>) =
-        EventDetailsService.getValidParticipantCount(participantList)
-
-    fun addParticipant(eventId: String, participant: EventParticipant) =
-        EventDetailsService.addParticipant(eventId, participant)
-
-    //    fun removeParticipant(eventId: String) = EventDetailsService.removeParticipant(eventId)
-    fun removeParticipant(eventId: String) {
+    fun addParticipant(participant: EventParticipant) {
         viewModelScope.launch {
-            EventDetailsService.removeParticipant(eventId).collect { state ->
+            EventDetailsService.addParticipant(eventId.value!!, participant).collect { state ->
                 when (state) {
                     is State.Loading -> {
+
                     }
                     is State.Success -> {
-                        Log.d("EventDetailsViewModel", "cancellation succesful")
+                        Log.d(TAG, "addParticipant Success")
                     }
                     is State.Failed -> {
-                        Log.d("EventDetailsViewModel", "cancellation failed: ${state.message}")
+                        Log.d(TAG, "addParticipant Failed: ${state.message}")
                     }
                 }
             }
         }
     }
 
-    fun acceptParticipant(eventId: String, participant: EventParticipant) =
-        EventDetailsService.acceptParticipant(eventId, participant)
+    fun removeParticipant() {
+        viewModelScope.launch {
+            EventDetailsService.removeParticipant(eventId.value!!).collect { state ->
+                when (state) {
+                    is State.Loading -> {
+                    }
+                    is State.Success -> {
+                        Log.d(TAG, "removeParticipant Success")
+                    }
+                    is State.Failed -> {
+                        Log.d(TAG, "removeParticipant Failed: ${state.message}")
+                    }
+                }
+            }
+        }
+    }
 
-    fun refuseParticipant(eventId: String, participant: EventParticipant) =
-        EventDetailsService.refuseParticipant(eventId, participant)
+    fun acceptParticipant(participant: EventParticipant) {
+        viewModelScope.launch {
+            EventDetailsService.acceptParticipant(eventId.value!!, participant).collect { state ->
+                when (state) {
+                    is State.Loading -> {
+                    }
+                    is State.Success -> {
+                        Log.d(TAG, "acceptParticipant Success")
+                    }
+                    is State.Failed -> {
+                        Log.d(TAG, "removeParticipant Failed: ${state.message}")
+                    }
+                }
+            }
+        }
+    }
 
-    fun deleteEvent(eventId: String, club: ClubAffiliation) =
-        EventDetailsService.deleteEvent(eventId, club)
+    fun refuseParticipant(participant: EventParticipant) {
+        viewModelScope.launch {
+            EventDetailsService.refuseParticipant(eventId.value!!, participant).collect { state ->
+                when (state) {
+                    is State.Loading -> {
+                    }
+                    is State.Success -> {
+                        Log.d(TAG, "refuseParticipant Success")
+                    }
+                    is State.Failed -> {
+                        Log.d(TAG, "refuseParticipant Failed: ${state.message}")
+                    }
+                }
+            }
+        }
+    }
+
+    fun deleteEvent() {
+        viewModelScope.launch {
+            EventDetailsService.deleteEvent(eventId.value!!, club.value!!).collect { state ->
+                when (state) {
+                    is State.Loading -> {
+                    }
+                    is State.Success -> {
+                        Log.d(TAG, "deleteEvent Success")
+                    }
+                    is State.Failed -> {
+                        Log.d(TAG, "deleteEvent Failed: ${state.message}")
+                    }
+                }
+
+            }
+        }
+    }
 }

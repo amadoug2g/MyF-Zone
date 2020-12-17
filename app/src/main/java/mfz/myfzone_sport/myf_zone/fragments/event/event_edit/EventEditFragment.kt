@@ -20,8 +20,6 @@ import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.widget.Autocomplete
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import kotlinx.android.synthetic.main.fragment_event_edit.*
-import kotlinx.android.synthetic.main.fragment_event_edit.view.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import mfz.myfzone_sport.myf_zone.R
@@ -51,6 +49,7 @@ class EventEditFragment : Fragment() {
         private lateinit var binding: FragmentEventEditBinding
     }
 
+    //region Override Methods
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -138,6 +137,7 @@ class EventEditFragment : Fragment() {
             }
         }
     }
+    //endregion
 
     private suspend fun getEvent() {
         viewModel.getEvent(eventId!!).collect { state ->
@@ -214,6 +214,7 @@ class EventEditFragment : Fragment() {
         startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE)
     }
 
+    //region Event Time
     private fun setEventDate(event: Event) {
         val formatEventDay1 = SimpleDateFormat("E MMM dd", Locale.ENGLISH)
         val formatEventDay2 = SimpleDateFormat("z yyyy", Locale.ENGLISH)
@@ -267,7 +268,9 @@ class EventEditFragment : Fragment() {
             true
         ).show()
     }
+    //endregion
 
+    //region Form Validation
     private fun validateForm(): Boolean {
         var valid = true
 
@@ -321,6 +324,7 @@ class EventEditFragment : Fragment() {
 
         return valid
     }
+    //endregion
 
     private fun confirmUpdate() {
         MaterialAlertDialogBuilder(requireContext())
@@ -339,6 +343,7 @@ class EventEditFragment : Fragment() {
             }.show()
     }
 
+    //region Loading
     private fun showProgressBar() {
         binding.progressBar.apply {
             visibility = View.VISIBLE
@@ -350,8 +355,11 @@ class EventEditFragment : Fragment() {
             visibility = View.GONE
         }
     }
+    //endregion
 
+    //region View Methods
     private fun String.toast() {
         toast(this)
     }
+    //endregion
 }

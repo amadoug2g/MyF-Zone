@@ -24,9 +24,18 @@
         <action
             android:id="@+id/messageToDiscussion"
             app:destination="@id/discussion" />
+        <action
+            android:id="@+id/messageToEventCreation"
+            app:destination="@id/eventCreationFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/eventCreationFragment"
+        android:name="mfz.myfzone_sport.myf_zone.fragments.event.event_creation.EventCreationFragment"
+        android:label="@string/new_event"
+        tools:layout="@layout/fragment_event_creation" />
     <include app:graph="@navigation/profile" />
     <include app:graph="@navigation/affiliation_request" />
     <include app:graph="@navigation/login" />
     <include app:graph="@navigation/discussion" />
+    <include app:graph="@navigation/event_creation" />
 </navigation>

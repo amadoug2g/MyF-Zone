@@ -103,8 +103,8 @@
 
                 <ImageView
                     android:id="@+id/event_detail_imageView"
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
+                    android:layout_width="110dp"
+                    android:layout_height="110dp"
                     android:layout_gravity="center"
                     android:layout_margin="4dp"
                     android:contentDescription="@string/event_logo"

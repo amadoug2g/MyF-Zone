@@ -30,7 +30,7 @@
 
     <fragment
         android:id="@+id/mapsFragment"
-        android:name="mfz.myfzone_sport.myf_zone.fragments.maps.map.MapsFragment"
+        android:name="mfz.myfzone_sport.myf_zone.fragments.maps.MapsFragment"
         android:label="@string/title_activity_maps"
         tools:layout="@layout/fragment_maps">
         <action
@@ -45,9 +45,13 @@
         <action
             android:id="@+id/mapsToEventDetails"
             app:destination="@+id/event_detail" />
+        <action
+            android:id="@+id/mapsToEventCreation"
+            app:destination="@+id/event_creation" />
     </fragment>
     <include app:graph="@navigation/event_detail" />
     <include app:graph="@navigation/profile" />
     <include app:graph="@navigation/affiliation_request" />
     <include app:graph="@navigation/login" />
+    <include app:graph="@navigation/event_creation" />
 </navigation>

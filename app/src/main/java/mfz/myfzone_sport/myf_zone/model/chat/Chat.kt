@@ -93,6 +93,7 @@ data class Chat(
             } else {
                 if (boolWeek) {
                     result = formatMessageDay.format(formatDate.parse(updatedDate.toString())!!)
+                        .capitalize()
                 } else if (boolYear) {
                     result = formatMessageYear.format(formatDate.parse(updatedDate.toString())!!)
                 }

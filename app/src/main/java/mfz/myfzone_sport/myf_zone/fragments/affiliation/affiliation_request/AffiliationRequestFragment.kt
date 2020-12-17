@@ -171,7 +171,8 @@ class AffiliationRequestFragment : Fragment() {
         }
 
         affiliationCodeInput?.textChangedListener {
-            onTextChanged { sequence, i, i2, i3 ->
+            onTextChanged { sequence, _,
+                            _, _ ->
                 if (!sequence?.toString().equals(null)) {
                     validateForm()
                 }

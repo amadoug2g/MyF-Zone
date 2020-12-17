@@ -10,8 +10,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
-import kotlinx.android.synthetic.main.fragment_affiliation_success.*
-import kotlinx.android.synthetic.main.fragment_affiliation_success.view.*
 import kotlinx.coroutines.launch
 import mfz.myfzone_sport.myf_zone.R
 import mfz.myfzone_sport.myf_zone.databinding.FragmentAffiliationSuccessBinding
@@ -28,6 +26,7 @@ class AffiliationSuccessFragment : Fragment() {
         private lateinit var viewModel: AffiliationSuccessViewModel
     }
 
+    //region Override Methods
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -99,7 +98,9 @@ class AffiliationSuccessFragment : Fragment() {
         super.onStop()
         binding.affiliationSuccessShimmerLayout.stopShimmer()
     }
+    //endregion
 
+    //region Loading
     private fun showProgressBar() {
         binding.affiliationSuccessShimmerLayout.startShimmer()
         binding.affiliationSuccessShimmerLayout.visibility = View.VISIBLE
@@ -111,8 +112,11 @@ class AffiliationSuccessFragment : Fragment() {
         binding.affiliationSuccessShimmerLayout.visibility = View.GONE
         binding.affiliationSuccessLayout.visibility = View.VISIBLE
     }
+    //endregion
 
+    //region View Methods
     private fun String.toast() {
         toast(this)
     }
+    //endregion
 }

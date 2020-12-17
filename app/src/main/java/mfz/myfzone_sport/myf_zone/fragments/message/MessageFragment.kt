@@ -38,47 +38,6 @@ class MessageFragment : Fragment() {
         private lateinit var viewModel: MessageViewModel
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        Log.d(TAG, "onCREATE")
-
-        viewModel = ViewModelProvider(this).get(MessageViewModel::class.java)
-
-        lifecycleScope.launch {
-            viewModel.checkUserAffiliationStatus()
-        }
-
-        val recyclerOptions = FirestoreRecyclerOptions.Builder<Chat>()
-            .setQuery(
-                viewModel.query.value!!.orderBy("updatedDate", Query.Direction.DESCENDING),
-                Chat::class.java
-            )
-            .setLifecycleOwner(this)
-            .build()
-
-        adapter = object :
-            FirestoreRecyclerAdapter<Chat, ChatHolder>(recyclerOptions) {
-            override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChatHolder {
-                return ChatHolder.from(parent)
-            }
-
-            override fun onBindViewHolder(holder: ChatHolder, position: Int, model: Chat) {
-                holder.bind(model)
-            }
-
-            override fun onDataChanged() {
-                super.onDataChanged()
-                binding.messageChatList.visibility =
-                    if (itemCount == 0) View.VISIBLE else View.GONE
-
-                val params = binding.messageUserList.layoutParams
-                params.height = 320 * itemCount
-                binding.messageUserList.layoutParams = params
-            }
-
-        }
-    }
-
     class ChatHolder(val binding: CardMessageCoachBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
@@ -122,6 +81,48 @@ class MessageFragment : Fragment() {
         }
     }
 
+    //region Override Methods
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        Log.d(TAG, "onCREATE")
+
+        viewModel = ViewModelProvider(this).get(MessageViewModel::class.java)
+
+        lifecycleScope.launch {
+            viewModel.checkUserAffiliationStatus()
+        }
+
+        val recyclerOptions = FirestoreRecyclerOptions.Builder<Chat>()
+            .setQuery(
+                viewModel.query.value!!.orderBy("updatedDate", Query.Direction.DESCENDING),
+                Chat::class.java
+            )
+            .setLifecycleOwner(this)
+            .build()
+
+        adapter = object :
+            FirestoreRecyclerAdapter<Chat, ChatHolder>(recyclerOptions) {
+            override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChatHolder {
+                return ChatHolder.from(parent)
+            }
+
+            override fun onBindViewHolder(holder: ChatHolder, position: Int, model: Chat) {
+                holder.bind(model)
+            }
+
+            override fun onDataChanged() {
+                super.onDataChanged()
+                binding.messageChatList.visibility =
+                    if (itemCount == 0) View.VISIBLE else View.GONE
+
+                val params = binding.messageUserList.layoutParams
+                params.height = 320 * itemCount
+                binding.messageUserList.layoutParams = params
+            }
+
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -139,21 +140,20 @@ class MessageFragment : Fragment() {
             executePendingBindings()
         }
 
-        binding.accountButton.background = null
-        binding.accountButton.setOnClickListener {
-            accountButton()
-        }
-
         return binding.root
     }
+    //endregion
 
+    //region RecyclerView
     private fun setupRecyclerParameters() {
         binding.messageUserList.setHasFixedSize(false)
         binding.messageUserList.layoutManager = LinearLayoutManager(requireContext())
         binding.messageUserList.adapter = adapter
         binding.messageUserList.isNestedScrollingEnabled = false
     }
+    //endregion
 
+    //region User Info
     private suspend fun loadUser() {
         viewModel.getCurrentUser().collect { state ->
             when (state) {
@@ -173,7 +173,9 @@ class MessageFragment : Fragment() {
             }
         }
     }
+    //endregion
 
+    //region Navigation
     private fun accountButton() {
         if (!viewModel.isUserSignedIn.value!!) {
             navigate(R.id.messageToLogin)
@@ -190,9 +192,11 @@ class MessageFragment : Fragment() {
     private fun navigate(destination: Int) {
         findNavController().navigate(destination)
     }
+    //endregion
 
-
+    //region View Methods
     private fun showToast(string: String) {
         toast(string)
     }
+    //endregion
 }

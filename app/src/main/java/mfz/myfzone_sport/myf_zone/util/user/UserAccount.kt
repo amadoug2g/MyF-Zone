@@ -1,7 +1,5 @@
 package mfz.myfzone_sport.myf_zone.util.user
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.userProfileChangeRequest
@@ -9,16 +7,8 @@ import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.storage.FirebaseStorage
-import com.squareup.picasso.Picasso
-import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withContext
-import mfz.myfzone_sport.myf_zone.model.coach.ClubAffiliation
 import mfz.myfzone_sport.myf_zone.model.coach.Coach
 import mfz.myfzone_sport.myf_zone.util.Constants.COACH_PATH
-import mfz.myfzone_sport.myf_zone.util.Constants.DB
-import java.net.URL
 
 
 object UserAccount {
@@ -46,47 +36,6 @@ object UserAccount {
                 it.toObject<Coach>()?.let { it1 -> onComplete(it1) }
 //                Log.d(TAG, "User retrieved")
             }
-    }
-
-    suspend fun getClubUser(): ClubAffiliation? {
-        val currentUser = auth.currentUser
-
-        val docRef =
-            DB.collection(COACH_PATH)
-                .document(currentUser!!.uid)
-                .collection("ClubAffiliation")
-
-        return try {
-            docRef.get().await().documents[0].toObject<ClubAffiliation>()!!
-        } catch (e: Exception) {
-            Log.e(TAG, e.toString())
-            null
-        }
-    }
-
-    fun getCurrentClub(onComplete: (ClubAffiliation) -> Unit) {
-        currentUserDocRef.collection("ClubAffiliation").get()
-            .addOnSuccessListener {
-                val club = it.documents[0]
-                club.toObject<ClubAffiliation>()?.let { it1 -> onComplete(it1) }
-//                Log.d(TAG, "Club Affiliation retrieved")
-            }
-    }
-
-    fun pathToReference(path: String) =
-        storageInstance.getReference(path.removePrefix("gs://myf-zone.appspot.com"))
-
-    fun getImageClub(path: String): Bitmap? = runBlocking {
-        withContext(IO) {
-            Picasso.get().load(path).get()
-        }
-    }
-
-    fun getImageClubURL(path: String): Bitmap? = runBlocking {
-        withContext(IO) {
-            val url = URL(path)
-            BitmapFactory.decodeStream(url.openConnection().getInputStream())
-        }
     }
 
     fun updateCurrentUser(

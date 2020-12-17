@@ -1,17 +1,18 @@
-package mfz.myfzone_sport.myf_zone.fragments.calendar.event_creation
+package mfz.myfzone_sport.myf_zone.fragments.event.event_creation
 
 import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
-import android.text.format.DateFormat
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -21,8 +22,6 @@ import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.widget.Autocomplete
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import kotlinx.android.synthetic.main.fragment_event_creation.*
-import kotlinx.android.synthetic.main.fragment_event_creation.view.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import mfz.myfzone_sport.myf_zone.R
@@ -53,6 +52,7 @@ class EventCreationFragment : Fragment() {
         private lateinit var binding: FragmentEventCreationBinding
     }
 
+    //region Override Methods
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -64,14 +64,17 @@ class EventCreationFragment : Fragment() {
             false
         )
 
-        viewModel = ViewModelProvider(this).get(EventCreationViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(
+            EventCreationViewModel::class.java
+        )
 
         binding.apply {
             lifecycleOwner = this@EventCreationFragment
             executePendingBindings()
         }
 
-        binding.event = event
+        binding.event =
+            event
 
         //Event Address
         Places.initialize(requireContext(), getString(R.string.google_maps_key))
@@ -106,7 +109,10 @@ class EventCreationFragment : Fragment() {
         binding.eventCreateTeamSpinner.onItemSelectedListener {
             onItemSelected { _, _, _, selected ->
                 val nbTeam = 2 + selected
-                viewModel.setEventTeam(nbTeam.toInt(), event)
+                viewModel.setEventTeam(
+                    nbTeam.toInt(),
+                    event
+                )
             }
         }
 
@@ -139,6 +145,42 @@ class EventCreationFragment : Fragment() {
                     event.address = place.address!!
                     event.lat = place.latLng?.latitude!!
                     event.lng = place.latLng?.longitude!!
+                }
+            }
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        binding.eventCreateAddressInput.hideKeyboard()
+    }
+    //endregion
+
+
+    private fun resetFields() {
+        binding.eventCreateTitleInput.setText("")
+        binding.eventCreateDescInput.setText("")
+        binding.eventCreateTypeSpinner.setSelection(0)
+        binding.eventCreateTeamSpinner.setSelection(0)
+//        setStartDate()
+        binding.eventCreateAddressInput.setText("")
+    }
+
+    //region Event Creation
+    private suspend fun createNewEvent() {
+        viewModel.createEvent(
+            event
+        ).collect { state ->
+            when (state) {
+                is State.Loading -> {
+
+                }
+                is State.Success -> {
+                    Log.i(TAG, "Success! Event is: ${state.data}")
+                }
+                is State.Failed -> {
+                    val message = "An error occurred: ${state.message}"
+                    message.toast()
                 }
             }
         }
@@ -192,34 +234,10 @@ class EventCreationFragment : Fragment() {
         }
     }
 
-    private fun resetFields() {
-        binding.eventCreateTitleInput.setText("")
-        binding.eventCreateDescInput.setText("")
-        binding.eventCreateTypeSpinner.setSelection(0)
-        binding.eventCreateTeamSpinner.setSelection(0)
-        setStartDate()
-        binding.eventCreateAddressInput.setText("")
-    }
-
-    private suspend fun createNewEvent() {
-        viewModel.createEvent(event).collect { state ->
-            when (state) {
-                is State.Loading -> {
-
-                }
-                is State.Success -> {
-                    Log.i(TAG, "Success! Event is: ${state.data}")
-                }
-                is State.Failed -> {
-                    val message = "An error occurred: ${state.message}"
-                    message.toast()
-                }
-            }
-        }
-    }
-
     private suspend fun addOwnerToEvent(owner: EventOwner) {
-        viewModel.addOwnerToEvent(event, owner).collect { state ->
+        viewModel.addOwnerToEvent(
+            event, owner
+        ).collect { state ->
             when (state) {
                 is State.Loading -> {
 
@@ -236,7 +254,9 @@ class EventCreationFragment : Fragment() {
     }
 
     private suspend fun addEventToUser(owner: EventOwner, clubAffiliation: ClubAffiliation) {
-        viewModel.addEventToUser(event, owner, clubAffiliation).collect { state ->
+        viewModel.addEventToUser(
+            event, owner, clubAffiliation
+        ).collect { state ->
             when (state) {
                 is State.Loading -> {
 
@@ -258,15 +278,20 @@ class EventCreationFragment : Fragment() {
                 setHint(getString(R.string.enter_address_hint))
             }
                 .build(requireContext())
-        startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE)
+        startActivityForResult(
+            intent,
+            AUTOCOMPLETE_REQUEST_CODE
+        )
     }
+    //endregion
 
+    //region Event Time
     private fun setStartDate() {
-        val date = DateFormat.format("dd/MM/yyyy", Date()).toString()
-        val time = DateFormat.format("HH:mm", Date()).toString()
+//        val date = DateFormat.format("dd/MM/yyyy", Date()).toString()
+//        val time = DateFormat.format("HH:mm", Date()).toString()
 
-        binding.eventCreateDayPicker.text = date
-        binding.eventCreateTimePicker.text = time
+        binding.eventCreateDayPicker.text = getString(R.string.event_creation_date_btn)
+        binding.eventCreateTimePicker.text = getString(R.string.event_creation_time_btn)
     }
 
     private fun selectDate() {
@@ -311,7 +336,9 @@ class EventCreationFragment : Fragment() {
             true
         ).show()
     }
+    //endregion
 
+    //region Form Validation
     private fun validateForm(): Boolean {
         var valid = true
 
@@ -359,7 +386,11 @@ class EventCreationFragment : Fragment() {
         }
 
         if (eventDay1 != null && eventDay2 != null && eventTime != null) {
-            if (viewModel.setEventDate(eventDay1!!, eventDay2!!, eventTime!!, event) !is Date) {
+            if (viewModel.setEventDate(
+                    eventDay1!!, eventDay2!!, eventTime!!,
+                    event
+                ) !is Date
+            ) {
 //                toast(getString(R.string.date_required))
                 valid = false
             }
@@ -370,6 +401,7 @@ class EventCreationFragment : Fragment() {
 
         return valid
     }
+    //endregion
 
     private fun confirmCreation() {
         MaterialAlertDialogBuilder(requireContext())
@@ -377,7 +409,10 @@ class EventCreationFragment : Fragment() {
             .setMessage(getString(R.string.create_event_confirmation))
             .setIcon(R.drawable.ic_info)
             .setPositiveButton(getString(R.string.create_txt)) { _: DialogInterface, _: Int ->
-                viewModel.setEventDate(eventDay1!!, eventDay2!!, eventTime!!, event)
+                viewModel.setEventDate(
+                    eventDay1!!, eventDay2!!, eventTime!!,
+                    event
+                )
 
                 lifecycleScope.launch {
                     getOwnerForEvent()
@@ -388,6 +423,7 @@ class EventCreationFragment : Fragment() {
             }.show()
     }
 
+    //region Loading
     private fun showProgressBar() {
         binding.progressBar.apply {
             visibility = View.VISIBLE
@@ -399,8 +435,21 @@ class EventCreationFragment : Fragment() {
             visibility = View.GONE
         }
     }
+    //endregion
 
+    //region View Methods
     private fun String.toast() {
         toast(this)
     }
+
+    private fun View.showKeyboard() {
+        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
+    }
+
+    private fun View.hideKeyboard() {
+        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(windowToken, 0)
+    }
+    //endregion
 }

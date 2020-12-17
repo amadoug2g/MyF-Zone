@@ -10,30 +10,22 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.observe
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupActionBarWithNavController
-import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.datepicker.CalendarConstraints
-import com.google.android.material.datepicker.MaterialDatePicker
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.firebase.auth.FirebaseAuth
-import kotlinx.android.synthetic.main.activity_main_screen.*
+import kotlinx.coroutines.launch
 import mfz.myfzone_sport.myf_zone.R
-import mfz.myfzone_sport.myf_zone.model.event.MarkerItem
+import mfz.myfzone_sport.myf_zone.databinding.ActivityMainScreenBinding
 import mfz.myfzone_sport.myf_zone.setupWithNavController
-import mfz.myfzone_sport.myf_zone.util.event.EventUtil.globalEventList
-import mfz.myfzone_sport.myf_zone.util.event.EventUtil.markerItemList
-import mfz.myfzone_sport.myf_zone.util.event.MapsUtil.hideMarkerItem
-import mfz.myfzone_sport.myf_zone.util.event.MapsUtil.showMarkerItem
-import mfz.myfzone_sport.myf_zone.util.user.UserAccount
-import mfz.myfzone_sport.myf_zone.util.user.UserAccount.auth
-import mfz.myfzone_sport.myf_zone.util.user.UserAffiliation
 import org.jetbrains.anko.toast
 import java.util.*
 import kotlin.concurrent.schedule
@@ -47,35 +39,41 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
 
         private var currentNavController: LiveData<NavController>? = null
         private var doubleBackToExitPressedOnce = false
+
+        private lateinit var binding: ActivityMainScreenBinding
+        private lateinit var viewModel: MainViewModel
     }
 
+    //region Override Methods
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTheme(R.style.AppTheme)
-        setContentView(R.layout.activity_main_screen)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main_screen)
+
         Log.d(TAG, "onCREATE")
+
+        binding.apply {
+            lifecycleOwner = this@MainScreen
+            executePendingBindings()
+        }
+
+        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+
+        lifecycleScope.launch {
+            viewModel.checkUserAffiliationStatus()
+        }
+
+        binding.accountButton.background = null
 
         if (savedInstanceState == null) {
             setupBottomNavigationBar()
         }
 
-        auth = FirebaseAuth.getInstance()
-
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.fragmentNavHost) as NavHostFragment
         navController = navHostFragment.navController
-//        fragmentManager.popBackStack(
-//            firstFragmentTag,
-//            FragmentManager.POP_BACK_STACK_INCLUSIVE
-//        )
 
-//        bottomNavBar.selectedItemId = R.id.map
-//        bottomNavBar.performClick()
-//
-//        val view: View = bottomNavBar.findViewById(R.id.map)
-//        view.performClick()
-//
-//        navController.popBackStack()
+        //bottomNavBar.selectedItemId = R.id.map
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
@@ -84,7 +82,7 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-        bottomNavBar.apply {
+        binding.bottomNavBar.apply {
             background = null
         }
         return super.onPrepareOptionsMenu(menu)
@@ -119,161 +117,61 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
         destination: NavDestination,
         arguments: Bundle?
     ) {
-        val navBar: BottomAppBar = this.findViewById(R.id.bottomBar)
-        val fabButton: FloatingActionButton = this.findViewById(R.id.fabMain)
         when (destination.id) {
             R.id.mapsFragment -> {
-                navBar.visibility = View.VISIBLE
-                fabButton.visibility = View.VISIBLE
+                mainNavBarAppearance()
+                binding.bottomBar.hideOnScroll = false
 
-                fabMain.setImageResource(R.drawable.ic_filter)
-                fabMain.backgroundTintList = ColorStateList.valueOf(
-                    ContextCompat.getColor(
-                        applicationContext,
-                        R.color.colorAccent
-                    )
-                )
-
-                val builder = MaterialDatePicker.Builder.dateRangePicker()
-                val now = Calendar.getInstance()
-                val constraints = CalendarConstraints.Builder().apply {
-                    setStart(now.timeInMillis)
-                    setOpenAt(now.timeInMillis)
+                binding.fabMain.setOnClickListener {
+                    fabButton(R.id.mapsFragment)
                 }
 
-                builder.apply {
-                    setTitleText("Sélectionnez une période")
-                    setSelection(
-                        androidx.core.util.Pair(
-                            now.timeInMillis,
-                            now.timeInMillis + (604800000)
-                        )
-                    )
-                    setCalendarConstraints(constraints.build())
-                    setTheme(R.style.ThemeOverlay_MaterialComponents_MaterialCalendar)
+                binding.accountButton.setOnClickListener {
+                    profileButton(R.id.mapsFragment)
                 }
-
-                val filter = builder.build()
-
-                fabMain.setOnClickListener {
-                    filter.show(supportFragmentManager, "Event Range Picker")
-                }
-
-                filter.addOnNegativeButtonClickListener {
-
-                }
-
-                filter.addOnPositiveButtonClickListener {
-                    builder.apply {
-                        setSelection(androidx.core.util.Pair(it.first, it.second))
-                    }
-
-                    val filteredEventListToShow = mutableListOf<MarkerItem>()
-                    val filteredEventListToHide = mutableListOf<MarkerItem>()
-
-                    if (!globalEventList.isNullOrEmpty() && !markerItemList.isNullOrEmpty()) {
-                        for (item in markerItemList!!) {
-                            val inRange = item.day > it.first!! && item.day < it.second!!
-                            if (inRange) {
-                                filteredEventListToShow.add(item)
-                                Log.d(TAG, "Show: $item")
-                            } else {
-                                filteredEventListToHide.add(item)
-                                Log.d(TAG, "Hide: $item")
-                            }
-                        }
-                        showMarkerItem(filteredEventListToShow)
-                        hideMarkerItem(filteredEventListToHide)
-                    }
-                }
-
-                supportActionBar!!.apply {
-                    hide()
-                }
-
-                bottomBar.hideOnScroll = false
             }
             R.id.messageFragment -> {
-                navBar.visibility = View.VISIBLE
-                fabButton.visibility = View.VISIBLE
+                mainNavBarAppearance()
+                binding.bottomBar.hideOnScroll = true
 
-                fabMain.setImageResource(R.drawable.ic_add)
-                fabMain.backgroundTintList = ColorStateList.valueOf(
-                    ContextCompat.getColor(
-                        applicationContext,
-                        R.color.colorCoral
-                    )
-                )
-
-                fabMain.setOnClickListener {
-//                    accountButtonNewMessage()
-                    toast("new message creation")
+                binding.fabMain.setOnClickListener {
+                    fabButton(R.id.messageFragment)
                 }
 
-                bottomBar.hideOnScroll = true
-
-                supportActionBar!!.apply {
-                    hide()
+                binding.accountButton.setOnClickListener {
+                    profileButton(R.id.messageFragment)
                 }
             }
             R.id.calendarFragment -> {
-                navBar.visibility = View.VISIBLE
-                fabButton.visibility = View.VISIBLE
+                mainNavBarAppearance()
+                binding.bottomBar.hideOnScroll = true
 
-                fabMain.setImageResource(R.drawable.ic_add)
-                fabMain.backgroundTintList = ColorStateList.valueOf(
-                    ContextCompat.getColor(
-                        applicationContext,
-                        R.color.colorAccent
-                    )
-                )
-
-                fabMain.setOnClickListener {
-                    accountButtonEventCreation()
+                binding.fabMain.setOnClickListener {
+                    fabButton(R.id.calendarFragment)
                 }
 
-                bottomBar.hideOnScroll = true
-
-                supportActionBar!!.apply {
-                    hide()
+                binding.accountButton.setOnClickListener {
+                    profileButton(R.id.calendarFragment)
                 }
             }
             else -> {
-
                 supportActionBar!!.apply {
                     show()
                 }
 
-                navBar.visibility = View.GONE
-                fabButton.visibility = View.GONE
+                binding.bottomBar.visibility = View.GONE
+                binding.fabMain.visibility = View.GONE
+                binding.accountButton.visibility = View.GONE
             }
         }
     }
-//
-//    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
-//        if (ev!!.action == MotionEvent.ACTION_DOWN) {
-//            val v: View? = currentFocus
-//            if (v is TextInputEditText) {
-//                val outRect = Rect()
-//                v.getGlobalVisibleRect(outRect)
-//                if (!outRect.contains(ev.rawX.toInt(), ev.rawY.toInt())) {
-//                    if (currentFocus != null) {
-//                        val imm =
-//                            getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-//                        imm.hideSoftInputFromWindow(currentFocus!!.windowToken, 0)
-//                    }
-//                    hideKeyboard()
-//                    v.clearFocus()
-//                }
-//            }
-//        }
-//        return super.dispatchTouchEvent(ev)
-//    }
 
     override fun onSupportNavigateUp(): Boolean {
         return currentNavController?.value?.navigateUp() ?: false
     }
+    //endregion
 
+    //region Bottom Navigation
     private fun setupBottomNavigationBar() {
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavBar)
 
@@ -295,6 +193,49 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
         currentNavController = controller
     }
 
+    private fun mainNavBarAppearance() {
+        binding.bottomBar.visibility = View.VISIBLE
+        binding.fabMain.visibility = View.VISIBLE
+        binding.accountButton.visibility = View.VISIBLE
+
+        supportActionBar!!.apply {
+            hide()
+        }
+
+        binding.fabMain.setImageResource(R.drawable.ic_add)
+        binding.fabMain.backgroundTintList = ColorStateList.valueOf(
+            ContextCompat.getColor(
+                applicationContext,
+                R.color.colorAccent
+            )
+        )
+    }
+    //endregion
+
+    //region View Methods
+
+    /*
+    //    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+    //        if (ev!!.action == MotionEvent.ACTION_DOWN) {
+    //            val v: View? = currentFocus
+    //            if (v is TextInputEditText) {
+    //                val outRect = Rect()
+    //                v.getGlobalVisibleRect(outRect)
+    //                if (!outRect.contains(ev.rawX.toInt(), ev.rawY.toInt())) {
+    //                    if (currentFocus != null) {
+    //                        val imm =
+    //                            getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+    //                        imm.hideSoftInputFromWindow(currentFocus!!.windowToken, 0)
+    //                    }
+    //                    hideKeyboard()
+    //                    v.clearFocus()
+    //                }
+    //            }
+    //        }
+    //        return super.dispatchTouchEvent(ev)
+    //    }
+
+     */
     private fun Activity.hideKeyboard() {
         hideKeyboard(currentFocus ?: View(this))
     }
@@ -304,57 +245,117 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
             getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
     }
+    //endregion
 
+    //region Navigation
     private fun navigate(destination: Int) {
-        findNavController(fabMain.id).navigate(destination)
+        findNavController(binding.fragmentNavHost.id).navigate(destination)
     }
 
-    private fun accountButtonEventCreation() {
-        val currentUser = auth.currentUser
-        if (currentUser == null) {
-            navController.navigate(R.id.calendarToLogin)
-        } else {
-            UserAccount.getCurrentUser { user ->
-                if (currentUser.displayName == "") {
-                    UserAccount.updateCurrentUser("", user.firstName, user.lastName)
+    private fun fabButton(destinationId: Int) {
+        when (destinationId) {
+            R.id.mapsFragment -> {
+                viewModel.isUserSignedIn.observe(this) { isUserSignedIn ->
+                    if (isUserSignedIn) {
+                        viewModel.isUserAffiliated.observe(this) { isUserAffiliated ->
+                            if (isUserAffiliated) {
+                                navigate(R.id.mapsToEventCreation)
+                            } else {
+                                toast(getString(R.string.user_not_affiliated))
+                                navigate(R.id.mapsToAffiliationRequest)
+                            }
+                        }
+                    } else {
+                        navigate(R.id.mapsToLogin)
+                    }
                 }
             }
-
-            UserAffiliation.userAffiliationStatus {
-                when (it) {
-                    true -> {
-                        navController.navigate(R.id.calendarToEventCreation)
+            R.id.messageFragment -> {
+                viewModel.isUserSignedIn.observe(this) { isUserSignedIn ->
+                    if (isUserSignedIn) {
+                        viewModel.isUserAffiliated.observe(this) { isUserAffiliated ->
+                            if (isUserAffiliated) {
+                                navigate(R.id.messageToEventCreation)
+                            } else {
+                                toast(getString(R.string.user_not_affiliated))
+                                navigate(R.id.messageToAffiliationRequest)
+                            }
+                        }
+                    } else {
+                        navigate(R.id.messageToLogin)
                     }
-                    false -> {
-                        navController.navigate(R.id.calendarToAffiliationRequest)
+                }
+            }
+            R.id.calendarFragment -> {
+                viewModel.isUserSignedIn.observe(this) { isUserSignedIn ->
+                    if (isUserSignedIn) {
+                        viewModel.isUserAffiliated.observe(this) { isUserAffiliated ->
+                            if (isUserAffiliated) {
+                                navigate(R.id.calendarToEventCreation)
+                            } else {
+                                toast(getString(R.string.user_not_affiliated))
+                                navigate(R.id.calendarToAffiliationRequest)
+                            }
+                        }
+                    } else {
+                        navigate(R.id.calendarToLogin)
                     }
                 }
             }
         }
     }
 
-    private fun accountButtonNewMessage() {
-        val currentUser = auth.currentUser
-        if (currentUser == null) {
-            navController.navigate(R.id.calendarToLogin)
-        } else {
-            UserAccount.getCurrentUser { user ->
-                if (currentUser.displayName == "") {
-                    UserAccount.updateCurrentUser("", user.firstName, user.lastName)
+    private fun profileButton(destinationId: Int) {
+        when (destinationId) {
+            R.id.mapsFragment -> {
+                viewModel.isUserSignedIn.observe(this) { isUserSignedIn ->
+                    if (isUserSignedIn) {
+                        viewModel.isUserAffiliated.observe(this) { isUserAffiliated ->
+                            if (isUserAffiliated) {
+                                navigate(R.id.mapsToProfile)
+                            } else {
+                                toast(getString(R.string.user_not_affiliated))
+                                navigate(R.id.mapsToAffiliationRequest)
+                            }
+                        }
+                    } else {
+                        navigate(R.id.mapsToLogin)
+                    }
                 }
             }
-
-            UserAffiliation.userAffiliationStatus {
-                when (it) {
-                    true -> {
-                        toast("new message creation")
+            R.id.messageFragment -> {
+                viewModel.isUserSignedIn.observe(this) { isUserSignedIn ->
+                    if (isUserSignedIn) {
+                        viewModel.isUserAffiliated.observe(this) { isUserAffiliated ->
+                            if (isUserAffiliated) {
+                                navigate(R.id.messageToProfile)
+                            } else {
+                                toast(getString(R.string.user_not_affiliated))
+                                navigate(R.id.messageToAffiliationRequest)
+                            }
+                        }
+                    } else {
+                        navigate(R.id.messageToLogin)
                     }
-                    false -> {
-                        super.onPostResume()
-                        navController.navigate(R.id.calendarToAffiliationRequest)
+                }
+            }
+            R.id.calendarFragment -> {
+                viewModel.isUserSignedIn.observe(this) { isUserSignedIn ->
+                    if (isUserSignedIn) {
+                        viewModel.isUserAffiliated.observe(this) { isUserAffiliated ->
+                            if (isUserAffiliated) {
+                                navigate(R.id.calendarToProfile)
+                            } else {
+                                toast(getString(R.string.user_not_affiliated))
+                                navigate(R.id.calendarToAffiliationRequest)
+                            }
+                        }
+                    } else {
+                        navigate(R.id.calendarToLogin)
                     }
                 }
             }
         }
     }
+    //endregion
 }

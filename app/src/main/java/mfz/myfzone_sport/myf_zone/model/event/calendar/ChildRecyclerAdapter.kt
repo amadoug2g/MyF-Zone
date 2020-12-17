@@ -57,7 +57,7 @@ class ChildRecyclerAdapter(private val items: MutableList<EventCalendar>) :
                         .into(itemView.cardView_clubImage_profile)
                 }
             } catch (e: Exception) {
-                Log.e("ParticipantAdapter", "Image could not load: $e")
+                Log.e("ViewHolder", "Image could not load: $e")
             }
 
 //            CoroutineScope(Main).launch {

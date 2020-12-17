@@ -91,9 +91,12 @@ data class Event(
         get() {
             var result: Int = R.mipmap.ic_football_ball_icon_001
             when (type) {
-                "friendly" -> result = R.mipmap.ic_football_ball_icon_002
-                "tournament" -> result = R.mipmap.ic_football__trophy_icon_002
-                "plateau" -> result = R.mipmap.ic_football_field_icon_002
+                "friendly" -> result = R.mipmap.ic_ball
+                "tournament" -> result = R.mipmap.ic_cup
+                "plateau" -> result = R.mipmap.ic_stadium
+                //"friendly" -> result = R.mipmap.ic_football_ball_icon_002
+                //"tournament" -> result = R.mipmap.ic_football__trophy_icon_002
+                //"plateau" -> result = R.mipmap.ic_football_field_icon_002
             }
             return result
         }

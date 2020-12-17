@@ -1,4 +1,4 @@
-package mfz.myfzone_sport.myf_zone.fragments.calendar.event_creation
+package mfz.myfzone_sport.myf_zone.fragments.event.event_creation
 
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers

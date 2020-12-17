@@ -1,4 +1,4 @@
-package mfz.myfzone_sport.myf_zone.fragments.calendar.event_creation
+package mfz.myfzone_sport.myf_zone.fragments.event.event_creation
 
 import android.util.Log
 import androidx.lifecycle.LiveData
@@ -36,17 +36,29 @@ class EventCreationViewModel : ViewModel() {
         initFields()
     }
 
-    fun checkAffiliationStatus() = EventCreationService.checkAffiliationStatus()
+    fun checkAffiliationStatus() =
+        EventCreationService.checkAffiliationStatus()
 
-    fun getOwnerForEvent() = EventCreationService.getOwnerForEvent()
+    fun getOwnerForEvent() =
+        EventCreationService.getOwnerForEvent()
 
-    fun createEvent(event: Event) = EventCreationService.createEvent(event)
+    fun createEvent(event: Event) =
+        EventCreationService.createEvent(
+            event
+        )
 
     fun addOwnerToEvent(event: Event, owner: EventOwner) =
-        EventCreationService.addOwnerToEvent(event, owner)
+        EventCreationService.addOwnerToEvent(
+            event,
+            owner
+        )
 
     fun addEventToUser(event: Event, owner: EventOwner, club: ClubAffiliation) =
-        EventCreationService.addEventToUser(event, owner, club)
+        EventCreationService.addEventToUser(
+            event,
+            owner,
+            club
+        )
 
     fun setEventType(type: String, event: Event) {
         when (type) {

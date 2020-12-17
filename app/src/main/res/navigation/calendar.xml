@@ -9,12 +9,12 @@
 
     <fragment
         android:id="@+id/calendarFragment"
-        android:name="mfz.myfzone_sport.myf_zone.fragments.calendar.calendar.CalendarFragment"
+        android:name="mfz.myfzone_sport.myf_zone.fragments.calendar.CalendarFragment"
         android:label=""
         tools:layout="@layout/fragment_calendar">
         <action
             android:id="@+id/calendarToEventCreation"
-            app:destination="@id/eventCreationFragment" />
+            app:destination="@id/event_creation" />
         <action
             android:id="@+id/calendarToEventDetail"
             app:destination="@+id/event_detail" />
@@ -28,13 +28,9 @@
             android:id="@+id/calendarToProfile"
             app:destination="@id/profile" />
     </fragment>
-    <fragment
-        android:id="@+id/eventCreationFragment"
-        android:name="mfz.myfzone_sport.myf_zone.fragments.calendar.event_creation.EventCreationFragment"
-        android:label="@string/new_event"
-        tools:layout="@layout/fragment_event_creation" />
     <include app:graph="@navigation/event_detail" />
     <include app:graph="@navigation/profile" />
     <include app:graph="@navigation/affiliation_request" />
     <include app:graph="@navigation/login" />
+    <include app:graph="@navigation/event_creation" />
 </navigation>

@@ -5,8 +5,8 @@ import androidx.appcompat.app.AppCompatActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
-import mfz.myfzone_sport.myf_zone.util.event.EventUtil.getEventsByDate
-import mfz.myfzone_sport.myf_zone.util.event.EventUtil.globalEventList
+import mfz.myfzone_sport.myf_zone.fragments.calendar.CalendarService.getEventsByDate
+import mfz.myfzone_sport.myf_zone.fragments.calendar.CalendarService.globalEventList
 import org.jetbrains.anko.startActivity
 import java.util.*
 import kotlin.concurrent.schedule
@@ -15,8 +15,6 @@ class SplashScreen : AppCompatActivity() {
     companion object {
         private val TAG = SplashScreen::class.java.simpleName
     }
-
-//    var globalEventList = mutableListOf<Event>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

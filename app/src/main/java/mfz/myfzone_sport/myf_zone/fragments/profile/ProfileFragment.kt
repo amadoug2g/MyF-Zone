@@ -1,5 +1,6 @@
 package mfz.myfzone_sport.myf_zone.fragments.profile
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -10,8 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import kotlinx.android.synthetic.main.fragment_profile.*
-import kotlinx.android.synthetic.main.fragment_profile.view.*
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import mfz.myfzone_sport.myf_zone.R
@@ -20,6 +20,11 @@ import mfz.myfzone_sport.myf_zone.fragments.profile.ProfileService.getImageRefer
 import mfz.myfzone_sport.myf_zone.glide.GlideApp
 import mfz.myfzone_sport.myf_zone.model.State
 import mfz.myfzone_sport.myf_zone.model.event.Event
+import mfz.myfzone_sport.myf_zone.screens.MainScreen
+import mfz.myfzone_sport.myf_zone.util.user.UserAccount.auth
+import org.jetbrains.anko.clearTask
+import org.jetbrains.anko.newTask
+import org.jetbrains.anko.support.v4.intentFor
 import org.jetbrains.anko.support.v4.toast
 
 class ProfileFragment : Fragment() {
@@ -30,6 +35,7 @@ class ProfileFragment : Fragment() {
         private lateinit var viewModelFactory: ProfileViewModelFactory
     }
 
+    //region Override Methods
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCREATE")
@@ -60,9 +66,23 @@ class ProfileFragment : Fragment() {
             loadUserEvents()
         }
 
+        binding.profileSettings.setOnClickListener { signOut() }
+
         return binding.root
     }
 
+    override fun onResume() {
+        super.onResume()
+        binding.profileShimmerLayout.startShimmer()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        binding.profileShimmerLayout.stopShimmer()
+    }
+    //endregion
+
+    //region User Info
     private suspend fun loadUser() {
         viewModel.getCurrentUser().collect { state ->
             when (state) {
@@ -76,7 +96,7 @@ class ProfileFragment : Fragment() {
                 }
                 is State.Failed -> {
                     hideProgressBar()
-                    val message = "An error occurred: ${state.message}"
+                    val message = "An error occurred [in loadUser]: ${state.message}"
                     showToast(message)
                 }
             }
@@ -95,7 +115,7 @@ class ProfileFragment : Fragment() {
                     binding.club = club
                     Log.d(TAG, "club: ${club.clubLogo}")
                     binding.profileSubCategory.text =
-                        if (club.subCategoryName.isNullOrEmpty()) "" else "- ${club.subCategoryName}"
+                        if (club.subCategoryName.isNullOrEmpty()) "" else " - ${club.subCategoryName}"
 
                     GlideApp.with(this).apply {
                         load(getImageReference(club.clubLogo))
@@ -105,7 +125,7 @@ class ProfileFragment : Fragment() {
                 }
                 is State.Failed -> {
                     hideProgressBar()
-                    val message = "An error occurred: ${state.message}"
+                    val message = "An error occurred [in loadUserClub]: ${state.message}"
                     showToast(message)
                 }
             }
@@ -126,7 +146,7 @@ class ProfileFragment : Fragment() {
                 }
                 is State.Failed -> {
                     hideProgressBar()
-                    val message = "An error occurred: ${state.message}"
+                    val message = "An error occurred [in loadUserEvents]: ${state.message}"
                     showToast(message)
                 }
             }
@@ -143,16 +163,19 @@ class ProfileFragment : Fragment() {
 //                    hideProgressBar()
                     val eventOwner = state.data
                     eventList.forEach { event -> event.owner = eventOwner }
+                    Log.i(TAG, "event list is:$eventList")
                 }
                 is State.Failed -> {
                     hideProgressBar()
-                    val message = "An error occurred: ${state.message}"
+                    val message = "An error occurred [in loadEventOwner]: ${state.message}"
                     showToast(message)
                 }
             }
         }
     }
+    //endregion
 
+    //region RecyclerView
     private fun setupEventRecyclerView(eventList: MutableList<Event>) {
         val adapter = ProfileEventAdapter()
         adapter.submitList(eventList)
@@ -162,37 +185,39 @@ class ProfileFragment : Fragment() {
             setHasFixedSize(true)
         }
     }
+    //endregion
 
+    //region Loading
     private fun showProgressBar() {
-//        binding.profileProgressBar.apply {
-//            visibility = View.VISIBLE
-//        }
-
         binding.profileShimmerLayout.startShimmer()
         binding.profileShimmerLayout.visibility = View.VISIBLE
         binding.profileLayout.visibility = View.GONE
     }
 
-    override fun onResume() {
-        super.onResume()
-        binding.profileShimmerLayout.startShimmer()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        binding.profileShimmerLayout.stopShimmer()
-    }
-
     private fun hideProgressBar() {
-//        binding.profileProgressBar.apply {
-//            visibility = View.GONE
-//        }
         binding.profileShimmerLayout.stopShimmer()
         binding.profileShimmerLayout.visibility = View.GONE
         binding.profileLayout.visibility = View.VISIBLE
+    }
+    //endregion
+
+    //region View Methods
+    private fun signOut() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.logout)
+            .setMessage(R.string.logout_message)
+            .setPositiveButton(R.string.confirm_message) { _: DialogInterface, _: Int ->
+                auth.signOut()
+                toast(R.string.logout_success)
+                startActivity(intentFor<MainScreen>().newTask().clearTask())
+            }
+            .setNegativeButton(R.string.cancel_message) { _: DialogInterface, _: Int ->
+            }
+            .show()
     }
 
     private fun showToast(string: String) {
         toast(string)
     }
+    //endregion
 }

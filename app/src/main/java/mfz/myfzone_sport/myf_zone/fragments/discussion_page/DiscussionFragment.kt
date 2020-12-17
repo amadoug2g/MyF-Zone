@@ -1,12 +1,12 @@
 package mfz.myfzone_sport.myf_zone.fragments.discussion_page
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN
+import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -44,9 +44,9 @@ class DiscussionFragment : Fragment() {
         private lateinit var messageSection: Section
     }
 
+    //region Override Methods
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.i(TAG, "shouldInitRecycler = $shouldInitRecycler [onCreate]")
         shouldInitRecycler = true
         arguments?.let {
             coachId = it.getString(ARG_PARAM1)
@@ -62,7 +62,7 @@ class DiscussionFragment : Fragment() {
             viewModel.assignOtherClub(coachId!!)
         }
 
-        requireActivity().window.setSoftInputMode(SOFT_INPUT_ADJUST_PAN)
+//        requireActivity().window.setSoftInputMode(SOFT_INPUT_ADJUST_PAN)
     }
 
     override fun onCreateView(
@@ -76,11 +76,6 @@ class DiscussionFragment : Fragment() {
             container,
             false
         )
-
-        //Page Title
-        (activity as AppCompatActivity).supportActionBar?.apply {
-            title = viewModel.coach.value?.firstName
-        }
 
         viewModel.other.observe(viewLifecycleOwner) { other ->
             //Page Title
@@ -99,11 +94,11 @@ class DiscussionFragment : Fragment() {
         }
 
         binding.senderTextBox.textChangedListener {
-            beforeTextChanged { charSequence, i, i2, i3 ->
+            beforeTextChanged { _, _, _, _ ->
                 viewModel.typeStart()
             }
 
-            onTextChanged { charSequence, i, i2, i3 ->
+            onTextChanged { _, _, _, _ ->
             }
 
             afterTextChanged {
@@ -146,9 +141,9 @@ class DiscussionFragment : Fragment() {
 
         viewModel.other.observe(viewLifecycleOwner) { other ->
             try {
-                addChatMessageListener(other.id, requireContext(), this::updateRecyclerView)
+                messagesListenerRegistration =
+                    addChatMessageListener(other.id, requireContext(), this::updateRecyclerView)!!
             } catch (e: Exception) {
-                requireActivity().onBackPressed()
                 Log.e(TAG, "Error in messageListener: $e")
                 toast("Error in messageListener: $e")
             }
@@ -157,21 +152,20 @@ class DiscussionFragment : Fragment() {
         return binding.root
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            android.R.id.home -> {
-                shouldInitRecycler = true
-                Log.i(TAG, "shouldInitRecycler = $shouldInitRecycler [Home]")
-            }
-        }
-        return super.onOptionsItemSelected(item)
+    override fun onStop() {
+        super.onStop()
+        binding.recyclerViewMessages.hideKeyboard()
     }
+    //endregion
 
+    //region RecyclerView
     private fun updateRecyclerView(messages: List<Item>) {
-        Log.i(TAG, "shouldInitRecycler = $shouldInitRecycler [RecyclerView]")
         fun init() {
             binding.recyclerViewMessages.apply {
-                layoutManager = LinearLayoutManager(requireContext())
+                val layout = LinearLayoutManager(requireContext())
+                layout.stackFromEnd = true
+                //layout.reverseLayout = true
+                layoutManager = layout
                 adapter = GroupAdapter<GroupieViewHolder>().apply {
                     messageSection = Section(messages)
                     this.add(messageSection)
@@ -184,6 +178,14 @@ class DiscussionFragment : Fragment() {
 
         if (shouldInitRecycler) init() else updateItems()
 
-//        binding.recyclerViewMessages.scrollToPosition(recyclerViewMessages.adapter!!.itemCount - 1)
+        binding.recyclerViewMessages.scrollToPosition(binding.recyclerViewMessages.adapter!!.itemCount - 1)
     }
+    //endregion
+
+    //region View Methods
+    private fun View.hideKeyboard() {
+        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(windowToken, 0)
+    }
+    //endregion
 }

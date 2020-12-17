@@ -15,10 +15,6 @@
         <variable
             name="owner"
             type="mfz.myfzone_sport.myf_zone.model.event.EventOwner" />
-
-        <variable
-            name="viewModel"
-            type="mfz.myfzone_sport.myf_zone.fragments.event.event_details.EventDetailsViewModel" />
     </data>
 
     <ScrollView
@@ -119,7 +115,6 @@
                             android:layout_width="match_parent"
                             android:layout_height="0dp"
                             android:layout_weight="1"
-                            android:text="@{viewModel.participantList != null ? viewModel.getValidParticipantCount(viewModel.participantList) + `/` + event.nbTeam : `0` + `/` + event.nbTeam}"
                             android:textAlignment="textEnd"
                             android:textSize="16sp"
                             android:textStyle="normal" />

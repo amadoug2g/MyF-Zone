@@ -1,5 +1,6 @@
 package mfz.myfzone_sport.myf_zone.fragments.user_sign.sign_up
 
+import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
 import android.text.TextUtils
@@ -8,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -16,7 +18,6 @@ import androidx.navigation.Navigation
 import androidx.transition.ChangeBounds
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.android.synthetic.main.fragment_login.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import mfz.myfzone_sport.myf_zone.R
@@ -34,6 +35,7 @@ class SignUpFragment : Fragment() {
         private lateinit var binding: FragmentSignUpBinding
     }
 
+    //region Override Methods
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -76,6 +78,20 @@ class SignUpFragment : Fragment() {
         return super.onOptionsItemSelected(item)
     }
 
+    override fun onStop() {
+        super.onStop()
+        binding.signUpFirstNameInput.hideKeyboard()
+    }
+    //endregion
+
+    //region View Methods
+    private fun View.hideKeyboard() {
+        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(windowToken, 0)
+    }
+    //endregion
+
+    //region User Sign Up
     private suspend fun signUpUser() {
         viewModel.signUpUser(
             binding.signUpEmailInput.text.toString(),
@@ -170,6 +186,7 @@ class SignUpFragment : Fragment() {
                 signUpUser()
             }
     }
+    //endregion
 
     private fun resetFields() {
         binding.signUpEmailLayout.error = null
@@ -222,13 +239,15 @@ class SignUpFragment : Fragment() {
         return valid
     }
 
-
+    //region Navigation
     private fun navigate(destination: Int, extra: Bundle? = null) {
         Navigation
             .findNavController(this.requireView())
             .navigate(destination, extra)
     }
+    //endregion
 
+    //region Loading
     private fun showProgressBar() {
         binding.signUpProgressBar.apply {
             visibility = View.VISIBLE
@@ -240,4 +259,5 @@ class SignUpFragment : Fragment() {
             visibility = View.GONE
         }
     }
+    //endregion
 }
