@@ -8,6 +8,10 @@
             name="event"
             type="mfz.myfzone_sport.myf_zone.model.event.Event" />
 
+        <variable
+            name="viewModel"
+            type="mfz.myfzone_sport.myf_zone.fragments.maps.MapsViewModel" />
+
     </data>
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -62,7 +66,7 @@
             android:layout_marginTop="8dp"
             android:backgroundTint="@color/colorAccent"
             android:drawableEnd="@drawable/ic_filter"
-            android:text="@string/filter_text" />
+            android:text="@{`(` + String.valueOf(viewModel.filterCount) + `) ` + @string/filter_text}" />
 
         <include
             android:id="@+id/cardEventDetail"

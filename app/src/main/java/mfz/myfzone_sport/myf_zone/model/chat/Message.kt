@@ -4,12 +4,12 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 data class Message(
-    var id: String,
+    var id: String?,
     var senderId: String,
     var senderName: String,
     var senderClubLogo: String,
     var text: String?,
-//    var image: String?,
+    var image: String?,
     var createdDate: Date
 ) {
     constructor() : this(
@@ -17,20 +17,29 @@ data class Message(
         "",
         "",
         "",
-//        "",
+        "",
         "",
         Date(0)
     )
 
     fun toMap(): HashMap<String, Any?> {
-        return hashMapOf(
+        val result: HashMap<String, Any?> = hashMapOf(
             "id" to id,
             "senderId" to senderId,
             "senderName" to senderName,
             "senderClubLogo" to senderClubLogo,
-            "text" to text,
             "createdDate" to createdDate
         )
+
+        if (!text.isNullOrEmpty()) {
+            result["text"] = text
+        }
+
+        if (!image.isNullOrEmpty()) {
+            result["image"] = image
+        }
+
+        return result
     }
 
     val messageDate: String

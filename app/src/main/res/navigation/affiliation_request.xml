@@ -5,20 +5,6 @@
     android:id="@+id/affiliation_request"
     app:startDestination="@id/affiliationRequestFragment">
 
-    <action
-        android:id="@+id/affiliationToMaps"
-        app:destination="@id/map"
-        app:launchSingleTop="true"
-        app:popUpTo="@id/map"
-        app:popUpToInclusive="true" />
-
-    <action
-        android:id="@+id/globalToAffiliationSuccess"
-        app:destination="@id/affiliationSuccessFragment"
-        app:launchSingleTop="true"
-        app:popUpTo="@id/affiliationSuccessFragment"
-        app:popUpToInclusive="true" />
-
     <fragment
         android:id="@+id/affiliationRequestFragment"
         android:name="mfz.myfzone_sport.myf_zone.fragments.affiliation.affiliation_request.AffiliationRequestFragment"
@@ -27,10 +13,16 @@
         <action
             android:id="@+id/affiliationRequestToAffiliationSuccess"
             app:destination="@id/affiliationSuccessFragment" />
+        <action
+            android:id="@+id/affiliationRequestToMaps"
+            app:destination="@id/map" />
     </fragment>
     <fragment
         android:id="@+id/affiliationSuccessFragment"
         android:name="mfz.myfzone_sport.myf_zone.fragments.affiliation.affiliation_success.AffiliationSuccessFragment"
         android:label="@string/affiliation_text"
         tools:layout="@layout/fragment_affiliation_success" />
+    <action
+        android:id="@+id/affiliationSuccessToMaps"
+        app:destination="@id/map" />
 </navigation>

@@ -89,8 +89,38 @@ class MessageFragment : Fragment() {
         viewModel = ViewModelProvider(this).get(MessageViewModel::class.java)
 
         lifecycleScope.launch {
+            viewModel.checkUserSignedIn()
             viewModel.checkUserAffiliationStatus()
         }
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = DataBindingUtil.inflate(
+            inflater,
+            R.layout.fragment_message,
+            container,
+            false
+        )
+
+        lifecycleScope.launch {
+            viewModel.checkUserSignedIn()
+            viewModel.checkUserAffiliationStatus()
+        }
+
+        binding.apply {
+            lifecycleOwner = this@MessageFragment
+            setupRecyclerParameters()
+            executePendingBindings()
+        }
+
+        return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
 
         val recyclerOptions = FirestoreRecyclerOptions.Builder<Chat>()
             .setQuery(
@@ -112,35 +142,32 @@ class MessageFragment : Fragment() {
 
             override fun onDataChanged() {
                 super.onDataChanged()
-                binding.messageChatList.visibility =
-                    if (itemCount == 0) View.VISIBLE else View.GONE
+                lifecycleScope.launch {
+                    viewModel.checkUserSignedIn()
+                    viewModel.checkUserAffiliationStatus()
+                }
+                viewModel.isUserSignedIn.observe(viewLifecycleOwner) { isUserSignedIn ->
+                    if (isUserSignedIn) {
+                        viewModel.isUserAffiliated.observe(viewLifecycleOwner) { isUserAffiliated ->
+                            if (isUserAffiliated) {
+                                binding.messageEmptyList.visibility =
+                                    if (itemCount == 0) View.VISIBLE else View.GONE
 
-                val params = binding.messageUserList.layoutParams
-                params.height = 320 * itemCount
-                binding.messageUserList.layoutParams = params
+                                val params = binding.messageUserList.layoutParams
+                                params.height = 320 * itemCount
+                                binding.messageUserList.layoutParams = params
+                            } else {
+                                binding.messageChatListNotAffiliated.visibility = View.VISIBLE
+                            }
+                        }
+                    } else {
+                        binding.messageChatListNotSignedIn.visibility = View.VISIBLE
+                    }
+
+                }
             }
 
         }
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding = DataBindingUtil.inflate(
-            inflater,
-            R.layout.fragment_message,
-            container,
-            false
-        )
-
-        binding.apply {
-            lifecycleOwner = this@MessageFragment
-            setupRecyclerParameters()
-            executePendingBindings()
-        }
-
-        return binding.root
     }
     //endregion
 
@@ -176,19 +203,6 @@ class MessageFragment : Fragment() {
     //endregion
 
     //region Navigation
-    private fun accountButton() {
-        if (!viewModel.isUserSignedIn.value!!) {
-            navigate(R.id.messageToLogin)
-        } else {
-            viewModel.isUserAffiliated.observe(viewLifecycleOwner) { isUserAffiliated ->
-                when (isUserAffiliated) {
-                    true -> navigate(R.id.messageToProfile)
-                    false -> navigate(R.id.messageToAffiliationRequest)
-                }
-            }
-        }
-    }
-
     private fun navigate(destination: Int) {
         findNavController().navigate(destination)
     }

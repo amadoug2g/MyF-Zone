@@ -248,8 +248,8 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
     //endregion
 
     //region Navigation
-    private fun navigate(destination: Int) {
-        findNavController(binding.fragmentNavHost.id).navigate(destination)
+    private fun navigate(destination: Int, extra: Bundle? = null) {
+        findNavController(binding.fragmentNavHost.id).navigate(destination, extra)
     }
 
     private fun fabButton(destinationId: Int) {

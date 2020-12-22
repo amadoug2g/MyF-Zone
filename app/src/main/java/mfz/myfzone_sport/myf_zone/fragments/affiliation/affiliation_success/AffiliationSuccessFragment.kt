@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
+import androidx.navigation.fragment.findNavController
 import kotlinx.coroutines.launch
 import mfz.myfzone_sport.myf_zone.R
 import mfz.myfzone_sport.myf_zone.databinding.FragmentAffiliationSuccessBinding
@@ -64,7 +65,7 @@ class AffiliationSuccessFragment : Fragment() {
                         .into(binding.affiliationClubImage)
                 }
             } catch (e: Exception) {
-                toast("Club Image could not load: $e")
+                ("Club Image could not load: $e").toast()
             }
             hideProgressBar()
         }
@@ -77,13 +78,13 @@ class AffiliationSuccessFragment : Fragment() {
         binding.affiliationActivateNotifications.isEnabled = false
 
 //        binding.affiliationActivateNotifications.setOnClickListener {
-//            findNavController().navigate(R.id.affiliationToMaps)
+//            findNavController().navigate(R.id.affiliationSuccessToMaps)
 //            requireActivity().onBackPressed()
 //        }
 
         binding.affiliationLaterNotifications.setOnClickListener {
-//            findNavController().navigate(R.id.affiliationToMaps)
-            requireActivity().onBackPressed()
+            findNavController().navigate(R.id.affiliationSuccessToMaps)
+//            requireActivity().onBackPressed()
         }
 
         return binding.root

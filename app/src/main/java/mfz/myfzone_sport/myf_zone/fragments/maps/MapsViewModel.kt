@@ -60,6 +60,10 @@ class MapsViewModel : ViewModel() {
     val club: LiveData<Club>
         get() = _club
 
+    private val _marker = MutableLiveData<Marker>()
+    val marker: LiveData<Marker>
+        get() = _marker
+
     private val _clubAffiliation = MutableLiveData<ClubAffiliation>()
     private val clubAffiliation: LiveData<ClubAffiliation>
         get() = _clubAffiliation
@@ -68,13 +72,13 @@ class MapsViewModel : ViewModel() {
     val eventId: LiveData<String>
         get() = _eventId
 
+    var filterCount = MutableLiveData(0)
     var startDate = MutableLiveData<Long>(Calendar.getInstance().timeInMillis)
     var endDate = MutableLiveData<Long>(Calendar.getInstance().timeInMillis + (604800000))
     //endregion
 
     init {
         _isUserSignedIn.value = checkUserSignedIn()
-        assignEventList()
     }
 
     private fun checkUserSignedIn(): Boolean {
@@ -96,6 +100,14 @@ class MapsViewModel : ViewModel() {
 
     fun assignMap(googleMap: GoogleMap) {
         map.value = googleMap
+    }
+
+    fun assignMarker(marker: Marker) {
+        _marker.value = marker
+    }
+
+    fun assignFilterCount(counter: Int) {
+        filterCount.value = counter
     }
 
     fun mapInit() {
@@ -174,7 +186,7 @@ class MapsViewModel : ViewModel() {
 
     fun getEvents() = MapsService.getEvents(startDate.value!!, endDate.value!!)
 
-    private fun assignEventList() {
+    fun assignEventList() {
         viewModelScope.launch {
             getEvents().collect { state ->
                 when (state) {

@@ -1,14 +1,18 @@
 package mfz.myfzone_sport.myf_zone.fragments.user_sign.sign_up
 
+import android.util.Log
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.userProfileChangeRequest
+import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.tasks.await
 import mfz.myfzone_sport.myf_zone.model.State
+import mfz.myfzone_sport.myf_zone.model.chat.MessagingService
 import mfz.myfzone_sport.myf_zone.model.coach.Coach
 import mfz.myfzone_sport.myf_zone.util.Constants.COACH_PATH
 import mfz.myfzone_sport.myf_zone.util.Constants.DB
@@ -21,6 +25,7 @@ import mfz.myfzone_sport.myf_zone.util.Constants.DB
  */
 
 object SignUpService {
+    private val TAG = SignUpService::class.java.simpleName
     private val firebaseAuth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
 
     fun signUpUser(email: String, password: String) = flow<State<AuthResult>> {
@@ -39,21 +44,6 @@ object SignUpService {
 
         emit(State.loading())
 
-        val profileUpdates = userProfileChangeRequest {
-            displayName = "${coach.firstName} ${coach.lastName}"
-        }
-
-//        user?.updateProfile(profileUpdates)
-//            ?.addOnCompleteListener {
-//                if (it.isSuccessful) {
-//                    Log.d(TAG, "User profile updated")
-//                } else {
-//                    Log.d(TAG, "An error occurred: ${it.exception.toString()}")
-//                }
-//            }
-
-
-
         mDataBaseQuery.set(coach.toMap()).await()
 
         emit(State.success(coach))
@@ -71,6 +61,21 @@ object SignUpService {
         }
 
         user?.updateProfile(profileUpdates)?.await()
+
+        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Log.w(TAG, "Fetching FCM registration token failed", task.exception)
+                return@OnCompleteListener
+            }
+
+            // Get new FCM registration token
+            val token = task.result
+
+            // Log and toast
+            Log.d(TAG, token)
+
+            MessagingService.addTokenToFireStore(token)
+        })
 
         emit(State.Success(true))
     }.catch {

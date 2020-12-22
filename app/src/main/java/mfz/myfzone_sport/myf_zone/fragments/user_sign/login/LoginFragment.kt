@@ -24,6 +24,10 @@ import kotlinx.coroutines.launch
 import mfz.myfzone_sport.myf_zone.R
 import mfz.myfzone_sport.myf_zone.databinding.FragmentLoginBinding
 import mfz.myfzone_sport.myf_zone.model.State
+import mfz.myfzone_sport.myf_zone.screens.MainScreen
+import org.jetbrains.anko.clearTask
+import org.jetbrains.anko.newTask
+import org.jetbrains.anko.support.v4.intentFor
 import org.jetbrains.anko.support.v4.toast
 
 
@@ -104,8 +108,7 @@ class LoginFragment : Fragment() {
                     hideProgressBar()
                     Log.i(TAG, "${state.data}")
                     toast(getString(R.string.login_message))
-//                    navigate(R.id.loginToMaps)
-                    requireActivity().onBackPressed()
+                    startActivity(intentFor<MainScreen>().newTask().clearTask())
                 }
                 is State.Failed -> {
                     hideProgressBar()

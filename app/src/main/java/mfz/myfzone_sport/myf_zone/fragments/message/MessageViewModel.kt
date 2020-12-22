@@ -31,6 +31,10 @@ class MessageViewModel : ViewModel() {
     val isUserAffiliated: LiveData<Boolean>
         get() = _isUserAffiliated
 
+    private val _isConversationRead = MutableLiveData<Boolean>(false)
+    val isConversationRead: LiveData<Boolean>
+        get() = _isConversationRead
+
     private val _coach = MutableLiveData<Coach>()
     val coach: LiveData<Coach>
         get() = _coach
@@ -58,7 +62,7 @@ class MessageViewModel : ViewModel() {
             .collection(COACH_PATH + "/${currentUser?.uid}/Chat")
     }
 
-    private fun checkUserSignedIn(): Boolean {
+    fun checkUserSignedIn(): Boolean {
         val currentUser = FirebaseAuth.getInstance().currentUser
         return (currentUser != null)
     }
@@ -83,7 +87,7 @@ class MessageViewModel : ViewModel() {
         }
     }
 
-    fun getChatCoach(coachId: String) = MessageService.getChatCoach(coachId)
+    private fun getChatCoach(coachId: String) = MessageService.getChatCoach(coachId)
 
     suspend fun assignCoachChat(coachId: String) {
         getChatCoach(coachId).collect { state ->
@@ -114,7 +118,7 @@ class MessageViewModel : ViewModel() {
                 }
                 is State.Success -> {
 //                    hideProgressBar()
-                    _isUserAffiliated.value = true
+                    _isUserAffiliated.value = state.data
                 }
                 is State.Failed -> {
                     _isUserAffiliated.value = false

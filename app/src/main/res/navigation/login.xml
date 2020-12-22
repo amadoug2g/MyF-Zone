@@ -12,14 +12,14 @@
         app:popUpToInclusive="true" />
 
     <action
-        android:id="@+id/loginToMaps"
+        android:id="@+id/signUpToMaps"
         app:destination="@id/map"
         app:launchSingleTop="true"
         app:popUpTo="@id/map"
         app:popUpToInclusive="true" />
 
     <action
-        android:id="@+id/signUpToMaps"
+        android:id="@+id/globalLoginToMessage"
         app:destination="@id/map"
         app:launchSingleTop="true"
         app:popUpTo="@id/map"
@@ -32,10 +32,20 @@
         <action
             android:id="@+id/loginToSignUp"
             app:destination="@id/signUpFragment" />
+        <action
+            android:id="@+id/loginToMaps"
+            app:destination="@id/map" />
+        <action
+            android:id="@+id/loginToMessage"
+            app:destination="@id/message" />
     </fragment>
     <fragment
         android:id="@+id/signUpFragment"
         android:name="mfz.myfzone_sport.myf_zone.fragments.user_sign.sign_up.SignUpFragment"
-        android:label="@string/become_coach" />
+        android:label="@string/become_coach">
+        <action
+            android:id="@+id/signUpToAffiliationRequest"
+            app:destination="@id/affiliation_request" />
+    </fragment>
 
 </navigation>

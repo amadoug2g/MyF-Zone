@@ -122,7 +122,7 @@
     <string name="floating_action_button_desc">Floating Action Button</string>
     <string name="sender_hint_msg">Nouveau message</string>
     <string name="text_image_button">Text Image Button</string>
-    <string name="no_chat_msg">Vous n\'avez aucun chat pour actif pour l\'instant, rejoignez un évènement pour commencer !</string>
+    <string name="no_chat_msg">Aucun chat pour actif pour l\'instant, rejoignez un évènement pour commencer !</string>
     <string name="event_creation_date_btn">Date</string>
     <string name="event_creation_time_btn">Heure</string>
     <string name="event_created">Évènement créé</string>
@@ -132,6 +132,8 @@
     <string name="filter_text">Filtre</string>
     <string name="no_event_found">Aucun évènement à cette période</string>
     <string name="event_in_range">évènements à cette période</string>
+    <string name="event_list_update">Evènements mis à jour !</string>
+    <string name="image_message">Image Message</string>
 
     <string-array name="sportList">
         <item>Foot</item>

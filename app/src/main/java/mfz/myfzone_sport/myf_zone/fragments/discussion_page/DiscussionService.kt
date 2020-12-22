@@ -75,15 +75,6 @@ object DiscussionService {
         emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
     }.flowOn(IO)
 
-    fun getOtherUser(coachId: String) = flow<Coach> {
-        val mUserQuery = DB.document(COACH_PATH + "/${coachId}")
-
-        val snapshot = mUserQuery.get().await()
-        val coach = snapshot.toObject(Coach::class.java)
-
-        emit(coach!!)
-    }
-
     fun getOrCreateChat(
         coach: Coach,
         coachClub: ClubAffiliation,
@@ -128,30 +119,6 @@ object DiscussionService {
                     .set(newOtherChat.toMap())
             } else {
                 Log.i("DiscussionService", "Document already exists")
-
-                val userListMessageId = mUserChatQuery.collection("Message").document().id
-
-                val newUseMessage = Message().apply {
-                    id = userListMessageId
-                    senderId = coach.id
-                    senderName = coach.getName()
-                    senderClubLogo = coachClub.clubLogo
-                    text = "test"
-                    createdDate = time
-                }
-
-                val otherListMessageId = mUserChatQuery.collection("Message").document().id
-
-                val newMessage = Message().apply {
-                    id = otherListMessageId
-                    senderId = coach.id
-                    senderName = coach.getName()
-                    senderClubLogo = coachClub.clubLogo
-                    text = "test"
-                    createdDate = time
-                }
-
-//                val otherListMessage = mOtherUserChatQuery
             }
         }
     }
@@ -160,7 +127,8 @@ object DiscussionService {
         coach: Coach,
         coachClub: ClubAffiliation,
         other: Coach,
-        message: String
+        message: String,
+        photo: String
     ) {
         val time = Calendar.getInstance().time
         val mUserChatQuery = DB
@@ -171,18 +139,25 @@ object DiscussionService {
 
         val messageId = mUserChatQuery.collection("Message").document().id
 
-        val updatedChat = hashMapOf(
+        val updatedUserChat = hashMapOf(
             "isTyping" to false,
             "lastMessage" to message,
             "unread" to false,
             "updatedDate" to time
         )
 
+        val updatedOtherChat = hashMapOf(
+            "isTyping" to false,
+            "lastMessage" to message,
+            "unread" to true,
+            "updatedDate" to time
+        )
+
         mUserChatQuery
-            .set(updatedChat, SetOptions.merge())
+            .set(updatedUserChat, SetOptions.merge())
 
         mOtherUserChatQuery
-            .set(updatedChat, SetOptions.merge())
+            .set(updatedOtherChat, SetOptions.merge())
 
         val newMessage = Message().apply {
             id = messageId
@@ -190,9 +165,9 @@ object DiscussionService {
             senderName = coach.getName()
             senderClubLogo = coachClub.clubLogo
             text = message
+            image = photo
             createdDate = time
         }
-
 
         val messageUserPath =
             mUserChatQuery
@@ -229,7 +204,11 @@ object DiscussionService {
 
                     val items = mutableListOf<Item>()
                     value?.documents?.forEach {
-                        items.add(TextMessageItem(it.toObject(Message::class.java)!!, context))
+                        try {
+                            items.add(TextMessageItem(it.toObject(Message::class.java)!!, context))
+                        } catch (e: Exception) {
+                            Log.i(TAG, "Error in fetching messages: $e")
+                        }
                     }
 
                     onListen(items)
@@ -240,4 +219,68 @@ object DiscussionService {
         }
     }
 
+    fun setDiscussionRead(
+        coach: Coach,
+        other: Coach
+    ) {
+        val mUserChatQuery = DB
+            .document(COACH_PATH + "/${coach.id}/Chat/${other.id}")
+
+        val mOtherUserChatQuery = DB
+            .document(COACH_PATH + "/${other.id}/Chat/${coach.id}")
+
+        val updatedUserChat = hashMapOf(
+            "unread" to false
+        )
+
+        val updatedOtherChat = hashMapOf(
+            "unread" to true
+        )
+
+        mUserChatQuery
+            .set(updatedUserChat, SetOptions.merge())
+
+        mOtherUserChatQuery
+            .set(updatedOtherChat, SetOptions.merge())
+    }
+
+    fun setDiscussionUnread(
+        coach: Coach,
+        other: Coach
+    ) {
+        val mUserChatQuery = DB
+            .document(COACH_PATH + "/${coach.id}/Chat/${other.id}")
+
+        val updatedUserChat = hashMapOf(
+            "unread" to true
+        )
+
+        mUserChatQuery
+            .set(updatedUserChat, SetOptions.merge())
+    }
+
+    fun discussionHasMessages(
+        coach: Coach,
+        other: Coach
+    ) = flow<State<Boolean>> {
+        val mChatMessagesCollection = DB
+            .collection(COACH_PATH + "/${coach.id}/Chat/${other.id}/Message")
+
+        val mUserChatQuery = DB
+            .document(COACH_PATH + "/${coach.id}/Chat/${other.id}")
+
+        val mOtherUserChatQuery = DB
+            .document(COACH_PATH + "/${other.id}/Chat/${coach.id}")
+
+        mChatMessagesCollection.get().addOnSuccessListener { snapshot ->
+            if (snapshot.documents.size > 0) {
+                return@addOnSuccessListener
+            } else {
+                mUserChatQuery.delete()
+                mOtherUserChatQuery.delete()
+            }
+        }
+
+        emit(State.success(true))
+    }
 }

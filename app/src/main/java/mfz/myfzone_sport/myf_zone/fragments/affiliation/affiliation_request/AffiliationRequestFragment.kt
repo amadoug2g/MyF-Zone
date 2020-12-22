@@ -50,8 +50,8 @@ class AffiliationRequestFragment : Fragment() {
             inflater.inflate(R.layout.fragment_affiliation_request, container, false)
 
         fragmentInflater.affiliationLaterAffiliate.setOnClickListener {
-//            navigate(R.id.affiliationToMaps)
-            requireActivity().onBackPressed()
+            navigate(R.id.affiliationRequestToMaps)
+//            requireActivity().onBackPressed()
         }
 
         fragmentInflater.affiliateButton.setOnClickListener {
@@ -82,8 +82,7 @@ class AffiliationRequestFragment : Fragment() {
                         val bundle = bundleOf("clubId" to affiliationCode)
                         try {
                             withContext(Main) {
-//                                navigate(R.id.globalToAffiliationSuccess/*, bundle*/)
-                                navigate(R.id.globalToAffiliationSuccess, bundle)
+                                navigate(R.id.affiliationRequestToAffiliationSuccess, bundle)
                             }
                         } catch (e: Exception) {
                             Log.d(TAG, "Error: $e")

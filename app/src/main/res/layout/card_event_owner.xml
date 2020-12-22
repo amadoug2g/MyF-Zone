@@ -58,18 +58,16 @@
                             android:id="@+id/event_detail_owner_club"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@{@string/owner_txt + ` - ` + owner.clubAcronym + ` ` + owner.categoryName + ` ` + owner.subCategoryName}"
-                            android:textColor="@android:color/black"
-                            android:textSize="18sp" />
+                            style="@style/TextAppearance.AppCompat.Title"
+                            android:text="@{@string/owner_txt + ` - ` + owner.clubAcronym + ` ` + owner.categoryName + ` ` + owner.subCategoryName}" />
 
                         <TextView
                             android:id="@+id/event_detail_owner_name"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
-                            android:text="@{owner.coachFullname}"
-                            android:textColor="@android:color/darker_gray"
-                            android:textSize="16sp" />
+                            style="@style/ShapeAppearance.MaterialComponents.MediumComponent"
+                            android:text="@{owner.coachFullname}" />
 
                     </LinearLayout>
 

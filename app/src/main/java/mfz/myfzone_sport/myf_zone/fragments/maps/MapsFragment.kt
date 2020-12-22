@@ -20,6 +20,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.firebase.auth.FirebaseAuth
@@ -63,34 +64,15 @@ class MapsFragment : Fragment(),
                 viewModel.initializeMap(map)
             }
 
-            placeEvents()
+            refreshEventList()
 
             viewModel.mapInit()
         }
 
         googleMap.setOnMarkerClickListener { marker ->
+            viewModel.assignMarker(marker)
             googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(marker.position, 14f))
-            when (marker.tag) {
-                null -> {
-                    binding.cardEventDetail.cardViewTag.text = null
-                    binding.cardEventDetail.cardViewDetail.visibility = View.INVISIBLE
-                    crossFadeEnd()
-                }
-                else -> {
-                    binding.cardEventDetail.cardViewTag.text = marker.tag as String
-                    viewModel.assignEventId(marker)
-                    viewModel.eventId.observe(viewLifecycleOwner) { eventId ->
-                        viewModel.assignEvent(eventId)
-                        viewModel.event.observe(viewLifecycleOwner) { event ->
-                            binding.cardEventDetail.event = event
-                            if (!binding.cardEventDetail.cardViewDetail.isVisible) {
-                                crossFadeStart()
-                                binding.cardEventDetail.cardViewDetail.visibility = View.VISIBLE
-                            }
-                        }
-                    }
-                }
-            }
+            marker.markerClick()
 
             false
         }
@@ -134,6 +116,8 @@ class MapsFragment : Fragment(),
         )
 
         viewModel.assignContext(requireContext())
+        binding.viewModel = viewModel
+        //placeUserClub()
 
         binding.filterButton.setOnClickListener { setCalendar() }
 
@@ -158,6 +142,13 @@ class MapsFragment : Fragment(),
         mapFragment?.getMapAsync(callback)
     }
 
+    override fun onResume() {
+        super.onResume()
+        viewModel.marker.observe(viewLifecycleOwner) { marker ->
+            marker.markerClick()
+        }
+    }
+
     override fun onMapClick(p0: LatLng?) {
         if (binding.cardEventDetail.cardViewDetail.isVisible) {
             crossFadeEnd()
@@ -169,31 +160,8 @@ class MapsFragment : Fragment(),
     //endregion
 
     //region Marker Placement
-    private fun placeEvents() {
-        loadingMsgStart()
-        viewModel.placeEvents(viewModel.map.value!!, requireContext(), viewModel.eventList.value!!)
-        placeClub()
-        loadingMsgEnd()
-    }
-
-    private fun placeClub() {
-        viewModel.isUserSignedIn.observe(viewLifecycleOwner) { isUserSignedIn ->
-            if (isUserSignedIn) {
-                viewModel.isUserAffiliated.observe(viewLifecycleOwner) { isUserAffiliated ->
-                    if (isUserAffiliated) {
-                        viewModel.club.observe(viewLifecycleOwner) { club ->
-                            viewModel.map.observe(viewLifecycleOwner) { map ->
-                                viewModel.placeUserClub(club, map, requireContext())
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     private fun refreshEventList() {
-        lifecycleScope.launch {
+        lifecycleScope.launchWhenResumed {
             viewModel.getEvents().collect { state ->
                 when (state) {
                     is State.Loading -> {
@@ -202,28 +170,63 @@ class MapsFragment : Fragment(),
                     is State.Success -> {
                         loadingMsgEnd()
                         val list = state.data
-                        if (list.isNotEmpty()) {
-                            val message = getString(R.string.event_in_range)
-                            toast("${list.size} $message")
-                        } else {
-                            toast(getString(R.string.no_event_found))
-                        }
+                        val size = list.size
+                        viewModel.assignFilterCount(size)
+                        binding.viewModel = viewModel
                         viewModel.placeEvents(viewModel.map.value!!, requireContext(), list)
-                        viewModel.placeUserClub(
-                            viewModel.club.value!!,
-                            viewModel.map.value!!,
-                            requireContext()
-                        )
+                        placeUserClub()
                     }
                     is State.Failed -> {
                         loadingMsgEnd()
-                        val message = "An error occurred [in loadUser]: ${state.message}"
+                        val message = "Error loading markers: ${state.message}"
                         showToast(message)
                     }
                 }
             }
         }
     }
+
+    private fun placeUserClub() {
+        viewModel.isUserSignedIn.observe(viewLifecycleOwner) { isUserSignedIn ->
+            if (isUserSignedIn) {
+                viewModel.isUserAffiliated.observe(viewLifecycleOwner) { isUserAffiliated ->
+                    if (isUserAffiliated) {
+                        viewModel.placeUserClub(
+                            viewModel.club.value!!,
+                            viewModel.map.value!!,
+                            requireContext()
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    private fun Marker.markerClick() {
+        //this.hideInfoWindow()
+        when (this.tag) {
+            null -> {
+                binding.cardEventDetail.cardViewTag.text = null
+                binding.cardEventDetail.cardViewDetail.visibility = View.INVISIBLE
+                crossFadeEnd()
+            }
+            else -> {
+                binding.cardEventDetail.cardViewTag.text = this.tag as String
+                viewModel.assignEventId(this)
+                viewModel.eventId.observe(viewLifecycleOwner) { eventId ->
+                    viewModel.assignEvent(eventId)
+                    viewModel.event.observe(viewLifecycleOwner) { event ->
+                        binding.cardEventDetail.event = event
+                        if (!binding.cardEventDetail.cardViewDetail.isVisible) {
+                            crossFadeStart()
+                            binding.cardEventDetail.cardViewDetail.visibility = View.VISIBLE
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     //endregion
 
     //region Navigation
@@ -265,7 +268,6 @@ class MapsFragment : Fragment(),
         binding.loadLayout.visibility = View.INVISIBLE
     }
 
-
     private fun showToast(string: String) {
         toast(string)
     }
@@ -303,9 +305,6 @@ class MapsFragment : Fragment(),
             viewModel.assignEndDate(it.second!!)
 
             try {
-                //loadingMsgStart()
-                //viewModel.assignEventList(true)
-                //loadingMsgEnd()
                 refreshEventList()
             } catch (e: Exception) {
                 toast("$e")

@@ -61,9 +61,8 @@
                             android:id="@+id/cardView_clubName_profile"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@{event.eventTypeString}"
-                            android:textColor="@android:color/black"
-                            android:textSize="18sp" />
+                            style="@style/TextAppearance.AppCompat.Title"
+                            android:text="@{event.eventTypeString}" />
 
                         <TextView
                             android:id="@+id/cardView_clubDesc_profile"
@@ -71,9 +70,8 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
                             android:layout_marginStart="8dp"
-                            android:text="@{event.eventDateToDayProfile}"
-                            android:textColor="@android:color/darker_gray"
-                            android:textSize="16sp" />
+                            style="@style/ShapeAppearance.MaterialComponents.MediumComponent"
+                            android:text="@{event.eventDateToDayProfile}" />
 
                     </LinearLayout>
 

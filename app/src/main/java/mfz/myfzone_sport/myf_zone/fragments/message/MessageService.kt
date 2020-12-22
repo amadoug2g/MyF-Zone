@@ -13,6 +13,7 @@ import mfz.myfzone_sport.myf_zone.model.chat.Chat
 import mfz.myfzone_sport.myf_zone.model.coach.Coach
 import mfz.myfzone_sport.myf_zone.util.Constants.COACH_PATH
 import mfz.myfzone_sport.myf_zone.util.Constants.DB
+import mfz.myfzone_sport.myf_zone.util.user.UserAccount.currentUserDocRef
 
 /**
  * Created by Amadou on 07/12/2020, 01:04
@@ -69,6 +70,19 @@ object MessageService {
     }.catch {
         emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
     }.flowOn(IO)
+
+    //region FCM
+    fun getFCMRegistrationTokens(onComplete: (tokens: MutableList<String>) -> Unit) {
+        currentUserDocRef.get().addOnSuccessListener {
+            val user = it.toObject(Coach::class.java)!!
+            onComplete(user.devices)
+        }
+    }
+
+    fun setFCMRegistrationTokens(registrationTokens: MutableList<String>) {
+        currentUserDocRef.update(mapOf("devices" to registrationTokens))
+    }
+    //endregion FCM
 
     fun getImageReference(path: String) =
         storageInstance.getReference(path.removePrefix("gs://myf-zone.appspot.com"))

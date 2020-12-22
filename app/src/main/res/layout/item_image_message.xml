@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+        <variable
+            name="message"
+            type="mfz.myfzone_sport.myf_zone.model.chat.Message" />
+    </data>
+
+    <FrameLayout xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp">
+
+        <RelativeLayout
+            android:id="@+id/message_root"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:background="@drawable/round_rect_primary">
+
+            <ImageView
+                android:id="@+id/imageViewMessageText"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:contentDescription="@string/image_message"
+                android:paddingStart="8dp"
+                android:paddingTop="8dp"
+                android:paddingEnd="8dp"
+                android:scaleType="fitCenter"
+                tools:src="@drawable/ic_image" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxWidth="250dp"
+                android:minWidth="120dp"
+                android:paddingStart="8dp"
+                android:paddingTop="4dp"
+                android:paddingEnd="8dp"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Body1"
+                tools:text="@{message.image}" />
+
+            <TextView
+                android:id="@+id/textViewMessageTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/imageViewMessageText"
+                android:layout_alignEnd="@id/imageViewMessageText"
+                android:layout_marginEnd="8dp"
+                android:textSize="12sp"
+                tools:text="@{message.messageDate}" />
+        </RelativeLayout>
+    </FrameLayout>
+</layout>

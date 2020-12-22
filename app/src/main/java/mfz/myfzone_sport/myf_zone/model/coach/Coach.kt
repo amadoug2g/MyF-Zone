@@ -8,7 +8,7 @@ data class Coach(
     var firstName: String,
     var lastName: String,
 //    val description: String,
-//    val devices: MutableList<String>,
+    val devices: MutableList<String>,
     var createdDate: Date
 //    val affiliations: MutableList<ClubAffiliation>,
 //    val chats: MutableList<Chat>
@@ -18,6 +18,7 @@ data class Coach(
         "",
         "",
         "",
+        mutableListOf(),
         Date(0)
     )
 
@@ -27,6 +28,7 @@ data class Coach(
             "firstName" to firstName,
             "lastName" to lastName,
             "id" to id,
+            "devices" to devices,
             "createdDate" to createdDate
         )
     }

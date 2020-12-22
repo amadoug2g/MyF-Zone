@@ -1,10 +1,12 @@
 package mfz.myfzone_sport.myf_zone.fragments.discussion_page
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.xwray.groupie.kotlinandroidextensions.Item
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import mfz.myfzone_sport.myf_zone.model.State
@@ -127,6 +129,37 @@ class DiscussionViewModel : ViewModel() {
             }
         }
     }
+
+    fun getOrCreateChat(
+        coach: Coach,
+        coachClub: ClubAffiliation,
+        other: Coach,
+        otherClub: ClubAffiliation
+    ) = DiscussionService.getOrCreateChat(coach, coachClub, other, otherClub)
+
+    fun addChatMessageListener(
+        otherId: String,
+        context: Context,
+        onListen: (List<Item>) -> Unit
+    ) = DiscussionService.addChatMessageListener(otherId, context, onListen)
+
+    fun sendChatMessage(
+        coach: Coach,
+        coachClub: ClubAffiliation,
+        other: Coach,
+        message: String,
+        photo: String
+    ) = DiscussionService.sendChatMessage(coach, coachClub, other, message, photo)
+
+    fun setDiscussionRead(
+        coach: Coach,
+        other: Coach
+    ) = DiscussionService.setDiscussionRead(coach, other)
+
+    fun discussionHasMessages(
+        coach: Coach,
+        other: Coach
+    ) = DiscussionService.discussionHasMessages(coach, other)
 
     fun typeStart() {
         isUserTyping.value = true

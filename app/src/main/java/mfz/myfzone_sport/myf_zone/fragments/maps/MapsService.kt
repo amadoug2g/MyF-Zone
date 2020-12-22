@@ -16,7 +16,6 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.tasks.await
 import mfz.myfzone_sport.myf_zone.R
-import mfz.myfzone_sport.myf_zone.fragments.calendar.CalendarService.markerItemList
 import mfz.myfzone_sport.myf_zone.model.State
 import mfz.myfzone_sport.myf_zone.model.club.Club
 import mfz.myfzone_sport.myf_zone.model.coach.ClubAffiliation
@@ -24,7 +23,6 @@ import mfz.myfzone_sport.myf_zone.model.coach.Coach
 import mfz.myfzone_sport.myf_zone.model.event.Event
 import mfz.myfzone_sport.myf_zone.model.event.EventOwner
 import mfz.myfzone_sport.myf_zone.model.event.EventParticipant
-import mfz.myfzone_sport.myf_zone.model.event.MarkerItem
 import mfz.myfzone_sport.myf_zone.util.Constants.CLUB_PATH
 import mfz.myfzone_sport.myf_zone.util.Constants.COACH_PATH
 import mfz.myfzone_sport.myf_zone.util.Constants.DB
@@ -149,8 +147,6 @@ object MapsService {
             for (event in eventList) {
                 val markerOptions = setEventMarkerOptions(event, context)
                 val marker = map.addMarker(markerOptions)
-                val date = event.date.time
-                markerItemList?.add(MarkerItem(marker, date))
                 marker.tag = event.id
             }
 

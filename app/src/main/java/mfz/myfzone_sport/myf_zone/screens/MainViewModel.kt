@@ -11,6 +11,9 @@ import mfz.myfzone_sport.myf_zone.model.State
 
 /**
  * Created by Amadou on 17/12/2020
+ *
+ * Main ViewModel class
+ *
  */
 
 

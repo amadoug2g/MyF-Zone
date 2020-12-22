@@ -112,20 +112,14 @@ class SignUpFragment : Fragment() {
                         user!!.uid,
                         binding.signUpEmailInput.text.toString(),
                         binding.signUpFirstNameInput.text.toString(),
-                        binding.signUpLastNameInput.text.toString(), time
+                        binding.signUpLastNameInput.text.toString(), mutableListOf(), time
                     )
 
                     addUserToDB(coach)
                 }
                 is State.Failed -> {
                     hideProgressBar()
-                    Log.d(TAG, "signUpUserWithEmail:failed: " + state.message)
-                    MaterialAlertDialogBuilder(requireContext())
-                        .setTitle(R.string.sign_up_error)
-                        .setMessage(state.message)
-                        .setPositiveButton(getString(R.string.confirm_message)) { _: DialogInterface, _: Int ->
-                        }
-                        .show()
+                    (state.message).errorDialog()
                 }
             }
         }
@@ -143,13 +137,7 @@ class SignUpFragment : Fragment() {
                 }
                 is State.Failed -> {
                     hideProgressBar()
-                    Log.d(TAG, "signUpUserWithEmail:failed: " + state.message)
-                    MaterialAlertDialogBuilder(requireContext())
-                        .setTitle(R.string.sign_up_error)
-                        .setMessage(state.message)
-                        .setPositiveButton(getString(R.string.confirm_message)) { _: DialogInterface, _: Int ->
-                        }
-                        .show()
+                    (state.message).errorDialog()
                 }
             }
         }
@@ -164,17 +152,11 @@ class SignUpFragment : Fragment() {
                 is State.Success -> {
                     hideProgressBar()
                     toast(getString(R.string.account_creation_msg))
-                    navigate(R.id.signUpToMaps)
+                    navigate(R.id.signUpToAffiliationRequest)
                 }
                 is State.Failed -> {
                     hideProgressBar()
-                    Log.d(TAG, "signUpUserWithEmail:failed: " + state.message)
-                    MaterialAlertDialogBuilder(requireContext())
-                        .setTitle(R.string.sign_up_error)
-                        .setMessage(state.message)
-                        .setPositiveButton(getString(R.string.confirm_message)) { _: DialogInterface, _: Int ->
-                        }
-                        .show()
+                    (state.message).errorDialog()
                 }
             }
         }
@@ -258,6 +240,18 @@ class SignUpFragment : Fragment() {
         binding.signUpProgressBar.apply {
             visibility = View.GONE
         }
+    }
+    //endregion
+
+    //region View Methods
+    private fun String.errorDialog() {
+        Log.d(TAG, "signUpUserWithEmail:failed: $this")
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.sign_up_error)
+            .setMessage(this)
+            .setPositiveButton(getString(R.string.confirm_message)) { _: DialogInterface, _: Int ->
+            }
+            .show()
     }
     //endregion
 }

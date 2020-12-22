@@ -2,9 +2,18 @@ package mfz.myfzone_sport.myf_zone.fragments.calendar
 
 import android.text.format.DateFormat
 import android.util.Log
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.tasks.await
-import mfz.myfzone_sport.myf_zone.model.event.*
+import mfz.myfzone_sport.myf_zone.model.State
+import mfz.myfzone_sport.myf_zone.model.event.Event
+import mfz.myfzone_sport.myf_zone.model.event.EventCalendar
+import mfz.myfzone_sport.myf_zone.model.event.EventOwner
+import mfz.myfzone_sport.myf_zone.model.event.EventParticipant
 import mfz.myfzone_sport.myf_zone.model.event.calendar.EventSection
 import mfz.myfzone_sport.myf_zone.util.Constants.DB
 import mfz.myfzone_sport.myf_zone.util.Constants.EVENT_PATH
@@ -20,8 +29,72 @@ import java.util.*
 
 object CalendarService {
     private val TAG = CalendarService::class.java.simpleName
-    var globalEventList: MutableList<Event>? = null
-    var markerItemList: MutableList<MarkerItem>? = mutableListOf()
+
+    fun getEvents() = flow<State<MutableList<Event>>> {
+        emit(State.loading())
+        val now = Calendar.getInstance().time
+        FirebaseFirestore.getInstance()
+
+        //val settings : FirebaseFirestoreSettings = FirebaseFirestoreSettings.Builder().apply {
+        //    isPersistenceEnabled = true
+        //}.build()
+
+        //FirebaseFirestore.getInstance().firestoreSettings = settings
+        val mEventQuery = DB.collection(EVENT_PATH).orderBy("date")
+
+        val snapshot = mEventQuery.get().await()
+        val eventList: MutableList<Event> = mutableListOf()
+
+        snapshot.forEach {
+            val event = it.toObject<Event>()
+            if (event.date.time > now.time) eventList.add(event)
+        }
+
+        eventList.forEach { event ->
+            val owner = getOwnerFromEvent(event.id)
+            val participantList = getParticipantsFromEvent(event.id)
+
+            event.owner = owner!!
+            event.participants = participantList!!
+        }
+
+        emit(State.success(eventList))
+    }.catch {
+        emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
+    }.flowOn(Dispatchers.IO)
+
+    private suspend fun getOwnerFromEvent(eventId: String): EventOwner? {
+        val docRef =
+            DB.collection(EVENT_PATH)
+                .document(eventId)
+                .collection("Owner")
+
+        return try {
+            docRef.get().await().documents[0].toObject<EventOwner>()!!
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in getOwnerFromEvent: $e")
+            null
+        }
+    }
+
+    private suspend fun getParticipantsFromEvent(eventId: String): MutableList<EventParticipant>? {
+        val docRef =
+            DB.collection(EVENT_PATH)
+                .document(eventId)
+                .collection("Participant")
+
+        return try {
+            val participationList = mutableListOf<EventParticipant>()
+            val documents = docRef.get().await().documents
+            for (doc in documents)
+                participationList.add(doc.toObject()!!)
+
+            participationList
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in getParticipantsFromEvent: $e")
+            null
+        }
+    }
 
     private fun sortedEventList(eventList: MutableList<Event>): MutableList<HashMap<String, MutableList<EventCalendar>>> {
         val result: MutableList<Event> = eventList
@@ -103,76 +176,8 @@ object CalendarService {
         return resultList
     }
 
-    suspend fun getEventsByDate(): MutableList<Event>? {
-        val docRef = DB.collection(EVENT_PATH).orderBy("date")
-        val time = Calendar.getInstance().time
-
-        return try {
-            val eventList = mutableListOf<Event>()
-            val documents = docRef.get().await().documents
-            for (doc in documents) {
-                val eventToAdd: Event = doc.toObject()!!
-
-                if (eventToAdd.date > time) {
-                    val owner =
-                        getOwnerFromEvent(
-                            doc.id
-                        )
-                    val participantList =
-                        getParticipantsFromEvent(
-                            doc.id
-                        )
-
-                    eventToAdd.owner = owner!!
-                    eventToAdd.participants = participantList!!
-
-                    eventList.add(eventToAdd)
-                }
-            }
-
-            eventList
-        } catch (e: Exception) {
-            Log.e(TAG, e.toString())
-            null
-        }
-    }
-
-    private suspend fun getOwnerFromEvent(eventId: String): EventOwner? {
-        val docRef =
-            DB.collection(EVENT_PATH)
-                .document(eventId)
-                .collection("Owner")
-
-        return try {
-            docRef.get().await().documents[0].toObject<EventOwner>()!!
-        } catch (e: Exception) {
-            Log.e(TAG, "Error in getOwnerFromEvent: $e")
-            null
-        }
-    }
-
-    private suspend fun getParticipantsFromEvent(eventId: String): MutableList<EventParticipant>? {
-        val docRef =
-            DB.collection(EVENT_PATH)
-                .document(eventId)
-                .collection("Participant")
-
-        return try {
-            val participationList = mutableListOf<EventParticipant>()
-            val documents = docRef.get().await().documents
-            for (doc in documents)
-                participationList.add(doc.toObject()!!)
-
-            participationList
-        } catch (e: Exception) {
-            Log.e(TAG, "Error in getParticipantsFromEvent: $e")
-            null
-        }
-    }
-
     fun eventToCalendar(eventList: MutableList<Event>): MutableList<EventSection> {
         val list = sortedEventList(eventList)
         return mapToEventSection(list)
     }
-
 }

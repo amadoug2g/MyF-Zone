@@ -48,7 +48,6 @@ class EventDetailsFragment : Fragment() {
         private val TAG = EventDetailsFragment::class.java.simpleName
         private var eventId: String? = null
         private var adapter: FirestoreRecyclerAdapter<EventParticipant, ParticipantHolder>? = null
-        private var firstCheck = false
 
         private lateinit var binding: FragmentEventDetailsBinding
         private lateinit var viewModel: EventDetailsViewModel
@@ -168,8 +167,11 @@ class EventDetailsFragment : Fragment() {
                     lifecycleScope.launch {
                         val count =
                             EventDetailsService.getValidParticipantCount(viewModel.eventId.value!!)
-                        val teamCpt = "$count/${viewModel.event.value?.nbTeam}"
-                        binding.eventDetailNbTeam.text = teamCpt
+                        try {
+                            binding.eventDetailNbTeam.text = count
+                        } catch (e: Exception) {
+                            Log.e(TAG, "Error in [onDataChanged]: $e")
+                        }
                     }
                 } catch (e: Exception) {
                     Log.e(TAG, "Error [onDataChanged] participant count: $e")
@@ -182,7 +184,6 @@ class EventDetailsFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
         binding = DataBindingUtil.inflate(
             inflater,
             R.layout.fragment_event_details,
@@ -237,7 +238,11 @@ class EventDetailsFragment : Fragment() {
 
         viewModel.isUserAffiliated.observe(viewLifecycleOwner) { isUserAffiliated ->
             if (isUserAffiliated)
-                binding.cardEventOwner.ownerMessageIcon.visibility = View.VISIBLE
+                viewModel.isUserOwner.observe(viewLifecycleOwner) { isUserOwner ->
+                    if (isUserOwner) {
+                        binding.cardEventOwner.ownerMessageIcon.visibility = View.GONE
+                    }
+                }
         }
 
         viewModel.isUserSignedIn.observe(viewLifecycleOwner) { isUserSignedIn ->
@@ -263,7 +268,6 @@ class EventDetailsFragment : Fragment() {
                 }
             } else {
                 binding.participateButton.visibility = View.GONE
-                binding.cardEventOwner.ownerMessageIcon.visibility = View.GONE
             }
         }
     }
@@ -276,7 +280,6 @@ class EventDetailsFragment : Fragment() {
     override fun onStop() {
         super.onStop()
         binding.profileShimmerLayout.stopShimmer()
-        firstCheck = false
     }
 
     //endregion
@@ -316,6 +319,7 @@ class EventDetailsFragment : Fragment() {
 
         lifecycleScope.launch {
             addParticipant(participant)
+            binding.participateButton.visibility = View.GONE
         }
     }
 
@@ -442,6 +446,7 @@ class EventDetailsFragment : Fragment() {
     private fun ownerAdmin(isUserOwner: Boolean) {
         if (isUserOwner) {
             binding.cardEventOwner.ownerMessageIcon.visibility = View.GONE
+            binding.eventDetailCardViewTitle.visibility = View.VISIBLE
             setHasOptionsMenu(true)
             val swipe = object :
                 SwipeHelper(

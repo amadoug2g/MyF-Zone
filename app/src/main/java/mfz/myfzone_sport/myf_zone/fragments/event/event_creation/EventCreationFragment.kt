@@ -156,17 +156,27 @@ class EventCreationFragment : Fragment() {
     }
     //endregion
 
+    //region Event Creation
+    private fun confirmCreation() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(getString(R.string.create_event))
+            .setMessage(getString(R.string.create_event_confirmation))
+            .setIcon(R.drawable.ic_info)
+            .setPositiveButton(getString(R.string.create_txt)) { _: DialogInterface, _: Int ->
+                viewModel.setEventDate(
+                    eventDay1!!, eventDay2!!, eventTime!!,
+                    event
+                )
 
-    private fun resetFields() {
-        binding.eventCreateTitleInput.setText("")
-        binding.eventCreateDescInput.setText("")
-        binding.eventCreateTypeSpinner.setSelection(0)
-        binding.eventCreateTeamSpinner.setSelection(0)
-//        setStartDate()
-        binding.eventCreateAddressInput.setText("")
+                lifecycleScope.launch {
+                    getOwnerForEvent()
+                }
+
+                Log.i(TAG, "Event is = $event")
+            }.setNegativeButton(getString(R.string.cancel_message)) { _: DialogInterface, _: Int ->
+            }.show()
     }
 
-    //region Event Creation
     private suspend fun createNewEvent() {
         viewModel.createEvent(
             event
@@ -287,9 +297,6 @@ class EventCreationFragment : Fragment() {
 
     //region Event Time
     private fun setStartDate() {
-//        val date = DateFormat.format("dd/MM/yyyy", Date()).toString()
-//        val time = DateFormat.format("HH:mm", Date()).toString()
-
         binding.eventCreateDayPicker.text = getString(R.string.event_creation_date_btn)
         binding.eventCreateTimePicker.text = getString(R.string.event_creation_time_btn)
     }
@@ -403,26 +410,6 @@ class EventCreationFragment : Fragment() {
     }
     //endregion
 
-    private fun confirmCreation() {
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle(getString(R.string.create_event))
-            .setMessage(getString(R.string.create_event_confirmation))
-            .setIcon(R.drawable.ic_info)
-            .setPositiveButton(getString(R.string.create_txt)) { _: DialogInterface, _: Int ->
-                viewModel.setEventDate(
-                    eventDay1!!, eventDay2!!, eventTime!!,
-                    event
-                )
-
-                lifecycleScope.launch {
-                    getOwnerForEvent()
-                }
-
-                Log.i(TAG, "Event is = $event")
-            }.setNegativeButton(getString(R.string.cancel_message)) { _: DialogInterface, _: Int ->
-            }.show()
-    }
-
     //region Loading
     private fun showProgressBar() {
         binding.progressBar.apply {
@@ -438,6 +425,15 @@ class EventCreationFragment : Fragment() {
     //endregion
 
     //region View Methods
+    private fun resetFields() {
+        binding.eventCreateTitleInput.setText("")
+        binding.eventCreateDescInput.setText("")
+        binding.eventCreateTypeSpinner.setSelection(0)
+        binding.eventCreateTeamSpinner.setSelection(0)
+//        setStartDate()
+        binding.eventCreateAddressInput.setText("")
+    }
+
     private fun String.toast() {
         toast(this)
     }

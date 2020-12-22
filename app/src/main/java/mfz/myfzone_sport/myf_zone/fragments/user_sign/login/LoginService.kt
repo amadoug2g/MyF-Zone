@@ -24,7 +24,6 @@ object LoginService {
 
         val auth = firebaseAuth.signInWithEmailAndPassword(email, password).await()
 
-//        if (auth.user != null)
         emit(State.success(auth))
     }.catch {
         emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))

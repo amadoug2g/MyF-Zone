@@ -70,6 +70,10 @@ data class Event(
         return owner.clubAcronym
     }
 
+    fun getTeamNb(): Int {
+        return nbTeam - 1
+    }
+
     var eventTypeString: String
         get() {
             var result = ""

@@ -1,7 +1,10 @@
 package mfz.myfzone_sport.myf_zone.fragments.discussion_page
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -19,12 +22,14 @@ import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.Section
 import com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder
 import com.xwray.groupie.kotlinandroidextensions.Item
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import mfz.myfzone_sport.myf_zone.R
 import mfz.myfzone_sport.myf_zone.databinding.FragmentDiscussionBinding
-import mfz.myfzone_sport.myf_zone.fragments.discussion_page.DiscussionService.addChatMessageListener
+import mfz.myfzone_sport.myf_zone.model.State
 import org.jetbrains.anko.sdk27.coroutines.textChangedListener
 import org.jetbrains.anko.support.v4.toast
+import java.io.ByteArrayOutputStream
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -36,6 +41,7 @@ class DiscussionFragment : Fragment() {
         private val TAG = DiscussionFragment::class.java.simpleName
         private var coachId: String? = null
         private var param2: String? = null
+        private const val RC_SELECT_IMAGE = 2
 
         private lateinit var binding: FragmentDiscussionBinding
         private lateinit var viewModel: DiscussionViewModel
@@ -69,7 +75,6 @@ class DiscussionFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // Inflate the layout for this fragment
         binding = DataBindingUtil.inflate(
             inflater,
             R.layout.fragment_discussion,
@@ -84,7 +89,7 @@ class DiscussionFragment : Fragment() {
             }
 
             viewModel.otherClub.observe(viewLifecycleOwner) { club ->
-                DiscussionService.getOrCreateChat(
+                viewModel.getOrCreateChat(
                     viewModel.coach.value!!,
                     viewModel.coachClub.value!!,
                     other,
@@ -125,24 +130,46 @@ class DiscussionFragment : Fragment() {
 
         binding.imageSenderButton.setOnClickListener {
             viewModel.other.observe(viewLifecycleOwner) { other ->
-                DiscussionService.sendChatMessage(
+                viewModel.sendChatMessage(
                     viewModel.coach.value!!,
                     viewModel.coachClub.value!!,
                     other,
-                    binding.senderTextBox.text.toString()
+                    binding.senderTextBox.text.toString(),
+                    ""
                 )
             }
             binding.senderTextBox.setText("")
         }
 
         binding.fabSendImage.setOnClickListener {
-            toast("Not implemented")
+            val intent = Intent().apply {
+                type = "image/*"
+                action = Intent.ACTION_GET_CONTENT
+                putExtra(
+                    Intent.EXTRA_MIME_TYPES,
+                    arrayOf("image/jpeg",/* "image/jpg",*/ "image/png")
+                )
+            }
+
+            viewModel.other.observe(viewLifecycleOwner) { other ->
+                viewModel.sendChatMessage(
+                    viewModel.coach.value!!,
+                    viewModel.coachClub.value!!,
+                    other,
+                    binding.senderTextBox.text.toString(),
+                    ""
+                )
+            }
         }
 
         viewModel.other.observe(viewLifecycleOwner) { other ->
             try {
                 messagesListenerRegistration =
-                    addChatMessageListener(other.id, requireContext(), this::updateRecyclerView)!!
+                    viewModel.addChatMessageListener(
+                        other.id,
+                        requireContext(),
+                        this::updateRecyclerView
+                    )!!
             } catch (e: Exception) {
                 Log.e(TAG, "Error in messageListener: $e")
                 toast("Error in messageListener: $e")
@@ -152,9 +179,65 @@ class DiscussionFragment : Fragment() {
         return binding.root
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == RC_SELECT_IMAGE) {
+                if (data != null) {
+                    if (data.data != null) {
+                        val selectedImagePath = data.data
+
+                        val selectedImageBmp =
+                            MediaStore.Images.Media.getContentUri(selectedImagePath?.path)
+
+                        val outputStream = ByteArrayOutputStream()
+                    }
+                }
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        setDiscussionAsRead()
+    }
+
     override fun onStop() {
         super.onStop()
         binding.recyclerViewMessages.hideKeyboard()
+    }
+    //endregion
+
+    //region Discussion Methods
+    private fun setDiscussionAsRead() {
+        viewModel.coach.observe(viewLifecycleOwner) { coach ->
+            viewModel.other.observe(viewLifecycleOwner) { other ->
+                viewModel.setDiscussionRead(coach, other)
+            }
+        }
+    }
+
+    private fun discussionHasMessages() {
+        viewModel.coach.observe(viewLifecycleOwner) { coach ->
+            viewModel.other.observe(viewLifecycleOwner) { other ->
+                lifecycleScope.launch {
+                    viewModel.discussionHasMessages(coach, other).collect { state ->
+                        when (state) {
+                            is State.Loading -> {
+                                Log.i(TAG, "Loading")
+                            }
+                            is State.Success -> {
+                                toast("Deleted")
+                            }
+                            is State.Failed -> {
+                                toast("Deletion failed: ${state.message}")
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
     //endregion
 
@@ -164,7 +247,6 @@ class DiscussionFragment : Fragment() {
             binding.recyclerViewMessages.apply {
                 val layout = LinearLayoutManager(requireContext())
                 layout.stackFromEnd = true
-                //layout.reverseLayout = true
                 layoutManager = layout
                 adapter = GroupAdapter<GroupieViewHolder>().apply {
                     messageSection = Section(messages)
