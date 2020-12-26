@@ -37,7 +37,7 @@ import mfz.myfzone_sport.myf_zone.util.Constants.EVENT_PATH
 
 object MapsService {
     private val TAG = MapsService::class.java.simpleName
-    private val firebaseAuth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
+    val firebaseAuth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
 
     fun getCurrentUser() = flow<State<Coach>> {
         val userId = firebaseAuth.currentUser?.uid

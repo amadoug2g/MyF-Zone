@@ -24,7 +24,7 @@ import org.jetbrains.anko.support.v4.toast
 
 class CalendarFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
     companion object {
-        private val TAG = CalendarFragment::class.java.simpleName
+        private val TAG = this::class.java.simpleName
         var eventList = mutableListOf<EventSection>()
 
         private lateinit var binding: FragmentCalendarBinding

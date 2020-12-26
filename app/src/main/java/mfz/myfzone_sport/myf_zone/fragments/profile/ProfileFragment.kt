@@ -16,12 +16,12 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import mfz.myfzone_sport.myf_zone.R
 import mfz.myfzone_sport.myf_zone.databinding.FragmentProfileBinding
+import mfz.myfzone_sport.myf_zone.fragments.profile.ProfileService.firebaseAuth
 import mfz.myfzone_sport.myf_zone.fragments.profile.ProfileService.getImageReference
 import mfz.myfzone_sport.myf_zone.glide.GlideApp
 import mfz.myfzone_sport.myf_zone.model.State
 import mfz.myfzone_sport.myf_zone.model.event.Event
 import mfz.myfzone_sport.myf_zone.screens.MainScreen
-import mfz.myfzone_sport.myf_zone.util.user.UserAccount.auth
 import org.jetbrains.anko.clearTask
 import org.jetbrains.anko.newTask
 import org.jetbrains.anko.support.v4.intentFor
@@ -207,7 +207,7 @@ class ProfileFragment : Fragment() {
             .setTitle(R.string.logout)
             .setMessage(R.string.logout_message)
             .setPositiveButton(R.string.confirm_message) { _: DialogInterface, _: Int ->
-                auth.signOut()
+                firebaseAuth.signOut()
                 toast(R.string.logout_success)
                 startActivity(intentFor<MainScreen>().newTask().clearTask())
             }

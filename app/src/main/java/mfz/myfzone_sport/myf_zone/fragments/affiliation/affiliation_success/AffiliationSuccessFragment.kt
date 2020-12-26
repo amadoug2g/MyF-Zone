@@ -10,12 +10,15 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
-import androidx.navigation.fragment.findNavController
 import kotlinx.coroutines.launch
 import mfz.myfzone_sport.myf_zone.R
 import mfz.myfzone_sport.myf_zone.databinding.FragmentAffiliationSuccessBinding
 import mfz.myfzone_sport.myf_zone.fragments.affiliation.affiliation_success.AffiliationSuccessService.getImageReference
 import mfz.myfzone_sport.myf_zone.glide.GlideApp
+import mfz.myfzone_sport.myf_zone.screens.MainScreen
+import org.jetbrains.anko.clearTask
+import org.jetbrains.anko.newTask
+import org.jetbrains.anko.support.v4.intentFor
 import org.jetbrains.anko.support.v4.toast
 
 class AffiliationSuccessFragment : Fragment() {
@@ -83,7 +86,8 @@ class AffiliationSuccessFragment : Fragment() {
 //        }
 
         binding.affiliationLaterNotifications.setOnClickListener {
-            findNavController().navigate(R.id.affiliationSuccessToMaps)
+//            findNavController().navigate(R.id.affiliationSuccessToMaps)
+            startActivity(intentFor<MainScreen>().newTask().clearTask())
 //            requireActivity().onBackPressed()
         }
 

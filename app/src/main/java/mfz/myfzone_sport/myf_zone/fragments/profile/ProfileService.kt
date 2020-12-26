@@ -25,8 +25,8 @@ import mfz.myfzone_sport.myf_zone.util.Constants.EVENT_PATH
  */
 
 object ProfileService {
-    private val firebaseAuth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
     private val storageInstance: FirebaseStorage by lazy { FirebaseStorage.getInstance() }
+    val firebaseAuth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
 
     fun getCurrentUser() = flow<State<Coach>> {
         val userId = firebaseAuth.currentUser?.uid

@@ -25,7 +25,7 @@ import mfz.myfzone_sport.myf_zone.util.Constants.EVENT_PATH
  */
 
 class EventDetailsViewModel : ViewModel() {
-    private val TAG = EventDetailsViewModel::class.java.simpleName
+    private val TAG = this::class.java.simpleName
 
     //region variable declaration
     private val _event = MutableLiveData<Event>()

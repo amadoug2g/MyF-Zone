@@ -3,7 +3,6 @@ package mfz.myfzone_sport.myf_zone.fragments.discussion_page
 import android.content.Context
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.SetOptions
 import com.xwray.groupie.kotlinandroidextensions.Item
@@ -31,8 +30,7 @@ import java.util.*
 
 object DiscussionService {
     private val TAG = DiscussionService::class.java.simpleName
-    private val firebaseAuth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
-    private val fireStoreInstance: FirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
+    val firebaseAuth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
 
     fun getCurrentUser() = flow<State<Coach>> {
         val userId = firebaseAuth.currentUser?.uid

@@ -95,6 +95,14 @@ class LoginFragment : Fragment() {
     }
     //endregion
 
+    //region Sign In
+    private fun signInProcess() {
+        if (validateForm())
+            lifecycleScope.launch {
+                signInUser()
+            }
+    }
+
     private suspend fun signInUser() {
         viewModel.signInUser(
             binding.loginEmailInput.text.toString(),
@@ -124,18 +132,6 @@ class LoginFragment : Fragment() {
         }
     }
 
-    private fun signInProcess() {
-        if (validateForm())
-            lifecycleScope.launch {
-                signInUser()
-            }
-    }
-
-    private fun resetFields() {
-        binding.loginEmailLayout.error = null
-        binding.loginPasswordLayout.error = null
-    }
-
     private fun validateForm(): Boolean {
         var valid = true
 
@@ -163,6 +159,7 @@ class LoginFragment : Fragment() {
 
         return valid
     }
+    //endregion
 
     //region Loading
     private fun showProgressBar() {
@@ -182,6 +179,11 @@ class LoginFragment : Fragment() {
     private fun View.hideKeyboard() {
         val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(windowToken, 0)
+    }
+
+    private fun resetFields() {
+        binding.loginEmailLayout.error = null
+        binding.loginPasswordLayout.error = null
     }
     //endregion
 

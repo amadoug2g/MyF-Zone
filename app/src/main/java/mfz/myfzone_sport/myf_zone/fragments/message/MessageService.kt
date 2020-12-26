@@ -1,6 +1,7 @@
 package mfz.myfzone_sport.myf_zone.fragments.message
 
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.Dispatchers.IO
@@ -13,7 +14,6 @@ import mfz.myfzone_sport.myf_zone.model.chat.Chat
 import mfz.myfzone_sport.myf_zone.model.coach.Coach
 import mfz.myfzone_sport.myf_zone.util.Constants.COACH_PATH
 import mfz.myfzone_sport.myf_zone.util.Constants.DB
-import mfz.myfzone_sport.myf_zone.util.user.UserAccount.currentUserDocRef
 
 /**
  * Created by Amadou on 07/12/2020, 01:04
@@ -40,6 +40,16 @@ object MessageService {
     }.catch {
         emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
     }.flowOn(IO)
+
+    private val currentUserDocRef: DocumentReference
+        get() = fireStoreInstance
+            .document(
+                COACH_PATH + "/${
+                FirebaseAuth.getInstance().currentUser?.uid ?: throw Exception(
+                    "You are not connected"
+                )
+                }"
+            )
 
     fun getChatCoach(coachId: String) = flow<State<Chat>> {
         val userId = firebaseAuth.currentUser?.uid

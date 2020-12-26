@@ -10,6 +10,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -91,7 +92,14 @@ class SignUpFragment : Fragment() {
     }
     //endregion
 
-    //region User Sign Up
+    //region Sign Up
+    private fun signUpProcess() {
+        if (validateForm())
+            lifecycleScope.launch {
+                signUpUser()
+            }
+    }
+
     private suspend fun signUpUser() {
         viewModel.signUpUser(
             binding.signUpEmailInput.text.toString(),
@@ -152,7 +160,9 @@ class SignUpFragment : Fragment() {
                 is State.Success -> {
                     hideProgressBar()
                     toast(getString(R.string.account_creation_msg))
-                    navigate(R.id.signUpToAffiliationRequest)
+//                    navigate(R.id.signUpToAffiliationRequest)
+                    val bundle = bundleOf("page" to R.id.signUpFragment)
+                    navigate(R.id.globalToAffiliation, bundle)
                 }
                 is State.Failed -> {
                     hideProgressBar()
@@ -160,21 +170,6 @@ class SignUpFragment : Fragment() {
                 }
             }
         }
-    }
-
-    private fun signUpProcess() {
-        if (validateForm())
-            lifecycleScope.launch {
-                signUpUser()
-            }
-    }
-    //endregion
-
-    private fun resetFields() {
-        binding.signUpEmailLayout.error = null
-        binding.signUpPasswordLayout.error = null
-        binding.signUpFirstNameLayout.error = null
-        binding.signUpLastNameLayout.error = null
     }
 
     private fun validateForm(): Boolean {
@@ -220,6 +215,7 @@ class SignUpFragment : Fragment() {
 
         return valid
     }
+    //endregion
 
     //region Navigation
     private fun navigate(destination: Int, extra: Bundle? = null) {
@@ -252,6 +248,13 @@ class SignUpFragment : Fragment() {
             .setPositiveButton(getString(R.string.confirm_message)) { _: DialogInterface, _: Int ->
             }
             .show()
+    }
+
+    private fun resetFields() {
+        binding.signUpEmailLayout.error = null
+        binding.signUpPasswordLayout.error = null
+        binding.signUpFirstNameLayout.error = null
+        binding.signUpLastNameLayout.error = null
     }
     //endregion
 }

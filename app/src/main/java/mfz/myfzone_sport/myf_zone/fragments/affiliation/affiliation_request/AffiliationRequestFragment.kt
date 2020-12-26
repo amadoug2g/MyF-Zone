@@ -9,167 +9,199 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.ProgressBar
 import androidx.core.os.bundleOf
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.android.synthetic.main.fragment_affiliation_request.*
-import kotlinx.android.synthetic.main.fragment_affiliation_request.view.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import mfz.myfzone_sport.myf_zone.R
-import mfz.myfzone_sport.myf_zone.util.club.CategoryUtil.queryCategoryIdFromList
-import mfz.myfzone_sport.myf_zone.util.club.CategoryUtil.queryCategoryList
-import mfz.myfzone_sport.myf_zone.util.club.SportUtil.querySportIdFromList
-import mfz.myfzone_sport.myf_zone.util.club.SportUtil.querySportList
-import mfz.myfzone_sport.myf_zone.util.club.SubCategoryUtil.querySubCategoryList
-import mfz.myfzone_sport.myf_zone.util.user.AffiliationForm.affiliationProcess
-import mfz.myfzone_sport.myf_zone.util.user.AffiliationForm.queryClubFromCode
-import mfz.myfzone_sport.myf_zone.util.user.AffiliationForm.queryIsCodeRegistered
+import mfz.myfzone_sport.myf_zone.databinding.FragmentAffiliationRequestBinding
+import mfz.myfzone_sport.myf_zone.model.State
+import mfz.myfzone_sport.myf_zone.screens.MainScreen
+import org.jetbrains.anko.clearTask
+import org.jetbrains.anko.newTask
 import org.jetbrains.anko.sdk27.coroutines.textChangedListener
+import org.jetbrains.anko.support.v4.intentFor
+import org.jetbrains.anko.support.v4.toast
+
+private const val ARG_PARAM1 = "page"
 
 class AffiliationRequestFragment : Fragment() {
     companion object {
-        private val TAG = AffiliationRequestFragment::class.java.simpleName
+        private val TAG = this::class.java.simpleName
+        private var page: Int? = null
 
         private var sportFirstPass = true
         private var categoryFirstPass = true
         private var subCategoryFirstPass = true
+
+        private lateinit var viewModel: AffiliationRequestViewModel
+        private lateinit var binding: FragmentAffiliationRequestBinding
+    }
+
+    //region Override Methods
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        arguments?.let {
+            page = it.getInt(ARG_PARAM1)
+        }
+
+        viewModel = ViewModelProvider(this).get(AffiliationRequestViewModel::class.java)
+
+        lifecycleScope.launch {
+            getClubs()
+        }
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        val fragmentInflater =
-            inflater.inflate(R.layout.fragment_affiliation_request, container, false)
+        binding = DataBindingUtil.inflate(
+            inflater,
+            R.layout.fragment_affiliation_request,
+            container,
+            false
+        )
 
-        fragmentInflater.affiliationLaterAffiliate.setOnClickListener {
-            navigate(R.id.affiliationRequestToMaps)
-//            requireActivity().onBackPressed()
+        binding.affiliationLaterAffiliate.setOnClickListener {
+            when (page) {
+                R.id.mapsFragment, R.id.messageFragment, R.id.calendarFragment -> {
+                    requireActivity().onBackPressed()
+                    //navigate(R.id.globalAffiliationRequestToMaps)
+                    //navigate(R.id.globalAffiliationRequestToMessage)
+                    //navigate(R.id.globalAffiliationRequestToCalendar)
+                }
+                else -> {
+                    startActivity(intentFor<MainScreen>().newTask().clearTask())
+                }
+            }
         }
 
-        fragmentInflater.affiliateButton.setOnClickListener {
-            val affiliationCode = affiliationCodeInput.text.toString()
-            val affiliationSport = sportSpinner.selectedItem.toString()
-            val affiliationCategory = categorySpinner.selectedItem.toString()
-            val affiliationSubCategory = subCategorySpinner.selectedItem.toString()
+        binding.affiliateButton.setOnClickListener {
+            val affiliationCode = binding.affiliationCodeInput.text.toString()
+            val affiliationSport = binding.sportSpinner.selectedItem.toString()
+            val affiliationCategory = binding.categorySpinner.selectedItem.toString()
+            val affiliationSubCategory = binding.subCategorySpinner.selectedItem.toString()
 
-            showProgressBar(affiliationProgressBar)
+            showProgressBar()
 
             if (validateForm()) {
-                CoroutineScope(IO).launch {
-                    Log.d(TAG, "form is valid")
-                    if (queryIsCodeRegistered(affiliationCode)) {
+                lifecycleScope.launch {
+                    val club = viewModel.checkCode(affiliationCode, viewModel.clubList.value!!)
+                    if (club != null) {
                         Log.d(TAG, "code is valid")
-                        affiliationProcess(
+                        viewModel.affiliationProcess(
                             affiliationCode,
                             affiliationSport,
                             affiliationCategory,
                             affiliationSubCategory
                         )
 
-                        Log.d(
-                            TAG,
-                            "Club for [$affiliationCode]: " + queryClubFromCode(affiliationCode).toString()
-                        )
-
                         val bundle = bundleOf("clubId" to affiliationCode)
                         try {
                             withContext(Main) {
+                                Log.d(TAG, "navigating")
                                 navigate(R.id.affiliationRequestToAffiliationSuccess, bundle)
                             }
                         } catch (e: Exception) {
                             Log.d(TAG, "Error: $e")
                         }
                     } else {
+                        Log.d(TAG, "code is not valid")
                         withContext(Main) {
                             errorMessage()
                         }
-                        Log.d(TAG, "code is not valid")
                     }
                 }
             } else {
                 Log.d(TAG, "form is not valid")
             }
 
-            hideProgressBar(affiliationProgressBar)
+            hideProgressBar()
         }
 
-        return fragmentInflater
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        CoroutineScope(Main).launch {
-            showProgressBar(affiliationProgressBar)
+        lifecycleScope.launchWhenResumed {
+            showProgressBar()
 
-            //SPORT SPINNER HANDLER
+            //region SPORT SPINNER HANDLER
 
             val sportList = mutableListOf<String>()
-            val sportObjectList = querySportList()!!
+            val sportObjectList = viewModel.querySportList()!!
             for (item in sportObjectList)
                 sportList.add(item.name)
 
             if (!sportList.isNullOrEmpty()) {
-                sportSpinner.adapter =
+                binding.sportSpinner.adapter =
                     ArrayAdapter(requireContext(), R.layout.simple_layout_file, sportList)
             }
+            //endregion
 
-
-            //CATEGORY SPINNER HANDLER
+            //region CATEGORY SPINNER HANDLER
 
             val categoryList = mutableListOf<String>()
             val sportId =
-                querySportIdFromList(sportSpinner.selectedItem.toString(), sportObjectList)!!
-            val categoryObjectList = queryCategoryList(sportId)!!
+                viewModel.querySportIdFromList(
+                    binding.sportSpinner.selectedItem.toString(),
+                    sportObjectList
+                )!!
+            val categoryObjectList = viewModel.queryCategoryList(sportId)!!
             if (sportId.isNotEmpty()) {
                 for (item in categoryObjectList)
                     categoryList.add(item.name)
 
                 if (!categoryList.isNullOrEmpty()) {
-                    categorySpinner.adapter =
+                    binding.categorySpinner.adapter =
                         ArrayAdapter(requireContext(), R.layout.simple_layout_file, categoryList)
-                    categorySpinner.visibility = View.VISIBLE
+                    binding.categorySpinner.visibility = View.VISIBLE
                 } else {
-                    categorySpinner.visibility = View.GONE
-                    subCategorySpinner.visibility = View.GONE
-                    affiliateButton.isEnabled = true
+                    binding.categorySpinner.visibility = View.GONE
+                    binding.subCategorySpinner.visibility = View.GONE
+                    binding.affiliateButton.isEnabled = true
                 }
             }
+            //endregion
 
-
-            //SUB-CATEGORY SPINNER HANDLER
+            //region SUB-CATEGORY SPINNER HANDLER
 
             val subCategoryList = mutableListOf<String>()
-            val categoryId = queryCategoryIdFromList(
-                categorySpinner.selectedItem.toString(),
+            val categoryId = viewModel.queryCategoryIdFromList(
+                binding.categorySpinner.selectedItem.toString(),
                 categoryObjectList
             )!!
             if (sportId.isNotEmpty() && categoryId.isNotEmpty()) {
-                for (item in querySubCategoryList(sportId, categoryId)!!)
+                for (item in viewModel.querySubCategoryList(sportId, categoryId)!!)
                     subCategoryList.add(item.name)
 
                 if (!subCategoryList.isNullOrEmpty()) {
-                    subCategorySpinner.adapter =
+                    binding.subCategorySpinner.adapter =
                         ArrayAdapter(requireContext(), R.layout.simple_layout_file, subCategoryList)
-                    subCategorySpinner.visibility = View.VISIBLE
+                    binding.subCategorySpinner.visibility = View.VISIBLE
                 } else {
-                    subCategorySpinner.visibility = View.GONE
-                    affiliateButton.isEnabled = true
+                    binding.subCategorySpinner.visibility = View.GONE
+                    binding.affiliateButton.isEnabled = true
                 }
             }
+            //endregion
 
-            hideProgressBar(affiliationProgressBar)
+            hideProgressBar()
         }
 
-        affiliationCodeInput?.textChangedListener {
+        binding.affiliationCodeInput.textChangedListener {
             onTextChanged { sequence, _,
                             _, _ ->
                 if (!sequence?.toString().equals(null)) {
@@ -178,7 +210,7 @@ class AffiliationRequestFragment : Fragment() {
             }
         }
 
-        sportSpinner?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        binding.sportSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(p0: AdapterView<*>?) {
 //                validateForm()
             }
@@ -186,20 +218,20 @@ class AffiliationRequestFragment : Fragment() {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
                 if (!sportFirstPass) {
 
-                    CoroutineScope(Main).launch {
+                    lifecycleScope.launchWhenResumed {
 
-                        showProgressBar(affiliationProgressBar)
+                        showProgressBar()
 
-                        val sportObjectList = querySportList()!!
+                        val sportObjectList = viewModel.querySportList()!!
 
-                        //CATEGORY SPINNER HANDLER
+                        //region CATEGORY SPINNER HANDLER
 
                         val categoryList = mutableListOf<String>()
-                        val sportId = querySportIdFromList(
+                        val sportId = viewModel.querySportIdFromList(
                             sportSpinner.selectedItem.toString(),
                             sportObjectList
                         )!!
-                        val categoryObjectList = queryCategoryList(sportId)!!
+                        val categoryObjectList = viewModel.queryCategoryList(sportId)!!
                         if (sportId.isNotEmpty()) {
                             for (item in categoryObjectList)
                                 categoryList.add(item.name)
@@ -217,17 +249,17 @@ class AffiliationRequestFragment : Fragment() {
                                 affiliateButton.isEnabled = true
                             }
                         }
+                        //endregion
 
-
-                        //SUB-CATEGORY SPINNER HANDLER
+                        //region SUB-CATEGORY SPINNER HANDLER
 
                         val subCategoryList = mutableListOf<String>()
-                        val categoryId = queryCategoryIdFromList(
+                        val categoryId = viewModel.queryCategoryIdFromList(
                             categorySpinner.selectedItem.toString(),
                             categoryObjectList
                         )!!
                         if (sportId.isNotEmpty() && categoryId.isNotEmpty()) {
-                            for (item in querySubCategoryList(sportId, categoryId)!!)
+                            for (item in viewModel.querySubCategoryList(sportId, categoryId)!!)
                                 subCategoryList.add(item.name)
 
                             if (!subCategoryList.isNullOrEmpty()) {
@@ -242,8 +274,9 @@ class AffiliationRequestFragment : Fragment() {
                                 affiliateButton.isEnabled = true
                             }
                         }
+                        //endregion
 
-                        hideProgressBar(affiliationProgressBar)
+                        hideProgressBar()
                     }
 
                     validateForm(false)
@@ -253,95 +286,127 @@ class AffiliationRequestFragment : Fragment() {
             }
         }
 
-        categorySpinner?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onNothingSelected(p0: AdapterView<*>?) {
+        binding.categorySpinner.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onNothingSelected(p0: AdapterView<*>?) {
 //                validateForm()
-            }
+                }
 
-            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
 
-                if (!categoryFirstPass) {
+                    if (!categoryFirstPass) {
 
-                    CoroutineScope(Main).launch {
+                        lifecycleScope.launchWhenResumed {
 
-                        showProgressBar(affiliationProgressBar)
+                            showProgressBar()
 
-                        val sportObjectList = querySportList()!!
-                        val sportId = querySportIdFromList(
-                            sportSpinner.selectedItem.toString(),
-                            sportObjectList
-                        )!!
-                        val categoryObjectList = queryCategoryList(sportId)!!
+                            val sportObjectList = viewModel.querySportList()!!
+                            val sportId = viewModel.querySportIdFromList(
+                                binding.sportSpinner.selectedItem.toString(),
+                                sportObjectList
+                            )!!
+                            val categoryObjectList = viewModel.queryCategoryList(sportId)!!
 
-                        //SUB-CATEGORY SPINNER HANDLER
+                            //region SUB-CATEGORY SPINNER HANDLER
 
-                        val subCategoryList = mutableListOf<String>()
-                        val categoryId = queryCategoryIdFromList(
-                            categorySpinner.selectedItem.toString(),
-                            categoryObjectList
-                        )!!
-                        if (sportId.isNotEmpty() && categoryId.isNotEmpty()) {
-                            for (item in querySubCategoryList(sportId, categoryId)!!)
-                                subCategoryList.add(item.name)
+                            val subCategoryList = mutableListOf<String>()
+                            val categoryId = viewModel.queryCategoryIdFromList(
+                                binding.categorySpinner.selectedItem.toString(),
+                                categoryObjectList
+                            )!!
+                            if (sportId.isNotEmpty() && categoryId.isNotEmpty()) {
+                                for (item in viewModel.querySubCategoryList(sportId, categoryId)!!)
+                                    subCategoryList.add(item.name)
 
-                            if (!subCategoryList.isNullOrEmpty()) {
-                                subCategorySpinner.adapter = ArrayAdapter(
-                                    requireContext(),
-                                    R.layout.simple_layout_file,
-                                    subCategoryList
-                                )
-                                subCategorySpinner.visibility = View.VISIBLE
-                            } else {
-                                subCategorySpinner.visibility = View.GONE
-                                affiliateButton.isEnabled = true
+                                if (!subCategoryList.isNullOrEmpty()) {
+                                    binding.subCategorySpinner.adapter = ArrayAdapter(
+                                        requireContext(),
+                                        R.layout.simple_layout_file,
+                                        subCategoryList
+                                    )
+                                    binding.subCategorySpinner.visibility = View.VISIBLE
+                                } else {
+                                    binding.subCategorySpinner.visibility = View.GONE
+                                    binding.affiliateButton.isEnabled = true
+                                }
                             }
+                            //endregion
+
+                            hideProgressBar()
                         }
 
-                        hideProgressBar(affiliationProgressBar)
+                        validateForm(false)
                     }
 
-                    validateForm(false)
+                    categoryFirstPass = false
                 }
-
-                categoryFirstPass = false
             }
-        }
 
-        subCategorySpinner?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onNothingSelected(p0: AdapterView<*>?) {
+        binding.subCategorySpinner.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onNothingSelected(p0: AdapterView<*>?) {
 //                validateForm()
-            }
-
-            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                if (!subCategoryFirstPass) {
-
-                    validateForm(false)
                 }
 
-                subCategoryFirstPass = false
+                override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                    if (!subCategoryFirstPass) {
+                        validateForm(false)
+                    }
+
+                    subCategoryFirstPass = false
+                }
             }
-        }
 
-        sportSpinner.isEnabled = false
+        binding.sportSpinner.isEnabled = false
     }
+    //endregion
 
+    //region Affiliation Process
     private fun validateForm(checkCode: Boolean = true): Boolean {
         var valid = true
 
-        val affiliationCode = affiliationCodeInput.text.toString()
+        val affiliationCode = binding.affiliationCodeInput.text.toString()
 
         if (checkCode) {
             if (!TextUtils.isEmpty(affiliationCode.trim())) {
-                affiliationCodeLayout.error = null
-                affiliateButton.isEnabled = true
+                binding.affiliationCodeLayout.error = null
+                binding.affiliateButton.isEnabled = true
             } else {
-                affiliationCodeLayout.error = getString(R.string.hint_required)
+                binding.affiliationCodeLayout.error = getString(R.string.hint_required)
                 valid = false
-                affiliateButton.isEnabled = false
+                binding.affiliateButton.isEnabled = false
             }
         }
 
         return valid
+    }
+    //endregion
+
+    //region Club Query
+    private suspend fun getClubs() {
+        viewModel.getClub().collect { state ->
+            when (state) {
+                is State.Loading -> {
+                    showProgressBar()
+                }
+                is State.Success -> {
+                    hideProgressBar()
+                    val list = state.data
+                    viewModel.assignClubList(list)
+                }
+                is State.Failed -> {
+                    hideProgressBar()
+                    val message = "Error while fetching events: ${state.message}"
+                    message.showToast()
+                }
+            }
+        }
+    }
+    //endregion
+
+    //region View Methods
+    private fun String.showToast() {
+        toast(this)
     }
 
     private fun errorMessage() {
@@ -352,23 +417,27 @@ class AffiliationRequestFragment : Fragment() {
             }
             .show()
     }
+    //endregion
 
-    private fun showProgressBar(progressBar: ProgressBar) {
-        progressBar.apply {
+    //region Loading
+    private fun showProgressBar() {
+        binding.affiliationProgressBar.apply {
             visibility = View.VISIBLE
         }
     }
 
-    private fun hideProgressBar(progressBar: ProgressBar) {
-        progressBar.apply {
+    private fun hideProgressBar() {
+        binding.affiliationProgressBar.apply {
             visibility = View.GONE
         }
     }
+    //endregion
 
+    //region Navigation
     private fun navigate(destination: Int, extra: Bundle? = null) {
         Navigation
             .findNavController(this.requireView())
             .navigate(destination, extra)
     }
-
+    //endregion
 }

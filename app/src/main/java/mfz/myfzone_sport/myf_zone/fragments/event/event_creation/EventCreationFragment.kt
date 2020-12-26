@@ -30,7 +30,6 @@ import mfz.myfzone_sport.myf_zone.model.State
 import mfz.myfzone_sport.myf_zone.model.coach.ClubAffiliation
 import mfz.myfzone_sport.myf_zone.model.event.Event
 import mfz.myfzone_sport.myf_zone.model.event.EventOwner
-import mfz.myfzone_sport.myf_zone.util.user.UserAccount.auth
 import org.jetbrains.anko.sdk27.coroutines.onItemSelectedListener
 import org.jetbrains.anko.support.v4.toast
 import java.text.SimpleDateFormat
@@ -41,7 +40,7 @@ class EventCreationFragment : Fragment() {
     companion object {
         private val TAG = EventCreationFragment::class.java.simpleName
 
-        private val currentUser = auth.currentUser
+        private val currentUser = EventCreationService.firebaseAuth.currentUser
         private var eventDay1: String? = null
         private var eventDay2: String? = null
         private var eventTime: String? = null

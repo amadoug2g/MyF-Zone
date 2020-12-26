@@ -5,6 +5,27 @@
     android:id="@+id/affiliation_request"
     app:startDestination="@id/affiliationRequestFragment">
 
+    <action
+        android:id="@+id/globalAffiliationRequestToMaps"
+        app:destination="@id/map"
+        app:launchSingleTop="true"
+        app:popUpTo="@id/map"
+        app:popUpToInclusive="true" />
+
+    <action
+        android:id="@+id/globalAffiliationRequestToMessage"
+        app:destination="@id/message"
+        app:launchSingleTop="true"
+        app:popUpTo="@id/message"
+        app:popUpToInclusive="true" />
+
+    <action
+        android:id="@+id/globalAffiliationRequestToCalendar"
+        app:destination="@id/calendar"
+        app:launchSingleTop="true"
+        app:popUpTo="@id/calendar"
+        app:popUpToInclusive="true" />
+
     <fragment
         android:id="@+id/affiliationRequestFragment"
         android:name="mfz.myfzone_sport.myf_zone.fragments.affiliation.affiliation_request.AffiliationRequestFragment"

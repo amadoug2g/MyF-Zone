@@ -10,6 +10,7 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
@@ -253,6 +254,7 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
     }
 
     private fun fabButton(destinationId: Int) {
+        val bundle = bundleOf("page" to destinationId)
         when (destinationId) {
             R.id.mapsFragment -> {
                 viewModel.isUserSignedIn.observe(this) { isUserSignedIn ->
@@ -262,7 +264,7 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
                                 navigate(R.id.mapsToEventCreation)
                             } else {
                                 toast(getString(R.string.user_not_affiliated))
-                                navigate(R.id.mapsToAffiliationRequest)
+                                navigate(R.id.mapsToAffiliationRequest, bundle)
                             }
                         }
                     } else {
@@ -278,7 +280,7 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
                                 navigate(R.id.messageToEventCreation)
                             } else {
                                 toast(getString(R.string.user_not_affiliated))
-                                navigate(R.id.messageToAffiliationRequest)
+                                navigate(R.id.messageToAffiliationRequest, bundle)
                             }
                         }
                     } else {
@@ -294,7 +296,7 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
                                 navigate(R.id.calendarToEventCreation)
                             } else {
                                 toast(getString(R.string.user_not_affiliated))
-                                navigate(R.id.calendarToAffiliationRequest)
+                                navigate(R.id.calendarToAffiliationRequest, bundle)
                             }
                         }
                     } else {
@@ -306,6 +308,7 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
     }
 
     private fun profileButton(destinationId: Int) {
+        val bundle = bundleOf("page" to destinationId)
         when (destinationId) {
             R.id.mapsFragment -> {
                 viewModel.isUserSignedIn.observe(this) { isUserSignedIn ->
@@ -315,7 +318,7 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
                                 navigate(R.id.mapsToProfile)
                             } else {
                                 toast(getString(R.string.user_not_affiliated))
-                                navigate(R.id.mapsToAffiliationRequest)
+                                navigate(R.id.mapsToAffiliationRequest, bundle)
                             }
                         }
                     } else {
@@ -331,7 +334,7 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
                                 navigate(R.id.messageToProfile)
                             } else {
                                 toast(getString(R.string.user_not_affiliated))
-                                navigate(R.id.messageToAffiliationRequest)
+                                navigate(R.id.messageToAffiliationRequest, bundle)
                             }
                         }
                     } else {
@@ -347,7 +350,7 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
                                 navigate(R.id.calendarToProfile)
                             } else {
                                 toast(getString(R.string.user_not_affiliated))
-                                navigate(R.id.calendarToAffiliationRequest)
+                                navigate(R.id.calendarToAffiliationRequest, bundle)
                             }
                         }
                     } else {

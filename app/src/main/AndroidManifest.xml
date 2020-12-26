@@ -42,7 +42,12 @@
         <activity
             android:name="mfz.myfzone_sport.myf_zone.screens.MainScreen"
             android:configChanges="orientation|keyboardHidden"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="DiscussionFragment" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
         <activity
             android:name="mfz.myfzone_sport.myf_zone.screens.SplashScreen"
             android:theme="@style/SplashTheme">

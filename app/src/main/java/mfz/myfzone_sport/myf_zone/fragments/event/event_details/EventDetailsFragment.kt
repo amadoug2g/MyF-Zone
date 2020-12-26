@@ -71,17 +71,22 @@ class EventDetailsFragment : Fragment() {
                     Log.e("ParticipantAdapter", "Image could not load: $e")
                 }
 
-                try {
-                    var dotBg: Int = R.drawable.notification_dot_blue
-                    when (participant.status) {
-                        "pending" -> dotBg = R.drawable.notification_dot_blue
-                        "validate" -> dotBg = R.drawable.notification_dot_green
-                        "refused" -> dotBg = R.drawable.notification_dot_red
+                if (viewModel.isUserParticipant.value!!) {
+                    try {
+                        var dotBg: Int = R.drawable.notification_dot_blue
+                        when (participant.status) {
+                            "pending" -> dotBg = R.drawable.notification_dot_blue
+                            "validate" -> dotBg = R.drawable.notification_dot_green
+                            "refused" -> dotBg = R.drawable.notification_dot_red
+                        }
+                        binding.notificationDotOwner.setImageResource(dotBg)
+                    } catch (e: Exception) {
+                        Log.e("ParticipantHolder", "Notification Dot could not load: $e")
                     }
-                    binding.notificationDotOwner.setImageResource(dotBg)
-                } catch (e: Exception) {
-                    Log.e("ParticipantHolder", "Notification Dot could not load: $e")
                 }
+
+                binding.notificationDotOwner.visibility =
+                    if (viewModel.isUserParticipant.value!!) View.VISIBLE else View.GONE
 
                 viewModel.checkIsUserParticipant(participant)
 
@@ -237,12 +242,15 @@ class EventDetailsFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
 
         viewModel.isUserAffiliated.observe(viewLifecycleOwner) { isUserAffiliated ->
-            if (isUserAffiliated)
+            if (isUserAffiliated) {
                 viewModel.isUserOwner.observe(viewLifecycleOwner) { isUserOwner ->
                     if (isUserOwner) {
                         binding.cardEventOwner.ownerMessageIcon.visibility = View.GONE
                     }
                 }
+            } else {
+                binding.cardEventOwner.ownerMessageIcon.visibility = View.GONE
+            }
         }
 
         viewModel.isUserSignedIn.observe(viewLifecycleOwner) { isUserSignedIn ->
@@ -281,7 +289,6 @@ class EventDetailsFragment : Fragment() {
         super.onStop()
         binding.profileShimmerLayout.stopShimmer()
     }
-
     //endregion
 
     //region Action Bar
@@ -527,7 +534,6 @@ class EventDetailsFragment : Fragment() {
 
     private fun userConversation() {
         viewModel.owner.observe(viewLifecycleOwner) { owner ->
-            Log.d(TAG, "clicked ${owner.coachFullname}")
             val bundle = bundleOf("coachId" to owner.coachId)
             navigate(R.id.eventDetailsToDiscussion, bundle)
         }

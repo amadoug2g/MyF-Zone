@@ -11,14 +11,7 @@
         android:id="@+id/globalToMaps"
         app:destination="@id/mapsFragment"
         app:launchSingleTop="true"
-        app:popUpTo="@id/mapsFragment"
-        app:popUpToInclusive="true" />
-
-    <action
-        android:id="@+id/globalToAffiliationRequest"
-        app:destination="@id/affiliation_request"
-        app:launchSingleTop="true"
-        app:popUpTo="@id/affiliation_request"
+        app:popUpTo="@id/map"
         app:popUpToInclusive="true" />
 
     <action

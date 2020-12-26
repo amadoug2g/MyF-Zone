@@ -22,7 +22,7 @@ import mfz.myfzone_sport.myf_zone.util.Constants.EVENT_PATH
  */
 
 object EventCreationService {
-    private val firebaseAuth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
+    val firebaseAuth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
 
     fun checkAffiliationStatus() = flow<State<Boolean>> {
         val userId = firebaseAuth.currentUser?.uid

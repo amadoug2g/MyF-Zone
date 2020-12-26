@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".fragments.affiliation.affiliation_success.AffiliationSuccessFragment">
+<layout>
 
     <data>
 
@@ -10,7 +8,9 @@
             type="mfz.myfzone_sport.myf_zone.model.club.Club" />
     </data>
 
-    <LinearLayout
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        tools:context=".fragments.affiliation.affiliation_success.AffiliationSuccessFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="?android:attr/actionBarSize"
@@ -20,6 +20,7 @@
             android:id="@+id/affiliation_success_shimmer_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="?android:attr/actionBarSize"
             android:layout_gravity="center"
             android:orientation="vertical">
 
@@ -38,6 +39,7 @@
             android:id="@+id/affiliation_success_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginTop="?android:attr/actionBarSize"
             android:orientation="vertical">
 
             <com.google.android.material.imageview.ShapeableImageView

@@ -100,7 +100,7 @@
     <string name="event_title">Titre</string>
     <string name="event_description">Description</string>
     <string name="select_range_text">Sélectionnez une période</string>
-    <string name="no_participant_msg">Il n\'y a aucun participant dans cet évènement</string>
+    <string name="no_participant_msg">Aucun participant dans cet évènement</string>
     <string name="no_event_msg">Vous n\'avez actuellement aucun évènement</string>
     <string name="new_event_error_msg">Vous devez être connecté et affilié à un club pour pouvoir créer un évènement</string>
     <string name="address_field">Adresse</string>

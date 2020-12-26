@@ -12,7 +12,6 @@ import kotlinx.coroutines.launch
 import mfz.myfzone_sport.myf_zone.model.State
 import mfz.myfzone_sport.myf_zone.model.coach.ClubAffiliation
 import mfz.myfzone_sport.myf_zone.model.coach.Coach
-import mfz.myfzone_sport.myf_zone.util.user.UserAccount
 
 /**
  * Created by Amadou on 07/12/2020, 12:03
@@ -74,7 +73,7 @@ class DiscussionViewModel : ViewModel() {
     private fun getClub(userId: String) = DiscussionService.getUserClub(userId)
 
     suspend fun assignCurrentClub() {
-        val currentUser = UserAccount.auth.currentUser
+        val currentUser = DiscussionService.firebaseAuth.currentUser
         getClub(currentUser!!.uid).collect { state ->
             when (state) {
                 is State.Loading -> {

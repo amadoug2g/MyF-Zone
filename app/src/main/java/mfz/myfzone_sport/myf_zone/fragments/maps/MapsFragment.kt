@@ -23,14 +23,12 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.MaterialDatePicker
-import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.card_event_item.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import mfz.myfzone_sport.myf_zone.R
 import mfz.myfzone_sport.myf_zone.databinding.FragmentMapsBinding
 import mfz.myfzone_sport.myf_zone.model.State
-import mfz.myfzone_sport.myf_zone.util.user.UserAccount.auth
 import org.jetbrains.anko.support.v4.toast
 import java.util.*
 
@@ -99,8 +97,6 @@ class MapsFragment : Fragment(),
             }
             viewModel.checkUserAffiliationStatus()
         }
-
-        auth = FirebaseAuth.getInstance()
     }
 
     override fun onCreateView(
@@ -142,10 +138,10 @@ class MapsFragment : Fragment(),
         mapFragment?.getMapAsync(callback)
     }
 
-    override fun onResume() {
-        super.onResume()
+    override fun onStop() {
+        super.onStop()
         viewModel.marker.observe(viewLifecycleOwner) { marker ->
-            marker.markerClick()
+            marker.hideInfoWindow()
         }
     }
 

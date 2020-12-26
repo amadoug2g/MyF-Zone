@@ -5,24 +5,10 @@
     app:startDestination="@id/loginFragment">
 
     <action
-        android:id="@+id/affiliationToMaps"
-        app:destination="@id/map"
+        android:id="@+id/globalToAffiliation"
+        app:destination="@id/affiliation_request"
         app:launchSingleTop="true"
-        app:popUpTo="@id/map"
-        app:popUpToInclusive="true" />
-
-    <action
-        android:id="@+id/signUpToMaps"
-        app:destination="@id/map"
-        app:launchSingleTop="true"
-        app:popUpTo="@id/map"
-        app:popUpToInclusive="true" />
-
-    <action
-        android:id="@+id/globalLoginToMessage"
-        app:destination="@id/map"
-        app:launchSingleTop="true"
-        app:popUpTo="@id/map"
+        app:popUpTo="@id/affiliation_request"
         app:popUpToInclusive="true" />
 
     <fragment
