@@ -19,7 +19,7 @@
             android:id="@+id/calendarToEventDetail"
             app:destination="@+id/event_detail" />
         <action
-            android:id="@+id/calendarToLogin"
+            android:id="@+id/calendarToSignUp"
             app:destination="@id/login" />
         <action
             android:id="@+id/calendarToAffiliationRequest"
@@ -27,10 +27,14 @@
         <action
             android:id="@+id/calendarToProfile"
             app:destination="@id/profile" />
+        <action
+            android:id="@+id/notificationCalendarToDiscussion"
+            app:destination="@id/discussion" />
     </fragment>
     <include app:graph="@navigation/event_detail" />
     <include app:graph="@navigation/profile" />
     <include app:graph="@navigation/affiliation_request" />
     <include app:graph="@navigation/login" />
     <include app:graph="@navigation/event_creation" />
+    <include app:graph="@navigation/discussion" />
 </navigation>

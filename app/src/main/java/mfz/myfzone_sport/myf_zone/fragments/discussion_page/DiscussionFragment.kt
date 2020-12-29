@@ -1,10 +1,7 @@
 package mfz.myfzone_sport.myf_zone.fragments.discussion_page
 
-import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
-import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -29,9 +26,7 @@ import mfz.myfzone_sport.myf_zone.databinding.FragmentDiscussionBinding
 import mfz.myfzone_sport.myf_zone.model.State
 import org.jetbrains.anko.sdk27.coroutines.textChangedListener
 import org.jetbrains.anko.support.v4.toast
-import java.io.ByteArrayOutputStream
 
-// TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "coachId"
 private const val ARG_PARAM2 = "param2"
@@ -61,9 +56,10 @@ class DiscussionFragment : Fragment() {
 
         viewModel = ViewModelProvider(this).get(DiscussionViewModel::class.java)
 
-        lifecycleScope.launch {
+        lifecycleScope.launchWhenResumed {
             viewModel.assignCurrentUser()
             viewModel.assignCurrentClub()
+            Log.i(TAG, "CoachId: $coachId")
             viewModel.assignDiscussionUser(coachId!!)
             viewModel.assignOtherClub(coachId!!)
         }
@@ -86,15 +82,6 @@ class DiscussionFragment : Fragment() {
             //Page Title
             (activity as AppCompatActivity).supportActionBar?.apply {
                 title = other.firstName
-            }
-
-            viewModel.otherClub.observe(viewLifecycleOwner) { club ->
-                viewModel.getOrCreateChat(
-                    viewModel.coach.value!!,
-                    viewModel.coachClub.value!!,
-                    other,
-                    club
-                )
             }
         }
 
@@ -130,37 +117,40 @@ class DiscussionFragment : Fragment() {
 
         binding.imageSenderButton.setOnClickListener {
             viewModel.other.observe(viewLifecycleOwner) { other ->
-                viewModel.sendChatMessage(
-                    viewModel.coach.value!!,
-                    viewModel.coachClub.value!!,
-                    other,
-                    binding.senderTextBox.text.toString(),
-                    ""
-                )
+                viewModel.otherClub.observe(viewLifecycleOwner) { club ->
+                    viewModel.getOrCreateChat(
+                        viewModel.coach.value!!,
+                        viewModel.coachClub.value!!,
+                        other,
+                        club,
+                        binding.senderTextBox.text.toString(),
+                        ""
+                    )
+                }
             }
             binding.senderTextBox.setText("")
         }
 
-        binding.fabSendImage.setOnClickListener {
-            val intent = Intent().apply {
-                type = "image/*"
-                action = Intent.ACTION_GET_CONTENT
-                putExtra(
-                    Intent.EXTRA_MIME_TYPES,
-                    arrayOf("image/jpeg",/* "image/jpg",*/ "image/png")
-                )
-            }
-
-            viewModel.other.observe(viewLifecycleOwner) { other ->
-                viewModel.sendChatMessage(
-                    viewModel.coach.value!!,
-                    viewModel.coachClub.value!!,
-                    other,
-                    binding.senderTextBox.text.toString(),
-                    ""
-                )
-            }
-        }
+//        binding.fabSendImage.setOnClickListener {
+//            val intent = Intent().apply {
+//                type = "image/*"
+//                action = Intent.ACTION_GET_CONTENT
+//                putExtra(
+//                    Intent.EXTRA_MIME_TYPES,
+//                    arrayOf("image/jpeg",/* "image/jpg",*/ "image/png")
+//                )
+//            }
+//
+//            viewModel.other.observe(viewLifecycleOwner) { other ->
+//                viewModel.sendChatMessage(
+//                    viewModel.coach.value!!,
+//                    viewModel.coachClub.value!!,
+//                    other,
+//                    binding.senderTextBox.text.toString(),
+//                    ""
+//                )
+//            }
+//        }
 
         viewModel.other.observe(viewLifecycleOwner) { other ->
             try {
@@ -179,6 +169,7 @@ class DiscussionFragment : Fragment() {
         return binding.root
     }
 
+/*
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
@@ -197,10 +188,16 @@ class DiscussionFragment : Fragment() {
             }
         }
     }
+*/
 
     override fun onResume() {
         super.onResume()
         setDiscussionAsRead()
+    }
+
+    override fun onPause() {
+        setDiscussionAsRead()
+        super.onPause()
     }
 
     override fun onStop() {

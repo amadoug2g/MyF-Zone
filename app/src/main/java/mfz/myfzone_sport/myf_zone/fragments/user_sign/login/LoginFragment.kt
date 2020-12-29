@@ -14,10 +14,10 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.FragmentNavigator
-import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
-import androidx.transition.TransitionInflater
+import androidx.transition.ChangeBounds
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.android.synthetic.main.fragment_login.*
 import kotlinx.android.synthetic.main.fragment_sign_up.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -57,19 +57,11 @@ class LoginFragment : Fragment() {
             executePendingBindings()
         }
 
-        binding.loginRegister.setOnClickListener {
-
-            val extras = FragmentNavigatorExtras(
-                binding.loginEmailLayout to "email_transition_field",
-                binding.loginPasswordLayout to "password_transition_field",
-                binding.loginButton to "button_transition"
-            )
-
-            navigate(R.id.loginToSignUp, extras)
-            resetFields()
-
-            sharedElementEnterTransition = TransitionInflater.from(requireContext())
-                .inflateTransition(R.transition.change_image_transform)
+        sharedElementEnterTransition = ChangeBounds().apply {
+            duration = 300
+        }
+        sharedElementReturnTransition = ChangeBounds().apply {
+            duration = 300
         }
 
         binding.loginButton.setOnClickListener {
@@ -83,9 +75,9 @@ class LoginFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         FragmentNavigator.Extras.Builder()
-            .addSharedElement(sign_up_email_layout, "email_transition_field")
-            .addSharedElement(sign_up_password_layout, "password_transition_field")
-            .addSharedElement(sign_up_button, "button_transition")
+            .addSharedElement(login_email_layout, "email_transition_field")
+            .addSharedElement(login_password_layout, "password_transition_field")
+            .addSharedElement(login_button, "button_transition")
             .build()
     }
 

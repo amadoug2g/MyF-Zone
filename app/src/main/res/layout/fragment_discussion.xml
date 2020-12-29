@@ -47,6 +47,7 @@
                 android:layout_alignParentStart="true"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
+                android:visibility="gone"
                 android:contentDescription="@string/text_image_button"
                 android:src="@drawable/ic_image"
                 android:tint="?attr/colorPrimaryDark"
@@ -73,6 +74,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="24dp"
                 android:elevation="2dp"
+                android:contentDescription="@string/send_button_description"
                 app:srcCompat="@drawable/ic_send" />
 
         </RelativeLayout>

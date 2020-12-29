@@ -133,22 +133,16 @@ class DiscussionViewModel : ViewModel() {
         coach: Coach,
         coachClub: ClubAffiliation,
         other: Coach,
-        otherClub: ClubAffiliation
-    ) = DiscussionService.getOrCreateChat(coach, coachClub, other, otherClub)
+        otherClub: ClubAffiliation,
+        message: String,
+        photo: String
+    ) = DiscussionService.getOrCreateChat(coach, coachClub, other, otherClub, message, photo)
 
     fun addChatMessageListener(
         otherId: String,
         context: Context,
         onListen: (List<Item>) -> Unit
     ) = DiscussionService.addChatMessageListener(otherId, context, onListen)
-
-    fun sendChatMessage(
-        coach: Coach,
-        coachClub: ClubAffiliation,
-        other: Coach,
-        message: String,
-        photo: String
-    ) = DiscussionService.sendChatMessage(coach, coachClub, other, message, photo)
 
     fun setDiscussionRead(
         coach: Coach,

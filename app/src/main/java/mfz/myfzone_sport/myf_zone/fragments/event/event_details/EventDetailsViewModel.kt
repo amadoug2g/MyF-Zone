@@ -40,6 +40,10 @@ class EventDetailsViewModel : ViewModel() {
     val owner: LiveData<EventOwner>
         get() = _owner
 
+    private val _ownerToken = MutableLiveData<MutableList<String>>()
+    val ownerToken: LiveData<MutableList<String>>
+        get() = _ownerToken
+
     private val _coach = MutableLiveData<Coach>()
     val coach: LiveData<Coach>
         get() = _coach
@@ -107,7 +111,8 @@ class EventDetailsViewModel : ViewModel() {
         return result
     }
 
-    fun getCurrentUser() = EventDetailsService.getCurrentUser()
+    private fun getCurrentUser() = EventDetailsService.getCurrentUser()
+    private fun getOwnerToken(ownerId: String) = EventDetailsService.getOwnerToken(ownerId)
 
     private fun getEventParticipantList(eventId: String) =
         EventDetailsService.getEventParticipant(eventId)
@@ -120,6 +125,24 @@ class EventDetailsViewModel : ViewModel() {
                 }
                 is State.Success -> {
                     _coach.value = state.data
+                }
+                is State.Failed -> {
+//                    hideProgressBar()
+                    val message = "An error occurred [in assignUser]: ${state.message}"
+                    Log.i("EventDetailsViewModel", message)
+                }
+            }
+        }
+    }
+
+    suspend fun assignOwnerToken(ownerId: String) {
+        getOwnerToken(ownerId).collect { state ->
+            when (state) {
+                is State.Loading -> {
+//                    showProgressBar()
+                }
+                is State.Success -> {
+                    _ownerToken.value = state.data
                 }
                 is State.Failed -> {
 //                    hideProgressBar()

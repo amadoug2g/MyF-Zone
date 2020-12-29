@@ -90,7 +90,7 @@
                 android:layout_marginStart="32dp"
                 android:layout_marginTop="32dp"
                 android:layout_marginEnd="32dp"
-                android:entries="@array/teamList"
+                android:entries="@array/amicalTeamList"
                 android:spinnerMode="dialog" />
 
             <LinearLayout

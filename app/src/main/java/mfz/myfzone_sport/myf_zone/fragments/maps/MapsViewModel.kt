@@ -11,6 +11,7 @@ import com.google.android.gms.maps.model.Marker
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import mfz.myfzone_sport.myf_zone.R
 import mfz.myfzone_sport.myf_zone.model.State
 import mfz.myfzone_sport.myf_zone.model.club.Club
 import mfz.myfzone_sport.myf_zone.model.coach.ClubAffiliation
@@ -108,6 +109,27 @@ class MapsViewModel : ViewModel() {
 
     fun assignFilterCount(counter: Int) {
         filterCount.value = counter
+    }
+
+    fun assignFilterIcon(list: MutableList<Event>): Int {
+        val filterIcon: Int = R.mipmap.ic_filter_icons_all
+
+        val plateauCount = 0
+        list.forEach { event -> if (event.type == "plateau") plateauCount.plus(1) }
+        val friendlyCount = 0
+        list.forEach { event -> if (event.type == "friendly") friendlyCount.plus(1) }
+        val tournamentCount = 0
+        list.forEach { event -> if (event.type == "tournament") tournamentCount.plus(1) }
+
+        if (plateauCount == 0) {
+            if (friendlyCount == 0) {
+                if (tournamentCount == 0) {
+
+                }
+            }
+        }
+
+        return filterIcon
     }
 
     fun mapInit() {

@@ -16,7 +16,7 @@
             android:id="@+id/messageToProfile"
             app:destination="@id/profile" />
         <action
-            android:id="@+id/messageToLogin"
+            android:id="@+id/messageToSignUp"
             app:destination="@id/login" />
         <action
             android:id="@+id/messageToAffiliationRequest"

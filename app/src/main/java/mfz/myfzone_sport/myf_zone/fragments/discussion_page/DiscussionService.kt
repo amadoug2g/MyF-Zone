@@ -77,6 +77,27 @@ object DiscussionService {
         coach: Coach,
         coachClub: ClubAffiliation,
         other: Coach,
+        otherClub: ClubAffiliation,
+        message: String,
+        photo: String
+    ) {
+        val mUserChatQuery = DB
+            .document(COACH_PATH + "/${coach.id}/Chat/${other.id}")
+
+        mUserChatQuery.get().addOnSuccessListener {
+            if (!it.exists()) {
+                createChat(coach, coachClub, other, otherClub)
+            } else {
+                Log.i("DiscussionService", "[getOrCreateChat] Document already exists")
+            }
+            sendChatMessage(coach, coachClub, other, message, photo)
+        }
+    }
+
+    private fun createChat(
+        coach: Coach,
+        coachClub: ClubAffiliation,
+        other: Coach,
         otherClub: ClubAffiliation
     ) {
         val time = Calendar.getInstance().time
@@ -86,42 +107,36 @@ object DiscussionService {
         val mOtherUserChatQuery = DB
             .document(COACH_PATH + "/${other.id}/Chat/${coach.id}")
 
-        mUserChatQuery.get().addOnSuccessListener {
-            if (!it.exists()) {
-                val newUserChat: Chat = Chat().apply {
-                    coachId = other.id
-                    fullname = other.getName()
-                    clubLogo = otherClub.clubLogo
-                    isTyping = false
-                    lastMessage = ""
-                    unread = false
-                    createdDate = time
-                    updatedDate = time
-                }
-
-                val newOtherChat: Chat = Chat().apply {
-                    coachId = coach.id
-                    fullname = coach.getName()
-                    clubLogo = coachClub.clubLogo
-                    isTyping = false
-                    lastMessage = ""
-                    unread = false
-                    createdDate = time
-                    updatedDate = time
-                }
-
-                mUserChatQuery
-                    .set(newUserChat.toMap())
-
-                mOtherUserChatQuery
-                    .set(newOtherChat.toMap())
-            } else {
-                Log.i("DiscussionService", "Document already exists")
-            }
+        val newUserChat: Chat = Chat().apply {
+            coachId = other.id
+            fullname = other.getName()
+            clubLogo = otherClub.clubLogo
+            isTyping = false
+            lastMessage = ""
+            unread = false
+            createdDate = time
+            updatedDate = time
         }
+
+        val newOtherChat: Chat = Chat().apply {
+            coachId = coach.id
+            fullname = coach.getName()
+            clubLogo = coachClub.clubLogo
+            isTyping = false
+            lastMessage = ""
+            unread = false
+            createdDate = time
+            updatedDate = time
+        }
+
+        mUserChatQuery
+            .set(newUserChat.toMap())
+
+        mOtherUserChatQuery
+            .set(newOtherChat.toMap())
     }
 
-    fun sendChatMessage(
+    private fun sendChatMessage(
         coach: Coach,
         coachClub: ClubAffiliation,
         other: Coach,
@@ -224,22 +239,21 @@ object DiscussionService {
         val mUserChatQuery = DB
             .document(COACH_PATH + "/${coach.id}/Chat/${other.id}")
 
-        val mOtherUserChatQuery = DB
-            .document(COACH_PATH + "/${other.id}/Chat/${coach.id}")
+        mUserChatQuery.get().addOnSuccessListener {
+            if (it.exists()) {
+                val updatedUserChat = hashMapOf(
+                    "unread" to false
+                )
 
-        val updatedUserChat = hashMapOf(
-            "unread" to false
-        )
+                mUserChatQuery
+                    .set(updatedUserChat, SetOptions.merge())
 
-        val updatedOtherChat = hashMapOf(
-            "unread" to true
-        )
+            } else {
+                Log.i("DiscussionService", "[setDiscussionRead] Document does not exist")
+            }
+        }
 
-        mUserChatQuery
-            .set(updatedUserChat, SetOptions.merge())
 
-        mOtherUserChatQuery
-            .set(updatedOtherChat, SetOptions.merge())
     }
 
     fun setDiscussionUnread(

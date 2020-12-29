@@ -16,6 +16,7 @@
     <string name="become_coach">Devenir Coach</string>
     <string name="login_coach">Connexion</string>
     <string name="no_account_string">Vous n\'avez pas de compte ?</string>
+    <string name="already_has_account_string">Vous avez déjà un compte ?</string>
     <string name="empty_string" translatable="false"> </string>
     <string name="image_club">Image club</string>
     <string name="club_subtitle">Sous-titre du club</string>
@@ -39,7 +40,6 @@
     <string name="menu_item_list">Liste</string>
     <string name="menu_item_message">Message</string>
     <string name="menu_item_calendar">Calendrier</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment fr</string>
     <string name="affiliationTextDesc">Rentrez votre code d\'affiliation pour vous enregistrez auprès d\'un club</string>
     <string name="affiliation_code_text">Code d\'Affiliation</string>
@@ -83,6 +83,7 @@
     <string name="notification_dot">Notification Dot</string>
     <string name="teams">" équipes"</string>
     <string name="friendly_event">Match amical</string>
+    <string name="friendly_event_txt">Amical</string>
     <string name="tournament_event">Tournoi</string>
     <string name="plateau_event">Plateau</string>
     <string name="participant_name">Jose Mourinho</string>
@@ -134,6 +135,21 @@
     <string name="event_in_range">évènements à cette période</string>
     <string name="event_list_update">Evènements mis à jour !</string>
     <string name="image_message">Image Message</string>
+    <string name="settings_button">Bouton des paramètres</string>
+    <string name="settings_label">Paramètres</string>
+    <string name="os_settings_text">Paramètres système</string>
+    <string name="CGU">CGU</string>
+    <string name="about_us">À propos</string>
+    <string name="app_review">Noter l\'application</string>
+    <string name="privacy_policy">Confidentialité</string>
+    <string name="onBoarding_intro">L\'application My F-Zone met\nen relation les éducateurs de foot afin de :</string>
+    <string name="onBoarding_create_event">Créer un évènement de type :</string>
+    <string name="onBoarding_calendar">Retrouver les détails de ces 3 types d\'évènements dans votre agenda</string>
+    <string name="onBoarding_map">Participer à des évènements à proximité de votre club depuis la Carte</string>
+    <string name="onBoarding_chat">Discuter avec d\'autres éducateurs à partir de la messagerie</string>
+    <string name="onBoarding_affiliation_code">À l\'aide du code d\'affiliation (FFF) de ton club, inscris-toi et rejoins la communauté</string>
+    <string name="app_logo_content_description">App Logo</string>
+    <string name="send_button_description">Bouton d\'envoi Button</string>
 
     <string-array name="sportList">
         <item>Foot</item>
@@ -153,7 +169,6 @@
         <item>2</item>
     </string-array>
     <string-array name="teamList">
-        <item>2</item>
         <item>3</item>
         <item>4</item>
         <item>5</item>
@@ -168,5 +183,21 @@
         <item>15</item>
         <item>14</item>
         <item>16</item>
+        <item>17</item>
+        <item>18</item>
+        <item>19</item>
+        <item>20</item>
+        <item>21</item>
+        <item>22</item>
+        <item>23</item>
+        <item>24</item>
+        <item>25</item>
+        <item>26</item>
+        <item>27</item>
+        <item>28</item>
+        <item>29</item>
+        <item>30</item>
+        <item>31</item>
+        <item>32</item>
     </string-array>
 </resources>

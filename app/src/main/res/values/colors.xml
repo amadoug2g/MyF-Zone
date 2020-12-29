@@ -8,4 +8,6 @@
     <color name="colorTransparent">#88FFFFFF</color>
     <color name="colorTransparentMessage">#EEEEEE</color>
     <color name="colorCoral">#FF7F50</color>
+    <color name="colorSettingStart">#009DFE</color>
+    <color name="colorSettingEnd">#0075F8</color>
 </resources>

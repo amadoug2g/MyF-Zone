@@ -16,7 +16,11 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.FragmentNavigator
+import androidx.navigation.fragment.FragmentNavigatorExtras
+import androidx.navigation.fragment.findNavController
 import androidx.transition.ChangeBounds
+import androidx.transition.TransitionInflater
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.collect
@@ -59,6 +63,21 @@ class SignUpFragment : Fragment() {
             signUpProcess()
         }
 
+        binding.loginRegister.setOnClickListener {
+
+            val extras = FragmentNavigatorExtras(
+                binding.signUpEmailLayout to "email_transition_field",
+                binding.signUpPasswordLayout to "password_transition_field",
+                binding.signUpButton to "button_transition"
+            )
+
+            navigate(R.id.signUpToLogin, extras)
+            resetFields()
+
+            sharedElementEnterTransition = TransitionInflater.from(requireContext())
+                .inflateTransition(R.transition.change_image_transform)
+        }
+
         sharedElementEnterTransition = ChangeBounds().apply {
             duration = 300
         }
@@ -82,13 +101,6 @@ class SignUpFragment : Fragment() {
     override fun onStop() {
         super.onStop()
         binding.signUpFirstNameInput.hideKeyboard()
-    }
-    //endregion
-
-    //region View Methods
-    private fun View.hideKeyboard() {
-        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideSoftInputFromWindow(windowToken, 0)
     }
     //endregion
 
@@ -223,6 +235,10 @@ class SignUpFragment : Fragment() {
             .findNavController(this.requireView())
             .navigate(destination, extra)
     }
+
+    private fun navigate(destination: Int, extra: FragmentNavigator.Extras? = null) {
+        findNavController().navigate(destination, null, null, extra)
+    }
     //endregion
 
     //region Loading
@@ -240,6 +256,11 @@ class SignUpFragment : Fragment() {
     //endregion
 
     //region View Methods
+    private fun View.hideKeyboard() {
+        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(windowToken, 0)
+    }
+
     private fun String.errorDialog() {
         Log.d(TAG, "signUpUserWithEmail:failed: $this")
         MaterialAlertDialogBuilder(requireContext())

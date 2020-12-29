@@ -13,6 +13,10 @@
         <action
             android:id="@+id/profileToEventDetails"
             app:destination="@id/event_detail" />
+        <action
+            android:id="@+id/profileToSettings"
+            app:destination="@id/settings" />
     </fragment>
     <include app:graph="@navigation/event_detail" />
+    <include app:graph="@navigation/settings" />
 </navigation>

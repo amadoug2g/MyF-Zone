@@ -167,6 +167,7 @@ class MapsFragment : Fragment(),
                         loadingMsgEnd()
                         val list = state.data
                         val size = list.size
+                        binding.filterButton.icon
                         viewModel.assignFilterCount(size)
                         binding.viewModel = viewModel
                         viewModel.placeEvents(viewModel.map.value!!, requireContext(), list)

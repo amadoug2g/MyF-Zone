@@ -1,22 +1,30 @@
 package mfz.myfzone_sport.myf_zone.fragments.settings
 
+import android.content.DialogInterface
+import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.Navigation
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import mfz.myfzone_sport.myf_zone.R
 import mfz.myfzone_sport.myf_zone.databinding.FragmentSettingsBinding
+import mfz.myfzone_sport.myf_zone.screens.MainScreen
+import org.jetbrains.anko.clearTask
+import org.jetbrains.anko.newTask
+import org.jetbrains.anko.support.v4.intentFor
+import org.jetbrains.anko.support.v4.toast
 
-// TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 
 class SettingsFragment : Fragment() {
-    // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
 
@@ -29,7 +37,6 @@ class SettingsFragment : Fragment() {
          * @param param2 Parameter 2.
          * @return A new instance of fragment SettingsFragment.
          */
-        // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
             SettingsFragment().apply {
@@ -56,7 +63,7 @@ class SettingsFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = DataBindingUtil.inflate(
             inflater,
             R.layout.fragment_settings,
@@ -64,8 +71,44 @@ class SettingsFragment : Fragment() {
             false
         )
 
-        // Inflate the layout for this fragment
+        binding.logout.setOnClickListener { signOut() }
+
+        binding.osSettings.setOnClickListener {
+//            val intent = Intent(Settings.ACTION_SETTINGS)
+//            startActivityForResult(intent, 0)
+            val dialogIntent = Intent(Settings.ACTION_SETTINGS)
+            dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(dialogIntent)
+        }
+
         return binding.root
     }
 
+    //region View Methods
+    private fun signOut() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.logout)
+            .setMessage(R.string.logout_message)
+            .setPositiveButton(R.string.confirm_message) { _: DialogInterface, _: Int ->
+                viewModel.signOut()
+                toast(R.string.logout_success)
+                startActivity(intentFor<MainScreen>().newTask().clearTask())
+            }
+            .setNegativeButton(R.string.cancel_message) { _: DialogInterface, _: Int ->
+            }
+            .show()
+    }
+
+    private fun showToast(string: String) {
+        toast(string)
+    }
+    //endregion
+
+    //region Navigation
+    private fun navigate(destination: Int, extra: Bundle? = null) {
+        Navigation
+            .findNavController(this.requireView())
+            .navigate(destination, extra)
+    }
+    //endregion
 }

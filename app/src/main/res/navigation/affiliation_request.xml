@@ -37,6 +37,9 @@
         <action
             android:id="@+id/affiliationRequestToMaps"
             app:destination="@id/map" />
+        <action
+            android:id="@+id/affiliationRequestToSettings"
+            app:destination="@id/settings" />
     </fragment>
     <fragment
         android:id="@+id/affiliationSuccessFragment"
@@ -46,4 +49,5 @@
     <action
         android:id="@+id/affiliationSuccessToMaps"
         app:destination="@id/map" />
+    <include app:graph="@navigation/settings" />
 </navigation>

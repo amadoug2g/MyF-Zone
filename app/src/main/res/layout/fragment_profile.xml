@@ -70,6 +70,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
                     android:layout_marginEnd="10dp"
+                    android:contentDescription="@string/settings_button"
                     android:src="@drawable/ic_settings" />
 
                 <ImageView

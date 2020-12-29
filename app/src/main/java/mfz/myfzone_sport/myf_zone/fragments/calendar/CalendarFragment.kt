@@ -97,7 +97,7 @@ class CalendarFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
                         viewModel.assignEventList(list)
                         viewModel.isListDifferent.observe(viewLifecycleOwner) { isListDifferent ->
                             if (isListDifferent) {
-                                toast(getString(R.string.event_list_update))
+//                                toast(getString(R.string.event_list_update))
                                 refreshRecycler(list)
                             }
                             //else {

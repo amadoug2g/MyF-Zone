@@ -50,6 +50,27 @@ object EventDetailsService {
         emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
     }.flowOn(IO)
 
+    fun getOwnerToken(ownerId: String) = flow<State<MutableList<String>>> {
+        val mOwnerTokenQuery = DB.document(COACH_PATH + "/${ownerId}")
+
+        val snapshot = mOwnerTokenQuery.get().await()
+        val user: Coach = snapshot.toObject()!!
+
+        val tokenList = mutableListOf<String>()
+
+        if (!user.devices.isNullOrEmpty()) {
+            user.devices.forEach { tokenList.add(it) }
+            emit(State.success(tokenList))
+            Log.i(TAG, "Tokens: $tokenList")
+        } else {
+            emit(State.success(mutableListOf()))
+            Log.i(TAG, "Tokens: list is empty")
+        }
+
+    }.catch {
+        emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
+    }.flowOn(IO)
+
     fun getEvent(eventId: String) = flow<State<Event>> {
         val mEventQuery = DB.document(EVENT_PATH + "/${eventId}")
 
@@ -97,11 +118,17 @@ object EventDetailsService {
 
         emit(State.loading())
 
-        val snapshot = mParticipantList.get().await().documents
-        val participantList = mutableListOf<EventParticipant>()
-        snapshot.forEach { participantList.add(it.toObject()!!) }
+        val snapshot = mParticipantList.get().await()
+//        val participantList = mutableListOf<EventParticipant>()
+//        snapshot.forEach { participantList.add(it.toObject()!!) }
+//        (!snapshot.isEmpty) ? (emit(State.success(snapshot.toObjects(EventParticipant::class.java)))) : (emit(State.success(mutableListOf())))
+        val resultState =
+            if (!snapshot.isEmpty) (State.success(snapshot.toObjects(EventParticipant::class.java))) else (State.success(
+                mutableListOf()
+            ))
 
-        emit(State.success(participantList))
+        emit(resultState)
+//        emit(State.success(participantList))
     }.catch {
         emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
     }.flowOn(IO)

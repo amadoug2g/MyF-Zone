@@ -116,6 +116,26 @@
                 tools:ignore="OnClick" />
 
 
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/registerText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="64dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="64dp"
+                android:text="@string/already_has_account_string"
+                android:textAlignment="center" />
+
+            <TextView
+                android:id="@+id/loginRegister"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="64dp"
+                android:layout_marginTop="-16dp"
+                android:layout_marginEnd="64dp"
+                android:text="@string/login_coach" />
+
         </LinearLayout>
 
     </ScrollView>

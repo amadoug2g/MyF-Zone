@@ -68,27 +68,33 @@ class EventDetailsFragment : Fragment() {
                             .into(binding.eventDetailParticipantImage)
                     }
                 } catch (e: Exception) {
-                    Log.e("ParticipantAdapter", "Image could not load: $e")
+                    Log.e("ParticipantHolder", "Image could not load: $e")
                 }
 
-                if (viewModel.isUserParticipant.value!!) {
-                    try {
-                        var dotBg: Int = R.drawable.notification_dot_blue
-                        when (participant.status) {
-                            "pending" -> dotBg = R.drawable.notification_dot_blue
-                            "validate" -> dotBg = R.drawable.notification_dot_green
-                            "refused" -> dotBg = R.drawable.notification_dot_red
-                        }
-                        binding.notificationDotOwner.setImageResource(dotBg)
-                    } catch (e: Exception) {
-                        Log.e("ParticipantHolder", "Notification Dot could not load: $e")
+                try {
+                    var dotBg: Int = R.drawable.notification_dot_blue
+                    when (participant.status) {
+                        "pending" -> dotBg = R.drawable.notification_dot_blue
+                        "validate" -> dotBg = R.drawable.notification_dot_green
+                        "refused" -> dotBg = R.drawable.notification_dot_red
                     }
+                    binding.notificationDotOwner.setImageResource(dotBg)
+                } catch (e: Exception) {
+                    Log.e("ParticipantHolder", "Notification Dot could not load: $e")
                 }
-
-                binding.notificationDotOwner.visibility =
-                    if (viewModel.isUserParticipant.value!!) View.VISIBLE else View.GONE
 
                 viewModel.checkIsUserParticipant(participant)
+//                viewModel.checkIsUserOwner()
+
+                if (viewModel.isUserOwner.value!!) {
+                    binding.notificationDotOwner.visibility = View.VISIBLE
+                } else {
+                    if (viewModel.isUserParticipant.value!!) {
+                        binding.notificationDotOwner.visibility = View.VISIBLE
+                    } else {
+                        binding.notificationDotOwner.visibility = View.GONE
+                    }
+                }
 
                 binding.cancelParticipation.visibility =
                     if (viewModel.isUserParticipant.value!!) View.VISIBLE else View.GONE
@@ -132,7 +138,7 @@ class EventDetailsFragment : Fragment() {
 
         lifecycleScope.launch {
             viewModel.assignEvent()
-            viewModel.assignClub() //TODO: necessary?
+            viewModel.assignClub()
             viewModel.assignOwner()
             viewModel.assignParticipants()
             viewModel.checkUserAffiliationStatus()
@@ -202,6 +208,12 @@ class EventDetailsFragment : Fragment() {
             viewModel.checkParticipationStatus()
         }
 
+        viewModel.owner.observe(viewLifecycleOwner) { owner ->
+            lifecycleScope.launch {
+                viewModel.assignOwnerToken(owner.coachId)
+            }
+        }
+
         binding.apply {
             lifecycleOwner = this@EventDetailsFragment
             setupRecyclerParameters()
@@ -241,15 +253,19 @@ class EventDetailsFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        viewModel.isUserAffiliated.observe(viewLifecycleOwner) { isUserAffiliated ->
-            if (isUserAffiliated) {
-                viewModel.isUserOwner.observe(viewLifecycleOwner) { isUserOwner ->
-                    if (isUserOwner) {
-                        binding.cardEventOwner.ownerMessageIcon.visibility = View.GONE
+        viewModel.isUserSignedIn.observe(viewLifecycleOwner) { isUserLoggedIn ->
+            if (isUserLoggedIn) {
+                viewModel.isUserAffiliated.observe(viewLifecycleOwner) { isUserAffiliated ->
+                    if (isUserAffiliated) {
+                        viewModel.isUserOwner.observe(viewLifecycleOwner) { isUserOwner ->
+                            if (isUserOwner) {
+                                binding.cardEventOwner.ownerMessageIcon.visibility = View.GONE
+                            } else {
+                                binding.cardEventOwner.ownerMessageIcon.visibility = View.VISIBLE
+                            }
+                        }
                     }
                 }
-            } else {
-                binding.cardEventOwner.ownerMessageIcon.visibility = View.GONE
             }
         }
 
@@ -452,7 +468,7 @@ class EventDetailsFragment : Fragment() {
     //region Owner Permissions
     private fun ownerAdmin(isUserOwner: Boolean) {
         if (isUserOwner) {
-            binding.cardEventOwner.ownerMessageIcon.visibility = View.GONE
+//            binding.cardEventOwner.ownerMessageIcon.visibility = View.GONE
             binding.eventDetailCardViewTitle.visibility = View.VISIBLE
             setHasOptionsMenu(true)
             val swipe = object :

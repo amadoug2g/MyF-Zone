@@ -59,6 +59,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             style="@style/TextAppearance.AppCompat.Title"
+                            android:ellipsize="end"
+                            android:maxLines="2"
                             android:text="@{@string/owner_txt + ` - ` + owner.clubAcronym + ` ` + owner.categoryName + ` ` + owner.subCategoryName}" />
 
                         <TextView
@@ -67,6 +69,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
                             style="@style/ShapeAppearance.MaterialComponents.MediumComponent"
+                            android:singleLine="true"
                             android:text="@{owner.coachFullname}" />
 
                     </LinearLayout>
@@ -76,14 +79,6 @@
                         android:layout_height="match_parent"
                         android:layout_alignParentEnd="true"
                         android:layout_margin="8dp">
-
-                        <!--                    <ImageView-->
-                        <!--                        android:id="@+id/notificationDotOwner"-->
-                        <!--                        android:layout_width="wrap_content"-->
-                        <!--                        android:layout_height="wrap_content"-->
-                        <!--                        android:layout_alignParentEnd="true"-->
-                        <!--                        android:background="@drawable/notification_dot_green"-->
-                        <!--                        android:contentDescription="@string/notification_dot" />-->
 
                         <ImageView
                             android:id="@+id/owner_message_icon"

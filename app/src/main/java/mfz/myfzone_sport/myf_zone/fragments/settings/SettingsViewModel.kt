@@ -7,4 +7,6 @@ import androidx.lifecycle.ViewModel
  * Created by Amadou on 22/12/2020
  */
 
-class SettingsViewModel : ViewModel()
+class SettingsViewModel : ViewModel() {
+    fun signOut() = SettingsService.signOut()
+}

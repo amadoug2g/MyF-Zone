@@ -1,13 +1,17 @@
 package mfz.myfzone_sport.myf_zone.screens
 
 import android.app.Activity
-import android.content.Context
+import android.content.*
+import android.content.pm.PackageInfo
+import android.content.pm.PackageManager
 import android.content.res.ColorStateList
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
@@ -17,12 +21,17 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.android.synthetic.main.activity_main_screen.*
+import kotlinx.android.synthetic.main.activity_main_screen.view.*
+import kotlinx.android.synthetic.main.card_event_item.*
+import kotlinx.android.synthetic.main.on_boarding_card.view.*
 import kotlinx.coroutines.launch
 import mfz.myfzone_sport.myf_zone.R
 import mfz.myfzone_sport.myf_zone.databinding.ActivityMainScreenBinding
@@ -31,6 +40,7 @@ import org.jetbrains.anko.toast
 import java.util.*
 import kotlin.concurrent.schedule
 
+private const val PREFS_NAME = "onBoarding"
 
 class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListener {
 
@@ -41,8 +51,14 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
         private var currentNavController: LiveData<NavController>? = null
         private var doubleBackToExitPressedOnce = false
 
-        private lateinit var binding: ActivityMainScreenBinding
+        lateinit var binding: ActivityMainScreenBinding
         private lateinit var viewModel: MainViewModel
+        private val messageReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context?, intent: Intent) {
+                Log.i(TAG, "Intent?1 ${intent.extras?.getString("elementId")}")
+            }
+        }
+
     }
 
     //region Override Methods
@@ -75,6 +91,21 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
         navController = navHostFragment.navController
 
         //bottomNavBar.selectedItemId = R.id.map
+        checkIntent()
+        checkOnBoarding()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+            messageReceiver,
+            IntentFilter("MyData")
+        )
+    }
+
+    override fun onStop() {
+        super.onStop()
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(messageReceiver)
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
@@ -199,6 +230,9 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
         binding.fabMain.visibility = View.VISIBLE
         binding.accountButton.visibility = View.VISIBLE
 
+//        binding.bottomNavBar.getOrCreateBadge(R.id.message).backgroundColor = resources.getColor(R.color.colorCoral)
+//        binding.bottomNavBar.getOrCreateBadge(R.id.message).backgroundColor = ContextCompat.getColor(this, R.color.colorCoral)
+
         supportActionBar!!.apply {
             hide()
         }
@@ -246,6 +280,63 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
             getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
     }
+
+    @RequiresApi(Build.VERSION_CODES.P)
+    fun checkOnBoardingStatus() {
+        // Show changelog
+        val prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+        val pInfo: PackageInfo
+        try {
+            pInfo = packageManager.getPackageInfo(packageName, PackageManager.GET_META_DATA)
+            if (prefs.getLong("lastRunVersionCode", 0) < pInfo.longVersionCode) {
+                showOnBoarding()
+                val editor = prefs.edit()
+                editor.putLong("lastRunVersionCode", pInfo.longVersionCode)
+                editor.apply()
+            }
+        } catch (e: PackageManager.NameNotFoundException) {
+            Log.e(TAG, "Error reading versionCode")
+            e.printStackTrace()
+        }
+    }
+
+    private fun checkOnBoarding() {
+        // Show changelog
+        val prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+        val firstStart = prefs.getBoolean("firstStart", true)
+
+        if (firstStart) {
+            showOnBoarding()
+        } else {
+            binding.mainLayout.visibility = View.VISIBLE
+            binding.onBoardingCardLayout.visibility = View.GONE
+        }
+    }
+
+    private fun showOnBoarding() {
+        onBoarding()
+
+        val prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+        val editor = prefs.edit()
+        editor.putBoolean("firstStart", false)
+        editor.apply()
+    }
+
+    private fun onBoarding() {
+        binding.onBoardingCardLayout.visibility = View.VISIBLE
+        binding.mainLayout.visibility = View.GONE
+
+        binding.onBoardingCardLayout.onBoardingCard.login_button.setOnClickListener {
+            binding.mainLayout.visibility = View.VISIBLE
+            binding.onBoardingCardLayout.visibility = View.GONE
+            navigate(R.id.calendarToSignUp)
+        }
+
+        binding.onBoardingCardLayout.onBoardingLaterButton.setOnClickListener {
+            binding.mainLayout.visibility = View.VISIBLE
+            binding.onBoardingCardLayout.visibility = View.GONE
+        }
+    }
     //endregion
 
     //region Navigation
@@ -268,7 +359,7 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
                             }
                         }
                     } else {
-                        navigate(R.id.mapsToLogin)
+                        navigate(R.id.mapsToSignUp)
                     }
                 }
             }
@@ -284,7 +375,7 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
                             }
                         }
                     } else {
-                        navigate(R.id.messageToLogin)
+                        navigate(R.id.messageToSignUp)
                     }
                 }
             }
@@ -300,7 +391,7 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
                             }
                         }
                     } else {
-                        navigate(R.id.calendarToLogin)
+                        navigate(R.id.calendarToSignUp)
                     }
                 }
             }
@@ -322,7 +413,7 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
                             }
                         }
                     } else {
-                        navigate(R.id.mapsToLogin)
+                        navigate(R.id.mapsToSignUp)
                     }
                 }
             }
@@ -338,7 +429,7 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
                             }
                         }
                     } else {
-                        navigate(R.id.messageToLogin)
+                        navigate(R.id.messageToSignUp)
                     }
                 }
             }
@@ -354,8 +445,48 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
                             }
                         }
                     } else {
-                        navigate(R.id.calendarToLogin)
+                        navigate(R.id.calendarToSignUp)
                     }
+                }
+            }
+        }
+    }
+    //endregion
+
+    //region Intent Receiver
+    private fun checkIntent() {
+        val bundle = intent.extras
+        if (bundle != null) {
+            when (bundle.getString("type")) {
+                "chatReceiveMessage" -> {
+                    Log.i(TAG, "Intent type: new chat message")
+                    val coachId = bundle.getString("elementId")
+                    val bundleNavigation = bundleOf("coachId" to coachId)
+//                    bottomNavBar.selectedItemId = R.id.message
+                    try {
+                        super.onPostResume()
+                        navController.navigate(
+                            R.id.notificationCalendarToDiscussion,
+                            bundleNavigation
+                        )
+//                        navController.navigate(R.id.discussionFragment, bundleNavigation)
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Could not navigate to Discussion:  $e")
+                    }
+                }
+                "eventModification", "eventAcceptParticipation", "eventParticipation", "eventRefuseParticipation" -> {
+                    Log.i(TAG, "Intent type: event modified")
+                    val eventId = bundle.getString("elementId")
+                    val bundleNavigation = bundleOf("eventId" to eventId)
+                    try {
+                        super.onPostResume()
+                        navController.navigate(R.id.calendarToEventDetail, bundleNavigation)
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Could not navigate to Event Detail:  $e")
+                    }
+                }
+                else -> {
+                    Log.i(TAG, "Intent? ${bundle.getString("type")}")
                 }
             }
         }

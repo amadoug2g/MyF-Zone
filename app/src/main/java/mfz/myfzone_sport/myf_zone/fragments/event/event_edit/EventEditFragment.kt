@@ -11,6 +11,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -90,10 +91,15 @@ class EventEditFragment : Fragment() {
             onItemSelected { _, _, _, selected ->
                 val longVal: Long = 0
                 if (selected == longVal) {
+                    val list = resources.getStringArray(R.array.amicalTeamList)
+                    val adapter = ArrayAdapter(requireContext(), R.layout.simple_layout_file, list)
                     binding.eventEditTeamSpinner.isEnabled = false
-                    binding.eventEditTeamSpinner.setSelection(0)
+                    binding.eventEditTeamSpinner.adapter = adapter
                 } else {
+                    val list = resources.getStringArray(R.array.teamList)
+                    val adapter = ArrayAdapter(requireContext(), R.layout.simple_layout_file, list)
                     binding.eventEditTeamSpinner.isEnabled = true
+                    binding.eventEditTeamSpinner.adapter = adapter
                 }
                 viewModel.setEventType(binding.eventEditTypeSpinner.selectedItem.toString())
             }

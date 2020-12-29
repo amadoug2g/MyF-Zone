@@ -1,6 +1,5 @@
 package mfz.myfzone_sport.myf_zone.fragments.profile
 
-import android.content.DialogInterface
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -10,21 +9,16 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import mfz.myfzone_sport.myf_zone.R
 import mfz.myfzone_sport.myf_zone.databinding.FragmentProfileBinding
-import mfz.myfzone_sport.myf_zone.fragments.profile.ProfileService.firebaseAuth
 import mfz.myfzone_sport.myf_zone.fragments.profile.ProfileService.getImageReference
 import mfz.myfzone_sport.myf_zone.glide.GlideApp
 import mfz.myfzone_sport.myf_zone.model.State
 import mfz.myfzone_sport.myf_zone.model.event.Event
-import mfz.myfzone_sport.myf_zone.screens.MainScreen
-import org.jetbrains.anko.clearTask
-import org.jetbrains.anko.newTask
-import org.jetbrains.anko.support.v4.intentFor
 import org.jetbrains.anko.support.v4.toast
 
 class ProfileFragment : Fragment() {
@@ -66,7 +60,7 @@ class ProfileFragment : Fragment() {
             loadUserEvents()
         }
 
-        binding.profileSettings.setOnClickListener { signOut() }
+        binding.profileSettings.setOnClickListener { navigate(R.id.profileToSettings) }
 
         return binding.root
     }
@@ -187,6 +181,14 @@ class ProfileFragment : Fragment() {
     }
     //endregion
 
+    //region Navigation
+    private fun navigate(destination: Int, extra: Bundle? = null) {
+        Navigation
+            .findNavController(this.requireView())
+            .navigate(destination, extra)
+    }
+    //endregion
+
     //region Loading
     private fun showProgressBar() {
         binding.profileShimmerLayout.startShimmer()
@@ -202,20 +204,6 @@ class ProfileFragment : Fragment() {
     //endregion
 
     //region View Methods
-    private fun signOut() {
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle(R.string.logout)
-            .setMessage(R.string.logout_message)
-            .setPositiveButton(R.string.confirm_message) { _: DialogInterface, _: Int ->
-                firebaseAuth.signOut()
-                toast(R.string.logout_success)
-                startActivity(intentFor<MainScreen>().newTask().clearTask())
-            }
-            .setNegativeButton(R.string.cancel_message) { _: DialogInterface, _: Int ->
-            }
-            .show()
-    }
-
     private fun showToast(string: String) {
         toast(string)
     }

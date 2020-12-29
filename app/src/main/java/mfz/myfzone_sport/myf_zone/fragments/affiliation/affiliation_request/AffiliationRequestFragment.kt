@@ -64,7 +64,7 @@ class AffiliationRequestFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = DataBindingUtil.inflate(
             inflater,
             R.layout.fragment_affiliation_request,
@@ -128,6 +128,8 @@ class AffiliationRequestFragment : Fragment() {
 
             hideProgressBar()
         }
+
+        binding.profileSettings.setOnClickListener { navigate(R.id.affiliationRequestToSettings) }
 
         return binding.root
     }

@@ -8,9 +8,7 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.observe
+import androidx.lifecycle.*
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,9 +16,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.firestore.Query
+import kotlinx.android.synthetic.main.activity_main_screen.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import mfz.myfzone_sport.myf_zone.R
+import mfz.myfzone_sport.myf_zone.databinding.ActivityMainScreenBinding
 import mfz.myfzone_sport.myf_zone.databinding.CardMessageCoachBinding
 import mfz.myfzone_sport.myf_zone.databinding.FragmentMessageBinding
 import mfz.myfzone_sport.myf_zone.fragments.message.MessageService.getImageReference
@@ -33,8 +33,10 @@ class MessageFragment : Fragment() {
     companion object {
         private val TAG = MessageFragment::class.java.simpleName
         private var adapter: FirestoreRecyclerAdapter<Chat, ChatHolder>? = null
+        private val userChat = MutableLiveData<Boolean>()
 
         private lateinit var binding: FragmentMessageBinding
+        private lateinit var activityMainScreenBinding: ActivityMainScreenBinding
         private lateinit var viewModel: MessageViewModel
     }
 
@@ -58,6 +60,10 @@ class MessageFragment : Fragment() {
                 }
 
                 binding.messageCardViewTitle.setOnClickListener { userConversation(chat) }
+
+                userChat.value = chat.unread
+
+//                bottomNavBar.getOrCreateBadge(R.id.message).number = 1
             }
         }
 
@@ -92,35 +98,7 @@ class MessageFragment : Fragment() {
             viewModel.checkUserSignedIn()
             viewModel.checkUserAffiliationStatus()
         }
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding = DataBindingUtil.inflate(
-            inflater,
-            R.layout.fragment_message,
-            container,
-            false
-        )
-
-        lifecycleScope.launch {
-            viewModel.checkUserSignedIn()
-            viewModel.checkUserAffiliationStatus()
-        }
-
-        binding.apply {
-            lifecycleOwner = this@MessageFragment
-            setupRecyclerParameters()
-            executePendingBindings()
-        }
-
-        return binding.root
-    }
-
-    override fun onResume() {
-        super.onResume()
+//        bottomNavBar.getOrCreateBadge(R.id.message).number = 1
 
         val recyclerOptions = FirestoreRecyclerOptions.Builder<Chat>()
             .setQuery(
@@ -146,6 +124,22 @@ class MessageFragment : Fragment() {
                     viewModel.checkUserSignedIn()
                     viewModel.checkUserAffiliationStatus()
                 }
+
+                userChat.observe(viewLifecycleOwner) { userHasUnreadChat ->
+                    viewModel.userHasMessages(userHasUnreadChat)
+                }
+
+                viewModel.newChat.observe(viewLifecycleOwner) { userHasChat ->
+                    if (userHasChat) {
+//                        bottomNavBar.getOrCreateBadge(R.id.message).number = 1
+//                        MainScreen.binding.bottomNavBar.getOrCreateBadge(R.id.message).backgroundColor =
+//                            ContextCompat.getColor(requireContext(), R.color.colorCoral)
+                        Log.i(TAG, "has unread messages")
+                    } else {
+                        Log.i(TAG, "has no unread messages")
+                    }
+                }
+
                 viewModel.isUserSignedIn.observe(viewLifecycleOwner) { isUserSignedIn ->
                     if (isUserSignedIn) {
                         viewModel.isUserAffiliated.observe(viewLifecycleOwner) { isUserAffiliated ->
@@ -163,11 +157,36 @@ class MessageFragment : Fragment() {
                     } else {
                         binding.messageChatListNotSignedIn.visibility = View.VISIBLE
                     }
-
                 }
-            }
 
+//                MainScreen.binding.bottomNavBar.getOrCreateBadge(R.id.message).backgroundColor = ContextCompat.getColor(requireContext(), R.color.colorCoral)
+            }
         }
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = DataBindingUtil.inflate(
+            inflater,
+            R.layout.fragment_message,
+            container,
+            false
+        )
+
+        lifecycleScope.launch {
+            viewModel.checkUserSignedIn()
+            viewModel.checkUserAffiliationStatus()
+        }
+
+        binding.apply {
+            lifecycleOwner = this@MessageFragment
+            setupRecyclerParameters()
+            executePendingBindings()
+        }
+
+        return binding.root
     }
     //endregion
 

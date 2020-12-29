@@ -13,6 +13,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import android.widget.ArrayAdapter
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -92,10 +93,15 @@ class EventCreationFragment : Fragment() {
             onItemSelected { _, _, _, selected ->
                 val longVal: Long = 0
                 if (selected == longVal) {
+                    val list = resources.getStringArray(R.array.amicalTeamList)
+                    val adapter = ArrayAdapter(requireContext(), R.layout.simple_layout_file, list)
                     binding.eventCreateTeamSpinner.isEnabled = false
-                    binding.eventCreateTeamSpinner.setSelection(0)
+                    binding.eventCreateTeamSpinner.adapter = adapter
                 } else {
+                    val list = resources.getStringArray(R.array.teamList)
+                    val adapter = ArrayAdapter(requireContext(), R.layout.simple_layout_file, list)
                     binding.eventCreateTeamSpinner.isEnabled = true
+                    binding.eventCreateTeamSpinner.adapter = adapter
                 }
                 viewModel.setEventType(
                     binding.eventCreateTypeSpinner.selectedItem.toString(),
@@ -118,9 +124,8 @@ class EventCreationFragment : Fragment() {
         binding.eventCreateAddressInput.setOnClickListener {
             setupAddressIntent(viewModel.fields.value!!)
         }
-        binding.eventCreateButton.setOnClickListener {
-            Log.i(TAG, "Event is = $event")
 
+        binding.eventCreateButton.setOnClickListener {
             if (currentUser != null) {
                 lifecycleScope.launch {
                     createEvent()

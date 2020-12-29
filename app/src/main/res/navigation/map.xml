@@ -27,7 +27,7 @@
         android:label="@string/title_activity_maps"
         tools:layout="@layout/fragment_maps">
         <action
-            android:id="@+id/mapsToLogin"
+            android:id="@+id/mapsToSignUp"
             app:destination="@id/login" />
         <action
             android:id="@+id/mapsToProfile"

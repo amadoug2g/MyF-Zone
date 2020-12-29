@@ -35,6 +35,10 @@ class MessageViewModel : ViewModel() {
     val isConversationRead: LiveData<Boolean>
         get() = _isConversationRead
 
+    private val _newChat = MutableLiveData<Boolean>(false)
+    val newChat: LiveData<Boolean>
+        get() = _newChat
+
     private val _coach = MutableLiveData<Coach>()
     val coach: LiveData<Coach>
         get() = _coach
@@ -60,6 +64,10 @@ class MessageViewModel : ViewModel() {
         val currentUser = FirebaseAuth.getInstance().currentUser
         return MessageService.fireStoreInstance
             .collection(COACH_PATH + "/${currentUser?.uid}/Chat")
+    }
+
+    fun userHasMessages(value: Boolean) {
+        _newChat.value = value
     }
 
     fun checkUserSignedIn(): Boolean {
@@ -106,7 +114,6 @@ class MessageViewModel : ViewModel() {
             }
         }
     }
-
 
     private fun affiliationStatus() = MessageService.checkAffiliationStatus()
 
