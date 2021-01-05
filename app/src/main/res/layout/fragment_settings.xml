@@ -42,7 +42,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="30dp"
                 android:text="@string/privacy_policy"
-                android:textColor="@android:color/darker_gray" />
+                android:textColorLink="@android:color/white" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/cgu"
@@ -51,7 +51,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="30dp"
                 android:text="@string/CGU"
-                android:textColor="@android:color/darker_gray" />
+                android:textColorLink="@android:color/white" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/os_settings"

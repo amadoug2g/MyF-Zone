@@ -1,4 +1,4 @@
-    package mfz.myfzone_sport.myf_zone.fragments.event.event_edit
+package mfz.myfzone_sport.myf_zone.fragments.event.event_edit
 
 import android.app.Activity
 import android.app.DatePickerDialog
@@ -16,6 +16,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.observe
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.widget.Autocomplete
@@ -53,8 +54,18 @@ class EventEditFragment : Fragment() {
     //region Override Methods
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         arguments?.let {
             eventId = it.getString(ARG_PARAM1)
+        }
+
+        viewModelFactory = EventEditViewModelFactory()
+        viewModel = ViewModelProvider(this, viewModelFactory).get(EventEditViewModel::class.java)
+
+        viewModel.eventId.value = eventId!!
+
+        lifecycleScope.launchWhenResumed {
+            viewModel.assignParticipants()
         }
     }
 
@@ -68,9 +79,6 @@ class EventEditFragment : Fragment() {
             container,
             false
         )
-
-        viewModelFactory = EventEditViewModelFactory()
-        viewModel = ViewModelProvider(this, viewModelFactory).get(EventEditViewModel::class.java)
 
         binding.apply {
             lifecycleOwner = this@EventEditFragment
@@ -87,34 +95,47 @@ class EventEditFragment : Fragment() {
         binding.eventEditDayPicker.setOnClickListener { selectDate() }
         binding.eventEditTimePicker.setOnClickListener { selectTime() }
 
-        binding.eventEditTypeSpinner.onItemSelectedListener {
-            onItemSelected { _, _, _, selected ->
-                val longVal: Long = 0
-                if (selected == longVal) {
-                    val list = resources.getStringArray(R.array.amicalTeamList)
-                    val adapter = ArrayAdapter(requireContext(), R.layout.simple_layout_file, list)
-                    binding.eventEditTeamSpinner.isEnabled = false
-                    binding.eventEditTeamSpinner.adapter = adapter
-                } else {
-                    val list = resources.getStringArray(R.array.teamList)
-                    val adapter = ArrayAdapter(requireContext(), R.layout.simple_layout_file, list)
-                    binding.eventEditTeamSpinner.isEnabled = true
-                    binding.eventEditTeamSpinner.adapter = adapter
+        viewModel.isListInitialized.observe(viewLifecycleOwner) { isListInitialized ->
+            if (isListInitialized) {
+                binding.eventEditTypeSpinner.onItemSelectedListener {
+                    onItemSelected { _, _, _, selected ->
+                        val longVal: Long = 0
+                        if (selected == longVal) {
+                            val list = resources.getStringArray(R.array.amicalTeamList)
+                            val adapter =
+                                ArrayAdapter(requireContext(), R.layout.simple_layout_file, list)
+                            binding.eventEditTeamSpinner.isEnabled = false
+                            binding.eventEditTeamSpinner.adapter = adapter
+                            viewModel.setEventTeam(selected.toInt())
+                        } else {
+                            val list = resources.getStringArray(R.array.teamList)
+                            val adapter =
+                                ArrayAdapter(requireContext(), R.layout.simple_layout_file, list)
+                            binding.eventEditTeamSpinner.isEnabled = true
+                            binding.eventEditTeamSpinner.adapter = adapter
+
+                            try {
+                                binding.eventEditTeamSpinner.setSelection(adapter.getPosition("${viewModel.event.value?.nbTeam}"))
+                            } catch (e: Exception) {
+                                Log.e(TAG, "Error in onItemSelectedListener: $e")
+                            }
+                        }
+                        viewModel.setEventType(binding.eventEditTypeSpinner.selectedItem.toString())
+                    }
                 }
-                viewModel.setEventType(binding.eventEditTypeSpinner.selectedItem.toString())
             }
         }
 
         binding.eventEditTeamSpinner.onItemSelectedListener {
             onItemSelected { _, _, _, selected ->
-                val nbTeam = 2 + selected
+                val nbTeam = 3 + selected
                 viewModel.setEventTeam(nbTeam.toInt())
             }
         }
 
         binding.eventEditAddressInput.setOnClickListener { setupAddressIntent(viewModel.fields.value!!) }
-        binding.eventEditButton.setOnClickListener {
 
+        binding.eventEditButton.setOnClickListener {
             try {
                 if (validateForm()) {
                     confirmUpdate()
@@ -145,6 +166,7 @@ class EventEditFragment : Fragment() {
     }
     //endregion
 
+    //region Event Details
     private suspend fun getEvent() {
         viewModel.getEvent(eventId!!).collect { state ->
             when (state) {
@@ -177,12 +199,15 @@ class EventEditFragment : Fragment() {
                         hideProgressBar()
                         val message = ("Event successfully updated")
                         message.toast()
+                        viewModel.notifyParticipants()
                         requireActivity().onBackPressed()
+                        Log.i(TAG, "[updateEvent] Success")
                     }
                     is State.Failed -> {
                         hideProgressBar()
                         val message = "An error occurred: ${state.message}"
                         message.toast()
+                        Log.i(TAG, "[updateEvent] Success")
                     }
                 }
             }
@@ -191,25 +216,61 @@ class EventEditFragment : Fragment() {
     private fun linkPendingBindings(event: Event) {
         binding.event = event
 
-        try {
-            binding.eventEditTypeSpinner.setSelection(viewModel.getEventTypeToDisplay(event))
-        } catch (e: Exception) {
-            val message = "Error in selecting the type of event: $e"
-            message.toast()
-        }
+        assignEventType(event)
 
-        try {
-            binding.eventEditTeamSpinner.setSelection(viewModel.getEventNbTeamToDisplay(event))
-        } catch (e: Exception) {
-            val message = "Error in selecting the number of participant: $e"
-            message.toast()
-        }
+        assignEventTeams(event)
 
         binding.eventDate = viewModel.getEventDay(event)
         binding.eventTime = viewModel.getEventHour(event)
 
         setEventDate(event)
+        viewModel.initList()
     }
+
+    private fun assignEventType(event: Event) {
+        try {
+            binding.eventEditTypeSpinner.setSelection(viewModel.getEventTypeToDisplay(event))
+        } catch (e: Exception) {
+            val message = "Error in selecting the type of event: $e"
+            Log.i(TAG, message)
+            message.toast()
+        }
+    }
+
+    private fun assignEventTeams(event: Event) {
+        if (event.type == "friendly") {
+            val list = resources.getStringArray(R.array.amicalTeamList)
+            val adapter =
+                ArrayAdapter(requireContext(), R.layout.simple_layout_file, list)
+            binding.eventEditTeamSpinner.isEnabled = false
+            binding.eventEditTeamSpinner.adapter = adapter
+        } else {
+            val list = resources.getStringArray(R.array.teamList)
+            val adapter =
+                ArrayAdapter(requireContext(), R.layout.simple_layout_file, list)
+            binding.eventEditTeamSpinner.isEnabled = true
+            binding.eventEditTeamSpinner.adapter = adapter
+            val position = adapter.getPosition("${event.nbTeam}")
+            binding.eventEditTeamSpinner.setSelection(position)
+        }
+    }
+
+    private fun confirmUpdate() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(getString(R.string.edit_event))
+            .setMessage(getString(R.string.edit_event_confirmation))
+            .setIcon(R.drawable.ic_info)
+            .setPositiveButton(getString(R.string.edit_txt)) { _: DialogInterface, _: Int ->
+                viewModel.setEventDate(eventDay1!!, eventDay2!!, eventTime!!)
+
+                lifecycleScope.launch {
+                    updateEvent()
+                }
+
+            }.setNegativeButton(getString(R.string.cancel_message)) { _: DialogInterface, _: Int ->
+            }.show()
+    }
+    //endregion
 
     private fun setupAddressIntent(fields: MutableList<Place.Field>) {
         val intent =
@@ -331,23 +392,6 @@ class EventEditFragment : Fragment() {
         return valid
     }
     //endregion
-
-    private fun confirmUpdate() {
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle(getString(R.string.edit_event))
-            .setMessage(getString(R.string.edit_event_confirmation))
-            .setIcon(R.drawable.ic_info)
-            .setPositiveButton(getString(R.string.edit_txt)) { _: DialogInterface, _: Int ->
-                viewModel.setEventDate(eventDay1!!, eventDay2!!, eventTime!!)
-
-                lifecycleScope.launch {
-                    updateEvent()
-                }
-
-                Log.i(TAG, "Event is = ${viewModel.event.value}")
-            }.setNegativeButton(getString(R.string.cancel_message)) { _: DialogInterface, _: Int ->
-            }.show()
-    }
 
     //region Loading
     private fun showProgressBar() {

@@ -138,16 +138,16 @@
     <string name="settings_button">Bouton des paramètres</string>
     <string name="settings_label">Paramètres</string>
     <string name="os_settings_text">Paramètres système</string>
-    <string name="CGU">CGU</string>
+    <string name="CGU"><a href="https://myf-zone.web.app/cgu.pdf">CGU</a></string>
     <string name="about_us">À propos</string>
     <string name="app_review">Noter l\'application</string>
-    <string name="privacy_policy">Confidentialité</string>
+    <string name="privacy_policy"><a href="https://myf-zone.web.app/policy.pdf">Confidentialité</a></string>
     <string name="onBoarding_intro">L\'application My F-Zone met\nen relation les éducateurs de foot afin de :</string>
     <string name="onBoarding_create_event">Créer un évènement de type :</string>
     <string name="onBoarding_calendar">Retrouver les détails de ces 3 types d\'évènements dans votre agenda</string>
     <string name="onBoarding_map">Participer à des évènements à proximité de votre club depuis la Carte</string>
     <string name="onBoarding_chat">Discuter avec d\'autres éducateurs à partir de la messagerie</string>
-    <string name="onBoarding_affiliation_code">À l\'aide du code d\'affiliation (FFF) de ton club, inscris-toi et rejoins la communauté</string>
+    <string name="onBoarding_affiliation_code">À l\'aide du code d\'affiliation de ton club, inscris-toi et rejoins la communauté</string>
     <string name="app_logo_content_description">App Logo</string>
     <string name="send_button_description">Bouton d\'envoi Button</string>
 

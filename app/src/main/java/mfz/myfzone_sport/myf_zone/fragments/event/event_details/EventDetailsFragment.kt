@@ -1,3 +1,4 @@
+
 package mfz.myfzone_sport.myf_zone.fragments.event.event_details
 
 import android.content.DialogInterface
@@ -32,6 +33,8 @@ import mfz.myfzone_sport.myf_zone.databinding.FragmentEventDetailsBinding
 import mfz.myfzone_sport.myf_zone.fragments.event.event_details.EventDetailsService.getImageReference
 import mfz.myfzone_sport.myf_zone.glide.GlideApp
 import mfz.myfzone_sport.myf_zone.model.State
+import mfz.myfzone_sport.myf_zone.model.chat.MessagingService
+import mfz.myfzone_sport.myf_zone.model.chat.MessagingService.Companion.eventParticipation
 import mfz.myfzone_sport.myf_zone.model.event.Event
 import mfz.myfzone_sport.myf_zone.model.event.EventParticipant
 import mfz.myfzone_sport.myf_zone.model.event.swipe_handler.ButtonClickListener
@@ -140,7 +143,6 @@ class EventDetailsFragment : Fragment() {
             viewModel.assignEvent()
             viewModel.assignClub()
             viewModel.assignOwner()
-            viewModel.assignParticipants()
             viewModel.checkUserAffiliationStatus()
             viewModel.checkParticipationStatus()
 //            viewModel.checkIsUserOwner()
@@ -205,6 +207,7 @@ class EventDetailsFragment : Fragment() {
         lifecycleScope.launch {
             assignOwner()
             assignEvent(savedInstanceState)
+            viewModel.assignParticipants()
             viewModel.checkParticipationStatus()
         }
 
@@ -344,6 +347,14 @@ class EventDetailsFragment : Fragment() {
             addParticipant(participant)
             binding.participateButton.visibility = View.GONE
         }
+
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            viewModel.coach.observe(viewLifecycleOwner) { coach ->
+                viewModel.owner.observe(viewLifecycleOwner) { owner ->
+                    eventParticipation(event, coach, owner)
+                }
+            }
+        }
     }
 
     private fun deletionWindow() {
@@ -360,10 +371,10 @@ class EventDetailsFragment : Fragment() {
 
     private fun confirmDeletion() {
         viewModel.deleteEvent()
-        requireActivity().onBackPressed()
         toast(getString(R.string.event_deleted))
+        viewModel.notifyParticipants()
+        requireActivity().onBackPressed()
     }
-
     //endregion
 
     //region Event Details
@@ -384,8 +395,6 @@ class EventDetailsFragment : Fragment() {
 
                     //Event Map
                     mapView(event, savedInstanceState)
-
-//                    participantCount()
 
                     hideProgressBar()
                 }
@@ -468,7 +477,6 @@ class EventDetailsFragment : Fragment() {
     //region Owner Permissions
     private fun ownerAdmin(isUserOwner: Boolean) {
         if (isUserOwner) {
-//            binding.cardEventOwner.ownerMessageIcon.visibility = View.GONE
             binding.eventDetailCardViewTitle.visibility = View.VISIBLE
             setHasOptionsMenu(true)
             val swipe = object :
@@ -491,9 +499,16 @@ class EventDetailsFragment : Fragment() {
                             object :
                                 ButtonClickListener {
                                 override fun onClick(pos: Int) {
-                                    Log.d(TAG, "position: $pos")
-                                    acceptParticipant(viewModel.participantList.value!![pos])
-//                                    participantCount()
+                                    viewModel.participantList.observe(viewLifecycleOwner) { list ->
+                                        viewModel.event.observe(viewLifecycleOwner) { event ->
+                                            val participant = list[pos]
+                                            acceptParticipant(participant)
+                                            MessagingService.eventAcceptParticipation(
+                                                event,
+                                                participant
+                                            )
+                                        }
+                                    }
                                 }
                             })
                     )
@@ -507,10 +522,16 @@ class EventDetailsFragment : Fragment() {
                             object :
                                 ButtonClickListener {
                                 override fun onClick(pos: Int) {
-                                    Log.d(TAG, "position: $pos")
-                                    refuseParticipant(viewModel.participantList.value!![pos])
-
-//                                    participantCount()
+                                    viewModel.participantList.observe(viewLifecycleOwner) { list ->
+                                        viewModel.event.observe(viewLifecycleOwner) { event ->
+                                            val participant = list[pos]
+                                            refuseParticipant(participant)
+                                            MessagingService.eventRefuseParticipation(
+                                                event,
+                                                participant
+                                            )
+                                        }
+                                    }
                                 }
                             })
                     )

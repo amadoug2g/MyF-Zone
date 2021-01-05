@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.tasks.await
 import mfz.myfzone_sport.myf_zone.model.State
 import mfz.myfzone_sport.myf_zone.model.event.Event
+import mfz.myfzone_sport.myf_zone.model.event.EventParticipant
 import mfz.myfzone_sport.myf_zone.util.Constants.DB
 import mfz.myfzone_sport.myf_zone.util.Constants.EVENT_PATH
 
@@ -29,6 +30,24 @@ object EventEditService {
         val event = snapshot.toObject(Event::class.java)
 
         emit(State.success(event!!))
+    }.catch {
+        emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
+    }.flowOn(IO)
+
+    fun getEventParticipant(eventId: String) = flow<State<MutableList<EventParticipant>>> {
+        emit(State.loading())
+
+        val mParticipantList = DB.collection(EVENT_PATH + "/${eventId}/Participant")
+
+        val snapshot = mParticipantList.get().await()
+
+        val resultState =
+            if (!snapshot.isEmpty) (State.success(snapshot.toObjects(EventParticipant::class.java))) else (State.success(
+                mutableListOf()
+            ))
+
+        emit(resultState)
+//        emit(State.success(participantList))
     }.catch {
         emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
     }.flowOn(IO)

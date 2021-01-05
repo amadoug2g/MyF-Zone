@@ -29,6 +29,8 @@ import mfz.myfzone_sport.myf_zone.R
 import mfz.myfzone_sport.myf_zone.databinding.FragmentSignUpBinding
 import mfz.myfzone_sport.myf_zone.model.State
 import mfz.myfzone_sport.myf_zone.model.coach.Coach
+import mfz.myfzone_sport.myf_zone.util.Constants.TRACKING
+import mfz.myfzone_sport.myf_zone.util.Tracking
 import org.jetbrains.anko.support.v4.toast
 import java.util.*
 
@@ -172,9 +174,11 @@ class SignUpFragment : Fragment() {
                 is State.Success -> {
                     hideProgressBar()
                     toast(getString(R.string.account_creation_msg))
-//                    navigate(R.id.signUpToAffiliationRequest)
                     val bundle = bundleOf("page" to R.id.signUpFragment)
                     navigate(R.id.globalToAffiliation, bundle)
+
+//                    val trackingBundle = bundleOf("SignIn" to 1)
+                    TRACKING.logEvent(Tracking.SIGN_IN, null)
                 }
                 is State.Failed -> {
                     hideProgressBar()

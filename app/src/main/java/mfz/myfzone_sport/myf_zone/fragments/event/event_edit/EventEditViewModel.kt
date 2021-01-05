@@ -6,7 +6,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.android.libraries.places.api.model.Place
+import kotlinx.coroutines.flow.collect
+import mfz.myfzone_sport.myf_zone.model.State
+import mfz.myfzone_sport.myf_zone.model.chat.MessagingService.Companion.eventModifyParticipation
 import mfz.myfzone_sport.myf_zone.model.event.Event
+import mfz.myfzone_sport.myf_zone.model.event.EventParticipant
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -18,11 +22,23 @@ import java.util.*
  */
 
 class EventEditViewModel : ViewModel() {
+    private val TAG = this::class.java.simpleName
+
     private val _fields = MutableLiveData<MutableList<Place.Field>>()
     val fields: LiveData<MutableList<Place.Field>>
         get() = _fields
 
+    private val _isListInitialized = MutableLiveData<Boolean>(false)
+    val isListInitialized: LiveData<Boolean>
+        get() = _isListInitialized
+
+    private val _participantList = MutableLiveData<MutableList<EventParticipant>>()
+    val participantList: LiveData<MutableList<EventParticipant>>
+        get() = _participantList
+
     val event = MutableLiveData<Event>()
+
+    val eventId = MutableLiveData<String>()
 
     private fun initFields() {
         _fields.value = mutableListOf(
@@ -37,7 +53,32 @@ class EventEditViewModel : ViewModel() {
         initFields()
     }
 
+    fun initList() {
+        _isListInitialized.value = true
+    }
+
     fun getEvent(eventId: String) = EventEditService.getEvent(eventId)
+
+    private fun getEventParticipantList(eventId: String) =
+        EventEditService.getEventParticipant(eventId)
+
+    suspend fun assignParticipants() {
+        getEventParticipantList(eventId.value!!).collect { state ->
+            when (state) {
+                is State.Loading -> {
+//                    showProgressBar()
+                }
+                is State.Success -> {
+                    _participantList.value = state.data
+                }
+                is State.Failed -> {
+//                    hideProgressBar()
+                    val message = "An error occurred [in assignParticipants]: ${state.message}"
+                    Log.i(TAG, message)
+                }
+            }
+        }
+    }
 
     fun updateEvent(eventId: String, event: Event) = EventEditService.updateEvent(eventId, event)
 
@@ -101,5 +142,23 @@ class EventEditViewModel : ViewModel() {
             Log.d("EventEditViewModel", "An error occurred in setEventDate: ${e.localizedMessage}")
         }
         return date
+    }
+
+    fun notifyParticipants() {
+        if (!participantList.value.isNullOrEmpty() && event.value != null) {
+            notifyList(event.value!!, participantList.value!!)
+            Log.i(TAG, "[notifyParticipants] not null")
+        } else {
+            Log.i(TAG, "[notifyParticipants] null?")
+            Log.i(TAG, "participantList: ${participantList.value}")
+            Log.i(TAG, "event: ${event.value}")
+        }
+    }
+
+    private fun notifyList(event: Event, list: MutableList<EventParticipant>) {
+        list.forEach { participant ->
+            if (participant.status == "validate")
+                eventModifyParticipation(event, participant)
+        }
     }
 }

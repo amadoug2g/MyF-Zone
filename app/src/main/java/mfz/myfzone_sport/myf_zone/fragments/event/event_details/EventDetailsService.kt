@@ -30,7 +30,7 @@ import mfz.myfzone_sport.myf_zone.util.Constants.EVENT_PATH
  */
 
 object EventDetailsService {
-    private val TAG = EventDetailsService::class.java.simpleName
+    private val TAG = this::class.java.simpleName
 
     private val firebaseAuth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
     private val storageInstance: FirebaseStorage by lazy { FirebaseStorage.getInstance() }
@@ -114,14 +114,12 @@ object EventDetailsService {
     }.flowOn(IO)
 
     fun getEventParticipant(eventId: String) = flow<State<MutableList<EventParticipant>>> {
-        val mParticipantList = DB.collection(EVENT_PATH + "/${eventId}/Participant")
-
         emit(State.loading())
 
+        val mParticipantList = DB.collection(EVENT_PATH + "/${eventId}/Participant")
+
         val snapshot = mParticipantList.get().await()
-//        val participantList = mutableListOf<EventParticipant>()
-//        snapshot.forEach { participantList.add(it.toObject()!!) }
-//        (!snapshot.isEmpty) ? (emit(State.success(snapshot.toObjects(EventParticipant::class.java)))) : (emit(State.success(mutableListOf())))
+
         val resultState =
             if (!snapshot.isEmpty) (State.success(snapshot.toObjects(EventParticipant::class.java))) else (State.success(
                 mutableListOf()

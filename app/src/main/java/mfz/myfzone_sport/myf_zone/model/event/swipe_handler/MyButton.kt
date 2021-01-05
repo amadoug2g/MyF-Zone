@@ -5,7 +5,6 @@ import android.content.res.Resources
 import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
-import android.util.Log
 import androidx.core.content.ContextCompat
 
 class MyButton(
@@ -63,7 +62,6 @@ class MyButton(
                 (rectF.top + rectF.bottom) / (2),
                 p
             )
-            Log.d("MyButton", "Opaque? ${c.isOpaque}")
         }
 
         clickRegion = rectF
@@ -72,7 +70,6 @@ class MyButton(
 
     private fun drawableToBitmap(d: Drawable?): Bitmap {
         if (d is BitmapDrawable) return d.bitmap
-        Log.d("MyButton", "Bitmap")
         val bitmap =
             Bitmap.createBitmap(d!!.intrinsicWidth, d.intrinsicHeight, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)

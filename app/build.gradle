@@ -119,4 +119,6 @@ dependencies {
     implementation 'androidx.paging:paging-runtime-ktx:2.1.2'
     //messaging
     implementation 'com.google.firebase:firebase-messaging:21.0.1'
+    //functions
+    implementation 'com.google.firebase:firebase-functions-ktx:19.2.0'
 }

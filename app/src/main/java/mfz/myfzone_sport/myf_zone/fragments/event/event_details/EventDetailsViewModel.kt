@@ -10,6 +10,7 @@ import com.google.firebase.firestore.CollectionReference
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import mfz.myfzone_sport.myf_zone.model.State
+import mfz.myfzone_sport.myf_zone.model.chat.MessagingService.Companion.eventCancelParticipation
 import mfz.myfzone_sport.myf_zone.model.coach.ClubAffiliation
 import mfz.myfzone_sport.myf_zone.model.coach.Coach
 import mfz.myfzone_sport.myf_zone.model.event.Event
@@ -363,6 +364,19 @@ class EventDetailsViewModel : ViewModel() {
                 }
 
             }
+        }
+    }
+
+    fun notifyParticipants() {
+        if (!participantList.value.isNullOrEmpty() && event.value != null) {
+            notifyList(event.value!!, participantList.value!!)
+        }
+    }
+
+    private fun notifyList(event: Event, list: MutableList<EventParticipant>) {
+        list.forEach { participant ->
+            if (participant.status == "validate")
+                eventCancelParticipation(event, participant)
         }
     }
 }
