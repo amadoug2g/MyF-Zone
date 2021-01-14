@@ -2,12 +2,17 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.MaterialComponents.Light.DarkActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorPrimaryDark">@color/colorSettingEnd</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorPrimary">@color/colorSettingStart</item>
+        <!--        <item name="android:actionBarStyle">@style/myTheme</item>-->
         <item name="android:windowActionBarOverlay">true</item>
         <!-- Support library compatibility -->
         <item name="windowActionBarOverlay">true</item>
+    </style>
+
+    <style name="myTheme" parent="Theme.MaterialComponents.Light">
+        <item name="background">@color/colorLight</item>
     </style>
 
     <style name="map_button">

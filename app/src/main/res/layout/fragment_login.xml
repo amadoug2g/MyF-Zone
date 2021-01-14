@@ -80,6 +80,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="64dp"
                 android:layout_marginEnd="16dp"
+                android:backgroundTint="@color/colorSettingEnd"
                 android:text="@string/login_coach"
                 android:transitionName="@string/button_trans" />
 

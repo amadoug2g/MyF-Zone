@@ -107,7 +107,7 @@ data class Event(
 
     val eventDateToDay: String
         get() {
-            val formatEventDay = SimpleDateFormat("dd MMM y", Locale.FRANCE)
+            val formatEventDay = SimpleDateFormat("dd MMM y", Locale.ENGLISH)
             val formatDate = SimpleDateFormat("E MMM dd HH:mm:ss z yyyy", Locale.ENGLISH)
 
             return formatEventDay.format(formatDate.parse(date.toString())!!)

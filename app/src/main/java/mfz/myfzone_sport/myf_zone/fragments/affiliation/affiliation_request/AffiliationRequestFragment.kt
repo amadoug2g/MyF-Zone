@@ -25,6 +25,8 @@ import mfz.myfzone_sport.myf_zone.R
 import mfz.myfzone_sport.myf_zone.databinding.FragmentAffiliationRequestBinding
 import mfz.myfzone_sport.myf_zone.model.State
 import mfz.myfzone_sport.myf_zone.screens.MainScreen
+import mfz.myfzone_sport.myf_zone.util.Constants.TRACKING
+import mfz.myfzone_sport.myf_zone.util.Tracking
 import org.jetbrains.anko.clearTask
 import org.jetbrains.anko.newTask
 import org.jetbrains.anko.sdk27.coroutines.textChangedListener
@@ -49,6 +51,7 @@ class AffiliationRequestFragment : Fragment() {
     //region Override Methods
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        TRACKING.logEvent(Tracking.AFFILIATION_TO_CLUB, null)
 
         arguments?.let {
             page = it.getInt(ARG_PARAM1)
@@ -84,6 +87,7 @@ class AffiliationRequestFragment : Fragment() {
                     startActivity(intentFor<MainScreen>().newTask().clearTask())
                 }
             }
+            TRACKING.logEvent(Tracking.AFFILIATION_TO_CLUB_MAYBE_LATER, null)
         }
 
         binding.affiliateButton.setOnClickListener {
@@ -110,6 +114,7 @@ class AffiliationRequestFragment : Fragment() {
                         try {
                             withContext(Main) {
                                 Log.d(TAG, "navigating")
+                                TRACKING.logEvent(Tracking.AFFILIATION_TO_CLUB_DONE, null)
                                 navigate(R.id.affiliationRequestToAffiliationSuccess, bundle)
                             }
                         } catch (e: Exception) {

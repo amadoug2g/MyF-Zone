@@ -43,6 +43,11 @@ class CalendarViewModel : ViewModel() {
 
     fun getEvents() = CalendarService.getEvents()
 
+    fun eventToCalendar(eventList: MutableList<Event>) = CalendarService.eventToCalendar(eventList)
+
+    fun addEventListener(onListen: (MutableList<Event>) -> Unit) =
+        CalendarService.addEventListener(onListen)
+
     fun assignEventList(list: MutableList<Event>) {
         assignCalendarList()
         _eventList.value = list

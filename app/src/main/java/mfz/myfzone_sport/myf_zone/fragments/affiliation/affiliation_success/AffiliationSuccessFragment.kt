@@ -16,6 +16,8 @@ import mfz.myfzone_sport.myf_zone.databinding.FragmentAffiliationSuccessBinding
 import mfz.myfzone_sport.myf_zone.fragments.affiliation.affiliation_success.AffiliationSuccessService.getImageReference
 import mfz.myfzone_sport.myf_zone.glide.GlideApp
 import mfz.myfzone_sport.myf_zone.screens.MainScreen
+import mfz.myfzone_sport.myf_zone.util.Constants.TRACKING
+import mfz.myfzone_sport.myf_zone.util.Tracking
 import org.jetbrains.anko.clearTask
 import org.jetbrains.anko.newTask
 import org.jetbrains.anko.support.v4.intentFor
@@ -33,6 +35,7 @@ class AffiliationSuccessFragment : Fragment() {
     //region Override Methods
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        TRACKING.logEvent(Tracking.AFFILIATION_TO_CLUB_SUCCESS, null)
 
         arguments?.let {
             clubId = it.getString("clubId")
@@ -78,17 +81,16 @@ class AffiliationSuccessFragment : Fragment() {
             executePendingBindings()
         }
 
-        binding.affiliationActivateNotifications.isEnabled = false
+//        binding.affiliationActivateNotifications.isEnabled = false
 
-//        binding.affiliationActivateNotifications.setOnClickListener {
-//            findNavController().navigate(R.id.affiliationSuccessToMaps)
-//            requireActivity().onBackPressed()
-//        }
+        binding.affiliationActivateNotifications.setOnClickListener {
+            startActivity(intentFor<MainScreen>().newTask().clearTask())
+            TRACKING.logEvent(Tracking.AFFILIATION_TO_CLUB_ACTIVATE_NOTIFICATION, null)
+        }
 
         binding.affiliationLaterNotifications.setOnClickListener {
-//            findNavController().navigate(R.id.affiliationSuccessToMaps)
             startActivity(intentFor<MainScreen>().newTask().clearTask())
-//            requireActivity().onBackPressed()
+            TRACKING.logEvent(Tracking.AFFILIATION_TO_CLUB_SUCCESS_MAYBE_LATER, null)
         }
 
         return binding.root

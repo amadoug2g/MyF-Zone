@@ -24,6 +24,8 @@ import kotlinx.coroutines.launch
 import mfz.myfzone_sport.myf_zone.R
 import mfz.myfzone_sport.myf_zone.databinding.FragmentDiscussionBinding
 import mfz.myfzone_sport.myf_zone.model.State
+import mfz.myfzone_sport.myf_zone.util.Constants.TRACKING
+import mfz.myfzone_sport.myf_zone.util.Tracking
 import org.jetbrains.anko.sdk27.coroutines.textChangedListener
 import org.jetbrains.anko.support.v4.toast
 
@@ -116,6 +118,7 @@ class DiscussionFragment : Fragment() {
         }
 
         binding.imageSenderButton.setOnClickListener {
+            TRACKING.logEvent(Tracking.CHAT_DETAILS_SEND_MESSAGE, null)
             viewModel.other.observe(viewLifecycleOwner) { other ->
                 viewModel.otherClub.observe(viewLifecycleOwner) { club ->
                     viewModel.getOrCreateChat(

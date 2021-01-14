@@ -42,7 +42,11 @@ class SignUpFragment : Fragment() {
         private lateinit var binding: FragmentSignUpBinding
     }
 
-    //region Override Methods
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        TRACKING.logEvent(Tracking.SIGN_UP, null)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -177,8 +181,7 @@ class SignUpFragment : Fragment() {
                     val bundle = bundleOf("page" to R.id.signUpFragment)
                     navigate(R.id.globalToAffiliation, bundle)
 
-//                    val trackingBundle = bundleOf("SignIn" to 1)
-                    TRACKING.logEvent(Tracking.SIGN_IN, null)
+                    TRACKING.logEvent(Tracking.SIGN_UP_DONE, null)
                 }
                 is State.Failed -> {
                     hideProgressBar()

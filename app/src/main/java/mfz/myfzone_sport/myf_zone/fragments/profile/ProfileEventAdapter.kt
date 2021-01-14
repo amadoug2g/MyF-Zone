@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.RecyclerView
 import mfz.myfzone_sport.myf_zone.R
 import mfz.myfzone_sport.myf_zone.databinding.CardEventProfileBinding
 import mfz.myfzone_sport.myf_zone.model.event.Event
+import mfz.myfzone_sport.myf_zone.util.Constants.TRACKING
+import mfz.myfzone_sport.myf_zone.util.Tracking
 
 /**
  * Created by Amadou on 02/12/2020, 18:01
@@ -32,6 +34,7 @@ class ProfileEventAdapter :
         holder.bind(item)
 
         holder.binding.cardViewDetailProfile.setOnClickListener {
+            TRACKING.logEvent(Tracking.ACCOUNT_OPEN_EVENT, null)
             val bundle = bundleOf("eventId" to item.id)
             navigate(R.id.profileToEventDetails, bundle, holder.itemView)
         }

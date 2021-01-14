@@ -19,6 +19,8 @@ import mfz.myfzone_sport.myf_zone.fragments.profile.ProfileService.getImageRefer
 import mfz.myfzone_sport.myf_zone.glide.GlideApp
 import mfz.myfzone_sport.myf_zone.model.State
 import mfz.myfzone_sport.myf_zone.model.event.Event
+import mfz.myfzone_sport.myf_zone.util.Constants.TRACKING
+import mfz.myfzone_sport.myf_zone.util.Tracking
 import org.jetbrains.anko.support.v4.toast
 
 class ProfileFragment : Fragment() {
@@ -60,7 +62,10 @@ class ProfileFragment : Fragment() {
             loadUserEvents()
         }
 
-        binding.profileSettings.setOnClickListener { navigate(R.id.profileToSettings) }
+        binding.profileSettings.setOnClickListener {
+            TRACKING.logEvent(Tracking.SETTINGS, null)
+            navigate(R.id.profileToSettings)
+        }
 
         return binding.root
     }
@@ -134,7 +139,8 @@ class ProfileFragment : Fragment() {
                 }
                 is State.Success -> {
                     val eventList = state.data
-                    eventList.forEach { event -> loadEventOwner(event.id, eventList) }
+                    binding.count = eventList.size
+//                    eventList.forEach { event -> loadEventOwner(event.id, eventList) }
                     hideProgressBar()
                     setupEventRecyclerView(eventList)
                 }

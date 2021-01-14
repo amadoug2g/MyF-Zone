@@ -11,6 +11,10 @@
         <variable
             name="club"
             type="mfz.myfzone_sport.myf_zone.model.coach.ClubAffiliation" />
+
+        <variable
+            name="count"
+            type="Integer" />
     </data>
 
     <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
@@ -32,6 +36,7 @@
                 android:id="@+id/profile_shimmer_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 android:layout_gravity="center"
                 android:orientation="vertical">
 
@@ -217,7 +222,7 @@
                     android:layout_marginTop="32dp"
                     android:layout_marginEnd="32dp"
                     android:layout_marginBottom="8dp"
-                    android:text="@string/my_events"
+                    android:text="@{@string/my_events + ` (` + count + `) `}"
                     android:textAppearance="@style/TextAppearance.AppCompat.Headline"
                     android:textColor="@color/colorPrimaryDark"
                     android:textStyle="bold" />

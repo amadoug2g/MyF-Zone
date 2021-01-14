@@ -11,7 +11,6 @@ import com.google.android.gms.maps.model.Marker
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import mfz.myfzone_sport.myf_zone.R
 import mfz.myfzone_sport.myf_zone.model.State
 import mfz.myfzone_sport.myf_zone.model.club.Club
 import mfz.myfzone_sport.myf_zone.model.coach.ClubAffiliation
@@ -74,6 +73,9 @@ class MapsViewModel : ViewModel() {
         get() = _eventId
 
     var filterCount = MutableLiveData(0)
+    var filterCountFriendly = MutableLiveData(0)
+    var filterCountTourney = MutableLiveData(0)
+    var filterCountPlateau = MutableLiveData(0)
     var startDate = MutableLiveData<Long>(Calendar.getInstance().timeInMillis)
     var endDate = MutableLiveData<Long>(Calendar.getInstance().timeInMillis + (604800000))
     //endregion
@@ -111,25 +113,16 @@ class MapsViewModel : ViewModel() {
         filterCount.value = counter
     }
 
-    fun assignFilterIcon(list: MutableList<Event>): Int {
-        val filterIcon: Int = R.mipmap.ic_filter_icons_all
+    fun assignFilterFriendlyCount(counter: Int) {
+        filterCountFriendly.value = counter
+    }
 
-        val plateauCount = 0
-        list.forEach { event -> if (event.type == "plateau") plateauCount.plus(1) }
-        val friendlyCount = 0
-        list.forEach { event -> if (event.type == "friendly") friendlyCount.plus(1) }
-        val tournamentCount = 0
-        list.forEach { event -> if (event.type == "tournament") tournamentCount.plus(1) }
+    fun assignFilterTourneyCount(counter: Int) {
+        filterCountTourney.value = counter
+    }
 
-        if (plateauCount == 0) {
-            if (friendlyCount == 0) {
-                if (tournamentCount == 0) {
-
-                }
-            }
-        }
-
-        return filterIcon
+    fun assignFilterPlateauCount(counter: Int) {
+        filterCountPlateau.value = counter
     }
 
     fun mapInit() {
@@ -208,6 +201,9 @@ class MapsViewModel : ViewModel() {
 
     fun getEvents() = MapsService.getEvents(startDate.value!!, endDate.value!!)
 
+    fun addEventListener(onListen: (MutableList<Event>) -> Unit) =
+        MapsService.addEventListener(startDate.value!!, endDate.value!!, onListen)
+
     fun assignEventList() {
         viewModelScope.launch {
             getEvents().collect { state ->
@@ -228,6 +224,10 @@ class MapsViewModel : ViewModel() {
                 }
             }
         }
+    }
+
+    fun assignEventList(list: MutableList<Event>) {
+        _eventList.value = list
     }
 
     fun placeEvents(

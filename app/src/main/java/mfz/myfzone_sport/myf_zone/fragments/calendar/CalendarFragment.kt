@@ -1,6 +1,7 @@
 package mfz.myfzone_sport.myf_zone.fragments.calendar
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,7 +15,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import kotlinx.coroutines.flow.collect
 import mfz.myfzone_sport.myf_zone.R
 import mfz.myfzone_sport.myf_zone.databinding.FragmentCalendarBinding
-import mfz.myfzone_sport.myf_zone.fragments.calendar.CalendarService.eventToCalendar
 import mfz.myfzone_sport.myf_zone.model.State
 import mfz.myfzone_sport.myf_zone.model.event.Event
 import mfz.myfzone_sport.myf_zone.model.event.calendar.EventSection
@@ -57,6 +57,13 @@ class CalendarFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
         setupRecyclerParameters()
         setupSwipeRefresh()
 
+        try {
+            viewModel.addEventListener(this::refreshRecycler)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in eventListener: $e")
+            toast("Error in eventListener: $e")
+        }
+
         return binding.root
     }
 
@@ -97,13 +104,8 @@ class CalendarFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
                         viewModel.assignEventList(list)
                         viewModel.isListDifferent.observe(viewLifecycleOwner) { isListDifferent ->
                             if (isListDifferent) {
-//                                toast(getString(R.string.event_list_update))
                                 refreshRecycler(list)
                             }
-                            //else {
-                            //toast("Nothing new :/")
-                            //refreshRecycler(viewModel.eventList.value!!)
-                            //}
                         }
 
                         stopSwipeRefresh()
@@ -133,9 +135,8 @@ class CalendarFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
     }
 
     private fun refreshRecycler(list: MutableList<Event>) {
-        eventList = eventToCalendar(list)
+        eventList = viewModel.eventToCalendar(list)
         val listAdapter = ListRecyclerAdapter(eventList)
-        //listAdapter.notifyDataSetChanged()
 
         binding.parentRecyclerView.adapter = listAdapter
     }

@@ -111,6 +111,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="64dp"
                 android:layout_marginEnd="16dp"
+                android:backgroundTint="@color/colorSettingEnd"
                 android:text="@string/become_coach"
                 android:transitionName="@string/button_trans"
                 tools:ignore="OnClick" />
@@ -134,6 +135,7 @@
                 android:layout_marginStart="64dp"
                 android:layout_marginTop="-16dp"
                 android:layout_marginEnd="64dp"
+                android:textColor="@color/colorSettingEnd"
                 android:text="@string/login_coach" />
 
         </LinearLayout>

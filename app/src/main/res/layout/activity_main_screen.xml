@@ -51,14 +51,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:layout_gravity="bottom"
-                android:backgroundTint="@color/colorPrimary"
+                android:backgroundTint="@android:color/white"
                 app:fabAlignmentMode="end">
 
                 <com.google.android.material.bottomnavigation.BottomNavigationView
                     android:id="@+id/bottomNavBar"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
-                    android:background="@color/colorPrimary"
+                    android:background="@android:color/white"
+                    android:backgroundTint="@android:color/white"
                     app:itemIconTint="@color/nav_items_color"
                     app:itemTextColor="@color/nav_items_color"
                     app:menu="@menu/bottom_menu" />
@@ -70,7 +71,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/floating_action_button_desc"
-                android:src="@drawable/ic_filter"
+                android:background="@color/colorAccent"
+                android:src="@drawable/ic_add"
+                app:tint="@color/colorLight"
                 app:layout_anchor="@id/bottomBar" />
 
         </androidx.coordinatorlayout.widget.CoordinatorLayout>

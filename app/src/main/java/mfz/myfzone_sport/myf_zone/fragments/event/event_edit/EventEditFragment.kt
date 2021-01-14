@@ -28,6 +28,8 @@ import mfz.myfzone_sport.myf_zone.R
 import mfz.myfzone_sport.myf_zone.databinding.FragmentEventEditBinding
 import mfz.myfzone_sport.myf_zone.model.State
 import mfz.myfzone_sport.myf_zone.model.event.Event
+import mfz.myfzone_sport.myf_zone.util.Constants.TRACKING
+import mfz.myfzone_sport.myf_zone.util.Tracking
 import org.jetbrains.anko.sdk27.coroutines.onItemSelectedListener
 import org.jetbrains.anko.support.v4.toast
 import java.text.SimpleDateFormat
@@ -66,6 +68,7 @@ class EventEditFragment : Fragment() {
 
         lifecycleScope.launchWhenResumed {
             viewModel.assignParticipants()
+            viewModel.assignClub()
         }
     }
 
@@ -106,7 +109,6 @@ class EventEditFragment : Fragment() {
                                 ArrayAdapter(requireContext(), R.layout.simple_layout_file, list)
                             binding.eventEditTeamSpinner.isEnabled = false
                             binding.eventEditTeamSpinner.adapter = adapter
-                            viewModel.setEventTeam(selected.toInt())
                         } else {
                             val list = resources.getStringArray(R.array.teamList)
                             val adapter =
@@ -126,12 +128,12 @@ class EventEditFragment : Fragment() {
             }
         }
 
-        binding.eventEditTeamSpinner.onItemSelectedListener {
-            onItemSelected { _, _, _, selected ->
-                val nbTeam = 3 + selected
-                viewModel.setEventTeam(nbTeam.toInt())
-            }
-        }
+//        binding.eventEditTeamSpinner.onItemSelectedListener {
+//            onItemSelected { _, _, _, selected ->
+//                val nbTeam = 3 + selected
+//                viewModel.setEventTeam(nbTeam.toInt())
+//            }
+//        }
 
         binding.eventEditAddressInput.setOnClickListener { setupAddressIntent(viewModel.fields.value!!) }
 
@@ -189,7 +191,7 @@ class EventEditFragment : Fragment() {
     }
 
     private suspend fun updateEvent() {
-        viewModel.updateEvent(viewModel.event.value!!.id, viewModel.event.value!!)
+        viewModel.updateEvent(viewModel.event.value!!)
             .collect { state ->
                 when (state) {
                     is State.Loading -> {
@@ -197,6 +199,7 @@ class EventEditFragment : Fragment() {
                     }
                     is State.Success -> {
                         hideProgressBar()
+                        TRACKING.logEvent(Tracking.EVENT_MODIFICATION_DONE, null)
                         val message = ("Event successfully updated")
                         message.toast()
                         viewModel.notifyParticipants()
@@ -208,6 +211,27 @@ class EventEditFragment : Fragment() {
                         val message = "An error occurred: ${state.message}"
                         message.toast()
                         Log.i(TAG, "[updateEvent] Success")
+                    }
+                }
+            }
+    }
+
+    private suspend fun updateEventForOwner() {
+        viewModel.updateEventForOwner(viewModel.event.value!!, viewModel.club.value!!)
+            .collect { state ->
+                when (state) {
+                    is State.Loading -> {
+                        showProgressBar()
+                    }
+                    is State.Success -> {
+                        hideProgressBar()
+                        Log.i(TAG, "[updateEventForOwner] Success")
+                    }
+                    is State.Failed -> {
+                        hideProgressBar()
+                        val message = "An error occurred: ${state.message}"
+                        message.toast()
+                        Log.i(TAG, "[updateEventForOwner] Success")
                     }
                 }
             }
@@ -262,9 +286,12 @@ class EventEditFragment : Fragment() {
             .setIcon(R.drawable.ic_info)
             .setPositiveButton(getString(R.string.edit_txt)) { _: DialogInterface, _: Int ->
                 viewModel.setEventDate(eventDay1!!, eventDay2!!, eventTime!!)
+                val teams = binding.eventEditTeamSpinner.selectedItem.toString()
+                viewModel.setEventTeam(teams.toInt())
 
                 lifecycleScope.launch {
                     updateEvent()
+                    updateEventForOwner()
                 }
 
             }.setNegativeButton(getString(R.string.cancel_message)) { _: DialogInterface, _: Int ->

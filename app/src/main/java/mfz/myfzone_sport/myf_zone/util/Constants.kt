@@ -12,6 +12,7 @@ object Constants {
 
     private const val ENV_TEST = "Staging"
     private const val ENV_PROD = "Release"
+    private const val ENV_DEMO = "Demo"
 
     const val ENV = ENV_TEST
     const val COACH_PATH = "Env/${ENV}/Coach"

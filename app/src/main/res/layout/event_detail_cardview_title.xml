@@ -47,7 +47,6 @@
                         style="@style/MaterialAlertDialog.MaterialComponents.Title.Text"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@{secondaryEvent.eventTypeString}"
                         android:textAlignment="textStart"
                         android:textStyle="bold" />
 

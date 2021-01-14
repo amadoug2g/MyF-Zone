@@ -2,7 +2,9 @@ package mfz.myfzone_sport.myf_zone.fragments.calendar
 
 import android.text.format.DateFormat
 import android.util.Log
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.ktx.toObject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
@@ -29,6 +31,7 @@ import java.util.*
 
 object CalendarService {
     private val TAG = CalendarService::class.java.simpleName
+    val firebaseAuth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
 
     fun getEvents() = flow<State<MutableList<Event>>> {
         emit(State.loading())
@@ -179,5 +182,41 @@ object CalendarService {
     fun eventToCalendar(eventList: MutableList<Event>): MutableList<EventSection> {
         val list = sortedEventList(eventList)
         return mapToEventSection(list)
+    }
+
+    fun addEventListener(
+        onListen: (MutableList<Event>) -> Unit
+    ): ListenerRegistration? {
+        val now = Calendar.getInstance().time
+
+        val mUserChatQuery = DB
+            .collection(EVENT_PATH)
+        return try {
+            mUserChatQuery
+//                .orderBy("createdDate")
+                .addSnapshotListener { value, error ->
+                    if (error != null) {
+                        Log.e(TAG, "Error in addEventListener", error)
+                        return@addSnapshotListener
+                    }
+
+                    val items = mutableListOf<Event>()
+                    value?.documents?.forEach {
+
+                        try {
+                            val tempEvent = it.toObject(Event::class.java)!!
+                            if (tempEvent.date.time > now.time)
+                                items.add(it.toObject(Event::class.java)!!)
+                        } catch (e: Exception) {
+                            Log.i(TAG, "Error when fetching events: $e")
+                        }
+                    }
+
+                    onListen(items)
+                }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in addEventListener: ${e.localizedMessage}")
+            null
+        }
     }
 }

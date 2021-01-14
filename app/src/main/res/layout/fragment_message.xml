@@ -27,8 +27,8 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="8dp"
-            android:padding="8dp"
             android:visibility="gone"
+            android:padding="8dp"
             app:cardCornerRadius="10dp"
             app:cardElevation="4dp">
 
@@ -42,13 +42,14 @@
                 android:orientation="vertical">
 
                 <TextView
-                    style="@style/MaterialAlertDialog.MaterialComponents.Title.Text"
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_weight="1"
+                    android:lines="2"
+                    android:textColor="@android:color/black"
                     android:text="@string/no_chat_msg"
                     android:textAlignment="center"
+                    android:textSize="16sp"
                     android:textStyle="bold" />
 
             </LinearLayout>

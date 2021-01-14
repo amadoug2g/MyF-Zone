@@ -40,6 +40,8 @@ import mfz.myfzone_sport.myf_zone.model.event.EventParticipant
 import mfz.myfzone_sport.myf_zone.model.event.swipe_handler.ButtonClickListener
 import mfz.myfzone_sport.myf_zone.model.event.swipe_handler.MyButton
 import mfz.myfzone_sport.myf_zone.model.event.swipe_handler.SwipeHelper
+import mfz.myfzone_sport.myf_zone.util.Constants.TRACKING
+import mfz.myfzone_sport.myf_zone.util.Tracking
 import org.jetbrains.anko.support.v4.toast
 import java.util.*
 
@@ -102,7 +104,10 @@ class EventDetailsFragment : Fragment() {
                 binding.cancelParticipation.visibility =
                     if (viewModel.isUserParticipant.value!!) View.VISIBLE else View.GONE
 
-                binding.cancelParticipation.setOnClickListener { cancelParticipation() }
+                binding.cancelParticipation.setOnClickListener {
+                    TRACKING.logEvent(Tracking.EVENT_DETAILS_COACH_CANCEL_PARTICIPATION, null)
+                    cancelParticipation()
+                }
             }
         }
 
@@ -130,6 +135,7 @@ class EventDetailsFragment : Fragment() {
     //region Override Methods
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        TRACKING.logEvent(Tracking.EVENT_DETAILS, null)
 
         arguments?.let {
             eventId = it.getString(ARG_PARAM1)
@@ -229,7 +235,10 @@ class EventDetailsFragment : Fragment() {
 
         binding.participateButton.setOnClickListener { participationWindow() }
 
-        binding.cardEventOwner.ownerMessageIcon.setOnClickListener { userConversation() }
+        binding.cardEventOwner.ownerMessageIcon.setOnClickListener {
+            TRACKING.logEvent(Tracking.EVENT_DETAILS_OPEN_CHAT, null)
+            userConversation()
+        }
 
         return binding.root
     }
@@ -242,6 +251,7 @@ class EventDetailsFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.edit_event -> {
+                TRACKING.logEvent(Tracking.EVENT_MODIFICATION, null)
                 val bundle = bundleOf("eventId" to eventId)
                 navigate(R.id.eventDetailsToEventEdit, bundle)
             }
@@ -267,8 +277,12 @@ class EventDetailsFragment : Fragment() {
                                 binding.cardEventOwner.ownerMessageIcon.visibility = View.VISIBLE
                             }
                         }
+                    } else {
+                        binding.cardEventOwner.ownerMessageIcon.visibility = View.GONE
                     }
                 }
+            } else {
+                binding.cardEventOwner.ownerMessageIcon.visibility = View.GONE
             }
         }
 
@@ -311,52 +325,6 @@ class EventDetailsFragment : Fragment() {
     //endregion
 
     //region Action Bar
-
-    private fun participationWindow() {
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle(getString(R.string.enter_event))
-            .setMessage(getString(R.string.enter_event_msg))
-            .setPositiveButton(R.string.confirm_message) { _: DialogInterface, _: Int ->
-                confirmParticipation()
-            }
-            .setNegativeButton(R.string.cancel_message) { _: DialogInterface, _: Int ->
-            }.show()
-    }
-
-    private fun confirmParticipation() {
-        val participant = EventParticipant().apply {
-            clubLogo = viewModel.club.value!!.clubLogo
-            clubAcronym = viewModel.club.value!!.clubAcronym
-            coachId = viewModel.coach.value!!.id
-            coachFullname =
-                "${viewModel.coach.value!!.firstName} ${viewModel.coach.value!!.lastName}"
-            sportId = viewModel.club.value!!.sportId
-            sportName = viewModel.club.value!!.sportName
-            if (!viewModel.club.value!!.categoryId.isNullOrEmpty()) {
-                categoryId = viewModel.club.value!!.categoryId
-                categoryName = viewModel.club.value!!.categoryName
-                if (!viewModel.club.value!!.subCategoryId.isNullOrEmpty()) {
-                    subCategoryId = viewModel.club.value!!.subCategoryId
-                    subCategoryName = viewModel.club.value!!.subCategoryName
-                }
-            }
-            status = "pending"
-        }
-
-        lifecycleScope.launch {
-            addParticipant(participant)
-            binding.participateButton.visibility = View.GONE
-        }
-
-        viewModel.event.observe(viewLifecycleOwner) { event ->
-            viewModel.coach.observe(viewLifecycleOwner) { coach ->
-                viewModel.owner.observe(viewLifecycleOwner) { owner ->
-                    eventParticipation(event, coach, owner)
-                }
-            }
-        }
-    }
-
     private fun deletionWindow() {
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(getString(R.string.delete_event))
@@ -374,6 +342,7 @@ class EventDetailsFragment : Fragment() {
         toast(getString(R.string.event_deleted))
         viewModel.notifyParticipants()
         requireActivity().onBackPressed()
+        TRACKING.logEvent(Tracking.EVENT_MODIFICATION_CANCELLATION, null)
     }
     //endregion
 
@@ -387,10 +356,11 @@ class EventDetailsFragment : Fragment() {
                 is State.Success -> {
                     val event = state.data
                     binding.event = event
+                    binding.eventDetailCardviewLayout.eventDetailType.text = eventType(event)
 
                     //Page Title
                     (activity as AppCompatActivity).supportActionBar?.apply {
-                        title = event.eventTypeString
+                        title = eventType(event)
                     }
 
                     //Event Map
@@ -466,9 +436,69 @@ class EventDetailsFragment : Fragment() {
             }
         }
     }
+
+    private fun eventType(event: Event): String {
+        return when (event.type) {
+            "friendly" -> {
+                getString(R.string.friendly_event)
+            }
+            "tournament" -> {
+                getString(R.string.tournament_event)
+            }
+            else -> {
+                getString(R.string.plateau_event)
+            }
+        }
+    }
     //endregion
 
     //region Coach Actions
+    private fun participationWindow() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(getString(R.string.enter_event))
+            .setMessage(getString(R.string.enter_event_msg))
+            .setPositiveButton(R.string.confirm_message) { _: DialogInterface, _: Int ->
+                confirmParticipation()
+            }
+            .setNegativeButton(R.string.cancel_message) { _: DialogInterface, _: Int ->
+            }.show()
+    }
+
+    private fun confirmParticipation() {
+        val participant = EventParticipant().apply {
+            clubLogo = viewModel.club.value!!.clubLogo
+            clubAcronym = viewModel.club.value!!.clubAcronym
+            coachId = viewModel.coach.value!!.id
+            coachFullname =
+                "${viewModel.coach.value!!.firstName} ${viewModel.coach.value!!.lastName}"
+            sportId = viewModel.club.value!!.sportId
+            sportName = viewModel.club.value!!.sportName
+            if (!viewModel.club.value!!.categoryId.isNullOrEmpty()) {
+                categoryId = viewModel.club.value!!.categoryId
+                categoryName = viewModel.club.value!!.categoryName
+                if (!viewModel.club.value!!.subCategoryId.isNullOrEmpty()) {
+                    subCategoryId = viewModel.club.value!!.subCategoryId
+                    subCategoryName = viewModel.club.value!!.subCategoryName
+                }
+            }
+            status = "pending"
+        }
+
+        lifecycleScope.launch {
+            TRACKING.logEvent(Tracking.EVENT_DETAILS_COACH_PARTICIPATION, null)
+            addParticipant(participant)
+            binding.participateButton.visibility = View.GONE
+        }
+
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            viewModel.coach.observe(viewLifecycleOwner) { coach ->
+                viewModel.owner.observe(viewLifecycleOwner) { owner ->
+                    eventParticipation(event, coach, owner)
+                }
+            }
+        }
+    }
+
     private fun addParticipant(participant: EventParticipant) {
         viewModel.addParticipant(participant)
     }
@@ -499,6 +529,10 @@ class EventDetailsFragment : Fragment() {
                             object :
                                 ButtonClickListener {
                                 override fun onClick(pos: Int) {
+                                    TRACKING.logEvent(
+                                        Tracking.EVENT_DETAILS_OWNER_ACCEPT_PARTICIPATION,
+                                        null
+                                    )
                                     viewModel.participantList.observe(viewLifecycleOwner) { list ->
                                         viewModel.event.observe(viewLifecycleOwner) { event ->
                                             val participant = list[pos]
@@ -522,6 +556,10 @@ class EventDetailsFragment : Fragment() {
                             object :
                                 ButtonClickListener {
                                 override fun onClick(pos: Int) {
+                                    TRACKING.logEvent(
+                                        Tracking.EVENT_DETAILS_OWNER_REFUSE_PARTICIPATION,
+                                        null
+                                    )
                                     viewModel.participantList.observe(viewLifecycleOwner) { list ->
                                         viewModel.event.observe(viewLifecycleOwner) { event ->
                                             val participant = list[pos]

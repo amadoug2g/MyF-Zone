@@ -23,7 +23,7 @@ object Tracking {
     const val AFFILIATION_TO_CLUB_DONE = "AffiliateToClubDone"
     const val AFFILIATION_TO_CLUB_SUCCESS = "AffiliateToClubSuccess"
     const val AFFILIATION_TO_CLUB_ACTIVATE_NOTIFICATION =
-        "AffiliateToClubSuccessActivateNotification"
+        "AffiliateSuccessActivateNotification"
     const val AFFILIATION_TO_CLUB_SUCCESS_MAYBE_LATER = "AffiliateToClubSuccessMaybeLater"
     //endregion
 

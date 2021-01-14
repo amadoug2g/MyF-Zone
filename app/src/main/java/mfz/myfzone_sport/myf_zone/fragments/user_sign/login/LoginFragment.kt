@@ -25,6 +25,8 @@ import mfz.myfzone_sport.myf_zone.R
 import mfz.myfzone_sport.myf_zone.databinding.FragmentLoginBinding
 import mfz.myfzone_sport.myf_zone.model.State
 import mfz.myfzone_sport.myf_zone.screens.MainScreen
+import mfz.myfzone_sport.myf_zone.util.Constants.TRACKING
+import mfz.myfzone_sport.myf_zone.util.Tracking
 import org.jetbrains.anko.clearTask
 import org.jetbrains.anko.newTask
 import org.jetbrains.anko.support.v4.intentFor
@@ -38,7 +40,11 @@ class LoginFragment : Fragment() {
         private lateinit var binding: FragmentLoginBinding
     }
 
-    //region Override Methods
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        TRACKING.logEvent(Tracking.SIGN_IN, null)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -108,6 +114,7 @@ class LoginFragment : Fragment() {
                     hideProgressBar()
                     Log.i(TAG, "${state.data}")
                     toast(getString(R.string.login_message))
+                    TRACKING.logEvent(Tracking.SIGN_IN_DONE, null)
                     startActivity(intentFor<MainScreen>().newTask().clearTask())
                 }
                 is State.Failed -> {

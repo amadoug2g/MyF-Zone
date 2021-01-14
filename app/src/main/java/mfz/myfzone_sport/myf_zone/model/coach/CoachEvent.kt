@@ -1,15 +1,16 @@
 package mfz.myfzone_sport.myf_zone.model.coach
 
+import mfz.myfzone_sport.myf_zone.model.event.Event
 import java.util.*
 
 data class CoachEvent(
-    val title: String,
-    val description: String,
-    val type: String,
-    val nbTeam: Int,
-    val date: Date,
-    val address: String,
-    val createdDate: Date
+    var title: String,
+    var description: String,
+    var type: String,
+    var nbTeam: Int,
+    var date: Date,
+    var address: String,
+    var createdDate: Date
 ) {
     constructor() : this(
         "",
@@ -20,4 +21,40 @@ data class CoachEvent(
         "",
         Date(0)
     )
+
+    fun toMap(): HashMap<String, Any?> {
+        return hashMapOf(
+            "title" to title,
+            "description" to description,
+            "type" to type,
+            "nbTeam" to nbTeam,
+            "date" to date,
+            "address" to address,
+            "createdDate" to createdDate
+        )
+    }
+
+    fun eventToCoach(event: Event): CoachEvent {
+        val newEvent = CoachEvent()
+        return newEvent.apply {
+            title = event.title
+            description = event.description
+            type = event.type
+            nbTeam = event.nbTeam
+            date = event.date
+            address = event.address
+            createdDate = event.createdDate
+        }
+    }
+
+    fun updateToMap(): HashMap<String, Any?> {
+        return hashMapOf(
+            "title" to title,
+            "description" to description,
+            "type" to type,
+            "nbTeam" to nbTeam,
+            "date" to date,
+            "address" to address
+        )
+    }
 }

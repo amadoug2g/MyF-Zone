@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
 import android.text.TextUtils
 import android.util.Log
 import android.view.LayoutInflater
@@ -31,6 +32,8 @@ import mfz.myfzone_sport.myf_zone.model.State
 import mfz.myfzone_sport.myf_zone.model.coach.ClubAffiliation
 import mfz.myfzone_sport.myf_zone.model.event.Event
 import mfz.myfzone_sport.myf_zone.model.event.EventOwner
+import mfz.myfzone_sport.myf_zone.util.Constants.TRACKING
+import mfz.myfzone_sport.myf_zone.util.Tracking
 import org.jetbrains.anko.sdk27.coroutines.onItemSelectedListener
 import org.jetbrains.anko.support.v4.toast
 import java.text.SimpleDateFormat
@@ -82,8 +85,33 @@ class EventCreationFragment : Fragment() {
         binding.eventCreateDayPicker.setOnClickListener {
             selectDate()
         }
+
+        binding.eventCreateDateLayout.setEndIconOnClickListener {
+            selectDate()
+        }
+
         binding.eventCreateTimePicker.setOnClickListener {
             selectTime()
+        }
+
+        binding.eventCreateTimeLayout.setEndIconOnClickListener {
+            selectTime()
+        }
+
+        binding.eventCreateTypeInput.setOnClickListener {
+            binding.eventCreateTypeSpinner.performClick()
+        }
+
+        binding.eventCreateTypeLayout.setEndIconOnClickListener {
+            binding.eventCreateTypeSpinner.performClick()
+        }
+
+        binding.eventCreateTeamInput.setOnClickListener {
+            binding.eventCreateTeamSpinner.performClick()
+        }
+
+        binding.eventCreateTeamLayout.setEndIconOnClickListener {
+            binding.eventCreateTeamSpinner.performClick()
         }
 
         setStartDate()
@@ -97,22 +125,23 @@ class EventCreationFragment : Fragment() {
                     val adapter = ArrayAdapter(requireContext(), R.layout.simple_layout_file, list)
                     binding.eventCreateTeamSpinner.isEnabled = false
                     binding.eventCreateTeamSpinner.adapter = adapter
+
                 } else {
                     val list = resources.getStringArray(R.array.teamList)
                     val adapter = ArrayAdapter(requireContext(), R.layout.simple_layout_file, list)
                     binding.eventCreateTeamSpinner.isEnabled = true
                     binding.eventCreateTeamSpinner.adapter = adapter
                 }
-                viewModel.setEventType(
-                    binding.eventCreateTypeSpinner.selectedItem.toString(),
-                    event
-                )
+
+                binding.eventCreateTypeInput.setText(binding.eventCreateTypeSpinner.selectedItem.toString())
             }
         }
 
         binding.eventCreateTeamSpinner.setSelection(0)
         binding.eventCreateTeamSpinner.onItemSelectedListener {
             onItemSelected { _, _, _, selected ->
+                binding.eventCreateTeamInput.setText(binding.eventCreateTeamSpinner.selectedItem.toString())
+
                 val nbTeam = 2 + selected
                 viewModel.setEventTeam(
                     nbTeam.toInt(),
@@ -161,45 +190,6 @@ class EventCreationFragment : Fragment() {
     //endregion
 
     //region Event Creation
-    private fun confirmCreation() {
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle(getString(R.string.create_event))
-            .setMessage(getString(R.string.create_event_confirmation))
-            .setIcon(R.drawable.ic_info)
-            .setPositiveButton(getString(R.string.create_txt)) { _: DialogInterface, _: Int ->
-                viewModel.setEventDate(
-                    eventDay1!!, eventDay2!!, eventTime!!,
-                    event
-                )
-
-                lifecycleScope.launch {
-                    getOwnerForEvent()
-                }
-
-                Log.i(TAG, "Event is = $event")
-            }.setNegativeButton(getString(R.string.cancel_message)) { _: DialogInterface, _: Int ->
-            }.show()
-    }
-
-    private suspend fun createNewEvent() {
-        viewModel.createEvent(
-            event
-        ).collect { state ->
-            when (state) {
-                is State.Loading -> {
-
-                }
-                is State.Success -> {
-                    Log.i(TAG, "Success! Event is: ${state.data}")
-                }
-                is State.Failed -> {
-                    val message = "An error occurred: ${state.message}"
-                    message.toast()
-                }
-            }
-        }
-    }
-
     private suspend fun createEvent() {
         viewModel.checkAffiliationStatus().collect { state ->
             when (state) {
@@ -222,6 +212,33 @@ class EventCreationFragment : Fragment() {
         }
     }
 
+    private fun confirmCreation() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(getString(R.string.create_event))
+            .setMessage(getString(R.string.create_event_confirmation))
+            .setIcon(R.drawable.ic_info)
+            .setPositiveButton(getString(R.string.create_txt)) { _: DialogInterface, _: Int ->
+                viewModel.setEventDate(
+                    eventDay1!!, eventDay2!!, eventTime!!,
+                    event
+                )
+
+                Log.i(TAG, "type? ${binding.eventCreateTypeSpinner.selectedItem}")
+
+                viewModel.setEventType(
+                    binding.eventCreateTypeSpinner.selectedItem.toString(),
+                    event
+                )
+
+                lifecycleScope.launch {
+                    getOwnerForEvent()
+                }
+
+                Log.i(TAG, "Event is = $event")
+            }.setNegativeButton(getString(R.string.cancel_message)) { _: DialogInterface, _: Int ->
+            }.show()
+    }
+
     private suspend fun getOwnerForEvent() {
         viewModel.getOwnerForEvent().collect { state ->
             when (state) {
@@ -235,12 +252,32 @@ class EventCreationFragment : Fragment() {
                     createNewEvent()
                     addOwnerToEvent(owner)
                     addEventToUser(owner, club)
+                    TRACKING.logEvent(Tracking.EVENT_CREATION_DONE, null)
                     (getString(R.string.event_created)).toast()
                     resetFields()
                     requireActivity().onBackPressed()
                 }
                 is State.Failed -> {
                     hideProgressBar()
+                    val message = "An error occurred: ${state.message}"
+                    message.toast()
+                }
+            }
+        }
+    }
+
+    private suspend fun createNewEvent() {
+        viewModel.createEvent(
+            event
+        ).collect { state ->
+            when (state) {
+                is State.Loading -> {
+
+                }
+                is State.Success -> {
+                    Log.i(TAG, "Success! Event is: ${state.data}")
+                }
+                is State.Failed -> {
                     val message = "An error occurred: ${state.message}"
                     message.toast()
                 }
@@ -301,8 +338,9 @@ class EventCreationFragment : Fragment() {
 
     //region Event Time
     private fun setStartDate() {
-        binding.eventCreateDayPicker.text = getString(R.string.event_creation_date_btn)
-        binding.eventCreateTimePicker.text = getString(R.string.event_creation_time_btn)
+        binding.eventCreateDayPicker.text = getString(R.string.event_creation_date_btn).toEditable()
+        binding.eventCreateTimePicker.text =
+            getString(R.string.event_creation_time_btn).toEditable()
     }
 
     private fun selectDate() {
@@ -318,7 +356,7 @@ class EventCreationFragment : Fragment() {
                 cal.set(Calendar.MONTH, m)
                 cal.set(Calendar.YEAR, y)
                 binding.eventCreateDayPicker.text =
-                    SimpleDateFormat("dd/MM/y", Locale.FRANCE).format(cal.time)
+                    SimpleDateFormat("dd/MM/y", Locale.FRANCE).format(cal.time).toEditable()
                 eventDay1 = SimpleDateFormat("E MMM dd", Locale.ENGLISH).format(cal.time)
                 eventDay2 = SimpleDateFormat("z yyyy", Locale.ENGLISH).format(cal.time)
             },
@@ -336,7 +374,7 @@ class EventCreationFragment : Fragment() {
             cal.set(Calendar.HOUR_OF_DAY, hour)
             cal.set(Calendar.MINUTE, minute)
             binding.eventCreateTimePicker.text =
-                SimpleDateFormat("HH:mm", Locale.FRANCE).format(cal.time)
+                SimpleDateFormat("HH:mm", Locale.FRANCE).format(cal.time).toEditable()
             eventTime = SimpleDateFormat("HH:mm:ss", Locale.ENGLISH).format(cal.time)
         }
         TimePickerDialog(
@@ -451,5 +489,7 @@ class EventCreationFragment : Fragment() {
         val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(windowToken, 0)
     }
+
+    fun String.toEditable(): Editable = Editable.Factory.getInstance().newEditable(this)
     //endregion
 }

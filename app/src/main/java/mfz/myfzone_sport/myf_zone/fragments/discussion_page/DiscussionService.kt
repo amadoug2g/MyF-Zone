@@ -211,7 +211,7 @@ object DiscussionService {
                 .collection("/Message").orderBy("createdDate")
                 .addSnapshotListener { value, error ->
                     if (error != null) {
-                        Log.e("DiscussionService", "Error in addChatMessageListener", error)
+                        Log.e(TAG, "Error in addChatMessageListener", error)
                         return@addSnapshotListener
                     }
 
@@ -220,7 +220,7 @@ object DiscussionService {
                         try {
                             items.add(TextMessageItem(it.toObject(Message::class.java)!!, context))
                         } catch (e: Exception) {
-                            Log.i(TAG, "Error in fetching messages: $e")
+                            Log.i(TAG, "Error when fetching messages: $e")
                         }
                     }
 
@@ -249,7 +249,7 @@ object DiscussionService {
                     .set(updatedUserChat, SetOptions.merge())
 
             } else {
-                Log.i("DiscussionService", "[setDiscussionRead] Document does not exist")
+                Log.i(TAG, "[setDiscussionRead] Document does not exist")
             }
         }
 

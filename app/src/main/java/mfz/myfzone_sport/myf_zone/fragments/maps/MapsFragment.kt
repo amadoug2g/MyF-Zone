@@ -29,6 +29,9 @@ import kotlinx.coroutines.launch
 import mfz.myfzone_sport.myf_zone.R
 import mfz.myfzone_sport.myf_zone.databinding.FragmentMapsBinding
 import mfz.myfzone_sport.myf_zone.model.State
+import mfz.myfzone_sport.myf_zone.model.event.Event
+import mfz.myfzone_sport.myf_zone.util.Constants.TRACKING
+import mfz.myfzone_sport.myf_zone.util.Tracking
 import org.jetbrains.anko.support.v4.toast
 import java.util.*
 
@@ -113,9 +116,22 @@ class MapsFragment : Fragment(),
 
         viewModel.assignContext(requireContext())
         binding.viewModel = viewModel
-        //placeUserClub()
 
-        binding.filterButton.setOnClickListener { setCalendar() }
+        binding.filterButton.setOnClickListener {
+            calendarClick()
+        }
+
+        binding.filterButtonBall.setOnClickListener {
+            calendarClick()
+        }
+
+        binding.filterButtonStadium.setOnClickListener {
+            calendarClick()
+        }
+
+        binding.filterButtonCup.setOnClickListener {
+            calendarClick()
+        }
 
         binding.cardEventDetail.cardViewDetail.setOnClickListener {
             when (binding.cardEventDetail.cardViewTag.text) {
@@ -123,10 +139,20 @@ class MapsFragment : Fragment(),
 
                 }
                 else -> {
+                    TRACKING.logEvent(Tracking.MAP_OPEN_EVENT, null)
                     val bundle = bundleOf("eventId" to cardView_tag.text)
                     navigate(R.id.mapsToEventDetails, bundle)
                 }
             }
+        }
+
+        try {
+            viewModel.addEventListener {
+                refreshEventList()
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in eventListener: $e")
+            toast("Error in eventListener: $e")
         }
 
         return binding.root
@@ -136,6 +162,11 @@ class MapsFragment : Fragment(),
         super.onViewCreated(view, savedInstanceState)
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(callback)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        checkEventList(viewModel.eventList.value!!)
     }
 
     override fun onStop() {
@@ -166,9 +197,8 @@ class MapsFragment : Fragment(),
                     is State.Success -> {
                         loadingMsgEnd()
                         val list = state.data
-                        val size = list.size
-                        binding.filterButton.icon
-                        viewModel.assignFilterCount(size)
+                        viewModel.assignEventList(list)
+                        checkEventList(list)
                         binding.viewModel = viewModel
                         viewModel.placeEvents(viewModel.map.value!!, requireContext(), list)
                         placeUserClub()
@@ -208,6 +238,7 @@ class MapsFragment : Fragment(),
                 crossFadeEnd()
             }
             else -> {
+                TRACKING.logEvent(Tracking.MAP_OPEN_SMALL_EVENT_DETAILS, null)
                 binding.cardEventDetail.cardViewTag.text = this.tag as String
                 viewModel.assignEventId(this)
                 viewModel.eventId.observe(viewLifecycleOwner) { eventId ->
@@ -269,6 +300,11 @@ class MapsFragment : Fragment(),
         toast(string)
     }
 
+    private fun calendarClick() {
+        TRACKING.logEvent(Tracking.MAP_FILTERS, null)
+        setCalendar()
+    }
+
     private fun setCalendar() {
         val builder = MaterialDatePicker.Builder.dateRangePicker()
         val now = Calendar.getInstance().time
@@ -307,6 +343,63 @@ class MapsFragment : Fragment(),
                 toast("$e")
             }
         }
+    }
+
+    private fun checkEventList(list: MutableList<Event>) {
+        if (list.isEmpty()) {
+            binding.filterButton.visibility = View.VISIBLE
+            binding.filterButtonBall.visibility = View.GONE
+            binding.filterButtonStadium.visibility = View.GONE
+            binding.filterButtonCup.visibility = View.GONE
+
+            viewModel.assignFilterCount(0)
+        } else assignFilters(list)
+    }
+
+    private fun assignFilters(list: MutableList<Event>) {
+        var nbTourneyEvent = 0
+        var nbFriendlyEvent = 0
+        var nbPlateauEvent = 0
+
+        binding.filterButton.visibility = View.GONE
+        binding.filterButtonBall.visibility = View.GONE
+        binding.filterButtonStadium.visibility = View.GONE
+        binding.filterButtonCup.visibility = View.GONE
+
+        list.forEach {
+            when (it.type) {
+                "plateau" -> {
+                    nbPlateauEvent++
+                }
+                "friendly" -> {
+                    nbFriendlyEvent++
+                }
+                "tournament" -> {
+                    nbTourneyEvent++
+                }
+            }
+        }
+
+        Log.i(TAG, "plateau: $nbPlateauEvent")
+        Log.i(TAG, "friendly: $nbFriendlyEvent")
+        Log.i(TAG, "tournament: $nbTourneyEvent")
+
+        if (nbFriendlyEvent != 0) {
+            binding.filterButtonBall.visibility = View.VISIBLE
+            viewModel.assignFilterFriendlyCount(nbFriendlyEvent)
+        }
+
+        if (nbPlateauEvent != 0) {
+            binding.filterButtonStadium.visibility = View.VISIBLE
+            viewModel.assignFilterPlateauCount(nbPlateauEvent)
+        }
+
+        if (nbTourneyEvent != 0) {
+            binding.filterButtonCup.visibility = View.VISIBLE
+            viewModel.assignFilterTourneyCount(nbTourneyEvent)
+        }
+
+
     }
     //endregion
 

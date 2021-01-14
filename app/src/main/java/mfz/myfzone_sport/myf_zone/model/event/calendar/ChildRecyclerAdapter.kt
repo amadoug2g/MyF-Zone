@@ -15,6 +15,8 @@ import kotlinx.android.synthetic.main.card_event_profile.view.*
 import mfz.myfzone_sport.myf_zone.R
 import mfz.myfzone_sport.myf_zone.glide.GlideApp
 import mfz.myfzone_sport.myf_zone.model.event.EventCalendar
+import mfz.myfzone_sport.myf_zone.util.Constants.TRACKING
+import mfz.myfzone_sport.myf_zone.util.Tracking
 
 class ChildRecyclerAdapter(private val items: MutableList<EventCalendar>) :
     RecyclerView.Adapter<ChildRecyclerAdapter.ViewHolder>() {
@@ -32,6 +34,7 @@ class ChildRecyclerAdapter(private val items: MutableList<EventCalendar>) :
         holder.bind(event)
 
         holder.cardview.setOnClickListener {
+            TRACKING.logEvent(Tracking.AGENDA_OPEN_EVENT, null)
             val bundle = bundleOf("eventId" to event.id)
             navigate(R.id.calendarToEventDetail, bundle, holder.itemView)
         }

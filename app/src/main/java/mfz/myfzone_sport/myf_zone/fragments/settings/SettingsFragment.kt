@@ -20,6 +20,8 @@ import com.google.android.material.textview.MaterialTextView
 import mfz.myfzone_sport.myf_zone.R
 import mfz.myfzone_sport.myf_zone.databinding.FragmentSettingsBinding
 import mfz.myfzone_sport.myf_zone.screens.MainScreen
+import mfz.myfzone_sport.myf_zone.util.Constants.TRACKING
+import mfz.myfzone_sport.myf_zone.util.Tracking
 import org.jetbrains.anko.clearTask
 import org.jetbrains.anko.newTask
 import org.jetbrains.anko.support.v4.intentFor
@@ -80,17 +82,20 @@ class SettingsFragment : Fragment() {
         binding.logout.setOnClickListener { signOut() }
 
         binding.privacyPolicy.apply {
+            TRACKING.logEvent(Tracking.POLICY, null)
             movementMethod = LinkMovementMethod.getInstance()
             binding.privacyPolicy.removeLinksUnderline()
         }
 
         binding.cgu.apply {
+            TRACKING.logEvent(Tracking.CGU, null)
             movementMethod = LinkMovementMethod.getInstance()
             binding.cgu.removeLinksUnderline()
         }
 
 
         binding.osSettings.setOnClickListener {
+            TRACKING.logEvent(Tracking.OS_SETTINGS, null)
 //            val intent = Intent(Settings.ACTION_SETTINGS)
 //            startActivityForResult(intent, 0)
             val dialogIntent = Intent(Settings.ACTION_SETTINGS)
@@ -108,6 +113,7 @@ class SettingsFragment : Fragment() {
             .setTitle(R.string.logout)
             .setMessage(R.string.logout_message)
             .setPositiveButton(R.string.confirm_message) { _: DialogInterface, _: Int ->
+                TRACKING.logEvent(Tracking.LOGOUT, null)
                 viewModel.signOut()
                 toast(R.string.logout_success)
                 startActivity(intentFor<MainScreen>().newTask().clearTask())

@@ -9,6 +9,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.ktx.toObject
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.flow.catch
@@ -27,6 +28,7 @@ import mfz.myfzone_sport.myf_zone.util.Constants.CLUB_PATH
 import mfz.myfzone_sport.myf_zone.util.Constants.COACH_PATH
 import mfz.myfzone_sport.myf_zone.util.Constants.DB
 import mfz.myfzone_sport.myf_zone.util.Constants.EVENT_PATH
+import java.util.*
 
 
 /**
@@ -36,7 +38,7 @@ import mfz.myfzone_sport.myf_zone.util.Constants.EVENT_PATH
  */
 
 object MapsService {
-    private val TAG = MapsService::class.java.simpleName
+    private val TAG = this::class.java.simpleName
     val firebaseAuth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
 
     fun getCurrentUser() = flow<State<Coach>> {
@@ -261,4 +263,48 @@ object MapsService {
     }.catch {
         emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
     }.flowOn(IO)
+
+    fun addEventListener(
+        startDate: Long, endDate: Long,
+        onListen: (MutableList<Event>) -> Unit
+    ): ListenerRegistration? {
+
+        val mUserChatQuery = DB
+            .collection(EVENT_PATH)
+        return try {
+            mUserChatQuery
+                .orderBy("date")
+                .addSnapshotListener { value, error ->
+                    if (error != null) {
+                        Log.e(TAG, "Error in addEventListener", error)
+                        return@addSnapshotListener
+                    }
+
+                    val items = mutableListOf<Event>()
+                    value?.documents?.forEach {
+
+                        try {
+                            val tempEvent = it.toObject(Event::class.java)!!
+                            if (tempEvent.date.time in startDate..endDate)
+                                items.add(it.toObject(Event::class.java)!!)
+                        } catch (e: Exception) {
+                            Log.i(TAG, "Error when fetching events: $e")
+                        }
+                    }
+
+//                    items.forEach { event ->
+//                        val owner = getOwnerFromEvent(event.id)
+//                        val participantList = getParticipantsFromEvent(event.id)
+//
+//                        event.owner = owner!!
+//                        event.participants = participantList!!
+//                    }
+
+                    onListen(items)
+                }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in addEventListener: ${e.localizedMessage}")
+            null
+        }
+    }
 }

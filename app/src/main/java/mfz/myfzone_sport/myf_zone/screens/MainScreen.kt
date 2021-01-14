@@ -2,16 +2,12 @@ package mfz.myfzone_sport.myf_zone.screens
 
 import android.app.Activity
 import android.content.*
-import android.content.pm.PackageInfo
-import android.content.pm.PackageManager
 import android.content.res.ColorStateList
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
@@ -35,7 +31,10 @@ import kotlinx.android.synthetic.main.on_boarding_card.view.*
 import kotlinx.coroutines.launch
 import mfz.myfzone_sport.myf_zone.R
 import mfz.myfzone_sport.myf_zone.databinding.ActivityMainScreenBinding
+import mfz.myfzone_sport.myf_zone.model.chat.Chat
 import mfz.myfzone_sport.myf_zone.setupWithNavController
+import mfz.myfzone_sport.myf_zone.util.Constants.TRACKING
+import mfz.myfzone_sport.myf_zone.util.Tracking
 import org.jetbrains.anko.toast
 import java.util.*
 import kotlin.concurrent.schedule
@@ -64,6 +63,7 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
     //region Override Methods
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+//        ManagerAuth.checkUserStatus()
         setTheme(R.style.AppTheme)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main_screen)
 
@@ -150,7 +150,21 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
         arguments: Bundle?
     ) {
         when (destination.id) {
+            R.id.calendarFragment -> {
+                TRACKING.logEvent(Tracking.AGENDA, null)
+                mainNavBarAppearance()
+                binding.bottomBar.hideOnScroll = true
+
+                binding.fabMain.setOnClickListener {
+                    fabButton(R.id.calendarFragment)
+                }
+
+                binding.accountButton.setOnClickListener {
+                    profileButton(R.id.calendarFragment)
+                }
+            }
             R.id.mapsFragment -> {
+                TRACKING.logEvent(Tracking.MAP, null)
                 mainNavBarAppearance()
                 binding.bottomBar.hideOnScroll = false
 
@@ -163,6 +177,7 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
                 }
             }
             R.id.messageFragment -> {
+                TRACKING.logEvent(Tracking.CHAT, null)
                 mainNavBarAppearance()
                 binding.bottomBar.hideOnScroll = true
 
@@ -172,18 +187,6 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
 
                 binding.accountButton.setOnClickListener {
                     profileButton(R.id.messageFragment)
-                }
-            }
-            R.id.calendarFragment -> {
-                mainNavBarAppearance()
-                binding.bottomBar.hideOnScroll = true
-
-                binding.fabMain.setOnClickListener {
-                    fabButton(R.id.calendarFragment)
-                }
-
-                binding.accountButton.setOnClickListener {
-                    profileButton(R.id.calendarFragment)
                 }
             }
             else -> {
@@ -230,14 +233,29 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
         binding.fabMain.visibility = View.VISIBLE
         binding.accountButton.visibility = View.VISIBLE
 
-//        binding.bottomNavBar.getOrCreateBadge(R.id.message).backgroundColor = resources.getColor(R.color.colorCoral)
-//        binding.bottomNavBar.getOrCreateBadge(R.id.message).backgroundColor = ContextCompat.getColor(this, R.color.colorCoral)
+        viewModel.isUserSignedIn.observe(this) { isUserSignedIn ->
+            if (isUserSignedIn) {
+                viewModel.isUserAffiliated.observe(this) { isUserAffiliated ->
+                    if (isUserAffiliated) {
+                        try {
+                            viewModel.addChatListener {
+                                countMessages(it)
+                            }
+                        } catch (e: Exception) {
+                            Log.e(TAG, "Error in eventListener: $e")
+                            toast("Error in eventListener: $e")
+                        }
+                    }
+                }
+            }
+        }
 
         supportActionBar!!.apply {
             hide()
         }
 
-        binding.fabMain.setImageResource(R.drawable.ic_add)
+//        binding.fabMain.setImageResource(R.drawable.ic_add)
+//        binding.fabMain.col
         binding.fabMain.backgroundTintList = ColorStateList.valueOf(
             ContextCompat.getColor(
                 applicationContext,
@@ -279,25 +297,6 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
         val inputMethodManager =
             getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
-    }
-
-    @RequiresApi(Build.VERSION_CODES.P)
-    fun checkOnBoardingStatus() {
-        // Show changelog
-        val prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
-        val pInfo: PackageInfo
-        try {
-            pInfo = packageManager.getPackageInfo(packageName, PackageManager.GET_META_DATA)
-            if (prefs.getLong("lastRunVersionCode", 0) < pInfo.longVersionCode) {
-                showOnBoarding()
-                val editor = prefs.edit()
-                editor.putLong("lastRunVersionCode", pInfo.longVersionCode)
-                editor.apply()
-            }
-        } catch (e: PackageManager.NameNotFoundException) {
-            Log.e(TAG, "Error reading versionCode")
-            e.printStackTrace()
-        }
     }
 
     private fun checkOnBoarding() {
@@ -345,8 +344,35 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
     }
 
     private fun fabButton(destinationId: Int) {
+        TRACKING.logEvent(Tracking.EVENT_CREATION, null)
         val bundle = bundleOf("page" to destinationId)
         when (destinationId) {
+            R.id.calendarFragment -> {
+//                if (isConnected) {
+//                    if (isAffiliated) {
+//                        navigate(R.id.calendarToEventCreation)
+//                    } else {
+//                        toast(getString(R.string.user_not_affiliated))
+//                        navigate(R.id.calendarToAffiliationRequest, bundle)
+//                    }
+//                } else {
+//                    navigate(R.id.calendarToSignUp)
+//                }
+                viewModel.isUserSignedIn.observe(this) { isUserSignedIn ->
+                    if (isUserSignedIn) {
+                        viewModel.isUserAffiliated.observe(this) { isUserAffiliated ->
+                            if (isUserAffiliated) {
+                                navigate(R.id.calendarToEventCreation)
+                            } else {
+                                toast(getString(R.string.user_not_affiliated))
+                                navigate(R.id.calendarToAffiliationRequest, bundle)
+                            }
+                        }
+                    } else {
+                        navigate(R.id.calendarToSignUp)
+                    }
+                }
+            }
             R.id.mapsFragment -> {
                 viewModel.isUserSignedIn.observe(this) { isUserSignedIn ->
                     if (isUserSignedIn) {
@@ -379,12 +405,19 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
                     }
                 }
             }
+        }
+    }
+
+    private fun profileButton(destinationId: Int) {
+        TRACKING.logEvent(Tracking.ACCOUNT, null)
+        val bundle = bundleOf("page" to destinationId)
+        when (destinationId) {
             R.id.calendarFragment -> {
                 viewModel.isUserSignedIn.observe(this) { isUserSignedIn ->
                     if (isUserSignedIn) {
                         viewModel.isUserAffiliated.observe(this) { isUserAffiliated ->
                             if (isUserAffiliated) {
-                                navigate(R.id.calendarToEventCreation)
+                                navigate(R.id.calendarToProfile)
                             } else {
                                 toast(getString(R.string.user_not_affiliated))
                                 navigate(R.id.calendarToAffiliationRequest, bundle)
@@ -395,12 +428,6 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
                     }
                 }
             }
-        }
-    }
-
-    private fun profileButton(destinationId: Int) {
-        val bundle = bundleOf("page" to destinationId)
-        when (destinationId) {
             R.id.mapsFragment -> {
                 viewModel.isUserSignedIn.observe(this) { isUserSignedIn ->
                     if (isUserSignedIn) {
@@ -430,22 +457,6 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
                         }
                     } else {
                         navigate(R.id.messageToSignUp)
-                    }
-                }
-            }
-            R.id.calendarFragment -> {
-                viewModel.isUserSignedIn.observe(this) { isUserSignedIn ->
-                    if (isUserSignedIn) {
-                        viewModel.isUserAffiliated.observe(this) { isUserAffiliated ->
-                            if (isUserAffiliated) {
-                                navigate(R.id.calendarToProfile)
-                            } else {
-                                toast(getString(R.string.user_not_affiliated))
-                                navigate(R.id.calendarToAffiliationRequest, bundle)
-                            }
-                        }
-                    } else {
-                        navigate(R.id.calendarToSignUp)
                     }
                 }
             }
@@ -492,4 +503,26 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
         }
     }
     //endregion
+
+    private fun countMessages(list: MutableList<Chat>) {
+        var messageCount = 0
+
+        list.forEach { chat -> if (chat.unread) messageCount++ }
+
+        notifyMessages(messageCount)
+    }
+
+    private fun notifyMessages(count: Int) {
+        when (count > 0) {
+            true -> {
+                binding.bottomNavBar.getOrCreateBadge(R.id.message).backgroundColor =
+                    ContextCompat.getColor(this, R.color.colorCoral)
+//                binding.bottomNavBar.getOrCreateBadge(R.id.message).number = count
+            }
+
+            false -> {
+                binding.bottomNavBar.removeBadge(R.id.message)
+            }
+        }
+    }
 }

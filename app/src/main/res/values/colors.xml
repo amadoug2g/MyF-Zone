@@ -1,13 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!--    <color name="colorPrimary">#FFF</color>-->
     <color name="colorPrimary">#6200EE</color>
+    <!--    <color name="colorPrimaryDark">#FFF</color>-->
     <color name="colorPrimaryDark">#3700B3</color>
-    <color name="colorAccent">#03DAC5</color>
+    <!--    <color name="colorAccent">#03DAC5</color>-->
+    <color name="colorAccent">#0091FE</color>
     <color name="colorDiscreet">#B9B9B9</color>
+    <color name="colorGoogle">#C8D2DC</color>
+    <color name="colorLight">#FFF</color>
+    <color name="colorDark">#000</color>
     <color name="colorShimmer">#DDDDDD</color>
     <color name="colorTransparent">#88FFFFFF</color>
     <color name="colorTransparentMessage">#EEEEEE</color>
     <color name="colorCoral">#FF7F50</color>
-    <color name="colorSettingStart">#009DFE</color>
-    <color name="colorSettingEnd">#0075F8</color>
+    <color name="colorSettingStart">#00A0FE</color>
+    <color name="colorSettingEnd">#0173F7</color>
 </resources>

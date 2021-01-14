@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.collect
 import mfz.myfzone_sport.myf_zone.model.State
+import mfz.myfzone_sport.myf_zone.model.chat.Chat
 
 
 /**
@@ -38,6 +39,9 @@ class MainViewModel : ViewModel() {
     }
 
     private fun affiliationStatus() = MainService.checkAffiliationStatus()
+
+    fun addChatListener(onListen: (MutableList<Chat>) -> Unit) =
+        MainService.addChatListener(onListen)
 
     suspend fun checkUserAffiliationStatus() {
         affiliationStatus().collect { state ->

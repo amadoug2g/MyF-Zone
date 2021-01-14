@@ -9,6 +9,7 @@ import com.google.android.libraries.places.api.model.Place
 import kotlinx.coroutines.flow.collect
 import mfz.myfzone_sport.myf_zone.model.State
 import mfz.myfzone_sport.myf_zone.model.chat.MessagingService.Companion.eventModifyParticipation
+import mfz.myfzone_sport.myf_zone.model.coach.ClubAffiliation
 import mfz.myfzone_sport.myf_zone.model.event.Event
 import mfz.myfzone_sport.myf_zone.model.event.EventParticipant
 import java.text.SimpleDateFormat
@@ -28,12 +29,16 @@ class EventEditViewModel : ViewModel() {
     val fields: LiveData<MutableList<Place.Field>>
         get() = _fields
 
+    private val _club = MutableLiveData<ClubAffiliation>()
+    val club: LiveData<ClubAffiliation>
+        get() = _club
+
     private val _isListInitialized = MutableLiveData<Boolean>(false)
     val isListInitialized: LiveData<Boolean>
         get() = _isListInitialized
 
     private val _participantList = MutableLiveData<MutableList<EventParticipant>>()
-    val participantList: LiveData<MutableList<EventParticipant>>
+    private val participantList: LiveData<MutableList<EventParticipant>>
         get() = _participantList
 
     val event = MutableLiveData<Event>()
@@ -80,7 +85,29 @@ class EventEditViewModel : ViewModel() {
         }
     }
 
-    fun updateEvent(eventId: String, event: Event) = EventEditService.updateEvent(eventId, event)
+    fun updateEvent(event: Event) = EventEditService.updateEvent(event)
+    fun updateEventForOwner(event: Event, clubAffiliation: ClubAffiliation) =
+        EventEditService.updateEventForOwner(event, clubAffiliation)
+
+    private fun getUserClub() = EventEditService.getUserClub()
+
+    suspend fun assignClub() {
+        getUserClub().collect { state ->
+            when (state) {
+                is State.Loading -> {
+//                    showProgressBar()
+                }
+                is State.Success -> {
+                    _club.value = state.data
+                }
+                is State.Failed -> {
+//                    hideProgressBar()
+                    val message = "An error occurred [in assignClub]: ${state.message}"
+                    Log.i("EventDetailsViewModel", message)
+                }
+            }
+        }
+    }
 
     fun getEventTypeToDisplay(event: Event): Int {
         return when (event.type) {

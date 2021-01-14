@@ -27,6 +27,8 @@ import mfz.myfzone_sport.myf_zone.fragments.message.MessageService.getImageRefer
 import mfz.myfzone_sport.myf_zone.glide.GlideApp
 import mfz.myfzone_sport.myf_zone.model.State
 import mfz.myfzone_sport.myf_zone.model.chat.Chat
+import mfz.myfzone_sport.myf_zone.util.Constants.TRACKING
+import mfz.myfzone_sport.myf_zone.util.Tracking
 import org.jetbrains.anko.support.v4.toast
 
 class MessageFragment : Fragment() {
@@ -59,7 +61,10 @@ class MessageFragment : Fragment() {
                     Log.e("CoachHolder", "Image could not load: $e")
                 }
 
-                binding.messageCardViewTitle.setOnClickListener { userConversation(chat) }
+                binding.messageCardViewTitle.setOnClickListener {
+                    TRACKING.logEvent(Tracking.CHAT_DETAILS, null)
+                    userConversation(chat)
+                }
 
                 userChat.value = chat.unread
 
