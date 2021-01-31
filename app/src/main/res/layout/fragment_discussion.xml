@@ -10,7 +10,7 @@
 
         <variable
             name="viewModel"
-            type="mfz.myfzone_sport.myf_zone.fragments.discussion_page.DiscussionViewModel" />
+            type="com.myfzone_sport.myf_zone.fragments.discussion_page.DiscussionViewModel" />
     </data>
 
     <!--        android:fitsSystemWindows="true"-->

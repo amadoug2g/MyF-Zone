@@ -9,7 +9,7 @@
 
     <fragment
         android:id="@+id/calendarFragment"
-        android:name="mfz.myfzone_sport.myf_zone.fragments.calendar.CalendarFragment"
+        android:name="com.myfzone_sport.myf_zone.fragments.calendar.CalendarFragment"
         android:label=""
         tools:layout="@layout/fragment_calendar">
         <action

@@ -1,0 +1,109 @@
+package com.myfzone_sport.myf_zone.fragments.message
+
+import android.util.Log
+import androidx.core.os.bundleOf
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.CollectionReference
+import com.myfzone_sport.myf_zone.model.State
+import com.myfzone_sport.myf_zone.model.coach.Coach
+import com.myfzone_sport.myf_zone.util.Constants
+import com.myfzone_sport.myf_zone.util.Constants.COACH_PATH
+import com.myfzone_sport.myf_zone.util.Tracking
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
+
+/**
+ * Created by Amadou on 07/12/2020, 01:03
+ *
+ * Message ViewModel class
+ *
+ */
+
+class MessageViewModel : ViewModel() {
+
+    private val _isUserSignedIn = MutableLiveData<Boolean>(false)
+    val isUserSignedIn: LiveData<Boolean>
+        get() = _isUserSignedIn
+
+    private val _isUserAffiliated = MutableLiveData<Boolean>(false)
+    val isUserAffiliated: LiveData<Boolean>
+        get() = _isUserAffiliated
+
+    private val _coach = MutableLiveData<Coach>()
+    val coach: LiveData<Coach>
+        get() = _coach
+
+    private val _query = MutableLiveData<CollectionReference>()
+    val query: LiveData<CollectionReference>
+        get() = _query
+
+    init {
+        _isUserSignedIn.value = checkUserSignedIn()
+        _query.value = getQuery()
+
+        viewModelScope.launch {
+            assignUser()
+        }
+    }
+
+    private fun getQuery(): CollectionReference {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        return MessageService.fireStoreInstance
+            .collection(COACH_PATH + "/${currentUser?.uid}/Chat")
+    }
+
+    fun checkUserSignedIn(): Boolean {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        return (currentUser != null)
+    }
+
+    fun getCurrentUser() = MessageService.getCurrentUser()
+
+    private suspend fun assignUser() {
+        getCurrentUser().collect { state ->
+            when (state) {
+                is State.Loading -> {
+//                    showProgressBar()
+                }
+                is State.Success -> {
+                    _coach.value = state.data
+                }
+                is State.Failed -> {
+                    val bundleTracking = bundleOf("Message Error [assignUser]" to state.message)
+                    Constants.TRACKING.logEvent(Tracking.ALERT_ERROR, bundleTracking)
+
+                    val message = "An error occurred: ${state.message}"
+                    Log.i("EventDetailsViewModel", message)
+                }
+            }
+        }
+    }
+
+    private fun getChatCoach(coachId: String) = MessageService.getChatCoach(coachId)
+
+    private fun affiliationStatus() = MessageService.checkAffiliationStatus()
+
+    suspend fun checkUserAffiliationStatus() {
+        affiliationStatus().collect { state ->
+            when (state) {
+                is State.Loading -> {
+//                    showProgressBar()
+                }
+                is State.Success -> {
+//                    hideProgressBar()
+                    _isUserAffiliated.value = state.data
+                }
+                is State.Failed -> {
+                    _isUserAffiliated.value = false
+                    val message = "An error occurred: ${state.message}"
+                    Log.i("EventDetailsViewModel", message)
+//                    hideProgressBar()
+                }
+            }
+        }
+    }
+}

@@ -81,7 +81,7 @@
     <string name="login_message">Connexion réussie</string>
     <string name="loading">Chargement…</string>
     <string name="notification_dot">Notification Dot</string>
-    <string name="teams">" équipes"</string>
+    <string name="teams">" équipes en tout"</string>
     <string name="friendly_event">Match amical</string>
     <string name="friendly_event_txt">Amical</string>
     <string name="tournament_event">Tournoi</string>
@@ -123,7 +123,9 @@
     <string name="floating_action_button_desc">Floating Action Button</string>
     <string name="sender_hint_msg">Nouveau message</string>
     <string name="text_image_button">Text Image Button</string>
-    <string name="no_chat_msg">Aucun chat pour actif pour l\'instant,\nrejoignez un évènement pour commencer !</string>
+    <string name="no_chat_msg">Aucun chat pour actif pour l\'instant,\ncréez ou rejoignez un évènement pour commencer !</string>
+    <string name="no_sign_in_msg">Connectez-vous pour discuter et participer aux évènements, cliquez ici pour commencer dès maintenant !</string>
+    <string name="no_affiliation_msg">Vous n\'êtes pas encore affilié à un club, \nterminez votre inscription pour commencer !</string>
     <string name="event_creation_date_btn">Date</string>
     <string name="event_creation_time_btn">Heure</string>
     <string name="event_created">Évènement créé</string>
@@ -150,6 +152,10 @@
     <string name="onBoarding_affiliation_code">À l\'aide du code d\'affiliation de ton club, inscris-toi et rejoins la communauté</string>
     <string name="app_logo_content_description">App Logo</string>
     <string name="send_button_description">Bouton d\'envoi Button</string>
+    <string name="error_fetch_club">Erreur pendant la récupération des clubs : </string>
+    <string name="error_msg">Erreur</string>
+    <string name="continue_text">Continuer</string>
+    <string name="understood_text">J\'ai compris</string>
 
     <string-array name="sportList">
         <item>Football</item>

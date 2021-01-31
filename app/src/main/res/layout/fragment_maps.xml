@@ -6,11 +6,11 @@
 
         <variable
             name="event"
-            type="mfz.myfzone_sport.myf_zone.model.event.Event" />
+            type="com.myfzone_sport.myf_zone.model.event.Event" />
 
         <variable
             name="viewModel"
-            type="mfz.myfzone_sport.myf_zone.fragments.maps.MapsViewModel" />
+            type="com.myfzone_sport.myf_zone.fragments.maps.MapsViewModel" />
 
     </data>
 

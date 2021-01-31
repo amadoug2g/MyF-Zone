@@ -6,11 +6,11 @@
 
         <variable
             name="user"
-            type="mfz.myfzone_sport.myf_zone.model.coach.Coach" />
+            type="com.myfzone_sport.myf_zone.model.coach.Coach" />
 
         <variable
             name="club"
-            type="mfz.myfzone_sport.myf_zone.model.coach.ClubAffiliation" />
+            type="com.myfzone_sport.myf_zone.model.coach.ClubAffiliation" />
     </data>
 
     <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"

@@ -7,7 +7,7 @@
 
         <variable
             name="event"
-            type="mfz.myfzone_sport.myf_zone.model.event.Event" />
+            type="com.myfzone_sport.myf_zone.model.event.Event" />
     </data>
 
     <ScrollView

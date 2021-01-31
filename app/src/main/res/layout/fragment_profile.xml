@@ -6,11 +6,11 @@
 
         <variable
             name="user"
-            type="mfz.myfzone_sport.myf_zone.model.coach.Coach" />
+            type="com.myfzone_sport.myf_zone.model.coach.Coach" />
 
         <variable
             name="club"
-            type="mfz.myfzone_sport.myf_zone.model.coach.ClubAffiliation" />
+            type="com.myfzone_sport.myf_zone.model.coach.ClubAffiliation" />
 
         <variable
             name="count"
@@ -69,14 +69,32 @@
                     android:indeterminateTint="@color/colorPrimary"
                     android:visibility="invisible" />
 
-                <ImageView
-                    android:id="@+id/profileSettings"
-                    android:layout_width="30dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:layout_marginEnd="10dp"
-                    android:contentDescription="@string/settings_button"
-                    android:src="@drawable/ic_settings" />
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:id="@+id/profileAffiliation"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_alignParentStart="true"
+                        android:layout_gravity="start"
+                        android:layout_marginStart="10dp"
+                        android:contentDescription="@string/settings_button"
+                        android:src="@drawable/ic_affiliation"
+                        android:visibility="invisible" />
+
+                    <ImageView
+                        android:id="@+id/profileSettings"
+                        android:layout_width="30dp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_gravity="end"
+                        android:layout_marginEnd="10dp"
+                        android:contentDescription="@string/settings_button"
+                        android:src="@drawable/ic_settings" />
+                </RelativeLayout>
+
 
                 <ImageView
                     android:id="@+id/profileClubImage"

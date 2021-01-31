@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/eventCreationFragment"
-        android:name="mfz.myfzone_sport.myf_zone.fragments.event.event_creation.EventCreationFragment"
+        android:name="com.myfzone_sport.myf_zone.fragments.event.event_creation.EventCreationFragment"
         android:label="@string/new_event"
         tools:layout="@layout/fragment_event_creation" />
 </navigation>

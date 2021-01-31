@@ -12,8 +12,11 @@
     <color name="colorDark">#000</color>
     <color name="colorShimmer">#DDDDDD</color>
     <color name="colorTransparent">#88FFFFFF</color>
+    <color name="colorTransparentDiscreet">#88B9B9B9</color>
     <color name="colorTransparentMessage">#EEEEEE</color>
     <color name="colorCoral">#FF7F50</color>
     <color name="colorSettingStart">#00A0FE</color>
     <color name="colorSettingEnd">#0173F7</color>
+    <color name="colorInfoStart">#FFFF00</color>
+    <color name="colorInfoEnd">#FF8000</color>
 </resources>

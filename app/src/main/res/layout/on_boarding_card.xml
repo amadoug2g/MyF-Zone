@@ -196,26 +196,23 @@
 
 
                     <com.google.android.material.button.MaterialButton
-                        android:id="@+id/login_button"
+                        android:id="@+id/continue_on_boarding"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_below="@id/textView_affiliation_code"
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="8dp"
                         android:layout_marginEnd="16dp"
-                        android:text="@string/become_coach" />
+                        android:enabled="false"
+                        android:text="@string/continue_text" />
 
-                    <TextView
-                        android:id="@+id/onBoardingLaterButton"
-                        style="@style/Widget.MaterialComponents.Button.TextButton"
-                        android:layout_width="match_parent"
+                    <androidx.appcompat.widget.AppCompatCheckBox
+                        android:id="@+id/checkbox_on_boarding"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_below="@id/login_button"
-                        android:layout_marginStart="64dp"
-                        android:layout_marginTop="-8dp"
-                        android:layout_marginEnd="64dp"
-                        android:text="@string/laterTextButton"
-                        android:textColor="@color/colorDiscreet" />
+                        android:layout_below="@id/continue_on_boarding"
+                        android:layout_centerHorizontal="true"
+                        android:text="@string/understood_text" />
 
                 </RelativeLayout>
 

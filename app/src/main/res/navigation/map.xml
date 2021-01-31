@@ -23,7 +23,7 @@
 
     <fragment
         android:id="@+id/mapsFragment"
-        android:name="mfz.myfzone_sport.myf_zone.fragments.maps.MapsFragment"
+        android:name="com.myfzone_sport.myf_zone.fragments.maps.MapsFragment"
         android:label="@string/title_activity_maps"
         tools:layout="@layout/fragment_maps">
         <action

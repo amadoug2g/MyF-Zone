@@ -6,6 +6,6 @@
 
     <fragment
         android:id="@+id/settingsFragment"
-        android:name="mfz.myfzone_sport.myf_zone.fragments.settings.SettingsFragment"
+        android:name="com.myfzone_sport.myf_zone.fragments.settings.SettingsFragment"
         android:label="@string/settings_label" />
 </navigation>

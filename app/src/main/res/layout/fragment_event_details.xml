@@ -10,11 +10,11 @@
 
         <variable
             name="event"
-            type="mfz.myfzone_sport.myf_zone.model.event.Event" />
+            type="com.myfzone_sport.myf_zone.model.event.Event" />
 
         <variable
             name="owner"
-            type="mfz.myfzone_sport.myf_zone.model.event.EventOwner" />
+            type="com.myfzone_sport.myf_zone.model.event.EventOwner" />
     </data>
 
     <ScrollView
@@ -60,6 +60,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:visibility="gone" />
+
+
+                <include
+                    android:id="@+id/user_info_card_status"
+                    layout="@layout/card_user_status_info" />
 
                 <include
                     android:id="@+id/event_detail_cardview_layout"

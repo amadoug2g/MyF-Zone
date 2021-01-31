@@ -13,7 +13,7 @@
 
     <fragment
         android:id="@+id/loginFragment"
-        android:name="mfz.myfzone_sport.myf_zone.fragments.user_sign.login.LoginFragment"
+        android:name="com.myfzone_sport.myf_zone.fragments.user_sign.login.LoginFragment"
         android:label="@string/login_coach">
         <action
             android:id="@+id/loginToSignUp"
@@ -27,7 +27,7 @@
     </fragment>
     <fragment
         android:id="@+id/signUpFragment"
-        android:name="mfz.myfzone_sport.myf_zone.fragments.user_sign.sign_up.SignUpFragment"
+        android:name="com.myfzone_sport.myf_zone.fragments.user_sign.sign_up.SignUpFragment"
         android:label="@string/become_coach">
         <action
             android:id="@+id/signUpToAffiliationRequest"

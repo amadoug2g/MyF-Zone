@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/eventDetailsFragment"
-        android:name="mfz.myfzone_sport.myf_zone.fragments.event.event_details.EventDetailsFragment"
+        android:name="com.myfzone_sport.myf_zone.fragments.event.event_details.EventDetailsFragment"
         android:label=""
         tools:layout="@layout/fragment_event_details">
         <action
@@ -16,10 +16,18 @@
         <action
             android:id="@+id/eventDetailsToDiscussion"
             app:destination="@id/discussion" />
+        <action
+            android:id="@+id/eventDetailsToSignUp"
+            app:destination="@id/login" />
+        <action
+            android:id="@+id/eventDetailsToAffiliationRequest"
+            app:destination="@id/affiliation_request" />
     </fragment>
     <fragment
         android:id="@+id/eventEditFragment"
-        android:name="mfz.myfzone_sport.myf_zone.fragments.event.event_edit.EventEditFragment"
+        android:name="com.myfzone_sport.myf_zone.fragments.event.event_edit.EventEditFragment"
         android:label="@string/edit_txt" />
     <include app:graph="@navigation/discussion" />
+    <include app:graph="@navigation/affiliation_request" />
+    <include app:graph="@navigation/login" />
 </navigation>

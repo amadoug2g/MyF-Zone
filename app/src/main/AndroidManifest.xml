@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="mfz.myfzone_sport.myf_zone">
+    package="com.myfzone_sport.myf_zone">
 
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
@@ -40,7 +40,7 @@
             android:resource="@color/colorAccent" />
 
         <activity
-            android:name="mfz.myfzone_sport.myf_zone.screens.MainScreen"
+            android:name="com.myfzone_sport.myf_zone.screens.MainScreen"
             android:configChanges="orientation|keyboardHidden"
             android:screenOrientation="portrait">
             <intent-filter>
@@ -51,7 +51,7 @@
         </activity>
 
         <service
-            android:name=".model.chat.MessagingService"
+            android:name="com.myfzone_sport.myf_zone.model.chat.MessagingService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />

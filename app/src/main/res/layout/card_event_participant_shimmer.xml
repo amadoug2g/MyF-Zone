@@ -5,7 +5,7 @@
 
         <variable
             name="participant"
-            type="mfz.myfzone_sport.myf_zone.model.event.EventParticipant" />
+            type="com.myfzone_sport.myf_zone.model.event.EventParticipant" />
     </data>
 
 

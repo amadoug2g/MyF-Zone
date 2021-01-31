@@ -28,7 +28,7 @@
 
     <fragment
         android:id="@+id/affiliationRequestFragment"
-        android:name="mfz.myfzone_sport.myf_zone.fragments.affiliation.affiliation_request.AffiliationRequestFragment"
+        android:name="com.myfzone_sport.myf_zone.fragments.affiliation.affiliation_request.AffiliationRequestFragment"
         android:label="@string/affiliation_text"
         tools:layout="@layout/fragment_affiliation_request">
         <action
@@ -43,7 +43,7 @@
     </fragment>
     <fragment
         android:id="@+id/affiliationSuccessFragment"
-        android:name="mfz.myfzone_sport.myf_zone.fragments.affiliation.affiliation_success.AffiliationSuccessFragment"
+        android:name="com.myfzone_sport.myf_zone.fragments.affiliation.affiliation_success.AffiliationSuccessFragment"
         android:label="@string/affiliation_text"
         tools:layout="@layout/fragment_affiliation_success" />
     <action

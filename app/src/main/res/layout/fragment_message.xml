@@ -8,7 +8,6 @@
         android:orientation="vertical"
         tools:context=".fragments.message.MessageFragment">
 
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/message_user_list"
             android:layout_width="wrap_content"
@@ -17,7 +16,6 @@
             android:layout_marginTop="70dp"
             android:layout_marginEnd="4dp"
             android:layout_marginBottom="4dp" />
-
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/message_empty_list"
@@ -56,7 +54,6 @@
 
         </com.google.android.material.card.MaterialCardView>
 
-
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/message_chat_list_not_signed_in"
             android:layout_width="match_parent"
@@ -65,8 +62,8 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="8dp"
-            android:padding="8dp"
             android:visibility="gone"
+            android:padding="8dp"
             app:cardCornerRadius="10dp"
             app:cardElevation="4dp">
 
@@ -80,19 +77,20 @@
                 android:orientation="vertical">
 
                 <TextView
-                    style="@style/MaterialAlertDialog.MaterialComponents.Title.Text"
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_weight="1"
-                    android:text="You must be signed in and affiliated to chat"
+                    android:lines="3"
+                    android:text="@string/no_sign_in_msg"
+                    android:textColor="@android:color/black"
                     android:textAlignment="center"
-                    android:textStyle="bold" />
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:drawableTopCompat="@drawable/ic_account" />
 
             </LinearLayout>
 
         </com.google.android.material.card.MaterialCardView>
-
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/message_chat_list_not_affiliated"
@@ -102,8 +100,8 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="8dp"
-            android:padding="8dp"
             android:visibility="gone"
+            android:padding="8dp"
             app:cardCornerRadius="10dp"
             app:cardElevation="4dp">
 
@@ -117,14 +115,16 @@
                 android:orientation="vertical">
 
                 <TextView
-                    style="@style/MaterialAlertDialog.MaterialComponents.Title.Text"
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_weight="1"
-                    android:text="You must be affiliated to chat"
+                    android:lines="2"
+                    android:text="@string/no_affiliation_msg"
+                    android:textColor="@android:color/black"
                     android:textAlignment="center"
-                    android:textStyle="bold" />
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:drawableTopCompat="@drawable/ic_account" />
 
             </LinearLayout>
 

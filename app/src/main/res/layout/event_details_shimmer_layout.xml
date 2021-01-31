@@ -9,15 +9,15 @@
 
         <variable
             name="event"
-            type="mfz.myfzone_sport.myf_zone.model.event.Event" />
+            type="com.myfzone_sport.myf_zone.model.event.Event" />
 
         <variable
             name="owner"
-            type="mfz.myfzone_sport.myf_zone.model.event.EventOwner" />
+            type="com.myfzone_sport.myf_zone.model.event.EventOwner" />
 
         <variable
             name="viewModel"
-            type="mfz.myfzone_sport.myf_zone.fragments.event.event_details.EventDetailsViewModel" />
+            type="com.myfzone_sport.myf_zone.fragments.event.event_details.EventDetailsViewModel" />
     </data>
 
     <ScrollView

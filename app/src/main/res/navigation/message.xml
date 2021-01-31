@@ -9,7 +9,7 @@
 
     <fragment
         android:id="@+id/messageFragment"
-        android:name="mfz.myfzone_sport.myf_zone.fragments.message.MessageFragment"
+        android:name="com.myfzone_sport.myf_zone.fragments.message.MessageFragment"
         android:label=""
         tools:layout="@layout/fragment_message">
         <action
@@ -30,7 +30,7 @@
     </fragment>
     <fragment
         android:id="@+id/eventCreationFragment"
-        android:name="mfz.myfzone_sport.myf_zone.fragments.event.event_creation.EventCreationFragment"
+        android:name="com.myfzone_sport.myf_zone.fragments.event.event_creation.EventCreationFragment"
         android:label="@string/new_event"
         tools:layout="@layout/fragment_event_creation" />
     <include app:graph="@navigation/profile" />
