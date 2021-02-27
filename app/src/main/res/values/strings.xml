@@ -138,6 +138,7 @@
     <string name="event_list_update">Evènements mis à jour !</string>
     <string name="image_message">Image Message</string>
     <string name="settings_button">Bouton des paramètres</string>
+    <string name="membership_button">Bouton d\'affiliation</string>
     <string name="settings_label">Paramètres</string>
     <string name="os_settings_text">Paramètres système</string>
     <string name="CGU"><a href="https://myf-zone.web.app/cgu.pdf">CGU</a></string>
@@ -156,6 +157,7 @@
     <string name="error_msg">Erreur</string>
     <string name="continue_text">Continuer</string>
     <string name="understood_text">J\'ai compris</string>
+    <string name="versioncode">versionCode</string>
 
     <string-array name="sportList">
         <item>Football</item>

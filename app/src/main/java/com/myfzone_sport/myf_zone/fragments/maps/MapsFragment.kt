@@ -209,9 +209,9 @@ class MapsFragment : Fragment(),
                         viewModel.assignEventList(list)
                         checkEventList(list)
                         binding.viewModel = viewModel
-                        viewModel.placeEvents(viewModel.map.value!!, requireContext(), list)
+//                        viewModel.placeEvents(viewModel.map.value!!, requireContext(), list)
 //                        viewModel.placeEventsCluster(viewModel.map.value!!, requireContext(), list)
-//                        setUpClusters(viewModel.map.value!!)
+                        setUpClusters(viewModel.map.value!!)
                         placeUserClub()
                     }
                     is State.Failed -> {
@@ -289,27 +289,47 @@ class MapsFragment : Fragment(),
         customClusterManager = ClusterManager(requireContext(), map)
         customClusterRenderer = ClusterRenderer(requireContext(), map, customClusterManager)
         customClusterManager.renderer = customClusterRenderer
+//        customClusterRenderer
 
-        map.setOnCameraIdleListener(customClusterManager)
+        map.setOnCameraMoveStartedListener {
+            customClusterManager.markerCollection.markers.forEach { it.alpha = 0.6f }
+            customClusterManager.clusterMarkerCollection.markers.forEach { it.alpha = 0.6f }
+
+            customClusterManager.onCameraIdle()
+            customClusterManager.cluster()
+        }
+
+        map.setOnCameraIdleListener {
+            customClusterManager.markerCollection.markers.forEach { it.alpha = 1.0f }
+            customClusterManager.clusterMarkerCollection.markers.forEach { it.alpha = 1.0f }
+
+            customClusterManager.onCameraIdle()
+            customClusterManager.cluster()
+        }
 
         customClusterManager.setOnClusterItemClickListener { item ->
             viewModel.assignItem(item)
-            map.animateCamera(CameraUpdateFactory.newLatLngZoom(item.position, 14f))
+//            map.animateCamera(CameraUpdateFactory.newLatLngZoom(item.position, 14f))
             item.markerClick()
 
             false
         }
 
         customClusterManager.setOnClusterClickListener { cluster ->
-            val camPosition = map.cameraPosition.zoom + 5.0f
-            Log.i(TAG, "camera position: ${map.cameraPosition.zoom}")
-            Log.i(TAG, "new camera position: $camPosition")
-            map.animateCamera(CameraUpdateFactory.zoomBy(camPosition))
+            val camPosition = map.cameraPosition.zoom + 1.5f
+//            map.animateCamera(CameraUpdateFactory.zoomBy(camPosition))
+            map.animateCamera(CameraUpdateFactory.newLatLngZoom(cluster.position, camPosition))
 
-            false
+            true
         }
 
         addClusters()
+        map.animateCamera(
+            CameraUpdateFactory.newLatLngZoom(
+                map.cameraPosition.target,
+                map.cameraPosition.zoom
+            )
+        )
     }
 
     private fun addClusters() {
@@ -317,11 +337,12 @@ class MapsFragment : Fragment(),
             if (list.isEmpty()) {
                 Log.i(TAG, "list is empty")
             } else {
+//                (viewModel.map.value!!).clear()
                 Log.i(TAG, "list is not empty: $list")
                 list.forEach { event ->
                     addItems(event)
                 }
-                customClusterManager.cluster()
+//                customClusterManager.cluster()
             }
         }
     }

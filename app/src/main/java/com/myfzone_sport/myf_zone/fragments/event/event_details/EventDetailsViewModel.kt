@@ -403,7 +403,6 @@ class EventDetailsViewModel : ViewModel() {
                         Log.d(TAG, "deleteEvent Failed: ${state.message}")
                     }
                 }
-
             }
         }
     }

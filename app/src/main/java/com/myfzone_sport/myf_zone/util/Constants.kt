@@ -14,7 +14,7 @@ object Constants {
     private const val ENV_PROD = "Release"
     private const val ENV_DEMO = "Demo"
 
-    const val ENV = ENV_DEMO
+    const val ENV = ENV_PROD
     const val COACH_PATH = "Env/${ENV}/Coach"
     const val CLUB_PATH = "Env/${ENV}/Club"
     const val EVENT_PATH = "Env/${ENV}/Event"

@@ -41,6 +41,9 @@ import java.util.*
 import kotlin.concurrent.schedule
 
 private const val PREFS_NAME = "onBoarding"
+private const val INFO_MSG_AGENDA = "onBoarding_agenda"
+private const val INFO_MSG_MAP = "onBoarding_map"
+private const val INFO_MSG_CHAT = "onBoarding_chat"
 
 class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListener {
 
@@ -64,7 +67,9 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 //        ManagerAuth.checkUserStatus()
+//        versionCode.text = "1.0"
         setTheme(R.style.AppTheme)
+//        versionCode.visibility = View.GONE
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main_screen)
 
         Log.d(TAG, "onCREATE")
@@ -166,6 +171,7 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
     ) {
         when (destination.id) {
             R.id.calendarFragment -> {
+//                checkOnBoardingAgenda()
                 TRACKING.logEvent(Tracking.AGENDA, null)
                 mainNavBarAppearance()
                 binding.bottomBar.hideOnScroll = true
@@ -183,6 +189,7 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
                 }
             }
             R.id.mapsFragment -> {
+                checkOnBoardingMap()
                 TRACKING.logEvent(Tracking.MAP, null)
                 mainNavBarAppearance()
                 binding.bottomBar.hideOnScroll = false
@@ -200,6 +207,7 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
                 }
             }
             R.id.messageFragment -> {
+                checkOnBoardingChat()
                 TRACKING.logEvent(Tracking.CHAT, null)
                 mainNavBarAppearance()
                 binding.bottomBar.hideOnScroll = true
@@ -333,7 +341,6 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
 
     //region onBoarding
     private fun checkOnBoarding() {
-        // Show changelog
         val prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
         val firstStart = prefs.getBoolean("firstStart", true)
 
@@ -342,6 +349,40 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
         } else {
             binding.mainLayout.visibility = View.VISIBLE
             binding.onBoardingCardLayout.visibility = View.GONE
+        }
+    }
+
+    private fun checkOnBoardingAgenda() {
+        val prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+        val firstStart = prefs.getBoolean("firstStart", true)
+
+        val prefsAgenda = getSharedPreferences(INFO_MSG_AGENDA, MODE_PRIVATE)
+        val firstStartAgenda = prefsAgenda.getBoolean("firstStartAgenda", true)
+
+//        if (firstStart) {
+//            Log.d(TAG, "firstStart = $firstStart")
+        if (firstStartAgenda) {
+            Log.d(TAG, "firstStartAgenda = $firstStartAgenda")
+            infoButton(R.id.calendarFragment)
+        }
+//        }
+    }
+
+    private fun checkOnBoardingMap() {
+        val prefs = getSharedPreferences(INFO_MSG_MAP, MODE_PRIVATE)
+        val firstStart = prefs.getBoolean("firstStartMap", true)
+
+        if (firstStart) {
+            infoButton(R.id.mapsFragment)
+        }
+    }
+
+    private fun checkOnBoardingChat() {
+        val prefs = getSharedPreferences(INFO_MSG_CHAT, MODE_PRIVATE)
+        val firstStart = prefs.getBoolean("firstStartChat", true)
+
+        if (firstStart) {
+            infoButton(R.id.messageFragment)
         }
     }
 
@@ -515,18 +556,33 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
         binding.mainLayout.isEnabled = false
         when (destinationId) {
             R.id.calendarFragment -> {
+                val prefs = getSharedPreferences(INFO_MSG_AGENDA, MODE_PRIVATE)
+                val editor = prefs.edit()
+                editor.putBoolean("firstStartAgenda", false)
+                editor.apply()
+
                 binding.infoWindowCardLayout.visibility = View.VISIBLE
                 binding.infoWindowCard.textViewIntroAgenda.visibility = View.VISIBLE
                 binding.infoWindowCard.textViewIntroMap.visibility = View.GONE
                 binding.infoWindowCard.textViewIntroChat.visibility = View.GONE
             }
             R.id.mapsFragment -> {
+                val prefs = getSharedPreferences(INFO_MSG_MAP, MODE_PRIVATE)
+                val editor = prefs.edit()
+                editor.putBoolean("firstStartMap", false)
+                editor.apply()
+
                 binding.infoWindowCardLayout.visibility = View.VISIBLE
                 binding.infoWindowCard.textViewIntroMap.visibility = View.VISIBLE
                 binding.infoWindowCard.textViewIntroAgenda.visibility = View.GONE
                 binding.infoWindowCard.textViewIntroChat.visibility = View.GONE
             }
             R.id.messageFragment -> {
+                val prefs = getSharedPreferences(INFO_MSG_CHAT, MODE_PRIVATE)
+                val editor = prefs.edit()
+                editor.putBoolean("firstStartChat", false)
+                editor.apply()
+
                 binding.infoWindowCardLayout.visibility = View.VISIBLE
                 binding.infoWindowCard.textViewIntroAgenda.visibility = View.GONE
                 binding.infoWindowCard.textViewIntroMap.visibility = View.GONE

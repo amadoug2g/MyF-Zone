@@ -62,7 +62,6 @@
                 android:contentDescription="@string/account_button_desc"
                 android:src="@drawable/ic_info" />
 
-
             <com.google.android.material.bottomappbar.BottomAppBar
                 android:id="@+id/bottomBar"
                 android:layout_width="match_parent"

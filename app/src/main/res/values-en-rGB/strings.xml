@@ -131,24 +131,26 @@
     <string name="event_list_update">Events updated!</string>
     <string name="image_message">Image Message</string>
     <string name="settings_button">settings button</string>
+    <string name="membership_button">membership button</string>
     <string name="settings_label">Settings</string>
     <string name="os_settings_text">OS Settings</string>
     <string name="CGU"><a href="https://myf-zone.web.app/cgu.pdf">CGU</a></string>
     <string name="about_us">About Us</string>
     <string name="app_review">App Review</string>
     <string name="privacy_policy"><a href="https://myf-zone.web.app/policy.pdf">Privacy Policy</a></string>
-    <string name="onBoarding_intro">L\'application My F-Zone met\nen relation les éducateurs de foot afin de :</string>
-    <string name="onBoarding_create_event">Créer un évènement de type :</string>
-    <string name="onBoarding_calendar">Retrouver les détails de ces 3 types d\'évènements dans votre agenda</string>
-    <string name="onBoarding_map">Participer à des évènements à proximité de votre club depuis la Carte</string>
-    <string name="onBoarding_chat">Discuter avec d\'autres éducateurs à partir de la messagerie</string>
-    <string name="onBoarding_affiliation_code">À l\'aide du code d\'affiliation de ton club, inscris-toi et rejoins la communauté</string>
+    <string name="onBoarding_intro">My F-Zone connects Football coaches in order to:</string>
+    <string name="onBoarding_create_event">Create an event such as:</string>
+    <string name="onBoarding_calendar">Find the details of these 3 types of events in your Calendar</string>
+    <string name="onBoarding_map">Participate in events near your club from the Map</string>
+    <string name="onBoarding_chat">Chat with other coaches using the messaging system</string>
+    <string name="onBoarding_affiliation_code">Using your club\'s membership code, register and join the community</string>
     <string name="app_logo_content_description">App Logo</string>
     <string name="send_button_description">Send Button</string>
     <string name="error_fetch_club">\"Error while fetching events: \"</string>
     <string name="error_msg">Error</string>
     <string name="continue_text">Continue</string>
     <string name="understood_text">I understand</string>
+    <string name="versioncode">versionCode</string>
 
 
     <!--    <string-array name="typeList">-->

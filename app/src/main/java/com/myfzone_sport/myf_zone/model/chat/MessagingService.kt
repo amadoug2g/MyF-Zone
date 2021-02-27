@@ -1,9 +1,16 @@
 package com.myfzone_sport.myf_zone.model.chat
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.Context
 import android.content.Intent
+import android.media.RingtoneManager
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import androidx.core.app.NotificationCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
@@ -14,11 +21,13 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import com.myfzone_sport.myf_zone.R
 import com.myfzone_sport.myf_zone.fragments.message.MessageService
 import com.myfzone_sport.myf_zone.model.coach.Coach
 import com.myfzone_sport.myf_zone.model.event.Event
 import com.myfzone_sport.myf_zone.model.event.EventOwner
 import com.myfzone_sport.myf_zone.model.event.EventParticipant
+import com.myfzone_sport.myf_zone.screens.MainScreen
 import com.myfzone_sport.myf_zone.util.Constants
 import com.myfzone_sport.myf_zone.util.Notification.Companion.notificationAcceptParticipationMessage
 import com.myfzone_sport.myf_zone.util.Notification.Companion.notificationCancelParticipationMessage
@@ -32,6 +41,7 @@ import com.myfzone_sport.myf_zone.util.Notification.Companion.notificationEventT
 import com.myfzone_sport.myf_zone.util.Notification.Companion.notificationModifyParticipationMessage
 import com.myfzone_sport.myf_zone.util.Notification.Companion.notificationRefuseParticipationMessage
 
+private const val CHANNEL_ID = "data"
 
 /**
  * Created by Amadou on 20/12/2020
@@ -70,6 +80,7 @@ class MessagingService : FirebaseMessagingService() {
 
             remoteMessage.notification?.let {
                 Log.d(TAG, "Message Notification Body: ${it.body}")
+//                sendNotification(remoteMessage)
             }
 
             handleMessage(remoteMessage)
@@ -219,6 +230,7 @@ class MessagingService : FirebaseMessagingService() {
     private fun handleMessage(remoteMessage: RemoteMessage) {
         val handler = Handler(Looper.getMainLooper())
 
+
         handler.post {
             remoteMessage.notification?.let {
                 val intent = Intent("MyData")
@@ -227,5 +239,41 @@ class MessagingService : FirebaseMessagingService() {
                 broadcaster?.sendBroadcast(intent)
             }
         }
+    }
+
+    private fun sendNotification(remoteMessage: RemoteMessage) {
+        handleMessage(remoteMessage)
+
+        val intent = Intent(this, MainScreen::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT)
+        val pendingIntent = PendingIntent.getActivity(
+            this, 0 /* Request code */, intent,
+            PendingIntent.FLAG_ONE_SHOT
+        )
+
+        val channelId = CHANNEL_ID
+        val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+        val notificationBuilder = NotificationCompat.Builder(this, channelId)
+            .setSmallIcon(R.drawable.ic_logo)
+            .setContentTitle(remoteMessage.notification?.title ?: "Title")
+            .setContentText(remoteMessage.notification?.body ?: "Body")
+            .setAutoCancel(true)
+            .setSound(defaultSoundUri)
+            .setContentIntent(pendingIntent)
+
+        val notificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        // Since android Oreo notification channel is needed.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                channelId,
+                "Channel human readable title",
+                NotificationManager.IMPORTANCE_DEFAULT
+            )
+            notificationManager.createNotificationChannel(channel)
+        }
+
+        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build())
     }
 }

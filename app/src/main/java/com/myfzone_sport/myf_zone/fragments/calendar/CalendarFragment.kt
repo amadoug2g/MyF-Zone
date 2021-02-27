@@ -109,7 +109,7 @@ class CalendarFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
                             }
                         }
 
-                        newEventCheck()
+//                        newEventCheck()
                         stopSwipeRefresh()
                     }
                     is State.Failed -> {
@@ -126,7 +126,11 @@ class CalendarFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
         Log.i(TAG, "EventData.event: ${EventData.newEvent}")
         if (EventData.newEvent != null) {
             Log.i(TAG, "EventData.event not null")
-//            binding.parentRecyclerView
+            try {
+                binding.parentRecyclerView.smoothScrollToPosition(viewModel.eventList.value!!.size)
+            } catch (e: Exception) {
+                Log.e(TAG, "Error: ${e.localizedMessage}")
+            }
 //            if (viewModel.eventInList(EventData.event!!.id)) {
 //                Log.i(TAG, "EventData.event list: ${viewModel.eventList.value}")
 //                viewModel.map.value!!.animateCamera(CameraUpdateFactory.newLatLngZoom(EventData.event!!.getPosition(), 14f))

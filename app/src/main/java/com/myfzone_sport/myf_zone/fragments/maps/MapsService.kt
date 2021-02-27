@@ -3,15 +3,14 @@ package com.myfzone_sport.myf_zone.fragments.maps
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.util.Log
+import androidx.core.content.ContextCompat
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.ktx.toObject
+import com.google.firebase.storage.FirebaseStorage
 import com.google.maps.android.clustering.ClusterManager
 import com.myfzone_sport.myf_zone.R
 import com.myfzone_sport.myf_zone.model.State
@@ -21,6 +20,7 @@ import com.myfzone_sport.myf_zone.model.coach.Coach
 import com.myfzone_sport.myf_zone.model.event.Event
 import com.myfzone_sport.myf_zone.model.event.EventOwner
 import com.myfzone_sport.myf_zone.model.event.EventParticipant
+import com.myfzone_sport.myf_zone.model.maps.BitmapHelper
 import com.myfzone_sport.myf_zone.model.maps.MapClusterItem
 import com.myfzone_sport.myf_zone.util.Constants.CLUB_PATH
 import com.myfzone_sport.myf_zone.util.Constants.COACH_PATH
@@ -42,6 +42,7 @@ import java.util.*
 
 object MapsService {
     private val TAG = this::class.java.simpleName
+    private val storageInstance: FirebaseStorage by lazy { FirebaseStorage.getInstance() }
     val firebaseAuth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
     private lateinit var clusterManager: ClusterManager<MapClusterItem>
 
@@ -263,18 +264,25 @@ object MapsService {
     }
 
     fun placeUserClub(club: Club, map: GoogleMap, context: Context) {
+        val homeIcon: BitmapDescriptor by lazy {
+            val color = ContextCompat.getColor(context, R.color.colorAccent)
+            BitmapHelper.vectorToBitmap(context, R.drawable.ic_home, color)
+        }
+
         val markerOptions = MarkerOptions().apply {
             position(club.getPosition())
             title(club.acronym)
             snippet(club.name)
-            icon(
-                BitmapDescriptorFactory
-                    .fromBitmap(
-                        BitmapFactory
-                            .decodeResource(context.resources, R.mipmap.ic_home)
-                    )
-            )
+            icon(homeIcon)
+//            icon(
+//                BitmapDescriptorFactory
+//                    .fromBitmap(
+//                        BitmapFactory
+//                            .decodeResource(context.resources, R.mipmap.ic_home)
+//                    )
+//            )
         }
+
         map.addMarker(markerOptions).apply {
             tag = null
             zIndex = -1f
@@ -352,4 +360,7 @@ object MapsService {
             null
         }
     }
+
+    fun getImageReference(path: String) =
+        storageInstance.getReference(path.removePrefix("gs://myf-zone.appspot.com"))
 }

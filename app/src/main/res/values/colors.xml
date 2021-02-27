@@ -6,6 +6,7 @@
     <color name="colorPrimaryDark">#3700B3</color>
     <!--    <color name="colorAccent">#03DAC5</color>-->
     <color name="colorAccent">#0091FE</color>
+    <color name="colorAccentTransparent">#00000000</color>
     <color name="colorDiscreet">#B9B9B9</color>
     <color name="colorGoogle">#C8D2DC</color>
     <color name="colorLight">#FFF</color>
