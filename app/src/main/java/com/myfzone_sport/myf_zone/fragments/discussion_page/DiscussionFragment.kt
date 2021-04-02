@@ -17,15 +17,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.firestore.ListenerRegistration
 import com.myfzone_sport.myf_zone.R
 import com.myfzone_sport.myf_zone.databinding.FragmentDiscussionBinding
-import com.myfzone_sport.myf_zone.model.State
 import com.myfzone_sport.myf_zone.util.Constants.TRACKING
 import com.myfzone_sport.myf_zone.util.Tracking
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.Section
 import com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder
 import com.xwray.groupie.kotlinandroidextensions.Item
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 import org.jetbrains.anko.sdk27.coroutines.textChangedListener
 import org.jetbrains.anko.support.v4.toast
 
@@ -59,8 +56,6 @@ class DiscussionFragment : Fragment() {
         viewModel = ViewModelProvider(this).get(DiscussionViewModel::class.java)
 
         lifecycleScope.launchWhenResumed {
-            viewModel.assignCurrentUser()
-            viewModel.assignCurrentClub()
             viewModel.assignDiscussionUser(coachId!!)
             viewModel.assignOtherClub(coachId!!)
         }
@@ -135,8 +130,6 @@ class DiscussionFragment : Fragment() {
             viewModel.other.observe(viewLifecycleOwner) { other ->
                 viewModel.otherClub.observe(viewLifecycleOwner) { club ->
                     viewModel.getOrCreateChat(
-                        viewModel.coach.value!!,
-                        viewModel.coachClub.value!!,
                         other,
                         club,
                         binding.senderTextBox.text.toString(),
@@ -224,34 +217,32 @@ class DiscussionFragment : Fragment() {
 
     //region Discussion Methods
     private fun setDiscussionAsRead() {
-        viewModel.coach.observe(viewLifecycleOwner) { coach ->
-            viewModel.other.observe(viewLifecycleOwner) { other ->
-                viewModel.setDiscussionRead(coach, other)
-            }
+        viewModel.other.observe(viewLifecycleOwner) { other ->
+            viewModel.setDiscussionRead(other)
         }
     }
 
-    private fun discussionHasMessages() {
-        viewModel.coach.observe(viewLifecycleOwner) { coach ->
-            viewModel.other.observe(viewLifecycleOwner) { other ->
-                lifecycleScope.launch {
-                    viewModel.discussionHasMessages(coach, other).collect { state ->
-                        when (state) {
-                            is State.Loading -> {
-                                Log.i(TAG, "Loading")
-                            }
-                            is State.Success -> {
-                                toast("Deleted")
-                            }
-                            is State.Failed -> {
-                                toast("Deletion failed: ${state.message}")
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
+//    private fun discussionHasMessages() {
+//        viewModel.coach.observe(viewLifecycleOwner) { coach ->
+//            viewModel.other.observe(viewLifecycleOwner) { other ->
+//                lifecycleScope.launch {
+//                    viewModel.discussionHasMessages(coach, other).collect { state ->
+//                        when (state) {
+//                            is State.Loading -> {
+//                                Log.i(TAG, "Loading")
+//                            }
+//                            is State.Success -> {
+//                                toast("Deleted")
+//                            }
+//                            is State.Failed -> {
+//                                toast("Deletion failed: ${state.message}")
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
     //endregion
 
     //region RecyclerView

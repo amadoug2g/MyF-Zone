@@ -92,7 +92,9 @@
     <string name="exit_event_msg">You are about to cancel your participation. Continue?</string>
     <string name="new_event">New event</string>
     <string name="event_title">Title</string>
+    <string name="event_title_help">Titre</string>
     <string name="event_description">Description</string>
+    <string name="event_description_help">Niveau recherché, nombre d\'équipes,…</string>
     <string name="select_range_text">Select range</string>
     <string name="no_participant_msg">There is no participant in this event</string>
     <string name="no_event_msg">You have no event</string>
@@ -102,6 +104,11 @@
     <string name="edit_event">Edit Event</string>
     <string name="delete_event">Delete Event</string>
     <string name="delete_txt">Delete</string>
+    <string name="participation_title">Participation</string>
+    <string name="participation_support_text">Allow this coach to join your event?</string>
+    <string name="participation_neutral">Cancel</string>
+    <string name="participation_decline">Refuse</string>
+    <string name="participation_accept">Accept</string>
     <string name="delete_event_confirmation">You are about to delete this event. Proceed?</string>
     <string name="edit_event_confirmation">You are about to edit this event. Proceed?</string>
     <string name="create_event_confirmation">You are about to create this event. Proceed?</string>

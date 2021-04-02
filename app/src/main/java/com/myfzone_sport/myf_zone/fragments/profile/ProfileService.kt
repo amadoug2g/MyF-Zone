@@ -5,7 +5,6 @@ import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.storage.FirebaseStorage
 import com.myfzone_sport.myf_zone.model.State
 import com.myfzone_sport.myf_zone.model.coach.ClubAffiliation
-import com.myfzone_sport.myf_zone.model.coach.Coach
 import com.myfzone_sport.myf_zone.model.event.Event
 import com.myfzone_sport.myf_zone.model.event.EventOwner
 import com.myfzone_sport.myf_zone.util.Constants.COACH_PATH
@@ -27,35 +26,6 @@ import kotlinx.coroutines.tasks.await
 object ProfileService {
     private val storageInstance: FirebaseStorage by lazy { FirebaseStorage.getInstance() }
     val firebaseAuth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
-
-    fun getCurrentUser() = flow<State<Coach>> {
-        val userId = firebaseAuth.currentUser?.uid
-        val mUserQuery = DB.document(COACH_PATH + "/${userId}")
-
-        emit(State.loading())
-
-        val snapshot = mUserQuery.get().await()
-        val currentUser = snapshot.toObject(Coach::class.java)
-
-        emit(State.success(currentUser!!))
-    }.catch {
-        emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
-    }.flowOn(IO)
-
-    fun getUserClub() = flow<State<ClubAffiliation>> {
-        val userId = firebaseAuth.currentUser?.uid
-        val mClubQuery = DB
-            .collection(COACH_PATH + "/${userId}/ClubAffiliation")
-
-        emit(State.loading())
-
-        val snapshot = mClubQuery.get().await().documents[0]
-        val currentUserClub = snapshot.toObject(ClubAffiliation::class.java)
-
-        emit(State.success(currentUserClub!!))
-    }.catch {
-        emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
-    }.flowOn(IO)
 
     fun getUserEventList() = flow<State<MutableList<Event>>> {
         val userId = firebaseAuth.currentUser?.uid

@@ -68,33 +68,8 @@ class EventDetailsGuestFragment : Fragment() {
                 } catch (e: Exception) {
                     Log.e("$TAG ParticipantHolder", "Image could not load: $e")
                 }
-
-//                viewModel.checkIsUserParticipant(participant)
-//
-//                binding.cancelParticipation.visibility =
-//                    if (viewModel.isUserParticipant.value!!) View.VISIBLE else View.GONE
-//
-//                binding.notificationDotOwner.visibility =
-//                    if (viewModel.isUserParticipant.value!!) View.VISIBLE else View.GONE
-//
-//                binding.cancelParticipation.setOnClickListener {
-//                    cancelParticipation()
-//                }
             }
         }
-
-//        private fun cancelParticipation() {
-//            MaterialAlertDialogBuilder(itemView.context)
-//                .setTitle(itemView.context.getString(R.string.event_exit))
-//                .setMessage(itemView.context.getString(R.string.exit_event_msg))
-//                .setPositiveButton(R.string.confirm_message) { _: DialogInterface, _: Int ->
-//                    TRACKING.logEvent(Tracking.EVENT_DETAILS_COACH_CANCEL_PARTICIPATION, null)
-//                    viewModel.removeParticipant()
-//                    binding.participateButton.visibility = View.VISIBLE
-//                }
-//                .setNegativeButton(R.string.cancel_message) { _: DialogInterface, _: Int ->
-//                }.show()
-//        }
 
         companion object {
             fun from(parent: ViewGroup): ParticipantHolder {
@@ -105,6 +80,7 @@ class EventDetailsGuestFragment : Fragment() {
         }
     }
 
+    //region Override Methods
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         TRACKING.logEvent(Tracking.EVENT_DETAILS, null)
@@ -144,9 +120,9 @@ class EventDetailsGuestFragment : Fragment() {
                 binding.eventDetailEmptyList.visibility =
                     if (itemCount == 0) View.VISIBLE else View.GONE
 
-                val params = binding.eventDetailParticipantList.layoutParams
+                val params = binding.eventDetailGuestParticipantList.layoutParams
                 params.height = 320 * itemCount
-                binding.eventDetailParticipantList.layoutParams = params
+                binding.eventDetailGuestParticipantList.layoutParams = params
             }
         }
     }
@@ -178,7 +154,7 @@ class EventDetailsGuestFragment : Fragment() {
 
         return binding.root
     }
-
+    //endregion
 
     //region Event Details
     private suspend fun assignEvent(savedInstanceState: Bundle?) {
@@ -307,15 +283,15 @@ class EventDetailsGuestFragment : Fragment() {
 
     //region Loading
     private fun showProgressBar() {
-        binding.profileShimmerLayout.startShimmer()
-        binding.profileShimmerLayout.visibility = View.VISIBLE
-        binding.profileLayout.visibility = View.GONE
+        binding.eventDetailGuestShimmerLayout.startShimmer()
+        binding.eventDetailGuestShimmerLayout.visibility = View.VISIBLE
+        binding.eventDetailGuestLayout.visibility = View.GONE
     }
 
     private fun hideProgressBar() {
-        binding.profileShimmerLayout.stopShimmer()
-        binding.profileShimmerLayout.visibility = View.GONE
-        binding.profileLayout.visibility = View.VISIBLE
+        binding.eventDetailGuestShimmerLayout.stopShimmer()
+        binding.eventDetailGuestShimmerLayout.visibility = View.GONE
+        binding.eventDetailGuestLayout.visibility = View.VISIBLE
     }
     //endregion
 
@@ -332,10 +308,11 @@ class EventDetailsGuestFragment : Fragment() {
 
     //region RecyclerView
     private fun setupRecyclerParameters() {
-        binding.eventDetailParticipantList.setHasFixedSize(false)
-        binding.eventDetailParticipantList.layoutManager = LinearLayoutManager(requireContext())
-        binding.eventDetailParticipantList.adapter = adapter
-        binding.eventDetailParticipantList.isNestedScrollingEnabled = false
+        binding.eventDetailGuestParticipantList.setHasFixedSize(false)
+        binding.eventDetailGuestParticipantList.layoutManager =
+            LinearLayoutManager(requireContext())
+        binding.eventDetailGuestParticipantList.adapter = adapter
+        binding.eventDetailGuestParticipantList.isNestedScrollingEnabled = false
     }
     //endregion RecyclerView
 }

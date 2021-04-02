@@ -11,8 +11,5 @@ import androidx.lifecycle.ViewModel
 
 class ProfileViewModel : ViewModel() {
 
-    fun getCurrentUser() = ProfileService.getCurrentUser()
-    fun getCurrentUserClub() = ProfileService.getUserClub()
     fun getCurrentUserEvents() = ProfileService.getUserEventList()
-    fun getEventOwner(eventId: String) = ProfileService.getOwnerFromEvent(eventId)
 }

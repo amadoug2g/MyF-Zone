@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/event_details_owner"
+    app:startDestination="@id/eventDetailsOwnerFragment">
+
+    <fragment
+        android:id="@+id/eventDetailsOwnerFragment"
+        android:name="com.myfzone_sport.myf_zone.fragments.event.event_details.owner.EventDetailsOwnerFragment"
+        android:label=""
+        tools:layout="@layout/fragment_event_details">
+        <action
+            android:id="@+id/eventDetailsToEventEdit"
+            app:destination="@id/eventEditFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/eventEditFragment"
+        android:name="com.myfzone_sport.myf_zone.fragments.event.event_edit.EventEditFragment"
+        android:label="@string/edit_txt" />
+</navigation>

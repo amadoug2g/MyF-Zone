@@ -1,4 +1,4 @@
-package com.myfzone_sport.myf_zone.fragments.event.event_details
+package com.myfzone_sport.myf_zone.fragments.event.event_details.participant
 
 import android.util.Log
 import androidx.core.os.bundleOf
@@ -9,24 +9,22 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.CollectionReference
 import com.myfzone_sport.myf_zone.model.State
-import com.myfzone_sport.myf_zone.model.chat.MessagingService.Companion.eventCancelParticipation
 import com.myfzone_sport.myf_zone.model.event.Event
 import com.myfzone_sport.myf_zone.model.event.EventOwner
 import com.myfzone_sport.myf_zone.model.event.EventParticipant
 import com.myfzone_sport.myf_zone.util.Constants
-import com.myfzone_sport.myf_zone.util.Constants.EVENT_PATH
 import com.myfzone_sport.myf_zone.util.Tracking
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 /**
- * Created by Amadou on 03/12/2020, 16:45
+ * Created by Amadou on 29/03/2021, 16:04
  *
- * Event Details ViewModel class
+ * Event Details Participant ViewModel class
  *
  */
 
-class EventDetailsViewModel : ViewModel() {
+class EventDetailsParticipantViewModel : ViewModel() {
     private val TAG = this::class.java.simpleName
 
     //region variable declaration
@@ -51,10 +49,6 @@ class EventDetailsViewModel : ViewModel() {
     val isUserParticipating: LiveData<Boolean>
         get() = _isUserParticipating
 
-    private val _isUserOwner = MutableLiveData<Boolean>(false)
-    val isUserOwner: LiveData<Boolean>
-        get() = _isUserOwner
-
     //checks if the user is added as a participant to the event
     private val _isUserParticipant = MutableLiveData<Boolean>(false)
     val isUserParticipant: LiveData<Boolean>
@@ -64,22 +58,10 @@ class EventDetailsViewModel : ViewModel() {
     //endregion variable declaration
 
     fun getQuery(eventId: String): CollectionReference {
-        return EventDetailsService.fireStoreInstance
-            .collection(EVENT_PATH)
+        return EventDetailsParticipantService.fireStoreInstance
+            .collection(Constants.EVENT_PATH)
             .document(eventId)
             .collection("Participant")
-    }
-
-    private fun checkUserSignedIn(): Boolean {
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        return (currentUser != null)
-    }
-
-    private fun checkIsUserOwner(): Boolean {
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        val result = owner.value?.coachId == currentUser?.uid
-        _isUserOwner.value = result
-        return result
     }
 
     fun checkIsUserParticipant(participant: EventParticipant): Boolean {
@@ -89,10 +71,11 @@ class EventDetailsViewModel : ViewModel() {
         return result
     }
 
-    private fun getOwnerToken(ownerId: String) = EventDetailsService.getOwnerToken(ownerId)
+    private fun getOwnerToken(ownerId: String) =
+        EventDetailsParticipantService.getOwnerToken(ownerId)
 
     private fun getEventParticipantList(eventId: String) =
-        EventDetailsService.getEventParticipant(eventId)
+        EventDetailsParticipantService.getEventParticipant(eventId)
 
     suspend fun assignOwnerToken(ownerId: String) {
         getOwnerToken(ownerId).collect { state ->
@@ -136,7 +119,7 @@ class EventDetailsViewModel : ViewModel() {
         }
     }
 
-    fun getEvent(eventId: String) = EventDetailsService.getEvent(eventId)
+    fun getEvent(eventId: String) = EventDetailsParticipantService.getEvent(eventId)
 
     suspend fun assignEvent() {
         getEvent(eventId.value!!).collect { state ->
@@ -159,7 +142,8 @@ class EventDetailsViewModel : ViewModel() {
         }
     }
 
-    fun getOwnerFromEvent(eventId: String) = EventDetailsService.getOwnerFromEvent(eventId)
+    fun getOwnerFromEvent(eventId: String) =
+        EventDetailsParticipantService.getOwnerFromEvent(eventId)
 
     suspend fun assignOwner() {
         getOwnerFromEvent(eventId.value!!).collect { state ->
@@ -169,7 +153,6 @@ class EventDetailsViewModel : ViewModel() {
                 }
                 is State.Success -> {
                     _owner.value = state.data
-                    checkIsUserOwner()
                 }
                 is State.Failed -> {
                     val bundleTracking =
@@ -184,7 +167,7 @@ class EventDetailsViewModel : ViewModel() {
     }
 
     private fun userParticipation(eventId: String) =
-        EventDetailsService.checkUserParticipation(eventId)
+        EventDetailsParticipantService.checkUserParticipation(eventId)
 
     suspend fun checkParticipationStatus() {
         userParticipation(eventId.value!!).collect { state ->
@@ -209,29 +192,30 @@ class EventDetailsViewModel : ViewModel() {
 
     fun addParticipant(participant: EventParticipant) {
         viewModelScope.launch {
-            EventDetailsService.addParticipant(eventId.value!!, participant).collect { state ->
-                when (state) {
-                    is State.Loading -> {
+            EventDetailsParticipantService.addParticipant(eventId.value!!, participant)
+                .collect { state ->
+                    when (state) {
+                        is State.Loading -> {
 
-                    }
-                    is State.Success -> {
-                        Log.d(TAG, "addParticipant Success")
-                    }
-                    is State.Failed -> {
-                        val bundleTracking =
-                            bundleOf("EventDetails Error [addParticipant]" to state.message)
-                        Constants.TRACKING.logEvent(Tracking.ALERT_ERROR, bundleTracking)
+                        }
+                        is State.Success -> {
+                            Log.d(TAG, "addParticipant Success")
+                        }
+                        is State.Failed -> {
+                            val bundleTracking =
+                                bundleOf("EventDetails Error [addParticipant]" to state.message)
+                            Constants.TRACKING.logEvent(Tracking.ALERT_ERROR, bundleTracking)
 
-                        Log.d(TAG, "addParticipant Failed: ${state.message}")
+                            Log.d(TAG, "addParticipant Failed: ${state.message}")
+                        }
                     }
                 }
-            }
         }
     }
 
     fun removeParticipant() {
         viewModelScope.launch {
-            EventDetailsService.removeParticipant(eventId.value!!).collect { state ->
+            EventDetailsParticipantService.removeParticipant(eventId.value!!).collect { state ->
                 when (state) {
                     is State.Loading -> {
                     }
@@ -247,82 +231,6 @@ class EventDetailsViewModel : ViewModel() {
                     }
                 }
             }
-        }
-    }
-
-    fun acceptParticipant(participant: EventParticipant) {
-        viewModelScope.launch {
-            EventDetailsService.acceptParticipant(eventId.value!!, participant).collect { state ->
-                when (state) {
-                    is State.Loading -> {
-                    }
-                    is State.Success -> {
-                        Log.d(TAG, "acceptParticipant Success")
-                    }
-                    is State.Failed -> {
-                        val bundleTracking =
-                            bundleOf("EventDetails Error [acceptParticipant]" to state.message)
-                        Constants.TRACKING.logEvent(Tracking.ALERT_ERROR, bundleTracking)
-
-                        Log.d(TAG, "removeParticipant Failed: ${state.message}")
-                    }
-                }
-            }
-        }
-    }
-
-    fun refuseParticipant(participant: EventParticipant) {
-        viewModelScope.launch {
-            EventDetailsService.refuseParticipant(eventId.value!!, participant).collect { state ->
-                when (state) {
-                    is State.Loading -> {
-                    }
-                    is State.Success -> {
-                        Log.d(TAG, "refuseParticipant Success")
-                    }
-                    is State.Failed -> {
-                        val bundleTracking =
-                            bundleOf("EventDetails Error [refuseParticipant]" to state.message)
-                        Constants.TRACKING.logEvent(Tracking.ALERT_ERROR, bundleTracking)
-
-                        Log.d(TAG, "refuseParticipant Failed: ${state.message}")
-                    }
-                }
-            }
-        }
-    }
-
-    fun deleteEvent() {
-        viewModelScope.launch {
-            EventDetailsService.deleteEvent(eventId.value!!).collect { state ->
-                when (state) {
-                    is State.Loading -> {
-                    }
-                    is State.Success -> {
-                        Log.d(TAG, "deleteEvent Success")
-                    }
-                    is State.Failed -> {
-                        val bundleTracking =
-                            bundleOf("EventDetails Error [deleteEvent]" to state.message)
-                        Constants.TRACKING.logEvent(Tracking.ALERT_ERROR, bundleTracking)
-
-                        Log.d(TAG, "deleteEvent Failed: ${state.message}")
-                    }
-                }
-            }
-        }
-    }
-
-    fun notifyParticipants() {
-        if (!participantList.value.isNullOrEmpty() && event.value != null) {
-            notifyList(event.value!!, participantList.value!!)
-        }
-    }
-
-    private fun notifyList(event: Event, list: MutableList<EventParticipant>) {
-        list.forEach { participant ->
-            if (participant.status == "validate")
-                eventCancelParticipation(event, participant)
         }
     }
 }

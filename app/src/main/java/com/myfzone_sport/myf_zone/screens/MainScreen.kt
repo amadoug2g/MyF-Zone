@@ -15,8 +15,6 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.observe
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
@@ -26,6 +24,9 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.myfzone_sport.myf_zone.R
 import com.myfzone_sport.myf_zone.databinding.ActivityMainScreenBinding
+import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth
+import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth.isAffiliated
+import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth.isConnected
 import com.myfzone_sport.myf_zone.model.chat.Chat
 import com.myfzone_sport.myf_zone.setupWithNavController
 import com.myfzone_sport.myf_zone.util.Constants.TRACKING
@@ -35,7 +36,6 @@ import kotlinx.android.synthetic.main.activity_main_screen.view.*
 import kotlinx.android.synthetic.main.card_event_item.*
 import kotlinx.android.synthetic.main.on_boarding_card.view.*
 import kotlinx.android.synthetic.main.on_boarding_choice.view.*
-import kotlinx.coroutines.launch
 import org.jetbrains.anko.toast
 import java.util.*
 import kotlin.concurrent.schedule
@@ -66,7 +66,7 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
     //region Override Methods
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        ManagerAuth.checkUserStatus()
+        ManagerAuth.checkUserStatus()
 //        versionCode.text = "1.0"
         setTheme(R.style.AppTheme)
 //        versionCode.visibility = View.GONE
@@ -81,9 +81,9 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
 
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
 
-        lifecycleScope.launch {
-            viewModel.checkUserAffiliationStatus()
-        }
+//        lifecycleScope.launch {
+//            viewModel.checkUserAffiliationStatus()
+//        }
 
         binding.accountButton.background = null
         binding.infoButton.background = null
@@ -270,23 +270,19 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
         binding.accountButton.visibility = View.VISIBLE
         binding.infoButton.visibility = View.VISIBLE
 
-        viewModel.isUserSignedIn.observe(this) { isUserSignedIn ->
-            if (isUserSignedIn) {
-                viewModel.isUserAffiliated.observe(this) { isUserAffiliated ->
-                    if (isUserAffiliated) {
-                        try {
-                            viewModel.addChatListener {
-                                countMessages(it)
-                            }
-                        } catch (e: Exception) {
-                            val bundleTracking =
-                                bundleOf("MainScreen ${getString(R.string.error_msg)}" to e.localizedMessage)
-                            TRACKING.logEvent(Tracking.ALERT_ERROR, bundleTracking)
-
-                            Log.e(TAG, "Error in eventListener: $e")
-                            toast("Error in eventListener: $e")
-                        }
+        if (isConnected) {
+            if (isAffiliated) {
+                try {
+                    viewModel.addChatListener {
+                        countMessages(it)
                     }
+                } catch (e: Exception) {
+                    val bundleTracking =
+                        bundleOf("MainScreen ${getString(R.string.error_msg)}" to e.localizedMessage)
+                    TRACKING.logEvent(Tracking.ALERT_ERROR, bundleTracking)
+
+                    Log.e(TAG, "Error in eventListener: $e")
+                    toast("Error in eventListener: $e")
                 }
             }
         }
@@ -437,61 +433,39 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
         val bundle = bundleOf("page" to destinationId)
         when (destinationId) {
             R.id.calendarFragment -> {
-//                if (isConnected) {
-//                    if (isAffiliated) {
-//                        navigate(R.id.calendarToEventCreation)
-//                    } else {
-//                        toast(getString(R.string.user_not_affiliated))
-//                        navigate(R.id.calendarToAffiliationRequest, bundle)
-//                    }
-//                } else {
-//                    navigate(R.id.calendarToSignUp)
-//                }
-                viewModel.isUserSignedIn.observe(this) { isUserSignedIn ->
-                    if (isUserSignedIn) {
-                        viewModel.isUserAffiliated.observe(this) { isUserAffiliated ->
-                            if (isUserAffiliated) {
-                                navigate(R.id.calendarToEventCreation)
-                            } else {
-                                toast(getString(R.string.user_not_affiliated))
-                                navigate(R.id.calendarToAffiliationRequest, bundle)
-                            }
-                        }
+                if (isConnected) {
+                    if (isAffiliated) {
+                        navigate(R.id.calendarToEventCreation)
                     } else {
-                        navigate(R.id.calendarToSignUp)
+                        toast(getString(R.string.user_not_affiliated))
+                        navigate(R.id.calendarToAffiliationRequest, bundle)
                     }
+                } else {
+                    navigate(R.id.calendarToSignUp)
                 }
             }
             R.id.mapsFragment -> {
-                viewModel.isUserSignedIn.observe(this) { isUserSignedIn ->
-                    if (isUserSignedIn) {
-                        viewModel.isUserAffiliated.observe(this) { isUserAffiliated ->
-                            if (isUserAffiliated) {
-                                navigate(R.id.mapsToEventCreation)
-                            } else {
-                                toast(getString(R.string.user_not_affiliated))
-                                navigate(R.id.mapsToAffiliationRequest, bundle)
-                            }
-                        }
+                if (isConnected) {
+                    if (isAffiliated) {
+                        navigate(R.id.mapsToEventCreation)
                     } else {
-                        navigate(R.id.mapsToSignUp)
+                        toast(getString(R.string.user_not_affiliated))
+                        navigate(R.id.mapsToAffiliationRequest, bundle)
                     }
+                } else {
+                    navigate(R.id.mapsToSignUp)
                 }
             }
             R.id.messageFragment -> {
-                viewModel.isUserSignedIn.observe(this) { isUserSignedIn ->
-                    if (isUserSignedIn) {
-                        viewModel.isUserAffiliated.observe(this) { isUserAffiliated ->
-                            if (isUserAffiliated) {
-                                navigate(R.id.messageToEventCreation)
-                            } else {
-                                toast(getString(R.string.user_not_affiliated))
-                                navigate(R.id.messageToAffiliationRequest, bundle)
-                            }
-                        }
+                if (isConnected) {
+                    if (isAffiliated) {
+                        navigate(R.id.messageToEventCreation)
                     } else {
-                        navigate(R.id.messageToSignUp)
+                        toast(getString(R.string.user_not_affiliated))
+                        navigate(R.id.messageToAffiliationRequest, bundle)
                     }
+                } else {
+                    navigate(R.id.messageToSignUp)
                 }
             }
         }
@@ -502,51 +476,39 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
         val bundle = bundleOf("page" to destinationId)
         when (destinationId) {
             R.id.calendarFragment -> {
-                viewModel.isUserSignedIn.observe(this) { isUserSignedIn ->
-                    if (isUserSignedIn) {
-                        viewModel.isUserAffiliated.observe(this) { isUserAffiliated ->
-                            if (isUserAffiliated) {
-                                navigate(R.id.calendarToProfile)
-                            } else {
-                                toast(getString(R.string.user_not_affiliated))
-                                navigate(R.id.calendarToAffiliationRequest, bundle)
-                            }
-                        }
+                if (isConnected) {
+                    if (isAffiliated) {
+                        navigate(R.id.calendarToProfile)
                     } else {
-                        navigate(R.id.calendarToSignUp)
+                        toast(getString(R.string.user_not_affiliated))
+                        navigate(R.id.calendarToAffiliationRequest, bundle)
                     }
+                } else {
+                    navigate(R.id.calendarToSignUp)
                 }
             }
             R.id.mapsFragment -> {
-                viewModel.isUserSignedIn.observe(this) { isUserSignedIn ->
-                    if (isUserSignedIn) {
-                        viewModel.isUserAffiliated.observe(this) { isUserAffiliated ->
-                            if (isUserAffiliated) {
-                                navigate(R.id.mapsToProfile)
-                            } else {
-                                toast(getString(R.string.user_not_affiliated))
-                                navigate(R.id.mapsToAffiliationRequest, bundle)
-                            }
-                        }
+                if (isConnected) {
+                    if (isAffiliated) {
+                        navigate(R.id.mapsToProfile)
                     } else {
-                        navigate(R.id.mapsToSignUp)
+                        toast(getString(R.string.user_not_affiliated))
+                        navigate(R.id.mapsToAffiliationRequest, bundle)
                     }
+                } else {
+                    navigate(R.id.mapsToSignUp)
                 }
             }
             R.id.messageFragment -> {
-                viewModel.isUserSignedIn.observe(this) { isUserSignedIn ->
-                    if (isUserSignedIn) {
-                        viewModel.isUserAffiliated.observe(this) { isUserAffiliated ->
-                            if (isUserAffiliated) {
-                                navigate(R.id.messageToProfile)
-                            } else {
-                                toast(getString(R.string.user_not_affiliated))
-                                navigate(R.id.messageToAffiliationRequest, bundle)
-                            }
-                        }
+                if (isConnected) {
+                    if (isAffiliated) {
+                        navigate(R.id.messageToProfile)
                     } else {
-                        navigate(R.id.messageToSignUp)
+                        toast(getString(R.string.user_not_affiliated))
+                        navigate(R.id.messageToAffiliationRequest, bundle)
                     }
+                } else {
+                    navigate(R.id.messageToSignUp)
                 }
             }
         }

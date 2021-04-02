@@ -29,20 +29,6 @@ object MessageService {
     private val storageInstance: FirebaseStorage by lazy { FirebaseStorage.getInstance() }
     val fireStoreInstance: FirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
 
-    fun getCurrentUser() = flow<State<Coach>> {
-        val userId = firebaseAuth.currentUser?.uid
-        val mUserQuery = DB.document(COACH_PATH + "/${userId}")
-
-        emit(State.loading())
-
-        val snapshot = mUserQuery.get().await()
-        val currentUser = snapshot.toObject(Coach::class.java)
-
-        emit(State.success(currentUser!!))
-    }.catch {
-        emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
-    }.flowOn(IO)
-
     private val currentUserDocRef: DocumentReference
         get() = fireStoreInstance
             .document(
@@ -64,21 +50,6 @@ object MessageService {
         val coachChat = snapshot.toObject(Chat::class.java)
 
         emit(State.success(coachChat!!))
-    }.catch {
-        emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
-    }.flowOn(IO)
-
-    fun checkAffiliationStatus() = flow<State<Boolean>> {
-        val userId = firebaseAuth.currentUser?.uid
-        val mAffiliationPath = DB
-            .collection(COACH_PATH + "/${userId}/ClubAffiliation")
-
-        emit(State.loading())
-
-        val snapshot = mAffiliationPath.get().await()
-        val status = snapshot.documents.size > 0
-
-        emit(State.success(status))
     }.catch {
         emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
     }.flowOn(IO)

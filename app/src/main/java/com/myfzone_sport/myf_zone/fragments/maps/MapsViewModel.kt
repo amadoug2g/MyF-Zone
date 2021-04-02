@@ -9,12 +9,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.Marker
-import com.google.firebase.auth.FirebaseAuth
 import com.myfzone_sport.myf_zone.model.State
 import com.myfzone_sport.myf_zone.model.club.Club
-import com.myfzone_sport.myf_zone.model.coach.ClubAffiliation
-import com.myfzone_sport.myf_zone.model.coach.Coach
 import com.myfzone_sport.myf_zone.model.event.Event
+import com.myfzone_sport.myf_zone.model.event.EventOwner
 import com.myfzone_sport.myf_zone.model.maps.MyClusterItem
 import com.myfzone_sport.myf_zone.util.Constants
 import com.myfzone_sport.myf_zone.util.Tracking
@@ -33,14 +31,6 @@ class MapsViewModel : ViewModel() {
     private val TAG = MapsViewModel::class.java.simpleName
 
     //region Variables
-    private val _isUserSignedIn = MutableLiveData<Boolean>(false)
-    val isUserSignedIn: LiveData<Boolean>
-        get() = _isUserSignedIn
-
-    private val _isUserAffiliated = MutableLiveData<Boolean>(false)
-    val isUserAffiliated: LiveData<Boolean>
-        get() = _isUserAffiliated
-
     private val _isMapInitialized = MutableLiveData<Boolean>(false)
     val isMapInitialized: LiveData<Boolean>
         get() = _isMapInitialized
@@ -56,9 +46,9 @@ class MapsViewModel : ViewModel() {
     val event: LiveData<Event>
         get() = _event
 
-    private val _coach = MutableLiveData<Coach>()
-    val coach: LiveData<Coach>
-        get() = _coach
+    private val _owner = MutableLiveData<EventOwner>()
+    val owner: LiveData<EventOwner>
+        get() = _owner
 
     private val _club = MutableLiveData<Club>()
     val club: LiveData<Club>
@@ -72,10 +62,6 @@ class MapsViewModel : ViewModel() {
     val item: LiveData<MyClusterItem>
         get() = _item
 
-    private val _clubAffiliation = MutableLiveData<ClubAffiliation>()
-    private val clubAffiliation: LiveData<ClubAffiliation>
-        get() = _clubAffiliation
-
     private val _eventId = MutableLiveData<String>()
     val eventId: LiveData<String>
         get() = _eventId
@@ -87,15 +73,6 @@ class MapsViewModel : ViewModel() {
     var startDate = MutableLiveData<Long>(Calendar.getInstance().timeInMillis)
     var endDate = MutableLiveData<Long>(Calendar.getInstance().timeInMillis + (604800000))
     //endregion
-
-    init {
-        _isUserSignedIn.value = checkUserSignedIn()
-    }
-
-    private fun checkUserSignedIn(): Boolean {
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        return (currentUser != null)
-    }
 
     fun assignContext(ctx: Context) {
         context.value = ctx
@@ -149,57 +126,11 @@ class MapsViewModel : ViewModel() {
         return false
     }
 
-    private fun getCurrentUser() = MapsService.getCurrentUser()
-
-    suspend fun assignUser() {
-        getCurrentUser().collect { state ->
-            when (state) {
-                is State.Loading -> {
-//                    showProgressBar()
-                }
-                is State.Success -> {
-                    _coach.value = state.data
-                    Log.i(TAG, "assignUser Success")
-                }
-                is State.Failed -> {
-                    val bundleTracking = bundleOf("Map Error [assignUser]" to state.message)
-                    Constants.TRACKING.logEvent(Tracking.ALERT_ERROR, bundleTracking)
-
-                    val message = "assignUser Failed: ${state.message}"
-                    Log.i(TAG, message)
-                }
-            }
-        }
-    }
-
-    private fun getUserAffiliation() = MapsService.getUserClub()
-
-    suspend fun assignClubAffiliation() {
-        getUserAffiliation().collect { state ->
-            when (state) {
-                is State.Loading -> {
-//                    showProgressBar()
-                }
-                is State.Success -> {
-                    _clubAffiliation.value = state.data
-                }
-                is State.Failed -> {
-                    val bundleTracking =
-                        bundleOf("Map Error [assignClubAffiliation]" to state.message)
-                    Constants.TRACKING.logEvent(Tracking.ALERT_ERROR, bundleTracking)
-
-                    val message = "An error occurred [in assignClub]: ${state.message}"
-                    Log.i("EventDetailsViewModel", message)
-                }
-            }
-        }
-    }
-
-    private fun getUserClub(clubAffiliation: ClubAffiliation) =
-        MapsService.getClubById(clubAffiliation)
+    private fun getUserClub() =
+        MapsService.getClubById()
 
     suspend fun assignClub() {
-        getUserClub(clubAffiliation.value!!).collect { state ->
+        getUserClub().collect { state ->
             when (state) {
                 is State.Loading -> {
 //                    showProgressBar()
@@ -218,8 +149,6 @@ class MapsViewModel : ViewModel() {
         }
     }
 
-    private fun affiliationStatus() = MapsService.checkAffiliationStatus()
-
     fun initializeMap(map: GoogleMap) {
         viewModelScope.launch {
             MapsService.initializeMap(map, club.value)
@@ -227,6 +156,14 @@ class MapsViewModel : ViewModel() {
     }
 
     fun getEvents() = MapsService.getEvents(startDate.value!!, endDate.value!!)
+
+    private suspend fun getOwner() = MapsService.getOwnerFromEvent(eventId.value!!)
+
+    fun getOwnerFromEvent() {
+        viewModelScope.launch {
+            _owner.value = getOwner()
+        }
+    }
 
     fun addEventListener(onListen: (MutableList<Event>) -> Unit) =
         MapsService.addEventListener(startDate.value!!, endDate.value!!, onListen)
@@ -298,27 +235,6 @@ class MapsViewModel : ViewModel() {
                         val message = "An error occurred [in assignEvent]: ${state.message}"
                         Log.i(TAG, message)
                     }
-                }
-            }
-        }
-    }
-
-    suspend fun checkUserAffiliationStatus() {
-        affiliationStatus().collect { state ->
-            when (state) {
-                is State.Loading -> {
-//                    showProgressBar()
-                }
-                is State.Success -> {
-//                    hideProgressBar()
-                    _isUserAffiliated.value = state.data
-                }
-                is State.Failed -> {
-                    _isUserAffiliated.value = false
-                    val message =
-                        "An error occurred [in checkUserAffiliationStatus]: ${state.message}"
-                    Log.i("EventDetailsViewModel", message)
-//                    hideProgressBar()
                 }
             }
         }

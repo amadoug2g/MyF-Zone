@@ -5,6 +5,7 @@ import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.SetOptions
+import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth
 import com.myfzone_sport.myf_zone.model.State
 import com.myfzone_sport.myf_zone.model.chat.Chat
 import com.myfzone_sport.myf_zone.model.chat.Message
@@ -31,20 +32,6 @@ import java.util.*
 object DiscussionService {
     private val TAG = this::class.java.simpleName
     val firebaseAuth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
-
-    fun getCurrentUser() = flow<State<Coach>> {
-        val userId = firebaseAuth.currentUser?.uid
-        val mUserQuery = DB.document(COACH_PATH + "/${userId}")
-
-        emit(State.loading())
-
-        val snapshot = mUserQuery.get().await()
-        val currentUser = snapshot.toObject(Coach::class.java)
-
-        emit(State.success(currentUser!!))
-    }.catch {
-        emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
-    }.flowOn(IO)
 
     fun getUserClub(userId: String) = flow<State<ClubAffiliation>> {
         val mClubQuery = DB
@@ -74,38 +61,34 @@ object DiscussionService {
     }.flowOn(IO)
 
     fun getOrCreateChat(
-        coach: Coach,
-        coachClub: ClubAffiliation,
         other: Coach,
         otherClub: ClubAffiliation,
         message: String,
         photo: String
     ) {
         val mUserChatQuery = DB
-            .document(COACH_PATH + "/${coach.id}/Chat/${other.id}")
+            .document(COACH_PATH + "/${ManagerAuth.activeCoach!!.id}/Chat/${other.id}")
 
         mUserChatQuery.get().addOnSuccessListener {
             if (!it.exists()) {
-                createChat(coach, coachClub, other, otherClub)
+                createChat(other, otherClub)
             } else {
                 Log.i("DiscussionService", "[getOrCreateChat] Document already exists")
             }
-            sendChatMessage(coach, coachClub, other, message, photo)
+            sendChatMessage(other, message, photo)
         }
     }
 
     private fun createChat(
-        coach: Coach,
-        coachClub: ClubAffiliation,
         other: Coach,
         otherClub: ClubAffiliation
     ) {
         val time = Calendar.getInstance().time
         val mUserChatQuery = DB
-            .document(COACH_PATH + "/${coach.id}/Chat/${other.id}")
+            .document(COACH_PATH + "/${ManagerAuth.activeCoach!!.id}/Chat/${other.id}")
 
         val mOtherUserChatQuery = DB
-            .document(COACH_PATH + "/${other.id}/Chat/${coach.id}")
+            .document(COACH_PATH + "/${other.id}/Chat/${ManagerAuth.activeCoach!!.id}")
 
         val newUserChat: Chat = Chat().apply {
             coachId = other.id
@@ -119,9 +102,9 @@ object DiscussionService {
         }
 
         val newOtherChat: Chat = Chat().apply {
-            coachId = coach.id
-            fullname = coach.getName()
-            clubLogo = coachClub.clubLogo
+            coachId = ManagerAuth.activeCoach!!.id
+            fullname = ManagerAuth.activeCoach!!.getName()
+            clubLogo = ManagerAuth.activeCoachClub!!.clubLogo
             isTyping = false
             lastMessage = ""
             unread = false
@@ -137,18 +120,16 @@ object DiscussionService {
     }
 
     private fun sendChatMessage(
-        coach: Coach,
-        coachClub: ClubAffiliation,
         other: Coach,
         message: String,
         photo: String
     ) {
         val time = Calendar.getInstance().time
         val mUserChatQuery = DB
-            .document(COACH_PATH + "/${coach.id}/Chat/${other.id}")
+            .document(COACH_PATH + "/${ManagerAuth.activeCoach!!.id}/Chat/${other.id}")
 
         val mOtherUserChatQuery = DB
-            .document(COACH_PATH + "/${other.id}/Chat/${coach.id}")
+            .document(COACH_PATH + "/${other.id}/Chat/${ManagerAuth.activeCoach!!.id}")
 
         val messageId = mUserChatQuery.collection("Message").document().id
 
@@ -174,9 +155,9 @@ object DiscussionService {
 
         val newMessage = Message().apply {
             id = messageId
-            senderId = coach.id
-            senderName = coach.getName()
-            senderClubLogo = coachClub.clubLogo
+            senderId = ManagerAuth.activeCoach!!.id
+            senderName = ManagerAuth.activeCoach!!.getName()
+            senderClubLogo = ManagerAuth.activeCoachClub!!.clubLogo
             text = message
             image = photo
             createdDate = time
@@ -233,11 +214,10 @@ object DiscussionService {
     }
 
     fun setDiscussionRead(
-        coach: Coach,
         other: Coach
     ) {
         val mUserChatQuery = DB
-            .document(COACH_PATH + "/${coach.id}/Chat/${other.id}")
+            .document(COACH_PATH + "/${ManagerAuth.activeCoach!!.id}/Chat/${other.id}")
 
         mUserChatQuery.get().addOnSuccessListener {
             if (it.exists()) {
@@ -255,11 +235,10 @@ object DiscussionService {
     }
 
     fun setDiscussionUnread(
-        coach: Coach,
         other: Coach
     ) {
         val mUserChatQuery = DB
-            .document(COACH_PATH + "/${coach.id}/Chat/${other.id}")
+            .document(COACH_PATH + "/${ManagerAuth.activeCoach!!.id}/Chat/${other.id}")
 
         val updatedUserChat = hashMapOf(
             "unread" to true
@@ -270,17 +249,16 @@ object DiscussionService {
     }
 
     fun discussionHasMessages(
-        coach: Coach,
         other: Coach
     ) = flow<State<Boolean>> {
         val mChatMessagesCollection = DB
-            .collection(COACH_PATH + "/${coach.id}/Chat/${other.id}/Message")
+            .collection(COACH_PATH + "/${ManagerAuth.activeCoach!!.id}/Chat/${other.id}/Message")
 
         val mUserChatQuery = DB
-            .document(COACH_PATH + "/${coach.id}/Chat/${other.id}")
+            .document(COACH_PATH + "/${ManagerAuth.activeCoach!!.id}/Chat/${other.id}")
 
         val mOtherUserChatQuery = DB
-            .document(COACH_PATH + "/${other.id}/Chat/${coach.id}")
+            .document(COACH_PATH + "/${other.id}/Chat/${ManagerAuth.activeCoach!!.id}")
 
         mChatMessagesCollection.get().addOnSuccessListener { snapshot ->
             if (snapshot.documents.size > 0) {
@@ -295,11 +273,10 @@ object DiscussionService {
     }
 
     fun setUserTyping(
-        coach: Coach,
         other: Coach, bool: Boolean
     ) {
         val mUserChatQuery = DB
-            .document(COACH_PATH + "/${coach.id}/Chat/${other.id}")
+            .document(COACH_PATH + "/${ManagerAuth.activeCoach!!.id}/Chat/${other.id}")
 
         mUserChatQuery.get().addOnSuccessListener {
             if (it.exists()) {

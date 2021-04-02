@@ -50,11 +50,13 @@ object ManagerAuth {
     }
 
     private fun getActiveClub() {
-        val mClubQuery = DB.document(COACH_PATH + "/${user?.uid}/ClubAffiliation")
+        val mClubQuery = DB.collection(COACH_PATH + "/${user?.uid}/ClubAffiliation")
 
         mClubQuery.get().addOnSuccessListener {
-            activeCoachClub = it.toObject(ClubAffiliation::class.java)
+            val snapshot = it.documents[0]
+            activeCoachClub = snapshot.toObject(ClubAffiliation::class.java)
         }
+
     }
 
 

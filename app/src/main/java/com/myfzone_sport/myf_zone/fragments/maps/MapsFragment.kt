@@ -26,6 +26,9 @@ import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.maps.android.clustering.ClusterManager
 import com.myfzone_sport.myf_zone.R
 import com.myfzone_sport.myf_zone.databinding.FragmentMapsBinding
+import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth.activeCoach
+import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth.isAffiliated
+import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth.isConnected
 import com.myfzone_sport.myf_zone.model.State
 import com.myfzone_sport.myf_zone.model.event.Event
 import com.myfzone_sport.myf_zone.model.event.EventData
@@ -101,13 +104,10 @@ class MapsFragment : Fragment(),
 
         lifecycleScope.launch {
             try {
-                viewModel.assignUser()
-                viewModel.assignClubAffiliation()
                 viewModel.assignClub()
             } catch (e: Exception) {
                 Log.i(TAG, "An error occurred: $e")
             }
-            viewModel.checkUserAffiliationStatus()
         }
     }
 
@@ -150,7 +150,27 @@ class MapsFragment : Fragment(),
                 else -> {
                     TRACKING.logEvent(Tracking.MAP_OPEN_EVENT, null)
                     val bundle = bundleOf("eventId" to cardView_tag.text)
-                    navigate(R.id.mapsToEventDetails, bundle)
+
+                    try {
+                        if (isConnected) {
+                            if (isAffiliated) {
+                                if (viewModel.owner.value?.coachId == activeCoach?.id) {
+                                    navigate(R.id.mapsToEventDetailsOwner, bundle)
+                                } else {
+                                    navigate(R.id.mapsToEventDetailsParticipant, bundle)
+                                }
+                            } else {
+                                navigate(R.id.mapsToEventDetailsGuest, bundle)
+                            }
+                        } else {
+                            navigate(R.id.mapsToEventDetailsGuest, bundle)
+                        }
+                    } catch (e: Exception) {
+                        Log.e(TAG, "ERROR: ${e.localizedMessage}")
+                    }
+
+
+//                    navigate(R.id.mapsToEventDetails, bundle)
                 }
             }
         }
@@ -225,17 +245,13 @@ class MapsFragment : Fragment(),
     }
 
     private fun placeUserClub() {
-        viewModel.isUserSignedIn.observe(viewLifecycleOwner) { isUserSignedIn ->
-            if (isUserSignedIn) {
-                viewModel.isUserAffiliated.observe(viewLifecycleOwner) { isUserAffiliated ->
-                    if (isUserAffiliated) {
-                        viewModel.placeUserClub(
-                            viewModel.club.value!!,
-                            viewModel.map.value!!,
-                            requireContext()
-                        )
-                    }
-                }
+        if (isConnected) {
+            if (isAffiliated) {
+                viewModel.placeUserClub(
+                    viewModel.club.value!!,
+                    viewModel.map.value!!,
+                    requireContext()
+                )
             }
         }
     }
@@ -256,6 +272,8 @@ class MapsFragment : Fragment(),
                 viewModel.assignEventId(this)
                 viewModel.eventId.observe(viewLifecycleOwner) { eventId ->
                     viewModel.assignEvent(eventId)
+                    viewModel.getOwnerFromEvent()
+                    Log.i(TAG, "bEvent izs $eventId")
                     viewModel.event.observe(viewLifecycleOwner) { event ->
                         binding.cardEventDetail.event = event
                         if (!binding.cardEventDetail.cardViewDetail.isVisible) {
@@ -367,6 +385,8 @@ class MapsFragment : Fragment(),
                 viewModel.assignEventId(this)
                 viewModel.eventId.observe(viewLifecycleOwner) { eventId ->
                     viewModel.assignEvent(eventId)
+                    viewModel.getOwnerFromEvent()
+                    Log.i(TAG, "aEvent izs $eventId")
                     viewModel.event.observe(viewLifecycleOwner) { event ->
                         binding.cardEventDetail.event = event
                         if (!binding.cardEventDetail.cardViewDetail.isVisible) {

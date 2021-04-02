@@ -23,7 +23,7 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.myfzone_sport.myf_zone.R
 import com.myfzone_sport.myf_zone.fragments.message.MessageService
-import com.myfzone_sport.myf_zone.model.coach.Coach
+import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth
 import com.myfzone_sport.myf_zone.model.event.Event
 import com.myfzone_sport.myf_zone.model.event.EventOwner
 import com.myfzone_sport.myf_zone.model.event.EventParticipant
@@ -104,11 +104,11 @@ class MessagingService : FirebaseMessagingService() {
             }
         }
 
-        fun eventParticipation(event: Event, coach: Coach, owner: EventOwner): Task<String> {
+        fun eventParticipation(event: Event, owner: EventOwner): Task<String> {
             functions = Firebase.functions
             val type = notificationEventParticipation()
             val title = notificationEventTitle(event)
-            val message = notificationEventParticipationMessage(coach)
+            val message = notificationEventParticipationMessage(ManagerAuth.activeCoach!!)
 
             val data = hashMapOf(
                 "env" to Constants.ENV,
@@ -230,7 +230,6 @@ class MessagingService : FirebaseMessagingService() {
     private fun handleMessage(remoteMessage: RemoteMessage) {
         val handler = Handler(Looper.getMainLooper())
 
-
         handler.post {
             remoteMessage.notification?.let {
                 val intent = Intent("MyData")
@@ -244,36 +243,81 @@ class MessagingService : FirebaseMessagingService() {
     private fun sendNotification(remoteMessage: RemoteMessage) {
         handleMessage(remoteMessage)
 
-        val intent = Intent(this, MainScreen::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT)
-        val pendingIntent = PendingIntent.getActivity(
-            this, 0 /* Request code */, intent,
-            PendingIntent.FLAG_ONE_SHOT
-        )
+        when (remoteMessage.data["type"]) {
+            "chatReceiveMessage" -> {
 
-        val channelId = CHANNEL_ID
-        val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-        val notificationBuilder = NotificationCompat.Builder(this, channelId)
-            .setSmallIcon(R.drawable.ic_logo)
-            .setContentTitle(remoteMessage.notification?.title ?: "Title")
-            .setContentText(remoteMessage.notification?.body ?: "Body")
-            .setAutoCancel(true)
-            .setSound(defaultSoundUri)
-            .setContentIntent(pendingIntent)
+                val intent = Intent(this, MainScreen::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT)
+                val pendingIntent = PendingIntent.getActivity(
+                    this, 0 /* Request code */, intent,
+                    PendingIntent.FLAG_ONE_SHOT
+                )
 
-        val notificationManager =
-            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                val channelId = CHANNEL_ID
+                val defaultSoundUri =
+                    RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+                val notificationBuilder = NotificationCompat.Builder(this, channelId)
+                    .setSmallIcon(R.drawable.ic_logo)
+                    .setContentTitle(remoteMessage.notification?.title ?: "Title")
+                    .setContentText(remoteMessage.notification?.body ?: "Body")
+                    .setAutoCancel(true)
+                    .setSound(defaultSoundUri)
+                    .setContentIntent(pendingIntent)
+//                    .setColor(ContextCompat.getColor(this, R.color.colorAccent))
 
-        // Since android Oreo notification channel is needed.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                channelId,
-                "Channel human readable title",
-                NotificationManager.IMPORTANCE_DEFAULT
-            )
-            notificationManager.createNotificationChannel(channel)
+                val notificationManager =
+                    getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+                // Since android Oreo notification channel is needed.
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    val channel = NotificationChannel(
+                        channelId,
+                        "Notification",
+                        NotificationManager.IMPORTANCE_DEFAULT
+                    )
+                    notificationManager.createNotificationChannel(channel)
+                }
+
+                notificationManager.notify(0 /* ID of notification */, notificationBuilder.build())
+            }
+            "eventModification", "eventAcceptParticipation", "eventParticipation", "eventRefuseParticipation" -> {
+                val intent = Intent(this, MainScreen::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT)
+                val pendingIntent = PendingIntent.getActivity(
+                    this, 0 /* Request code */, intent,
+                    PendingIntent.FLAG_ONE_SHOT
+                )
+
+                val channelId = CHANNEL_ID
+                val defaultSoundUri =
+                    RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+                val notificationBuilder = NotificationCompat.Builder(this, channelId)
+                    .setSmallIcon(R.drawable.ic_logo)
+                    .setContentTitle(remoteMessage.notification?.title ?: "Title")
+                    .setContentText(remoteMessage.notification?.body ?: "Body")
+                    .setAutoCancel(true)
+                    .setSound(defaultSoundUri)
+                    .setContentIntent(pendingIntent)
+//                    .setColor(ContextCompat.getColor(this, R.color.colorAccent))
+
+                val notificationManager =
+                    getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+                // Since android Oreo notification channel is needed.
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    val channel = NotificationChannel(
+                        channelId,
+                        "Notification",
+                        NotificationManager.IMPORTANCE_DEFAULT
+                    )
+                    notificationManager.createNotificationChannel(channel)
+                }
+
+                notificationManager.notify(0 /* ID of notification */, notificationBuilder.build())
+            }
+            else -> {
+
+            }
         }
-
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build())
     }
 }

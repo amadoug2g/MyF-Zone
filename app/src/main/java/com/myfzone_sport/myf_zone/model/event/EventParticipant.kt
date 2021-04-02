@@ -1,5 +1,7 @@
 package com.myfzone_sport.myf_zone.model.event
 
+import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth
+
 data class EventParticipant(
     var clubLogo: String,
     var clubAcronym: String,
@@ -47,5 +49,26 @@ data class EventParticipant(
         }
 
         return result
+    }
+
+    fun confirm(): EventParticipant {
+        return EventParticipant().apply {
+            clubLogo = ManagerAuth.activeCoachClub!!.clubLogo
+            clubAcronym = ManagerAuth.activeCoachClub!!.clubAcronym
+            coachId = ManagerAuth.activeCoach!!.id
+            coachFullname =
+                "${ManagerAuth.activeCoach!!.firstName} ${ManagerAuth.activeCoach!!.lastName}"
+            sportId = ManagerAuth.activeCoachClub!!.sportId
+            sportName = ManagerAuth.activeCoachClub!!.sportName
+            if (!ManagerAuth.activeCoachClub!!.categoryId.isNullOrEmpty()) {
+                categoryId = ManagerAuth.activeCoachClub!!.categoryId
+                categoryName = ManagerAuth.activeCoachClub!!.categoryName
+                if (!ManagerAuth.activeCoachClub!!.subCategoryId.isNullOrEmpty()) {
+                    subCategoryId = ManagerAuth.activeCoachClub!!.subCategoryId
+                    subCategoryName = ManagerAuth.activeCoachClub!!.subCategoryName
+                }
+            }
+            status = "pending"
+        }
     }
 }

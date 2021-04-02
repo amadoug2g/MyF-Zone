@@ -13,17 +13,15 @@ import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.storage.FirebaseStorage
 import com.google.maps.android.clustering.ClusterManager
 import com.myfzone_sport.myf_zone.R
+import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth
 import com.myfzone_sport.myf_zone.model.State
 import com.myfzone_sport.myf_zone.model.club.Club
-import com.myfzone_sport.myf_zone.model.coach.ClubAffiliation
-import com.myfzone_sport.myf_zone.model.coach.Coach
 import com.myfzone_sport.myf_zone.model.event.Event
 import com.myfzone_sport.myf_zone.model.event.EventOwner
 import com.myfzone_sport.myf_zone.model.event.EventParticipant
 import com.myfzone_sport.myf_zone.model.maps.BitmapHelper
 import com.myfzone_sport.myf_zone.model.maps.MapClusterItem
 import com.myfzone_sport.myf_zone.util.Constants.CLUB_PATH
-import com.myfzone_sport.myf_zone.util.Constants.COACH_PATH
 import com.myfzone_sport.myf_zone.util.Constants.DB
 import com.myfzone_sport.myf_zone.util.Constants.EVENT_PATH
 import kotlinx.coroutines.Dispatchers.IO
@@ -46,59 +44,15 @@ object MapsService {
     val firebaseAuth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
     private lateinit var clusterManager: ClusterManager<MapClusterItem>
 
-    fun getCurrentUser() = flow<State<Coach>> {
-        val userId = firebaseAuth.currentUser?.uid
-        val mUserQuery = DB.document(COACH_PATH + "/${userId}")
-
+    fun getClubById() = flow<State<Club>> {
         emit(State.loading())
 
-        val snapshot = mUserQuery.get().await()
-        val currentUser = snapshot.toObject(Coach::class.java)
-
-        emit(State.success(currentUser!!))
-    }.catch {
-        emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
-    }.flowOn(IO)
-
-    fun getUserClub() = flow<State<ClubAffiliation>> {
-        val userId = firebaseAuth.currentUser?.uid
-        val mClubQuery = DB
-            .collection(COACH_PATH + "/${userId}/ClubAffiliation")
-
-        emit(State.loading())
-
-        val snapshot = mClubQuery.get().await().documents[0]
-        val currentUserClub = snapshot.toObject(ClubAffiliation::class.java)
-
-        emit(State.success(currentUserClub!!))
-    }.catch {
-        emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
-    }.flowOn(IO)
-
-    fun getClubById(clubAffiliation: ClubAffiliation) = flow<State<Club>> {
-        emit(State.loading())
-
-        val mClubQuery = DB.document(CLUB_PATH + "/${clubAffiliation.clubId}")
+        val mClubQuery = DB.document(CLUB_PATH + "/${ManagerAuth.activeCoachClub!!.clubId}")
 
         val snapshot = mClubQuery.get().await()
         val club: Club = snapshot.toObject()!!
 
         emit(State.success(club))
-    }.catch {
-        emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
-    }.flowOn(IO)
-
-    fun checkAffiliationStatus() = flow<State<Boolean>> {
-        val userId = firebaseAuth.currentUser?.uid
-        val mAffiliationPath = DB
-            .collection(COACH_PATH + "/${userId}/ClubAffiliation")
-
-        emit(State.loading())
-
-        val snapshot = mAffiliationPath.get().await()
-        val status = snapshot.documents.size > 0
-
-        emit(State.success(status))
     }.catch {
         emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
     }.flowOn(IO)
@@ -230,7 +184,7 @@ object MapsService {
         emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
     }.flowOn(IO)
 
-    private suspend fun getOwnerFromEvent(eventId: String): EventOwner? {
+    suspend fun getOwnerFromEvent(eventId: String): EventOwner? {
         val docRef =
             DB.collection(EVENT_PATH)
                 .document(eventId)

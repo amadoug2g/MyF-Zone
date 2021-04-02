@@ -24,10 +24,11 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.myfzone_sport.myf_zone.R
-import com.myfzone_sport.myf_zone.databinding.CardEventParticipantBinding
+import com.myfzone_sport.myf_zone.databinding.CardEventParticipantForOwnerBinding
 import com.myfzone_sport.myf_zone.databinding.FragmentEventDetailsOwnerBinding
 import com.myfzone_sport.myf_zone.fragments.event.event_details.owner.EventDetailsOwnerService.getImageReference
 import com.myfzone_sport.myf_zone.fragments.event.event_details.owner.EventDetailsOwnerService.getValidParticipantCount
+import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth
 import com.myfzone_sport.myf_zone.glide.GlideApp
 import com.myfzone_sport.myf_zone.model.State
 import com.myfzone_sport.myf_zone.model.chat.MessagingService
@@ -59,7 +60,7 @@ class EventDetailsOwnerFragment : Fragment() {
         private lateinit var viewModel: EventDetailsOwnerViewModel
     }
 
-    class ParticipantHolder(val binding: CardEventParticipantBinding) :
+    class ParticipantHolder(val binding: CardEventParticipantForOwnerBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(participant: EventParticipant) {
@@ -74,7 +75,7 @@ class EventDetailsOwnerFragment : Fragment() {
                             .into(binding.eventDetailParticipantImage)
                     }
                 } catch (e: Exception) {
-                    Log.e("ParticipantHolder", "Image could not load: $e")
+                    Log.e("Holder", "Image could not load: $e")
                 }
 
                 try {
@@ -86,18 +87,22 @@ class EventDetailsOwnerFragment : Fragment() {
                     }
                     binding.notificationDotOwner.setImageResource(dotBg)
                 } catch (e: Exception) {
-                    Log.e("ParticipantHolder", "Notification Dot could not load: $e")
+                    Log.e("Holder", "Notification Dot could not load: $e")
                 }
 
                 binding.notificationDotOwner.visibility = View.VISIBLE
 
+                binding.eventDetailCardViewParticipant.setOnClickListener {
+                    Log.i(TAG, "2CLICKED ITEM $participant")
+                }
             }
         }
 
         companion object {
             fun from(parent: ViewGroup): ParticipantHolder {
                 val layoutInflater = LayoutInflater.from(parent.context)
-                val binding = CardEventParticipantBinding.inflate(layoutInflater, parent, false)
+                val binding =
+                    CardEventParticipantForOwnerBinding.inflate(layoutInflater, parent, false)
                 return ParticipantHolder(binding)
             }
         }
@@ -116,15 +121,6 @@ class EventDetailsOwnerFragment : Fragment() {
 
         viewModel.eventId.value = eventId!!
 
-//        lifecycleScope.launch {
-//            viewModel.assignEvent()
-//            viewModel.assignClub()
-//            viewModel.assignOwner()
-//            viewModel.checkUserAffiliationStatus()
-//            viewModel.checkParticipationStatus()
-//            viewModel.checkIsUserOwner()
-//        }
-
         val recyclerOptions = FirestoreRecyclerOptions.Builder<EventParticipant>()
             .setQuery(viewModel.getQuery(eventId!!), EventParticipant::class.java)
             .setLifecycleOwner(this)
@@ -142,6 +138,61 @@ class EventDetailsOwnerFragment : Fragment() {
                 model: EventParticipant
             ) {
                 holder.bind(model)
+                holder.itemView.setOnClickListener {
+                    Log.i(TAG, "1CLICKED ITEM $position")
+
+
+                    MaterialAlertDialogBuilder(requireContext())
+                        .setTitle(getString(R.string.participation_title))
+                        .setMessage(getString(R.string.participation_support_text))
+                        .setNeutralButton(getString(R.string.participation_neutral)) { _: DialogInterface, _: Int ->
+                            // Respond to neutral button press
+
+                        }
+                        .setNegativeButton(getString(R.string.participation_decline)) { _: DialogInterface, _: Int ->
+                            // Respond to negative button press
+
+                            TRACKING.logEvent(
+                                Tracking.EVENT_DETAILS_OWNER_REFUSE_PARTICIPATION,
+                                null
+                            )
+
+                            viewModel.participantList.observe(
+                                viewLifecycleOwner
+                            ) { list ->
+                                viewModel.event.observe(viewLifecycleOwner) { event ->
+                                    val participant = list[position]
+                                    refuseParticipant(participant)
+                                    MessagingService.eventRefuseParticipation(
+                                        event,
+                                        participant
+                                    )
+                                }
+                            }
+                        }
+                        .setPositiveButton(getString(R.string.participation_accept)) { _: DialogInterface, _: Int ->
+                            // Respond to positive button press
+
+                            TRACKING.logEvent(
+                                Tracking.EVENT_DETAILS_OWNER_ACCEPT_PARTICIPATION,
+                                null
+                            )
+
+                            viewModel.participantList.observe(
+                                viewLifecycleOwner
+                            ) { list ->
+                                viewModel.event.observe(viewLifecycleOwner) { event ->
+                                    val participant = list[position]
+                                    acceptParticipant(participant)
+                                    MessagingService.eventAcceptParticipation(
+                                        event,
+                                        participant
+                                    )
+                                }
+                            }
+                        }
+                        .show()
+                }
             }
 
             override fun onDataChanged() {
@@ -167,6 +218,8 @@ class EventDetailsOwnerFragment : Fragment() {
                     Log.e(TAG, "Error [onDataChanged] participant count: $e")
                 }
             }
+
+
         }
     }
 
@@ -186,12 +239,6 @@ class EventDetailsOwnerFragment : Fragment() {
             assignEvent(savedInstanceState)
 //            viewModel.assignParticipants()
 //            viewModel.checkParticipationStatus()
-        }
-
-        viewModel.owner.observe(viewLifecycleOwner) { owner ->
-            lifecycleScope.launch {
-                viewModel.assignOwnerToken(owner.coachId)
-            }
         }
 
         binding.apply {
@@ -226,7 +273,6 @@ class EventDetailsOwnerFragment : Fragment() {
         return super.onOptionsItemSelected(item)
     }
     //endregion
-
 
     //region Action Bar
     private fun deletionWindow() {
@@ -428,7 +474,60 @@ class EventDetailsOwnerFragment : Fragment() {
                 )
             }
         }
+    }
 
+    fun ownerPermission(position: Int) {
+
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(getString(R.string.participation_title))
+            .setMessage(getString(R.string.participation_support_text))
+            .setNeutralButton(getString(R.string.participation_neutral)) { _: DialogInterface, _: Int ->
+                // Respond to neutral button press
+
+            }
+            .setNegativeButton(getString(R.string.participation_decline)) { _: DialogInterface, _: Int ->
+                // Respond to negative button press
+
+                TRACKING.logEvent(
+                    Tracking.EVENT_DETAILS_OWNER_REFUSE_PARTICIPATION,
+                    null
+                )
+
+                viewModel.participantList.observe(
+                    viewLifecycleOwner
+                ) { list ->
+                    viewModel.event.observe(viewLifecycleOwner) { event ->
+                        val participant = list[position]
+                        refuseParticipant(participant)
+                        MessagingService.eventRefuseParticipation(
+                            event,
+                            participant
+                        )
+                    }
+                }
+            }
+            .setPositiveButton(getString(R.string.participation_accept)) { _: DialogInterface, _: Int ->
+                // Respond to positive button press
+
+                TRACKING.logEvent(
+                    Tracking.EVENT_DETAILS_OWNER_ACCEPT_PARTICIPATION,
+                    null
+                )
+
+                viewModel.participantList.observe(
+                    viewLifecycleOwner
+                ) { list ->
+                    viewModel.event.observe(viewLifecycleOwner) { event ->
+                        val participant = list[position]
+                        acceptParticipant(participant)
+                        MessagingService.eventAcceptParticipation(
+                            event,
+                            participant
+                        )
+                    }
+                }
+            }
+            .show()
     }
 
     private fun acceptParticipant(participant: EventParticipant) {
@@ -438,7 +537,6 @@ class EventDetailsOwnerFragment : Fragment() {
     private fun refuseParticipant(participant: EventParticipant) {
         viewModel.refuseParticipant(participant)
     }
-
     //endregion
 
     //region Navigation
@@ -459,24 +557,23 @@ class EventDetailsOwnerFragment : Fragment() {
     }
 
     private fun userConversation() {
-        viewModel.owner.observe(viewLifecycleOwner) { owner ->
-            val bundle = bundleOf("coachId" to owner.coachId)
-            navigate(R.id.eventDetailsToDiscussion, bundle)
-        }
+        val bundle = bundleOf("coachId" to ManagerAuth.activeCoach!!.id)
+        navigate(R.id.eventDetailsToDiscussion, bundle)
+
     }
     //endregion
 
     //region Loading
     private fun showProgressBar() {
-        binding.profileShimmerLayout.startShimmer()
-        binding.profileShimmerLayout.visibility = View.VISIBLE
-        binding.profileLayout.visibility = View.GONE
+        binding.eventDetailOwnerShimmerLayout.startShimmer()
+        binding.eventDetailOwnerShimmerLayout.visibility = View.VISIBLE
+        binding.eventDetailOwnerLayout.visibility = View.GONE
     }
 
     private fun hideProgressBar() {
-        binding.profileShimmerLayout.stopShimmer()
-        binding.profileShimmerLayout.visibility = View.GONE
-        binding.profileLayout.visibility = View.VISIBLE
+        binding.eventDetailOwnerShimmerLayout.stopShimmer()
+        binding.eventDetailOwnerShimmerLayout.visibility = View.GONE
+        binding.eventDetailOwnerLayout.visibility = View.VISIBLE
     }
     //endregion
 

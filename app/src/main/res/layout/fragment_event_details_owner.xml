@@ -30,7 +30,7 @@
             android:orientation="vertical">
 
             <com.facebook.shimmer.ShimmerFrameLayout
-                android:id="@+id/profile_shimmer_layout"
+                android:id="@+id/event_detail_owner_shimmer_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -42,14 +42,14 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <include layout="@layout/event_details_shimmer_layout" />
+                    <include layout="@layout/event_details_owner_shimmer_layout" />
 
                 </LinearLayout>
 
             </com.facebook.shimmer.ShimmerFrameLayout>
 
             <LinearLayout
-                android:id="@+id/profile_layout"
+                android:id="@+id/event_detail_owner_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">

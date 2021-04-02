@@ -7,8 +7,8 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.storage.FirebaseStorage
+import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth
 import com.myfzone_sport.myf_zone.model.State
-import com.myfzone_sport.myf_zone.model.coach.ClubAffiliation
 import com.myfzone_sport.myf_zone.model.coach.Coach
 import com.myfzone_sport.myf_zone.model.event.Event
 import com.myfzone_sport.myf_zone.model.event.EventOwner
@@ -35,20 +35,6 @@ object EventDetailsService {
     private val firebaseAuth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
     private val storageInstance: FirebaseStorage by lazy { FirebaseStorage.getInstance() }
     val fireStoreInstance: FirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
-
-    fun getCurrentUser() = flow<State<Coach>> {
-        val userId = firebaseAuth.currentUser?.uid
-        val mUserQuery = DB.document(COACH_PATH + "/${userId}")
-
-        emit(State.loading())
-
-        val snapshot = mUserQuery.get().await()
-        val currentUser = snapshot.toObject(Coach::class.java)
-
-        emit(State.success(currentUser!!))
-    }.catch {
-        emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
-    }.flowOn(IO)
 
     fun getOwnerToken(ownerId: String) = flow<State<MutableList<String>>> {
         val mOwnerTokenQuery = DB.document(COACH_PATH + "/${ownerId}")
@@ -80,21 +66,6 @@ object EventDetailsService {
         val event = snapshot.toObject(Event::class.java)
 
         emit(State.success(event!!))
-    }.catch {
-        emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
-    }.flowOn(IO)
-
-    fun getUserClub() = flow<State<ClubAffiliation>> {
-        val userId = firebaseAuth.currentUser?.uid
-        val mClubQuery = DB
-            .collection(COACH_PATH + "/${userId}/ClubAffiliation")
-
-        emit(State.loading())
-
-        val snapshot = mClubQuery.get().await().documents[0]
-        val currentUserClub = snapshot.toObject(ClubAffiliation::class.java)
-
-        emit(State.success(currentUserClub!!))
     }.catch {
         emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
     }.flowOn(IO)
@@ -211,21 +182,6 @@ object EventDetailsService {
         )
     }
 
-    fun checkAffiliationStatus() = flow<State<Boolean>> {
-        val userId = firebaseAuth.currentUser?.uid
-        val mAffiliationPath = DB
-            .collection(COACH_PATH + "/${userId}/ClubAffiliation")
-
-        emit(State.loading())
-
-        val snapshot = mAffiliationPath.get().await()
-        val status = snapshot.documents.size > 0
-
-        emit(State.success(status))
-    }.catch {
-        emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
-    }.flowOn(IO)
-
     fun checkUserParticipation(eventId: String) = flow<State<Boolean>> {
         val userId = firebaseAuth.currentUser?.uid
         val mParticipantListQuery = DB.collection(EVENT_PATH + "/${eventId}/Participant")
@@ -283,7 +239,7 @@ object EventDetailsService {
         }
     }
 
-    fun deleteEvent(eventId: String, club: ClubAffiliation) = flow<State<Boolean>> {
+    fun deleteEvent(eventId: String) = flow<State<Boolean>> {
         val userId = firebaseAuth.currentUser?.uid
 
         emit(State.loading())
@@ -292,7 +248,7 @@ object EventDetailsService {
         val mParticipantListQuery = DB.collection(EVENT_PATH + "/${eventId}/Participant")
         val mOwnerQuery = DB.document(EVENT_PATH + "/${eventId}/Owner/${userId}")
         val mOwnerEventQuery =
-            DB.document(COACH_PATH + "/${userId}/ClubAffiliation/${club.clubId}/CoachEvent/${eventId}")
+            DB.document(COACH_PATH + "/${userId}/ClubAffiliation/${ManagerAuth.activeCoachClub!!.clubId}/CoachEvent/${eventId}")
 
         mParticipantListQuery.get().addOnSuccessListener { querySnapshot ->
             if (querySnapshot.documents.size > 0) {

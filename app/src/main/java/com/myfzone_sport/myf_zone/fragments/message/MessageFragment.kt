@@ -20,14 +20,13 @@ import com.myfzone_sport.myf_zone.R
 import com.myfzone_sport.myf_zone.databinding.CardMessageCoachBinding
 import com.myfzone_sport.myf_zone.databinding.FragmentMessageBinding
 import com.myfzone_sport.myf_zone.fragments.message.MessageService.getImageReference
+import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth.isAffiliated
+import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth.isConnected
 import com.myfzone_sport.myf_zone.glide.GlideApp
-import com.myfzone_sport.myf_zone.model.State
 import com.myfzone_sport.myf_zone.model.chat.Chat
 import com.myfzone_sport.myf_zone.util.Constants.TRACKING
 import com.myfzone_sport.myf_zone.util.Tracking
 import kotlinx.android.synthetic.main.activity_main_screen.*
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 import org.jetbrains.anko.support.v4.toast
 
 class MessageFragment : Fragment() {
@@ -92,11 +91,6 @@ class MessageFragment : Fragment() {
 
         viewModel = ViewModelProvider(this).get(MessageViewModel::class.java)
 
-        lifecycleScope.launch {
-            viewModel.checkUserSignedIn()
-            viewModel.checkUserAffiliationStatus()
-        }
-
         val recyclerOptions = FirestoreRecyclerOptions.Builder<Chat>()
             .setQuery(
                 viewModel.query.value!!.orderBy("updatedDate", Query.Direction.DESCENDING),
@@ -116,31 +110,22 @@ class MessageFragment : Fragment() {
             }
 
             override fun onDataChanged() {
-                viewModel.isUserSignedIn.observe(viewLifecycleOwner) { isUserSignedIn ->
-                    if (isUserSignedIn) {
-                        viewModel.isUserAffiliated.observe(viewLifecycleOwner) { isUserAffiliated ->
-                            if (isUserAffiliated) {
-                                binding.messageEmptyList.visibility =
-                                    if (itemCount == 0) View.VISIBLE else View.GONE
+                if (isConnected) {
+                    if (isAffiliated) {
+                        binding.messageEmptyList.visibility =
+                            if (itemCount == 0) View.VISIBLE else View.GONE
 
-                                val params = binding.messageUserList.layoutParams
-                                params.height = 320 * itemCount
-                                binding.messageUserList.layoutParams = params
-                            } else {
-                                binding.messageChatListNotAffiliated.visibility = View.VISIBLE
-                            }
-                        }
+                        val params = binding.messageUserList.layoutParams
+                        params.height = 320 * itemCount
+                        binding.messageUserList.layoutParams = params
                     } else {
-                        binding.messageChatListNotSignedIn.visibility = View.VISIBLE
+                        binding.messageChatListNotAffiliated.visibility = View.VISIBLE
                     }
+                } else {
+                    binding.messageChatListNotSignedIn.visibility = View.VISIBLE
                 }
+
                 super.onDataChanged()
-                lifecycleScope.launch {
-                    viewModel.checkUserSignedIn()
-                    viewModel.checkUserAffiliationStatus()
-                }
-
-
             }
         }
     }
@@ -155,11 +140,6 @@ class MessageFragment : Fragment() {
             container,
             false
         )
-
-        lifecycleScope.launch {
-            viewModel.checkUserSignedIn()
-            viewModel.checkUserAffiliationStatus()
-        }
 
         binding.apply {
             lifecycleOwner = this@MessageFragment
@@ -180,28 +160,6 @@ class MessageFragment : Fragment() {
         binding.messageUserList.layoutManager = LinearLayoutManager(requireContext())
         binding.messageUserList.adapter = adapter
         binding.messageUserList.isNestedScrollingEnabled = false
-    }
-    //endregion
-
-    //region User Info
-    private suspend fun loadUser() {
-        viewModel.getCurrentUser().collect { state ->
-            when (state) {
-                is State.Loading -> {
-//                    showProgressBar()
-                }
-                is State.Success -> {
-//                    hideProgressBar()
-//                    val user = state.data
-//                    binding.user = user
-                }
-                is State.Failed -> {
-//                    hideProgressBar()
-                    val message = "An error occurred: ${state.message}"
-                    showToast(message)
-                }
-            }
-        }
     }
     //endregion
 

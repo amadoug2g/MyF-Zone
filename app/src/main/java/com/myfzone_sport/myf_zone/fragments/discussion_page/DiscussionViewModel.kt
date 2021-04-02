@@ -6,7 +6,6 @@ import androidx.core.os.bundleOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.myfzone_sport.myf_zone.model.State
 import com.myfzone_sport.myf_zone.model.coach.ClubAffiliation
 import com.myfzone_sport.myf_zone.model.coach.Coach
@@ -14,7 +13,6 @@ import com.myfzone_sport.myf_zone.util.Constants
 import com.myfzone_sport.myf_zone.util.Tracking
 import com.xwray.groupie.kotlinandroidextensions.Item
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 
 /**
  * Created by Amadou on 07/12/2020, 12:03
@@ -47,56 +45,7 @@ class DiscussionViewModel : ViewModel() {
 
     var textMessage = MutableLiveData<String>()
 
-    init {
-        viewModelScope.launch {
-//            assignCurrentUser()
-//            assignCurrentClub()
-        }
-    }
-
-    private fun getCurrentUser() = DiscussionService.getCurrentUser()
-
-    suspend fun assignCurrentUser() {
-        getCurrentUser().collect { state ->
-            when (state) {
-                is State.Loading -> {
-//                    showProgressBar()
-                }
-                is State.Success -> {
-                    _coach.value = state.data
-                }
-                is State.Failed -> {
-                    val bundleTracking = bundleOf("Discussion Error" to state.message)
-                    Constants.TRACKING.logEvent(Tracking.ALERT_ERROR, bundleTracking)
-
-                    val message = "An error occurred: ${state.message}"
-                    Log.i("DiscussionVM [User]", message)
-                }
-            }
-        }
-    }
-
     private fun getClub(userId: String) = DiscussionService.getUserClub(userId)
-
-    suspend fun assignCurrentClub() {
-        val currentUser = DiscussionService.firebaseAuth.currentUser
-        getClub(currentUser!!.uid).collect { state ->
-            when (state) {
-                is State.Loading -> {
-//                    showProgressBar()
-                }
-                is State.Success -> {
-                    _coachClub.value = state.data
-                }
-                is State.Failed -> {
-                    val bundleTracking = bundleOf("Discussion Error" to state.message)
-                    Constants.TRACKING.logEvent(Tracking.ALERT_ERROR, bundleTracking)
-                    val message = "An error occurred: ${state.message}"
-                    Log.i("DiscussionVM [UserClub]", message)
-                }
-            }
-        }
-    }
 
     private fun getDiscussionUser(coachId: String) = DiscussionService.getDiscussionUser(coachId)
 
@@ -141,13 +90,11 @@ class DiscussionViewModel : ViewModel() {
     }
 
     fun getOrCreateChat(
-        coach: Coach,
-        coachClub: ClubAffiliation,
         other: Coach,
         otherClub: ClubAffiliation,
         message: String,
         photo: String
-    ) = DiscussionService.getOrCreateChat(coach, coachClub, other, otherClub, message, photo)
+    ) = DiscussionService.getOrCreateChat(other, otherClub, message, photo)
 
     fun addChatMessageListener(
         otherId: String,
@@ -156,19 +103,16 @@ class DiscussionViewModel : ViewModel() {
     ) = DiscussionService.addChatMessageListener(otherId, context, onListen)
 
     fun setDiscussionRead(
-        coach: Coach,
         other: Coach
-    ) = DiscussionService.setDiscussionRead(coach, other)
+    ) = DiscussionService.setDiscussionRead(other)
 
     fun discussionHasMessages(
-        coach: Coach,
         other: Coach
-    ) = DiscussionService.discussionHasMessages(coach, other)
+    ) = DiscussionService.discussionHasMessages(other)
 
     fun setUserTyping(
-        coach: Coach,
         other: Coach
-    ) = DiscussionService.setUserTyping(coach, other, isUserTyping.value!!)
+    ) = DiscussionService.setUserTyping(other, isUserTyping.value!!)
 
     fun typeStart() {
         isUserTyping.value = true

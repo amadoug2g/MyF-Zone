@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="event"
+            type="com.myfzone_sport.myf_zone.model.event.Event" />
+
+        <variable
+            name="owner"
+            type="com.myfzone_sport.myf_zone.model.event.EventOwner" />
+
+        <variable
+            name="viewModel"
+            type="com.myfzone_sport.myf_zone.fragments.event.event_details.EventDetailsViewModel" />
+    </data>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context=".fragments.event.event_details.EventDetailsFragment">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <ProgressBar
+                android:id="@+id/event_detail_progressBar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                tools:showIn="@layout/fragment_event_details">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:padding="8dp"
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="4dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="8dp"
+                        android:baselineAligned="false">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="4dp"
+                            android:layout_marginEnd="4dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/event_detail_type"
+                                style="@style/MaterialAlertDialog.MaterialComponents.Title.Text"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@color/colorShimmer"
+                                android:text="                          "
+                                android:textAlignment="textStart"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/event_detail_team"
+                                style="@style/MaterialAlertDialog.MaterialComponents.Title.Text"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:background="@color/colorShimmer"
+                                android:text="                          "
+                                android:textAlignment="textStart"
+                                android:textStyle="bold" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/event_detail_date"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="4dp"
+                            android:layout_marginEnd="4dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/event_detail_day"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="end"
+                                android:layout_weight="1"
+                                android:background="@color/colorShimmer"
+                                android:text="                          "
+                                android:textAlignment="textEnd"
+                                android:textSize="16sp"
+                                android:textStyle="normal" />
+
+                            <TextView
+                                android:id="@+id/event_detail_hour"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="end"
+                                android:layout_marginTop="4dp"
+                                android:layout_weight="1"
+                                android:background="@color/colorShimmer"
+                                android:text="                          "
+                                android:textAlignment="textEnd"
+                                android:textSize="16sp"
+                                android:textStyle="normal" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="8dp"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:id="@+id/event_detail_imageView"
+                            android:layout_width="80dp"
+                            android:layout_height="80dp"
+                            android:layout_gravity="center"
+                            android:layout_margin="4dp"
+                            android:background="@color/colorShimmer"
+                            android:contentDescription="@string/event_logo" />
+
+                        <TextView
+                            android:id="@+id/event_detail_title"
+                            style="@style/TextAppearance.AppCompat.Title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="4dp"
+                            android:layout_marginEnd="8dp"
+                            android:background="@color/colorShimmer"
+                            android:text="                          " />
+
+                        <TextView
+                            android:id="@+id/event_detail_description"
+                            style="@style/MaterialAlertDialog.MaterialComponents.Title.Text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginBottom="16dp"
+                            android:background="@color/colorShimmer"
+                            android:inputType="textMultiLine"
+                            android:lines="3"
+                            android:maxLines="4"
+                            android:text="                        \n                                    \n                              \n                          "
+                            android:textAlignment="center" />
+
+                    </LinearLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                tools:showIn="@layout/fragment_event_details">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/event_detail_CardView_address"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:padding="4dp"
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="4dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/event_detail_address"
+                            style="@style/MaterialAlertDialog.MaterialComponents.Title.Text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginBottom="8dp"
+                            android:background="@color/colorShimmer"
+                            android:text="                                                                           "
+                            android:textAlignment="textStart"
+                            android:textStyle="bold" />
+
+                        <com.google.android.gms.maps.MapView
+                            android:layout_width="match_parent"
+                            android:layout_height="200dp"
+                            android:layout_margin="0dp"
+                            android:background="@color/colorShimmer" />
+
+                    </LinearLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:padding="8dp"
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="4dp">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <ImageView
+                            android:id="@+id/event_detail_owner_image"
+                            android:layout_width="70dp"
+                            android:layout_height="70dp"
+                            android:layout_centerVertical="true"
+                            android:layout_margin="8dp"
+                            android:background="@color/colorShimmer"
+                            android:contentDescription="@string/image_club" />
+
+                        <RelativeLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_toEndOf="@+id/event_detail_owner_image">
+
+                            <LinearLayout
+                                android:id="@+id/event_detail_owner_info"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:layout_margin="8dp"
+                                android:orientation="vertical"
+                                android:padding="4dp">
+
+                                <TextView
+                                    android:id="@+id/event_detail_owner_club"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:background="@color/colorShimmer"
+                                    android:text="                                     "
+                                    android:textColor="@android:color/black"
+                                    android:textSize="18sp" />
+
+                                <TextView
+                                    android:id="@+id/event_detail_owner_name"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="8dp"
+                                    android:layout_marginTop="4dp"
+                                    android:background="@color/colorShimmer"
+                                    android:text="                            "
+                                    android:textColor="@android:color/darker_gray"
+                                    android:textSize="16sp" />
+
+                            </LinearLayout>
+
+                            <RelativeLayout
+                                android:layout_width="40dp"
+                                android:layout_height="match_parent"
+                                android:layout_alignParentEnd="true"
+                                android:layout_margin="8dp">
+
+                                <ImageView
+                                    android:id="@+id/owner_message_icon"
+                                    android:layout_width="30dp"
+                                    android:layout_height="30dp"
+                                    android:layout_alignParentBottom="true"
+                                    android:layout_marginStart="4dp"
+                                    android:layout_marginEnd="4dp"
+                                    android:layout_marginBottom="16dp"
+                                    android:background="@color/colorShimmer"
+                                    android:contentDescription="@string/quick_message" />
+
+                            </RelativeLayout>
+
+                        </RelativeLayout>
+
+                    </RelativeLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+            </LinearLayout>
+
+            <include layout="@layout/card_event_participant_shimmer" />
+
+            <include layout="@layout/card_event_participant_shimmer" />
+
+            <include layout="@layout/card_event_participant_shimmer" />
+
+            <include layout="@layout/card_event_participant_shimmer" />
+        </LinearLayout>
+
+    </ScrollView>
+</layout>

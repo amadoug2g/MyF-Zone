@@ -1,7 +1,6 @@
 package com.myfzone_sport.myf_zone.fragments.profile
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,8 +13,7 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.myfzone_sport.myf_zone.R
 import com.myfzone_sport.myf_zone.databinding.FragmentProfileBinding
-import com.myfzone_sport.myf_zone.fragments.profile.ProfileService.getImageReference
-import com.myfzone_sport.myf_zone.glide.GlideApp
+import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth
 import com.myfzone_sport.myf_zone.model.State
 import com.myfzone_sport.myf_zone.model.event.Event
 import com.myfzone_sport.myf_zone.util.Constants.TRACKING
@@ -33,11 +31,6 @@ class ProfileFragment : Fragment() {
     }
 
     //region Override Methods
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        Log.d(TAG, "onCREATE")
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -57,9 +50,10 @@ class ProfileFragment : Fragment() {
             executePendingBindings()
         }
 
+        binding.user = ManagerAuth.activeCoach
+        binding.club = ManagerAuth.activeCoachClub
+
         lifecycleScope.launch {
-            loadUser()
-            loadUserClub()
             loadUserEvents()
         }
 
@@ -87,61 +81,6 @@ class ProfileFragment : Fragment() {
     //endregion
 
     //region User Info
-    private suspend fun loadUser() {
-        viewModel.getCurrentUser().collect { state ->
-            when (state) {
-                is State.Loading -> {
-                    showProgressBar()
-                }
-                is State.Success -> {
-//                    hideProgressBar()
-                    val user = state.data
-                    binding.user = user
-                }
-                is State.Failed -> {
-                    val bundleTracking = bundleOf("Profile Error [loadUser]" to state.message)
-                    TRACKING.logEvent(Tracking.ALERT_ERROR, bundleTracking)
-
-                    hideProgressBar()
-                    val message = "An error occurred [in loadUser]: ${state.message}"
-                    showToast(message)
-                }
-            }
-        }
-    }
-
-    private suspend fun loadUserClub() {
-        viewModel.getCurrentUserClub().collect { state ->
-            when (state) {
-                is State.Loading -> {
-//                    showProgressBar()
-                }
-                is State.Success -> {
-//                    hideProgressBar()
-                    val club = state.data
-                    binding.club = club
-                    Log.d(TAG, "club: ${club.clubLogo}")
-                    binding.profileSubCategory.text =
-                        if (club.subCategoryName.isNullOrEmpty()) "" else " - ${club.subCategoryName}"
-
-                    GlideApp.with(this).apply {
-                        load(getImageReference(club.clubLogo))
-                            .centerCrop()
-                            .into(binding.profileClubImage)
-                    }
-                }
-                is State.Failed -> {
-                    val bundleTracking = bundleOf("Profile Error [loadUserClub]" to state.message)
-                    TRACKING.logEvent(Tracking.ALERT_ERROR, bundleTracking)
-
-                    hideProgressBar()
-                    val message = "An error occurred [in loadUserClub]: ${state.message}"
-                    showToast(message)
-                }
-            }
-        }
-    }
-
     private suspend fun loadUserEvents() {
         viewModel.getCurrentUserEvents().collect { state ->
             when (state) {
@@ -161,27 +100,6 @@ class ProfileFragment : Fragment() {
 
                     hideProgressBar()
                     val message = "An error occurred [in loadUserEvents]: ${state.message}"
-                    showToast(message)
-                }
-            }
-        }
-    }
-
-    private suspend fun loadEventOwner(eventId: String, eventList: MutableList<Event>) {
-        viewModel.getEventOwner(eventId).collect { state ->
-            when (state) {
-                is State.Loading -> {
-                    showProgressBar()
-                }
-                is State.Success -> {
-//                    hideProgressBar()
-                    val eventOwner = state.data
-                    eventList.forEach { event -> event.owner = eventOwner }
-                    Log.i(TAG, "event list is:$eventList")
-                }
-                is State.Failed -> {
-                    hideProgressBar()
-                    val message = "An error occurred [in loadEventOwner]: ${state.message}"
                     showToast(message)
                 }
             }

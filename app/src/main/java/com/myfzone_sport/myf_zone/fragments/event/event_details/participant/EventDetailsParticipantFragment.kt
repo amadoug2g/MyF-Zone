@@ -1,4 +1,4 @@
-package com.myfzone_sport.myf_zone.fragments.event.event_details
+package com.myfzone_sport.myf_zone.fragments.event.event_details.participant
 
 import android.content.DialogInterface
 import android.content.Intent
@@ -25,22 +25,15 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.myfzone_sport.myf_zone.R
 import com.myfzone_sport.myf_zone.databinding.CardEventParticipantBinding
-import com.myfzone_sport.myf_zone.databinding.FragmentEventDetailsBinding
-import com.myfzone_sport.myf_zone.fragments.event.event_details.EventDetailsService.getImageReference
-import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth.isAffiliated
-import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth.isConnected
+import com.myfzone_sport.myf_zone.databinding.FragmentEventDetailsParticipantBinding
+import com.myfzone_sport.myf_zone.fragments.event.event_details.EventDetailsService
 import com.myfzone_sport.myf_zone.glide.GlideApp
 import com.myfzone_sport.myf_zone.model.State
 import com.myfzone_sport.myf_zone.model.chat.MessagingService
-import com.myfzone_sport.myf_zone.model.chat.MessagingService.Companion.eventParticipation
 import com.myfzone_sport.myf_zone.model.event.Event
 import com.myfzone_sport.myf_zone.model.event.EventParticipant
-import com.myfzone_sport.myf_zone.model.event.swipe_handler.ButtonClickListener
-import com.myfzone_sport.myf_zone.model.event.swipe_handler.MyButton
-import com.myfzone_sport.myf_zone.model.event.swipe_handler.SwipeHelper
 import com.myfzone_sport.myf_zone.util.Constants.TRACKING
 import com.myfzone_sport.myf_zone.util.Tracking
-import kotlinx.android.synthetic.main.card_user_status_info.view.*
 import kotlinx.android.synthetic.main.event_detail_cardview_map.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -50,14 +43,14 @@ import java.util.*
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "eventId"
 
-class EventDetailsFragment : Fragment() {
+class EventDetailsParticipantFragment : Fragment() {
     companion object {
         private val TAG = this::class.java.simpleName
         private var eventId: String? = null
         private var adapter: FirestoreRecyclerAdapter<EventParticipant, ParticipantHolder>? = null
 
-        private lateinit var binding: FragmentEventDetailsBinding
-        private lateinit var viewModel: EventDetailsViewModel
+        private lateinit var binding: FragmentEventDetailsParticipantBinding
+        private lateinit var viewModel: EventDetailsParticipantViewModel
     }
 
     class ParticipantHolder(val binding: CardEventParticipantBinding) :
@@ -69,7 +62,7 @@ class EventDetailsFragment : Fragment() {
 
                 try {
                     GlideApp.with(itemView).apply {
-                        load(getImageReference(participant.clubLogo))
+                        load(EventDetailsService.getImageReference(participant.clubLogo))
                             .placeholder(R.drawable.ic_account)
                             .centerCrop()
                             .into(binding.eventDetailParticipantImage)
@@ -91,16 +84,11 @@ class EventDetailsFragment : Fragment() {
                 }
 
                 viewModel.checkIsUserParticipant(participant)
-//                viewModel.checkIsUserOwner()
 
-                if (viewModel.isUserOwner.value!!) {
+                if (viewModel.isUserParticipant.value!!) {
                     binding.notificationDotOwner.visibility = View.VISIBLE
                 } else {
-                    if (viewModel.isUserParticipant.value!!) {
-                        binding.notificationDotOwner.visibility = View.VISIBLE
-                    } else {
-                        binding.notificationDotOwner.visibility = View.GONE
-                    }
+                    binding.notificationDotOwner.visibility = View.GONE
                 }
 
                 binding.cancelParticipation.visibility =
@@ -119,7 +107,8 @@ class EventDetailsFragment : Fragment() {
                 .setMessage(itemView.context.getString(R.string.exit_event_msg))
                 .setPositiveButton(R.string.confirm_message) { _: DialogInterface, _: Int ->
                     viewModel.removeParticipant()
-                    EventDetailsFragment.binding.participateButton.visibility = View.VISIBLE
+                    EventDetailsParticipantFragment.binding.participateButton.visibility =
+                        View.VISIBLE
                 }
                 .setNegativeButton(R.string.cancel_message) { _: DialogInterface, _: Int ->
                 }.show()
@@ -143,7 +132,7 @@ class EventDetailsFragment : Fragment() {
             eventId = it.getString(ARG_PARAM1)
         }
 
-        viewModel = ViewModelProvider(this).get(EventDetailsViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(EventDetailsParticipantViewModel::class.java)
 
         viewModel.eventId.value = eventId!!
 
@@ -151,7 +140,6 @@ class EventDetailsFragment : Fragment() {
             viewModel.assignEvent()
             viewModel.assignOwner()
             viewModel.checkParticipationStatus()
-//            viewModel.checkIsUserOwner()
         }
 
         val recyclerOptions = FirestoreRecyclerOptions.Builder<EventParticipant>()
@@ -205,7 +193,7 @@ class EventDetailsFragment : Fragment() {
     ): View {
         binding = DataBindingUtil.inflate(
             inflater,
-            R.layout.fragment_event_details,
+            R.layout.fragment_event_details_participant,
             container,
             false
         )
@@ -224,18 +212,12 @@ class EventDetailsFragment : Fragment() {
         }
 
         binding.apply {
-            lifecycleOwner = this@EventDetailsFragment
+            lifecycleOwner = this@EventDetailsParticipantFragment
             setupRecyclerParameters()
             executePendingBindings()
         }
 
-        viewModel.isUserOwner.observe(viewLifecycleOwner) { isUserOwner ->
-            ownerAdmin(isUserOwner)
-        }
-
         binding.participateButton.setOnClickListener { participationWindow() }
-        binding.userInfoCardStatus.messageChatListNotAffiliated.setOnClickListener { navigate(R.id.eventDetailsToAffiliationRequest) }
-        binding.userInfoCardStatus.messageChatListNotSignedIn.setOnClickListener { navigate(R.id.eventDetailsToSignUp) }
 
         binding.cardEventOwner.ownerMessageIcon.setOnClickListener {
             TRACKING.logEvent(Tracking.EVENT_DETAILS_OPEN_CHAT, null)
@@ -245,111 +227,14 @@ class EventDetailsFragment : Fragment() {
         return binding.root
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.event_details, menu)
-        super.onCreateOptionsMenu(menu, inflater)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.edit_event -> {
-                TRACKING.logEvent(Tracking.EVENT_MODIFICATION, null)
-                val bundle = bundleOf("eventId" to eventId)
-                navigate(R.id.eventDetailsToEventEdit, bundle)
-            }
-
-            R.id.delete_event -> {
-                deletionWindow()
-            }
-        }
-        return super.onOptionsItemSelected(item)
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
-        if (isConnected) {
-            if (isAffiliated) {
-                viewModel.isUserOwner.observe(viewLifecycleOwner) { isUserOwner ->
-                    if (isUserOwner) {
-                        binding.cardEventOwner.ownerMessageIcon.visibility = View.GONE
-                    } else {
-                        binding.cardEventOwner.ownerMessageIcon.visibility = View.VISIBLE
-                    }
-                }
-            } else {
-                binding.cardEventOwner.ownerMessageIcon.visibility = View.GONE
-            }
-        } else {
-            binding.cardEventOwner.ownerMessageIcon.visibility = View.GONE
-        }
-
-        if (isConnected) {
-            if (isAffiliated) {
-                binding.userInfoCardStatus.messageChatListNotSignedIn.visibility = View.GONE
-                binding.userInfoCardStatus.messageChatListNotAffiliated.visibility =
-                    View.GONE
-            } else {
-                binding.userInfoCardStatus.messageChatListNotAffiliated.visibility =
-                    View.VISIBLE
-            }
-        } else {
-            binding.userInfoCardStatus.messageChatListNotSignedIn.visibility = View.VISIBLE
-        }
-
-        if (isConnected) {
-            if (isAffiliated) {
-                viewModel.isUserOwner.observe(viewLifecycleOwner) { isUserOwner ->
-                    if (isUserOwner) {
-                        binding.participateButton.visibility = View.GONE
-                    } else {
-                        viewModel.isUserParticipating.observe(viewLifecycleOwner) { isUserParticipating ->
-                            if (isUserParticipating) {
-                                binding.participateButton.visibility = View.GONE
-                            } else {
-                                binding.participateButton.visibility = View.VISIBLE
-                            }
-                        }
-                    }
-                }
-            } else {
-                binding.participateButton.visibility = View.GONE
-            }
-        } else {
-            binding.participateButton.visibility = View.GONE
-        }
-    }
-
     override fun onResume() {
         super.onResume()
-        binding.profileShimmerLayout.startShimmer()
+        binding.eventDetailsParticipantShimmerLayout.startShimmer()
     }
 
     override fun onStop() {
         super.onStop()
-        binding.profileShimmerLayout.stopShimmer()
-    }
-    //endregion
-
-    //region Action Bar
-    private fun deletionWindow() {
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle(getString(R.string.delete_event))
-            .setMessage(getString(R.string.delete_event_confirmation))
-            .setIcon(R.drawable.ic_warning)
-            .setPositiveButton(getString(R.string.delete_txt)) { _: DialogInterface, _: Int ->
-                confirmDeletion()
-            }
-            .setNegativeButton(R.string.cancel_message) { _: DialogInterface, _: Int ->
-            }.show()
-    }
-
-    private fun confirmDeletion() {
-        viewModel.deleteEvent()
-        toast(getString(R.string.event_deleted))
-        viewModel.notifyParticipants()
-        requireActivity().onBackPressed()
-        TRACKING.logEvent(Tracking.EVENT_MODIFICATION_CANCELLATION, null)
+        binding.eventDetailsParticipantShimmerLayout.stopShimmer()
     }
     //endregion
 
@@ -395,7 +280,7 @@ class EventDetailsFragment : Fragment() {
                     binding.owner = owner
                     Log.i(TAG, "Owner URL: ${owner.clubLogo}")
                     GlideApp.with(this).apply {
-                        load(getImageReference(owner.clubLogo))
+                        load(EventDetailsService.getImageReference(owner.clubLogo))
                             .centerCrop()
                             .into(binding.cardEventOwner.eventDetailOwnerImage)
                     }
@@ -483,7 +368,7 @@ class EventDetailsFragment : Fragment() {
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
             viewModel.owner.observe(viewLifecycleOwner) { owner ->
-                eventParticipation(event, owner)
+                MessagingService.eventParticipation(event, owner)
             }
         }
     }
@@ -492,92 +377,6 @@ class EventDetailsFragment : Fragment() {
         viewModel.addParticipant(participant)
     }
     //endregion Coach Actions
-
-    //region Owner Permissions
-    private fun ownerAdmin(isUserOwner: Boolean) {
-        if (isUserOwner) {
-            binding.eventDetailCardViewTitle.visibility = View.VISIBLE
-            setHasOptionsMenu(true)
-            val swipe = object :
-                SwipeHelper(
-                    requireActivity(),
-                    binding.eventDetailParticipantList,
-                    250
-                ) {
-                override fun instantiateMyButton(
-                    viewHolder: RecyclerView.ViewHolder,
-                    buffer: MutableList<MyButton>
-                ) {
-                    buffer.add(
-                        MyButton(
-                            requireContext(),
-                            "Accept",
-                            50,
-                            R.drawable.ic_done,
-                            R.color.colorAccent,
-                            object :
-                                ButtonClickListener {
-                                override fun onClick(pos: Int) {
-                                    TRACKING.logEvent(
-                                        Tracking.EVENT_DETAILS_OWNER_ACCEPT_PARTICIPATION,
-                                        null
-                                    )
-                                    viewModel.participantList.observe(viewLifecycleOwner) { list ->
-                                        viewModel.event.observe(viewLifecycleOwner) { event ->
-                                            val participant = list[pos]
-                                            acceptParticipant(participant)
-                                            MessagingService.eventAcceptParticipation(
-                                                event,
-                                                participant
-                                            )
-                                        }
-                                    }
-                                }
-                            })
-                    )
-
-                    buffer.add(
-                        MyButton(requireContext(),
-                            "Refuse",
-                            50,
-                            R.drawable.ic_cancel,
-                            R.color.colorCoral,
-                            object :
-                                ButtonClickListener {
-                                override fun onClick(pos: Int) {
-                                    TRACKING.logEvent(
-                                        Tracking.EVENT_DETAILS_OWNER_REFUSE_PARTICIPATION,
-                                        null
-                                    )
-                                    viewModel.participantList.observe(viewLifecycleOwner) { list ->
-                                        viewModel.event.observe(viewLifecycleOwner) { event ->
-                                            val participant = list[pos]
-                                            refuseParticipant(participant)
-                                            MessagingService.eventRefuseParticipation(
-                                                event,
-                                                participant
-                                            )
-                                        }
-                                    }
-                                }
-                            })
-                    )
-                }
-            }
-        } else {
-            setHasOptionsMenu(false)
-        }
-    }
-
-    private fun acceptParticipant(participant: EventParticipant) {
-        viewModel.acceptParticipant(participant)
-    }
-
-    private fun refuseParticipant(participant: EventParticipant) {
-        viewModel.refuseParticipant(participant)
-    }
-
-    //endregion
 
     //region Navigation
     private fun redirectToMap(position: String) {
@@ -606,15 +405,15 @@ class EventDetailsFragment : Fragment() {
 
     //region Loading
     private fun showProgressBar() {
-        binding.profileShimmerLayout.startShimmer()
-        binding.profileShimmerLayout.visibility = View.VISIBLE
-        binding.profileLayout.visibility = View.GONE
+        binding.eventDetailsParticipantShimmerLayout.startShimmer()
+        binding.eventDetailsParticipantShimmerLayout.visibility = View.VISIBLE
+        binding.eventDetailsParticipantLayout.visibility = View.GONE
     }
 
     private fun hideProgressBar() {
-        binding.profileShimmerLayout.stopShimmer()
-        binding.profileShimmerLayout.visibility = View.GONE
-        binding.profileLayout.visibility = View.VISIBLE
+        binding.eventDetailsParticipantShimmerLayout.stopShimmer()
+        binding.eventDetailsParticipantShimmerLayout.visibility = View.GONE
+        binding.eventDetailsParticipantLayout.visibility = View.VISIBLE
     }
     //endregion
 
