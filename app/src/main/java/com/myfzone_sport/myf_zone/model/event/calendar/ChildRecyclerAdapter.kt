@@ -12,6 +12,9 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.myfzone_sport.myf_zone.R
+import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth
+import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth.isAffiliated
+import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth.isConnected
 import com.myfzone_sport.myf_zone.glide.GlideApp
 import com.myfzone_sport.myf_zone.model.event.EventCalendar
 import com.myfzone_sport.myf_zone.util.Constants.TRACKING
@@ -24,6 +27,7 @@ class ChildRecyclerAdapter(private val items: MutableList<EventCalendar>) :
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         val view = layoutInflater.inflate(R.layout.card_event_profile, parent, false)
+
         return ViewHolder(
             view
         )
@@ -34,9 +38,36 @@ class ChildRecyclerAdapter(private val items: MutableList<EventCalendar>) :
         holder.bind(event)
 
         holder.cardview.setOnClickListener {
+//            val owner = getOwner(event.id)
             TRACKING.logEvent(Tracking.AGENDA_OPEN_EVENT, null)
             val bundle = bundleOf("eventId" to event.id)
-            navigate(R.id.calendarToEventDetail, bundle, holder.itemView)
+//            navigate(R.id.calendarToEventDetail, bundle, holder.itemView)
+
+
+//            val ownerId = MapsViewModel.getOwnerFromEvent(event.id)
+
+            try {
+                if (isConnected) {
+                    if (isAffiliated) {
+                        if (ManagerAuth.isCoachOwner(event.id)) {
+                            navigate(R.id.calendarToEventDetailsOwner, bundle, holder.itemView)
+                        } else {
+                            navigate(
+                                R.id.calendarToEventDetailsParticipant,
+                                bundle,
+                                holder.itemView
+                            )
+                        }
+                    } else {
+                        navigate(R.id.calendarToEventDetailsGuest, bundle, holder.itemView)
+                    }
+                } else {
+                    navigate(R.id.calendarToEventDetailsGuest, bundle, holder.itemView)
+                }
+            } catch (e: Exception) {
+                Log.e("Error", "ERROR: ${e.localizedMessage}")
+            }
+
         }
     }
 
@@ -62,6 +93,15 @@ class ChildRecyclerAdapter(private val items: MutableList<EventCalendar>) :
             } catch (e: Exception) {
                 Log.e("ViewHolder", "Image could not load: $e")
             }
+
+            try {
+                if (ManagerAuth.isCoachOwner(eventCalendar.id)) {
+                    itemView.notificationDotOwner.visibility = View.VISIBLE
+                }
+            } catch (e: Exception) {
+                Log.e("ParticipantAdapter", "Image could not load: $e")
+            }
+
 
 //            CoroutineScope(Main).launch {
 //                try {
@@ -103,4 +143,6 @@ class ChildRecyclerAdapter(private val items: MutableList<EventCalendar>) :
             .findNavController(view)
             .navigate(destination, extra)
     }
+
+//    private suspend fun getOwner(id: String) = MapsService.getOwnerFromEvent(id)
 }

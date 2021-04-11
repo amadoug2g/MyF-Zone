@@ -36,7 +36,8 @@ class ProfileEventAdapter :
         holder.binding.cardViewDetailProfile.setOnClickListener {
             TRACKING.logEvent(Tracking.ACCOUNT_OPEN_EVENT, null)
             val bundle = bundleOf("eventId" to item.id)
-            navigate(R.id.profileToEventDetails, bundle, holder.itemView)
+            navigate(R.id.profileToEventDetailsOwner, bundle, holder.itemView)
+//            navigate(R.id.profileToEventDetails, bundle, holder.itemView)
         }
     }
 

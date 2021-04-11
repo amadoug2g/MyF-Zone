@@ -104,7 +104,7 @@ object DiscussionService {
         val newOtherChat: Chat = Chat().apply {
             coachId = ManagerAuth.activeCoach!!.id
             fullname = ManagerAuth.activeCoach!!.getName()
-            clubLogo = ManagerAuth.activeCoachClub!!.clubLogo
+            clubLogo = ManagerAuth.activeCoachClubAffiliation!!.clubLogo
             isTyping = false
             lastMessage = ""
             unread = false
@@ -157,7 +157,7 @@ object DiscussionService {
             id = messageId
             senderId = ManagerAuth.activeCoach!!.id
             senderName = ManagerAuth.activeCoach!!.getName()
-            senderClubLogo = ManagerAuth.activeCoachClub!!.clubLogo
+            senderClubLogo = ManagerAuth.activeCoachClubAffiliation!!.clubLogo
             text = message
             image = photo
             createdDate = time

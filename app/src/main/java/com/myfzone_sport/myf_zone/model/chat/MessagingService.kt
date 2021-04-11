@@ -11,6 +11,7 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import androidx.core.os.bundleOf
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
@@ -40,6 +41,7 @@ import com.myfzone_sport.myf_zone.util.Notification.Companion.notificationEventR
 import com.myfzone_sport.myf_zone.util.Notification.Companion.notificationEventTitle
 import com.myfzone_sport.myf_zone.util.Notification.Companion.notificationModifyParticipationMessage
 import com.myfzone_sport.myf_zone.util.Notification.Companion.notificationRefuseParticipationMessage
+import com.myfzone_sport.myf_zone.util.Tracking
 
 private const val CHANNEL_ID = "data"
 
@@ -80,7 +82,7 @@ class MessagingService : FirebaseMessagingService() {
 
             remoteMessage.notification?.let {
                 Log.d(TAG, "Message Notification Body: ${it.body}")
-//                sendNotification(remoteMessage)
+                sendNotification(remoteMessage)
             }
 
             handleMessage(remoteMessage)
@@ -276,6 +278,22 @@ class MessagingService : FirebaseMessagingService() {
                         NotificationManager.IMPORTANCE_DEFAULT
                     )
                     notificationManager.createNotificationChannel(channel)
+                }
+
+
+                val bundleNavigation = bundleOf("coachId" to remoteMessage.data["type"])
+//                    bottomNavBar.selectedItemId = R.id.message
+                try {
+                    MainScreen.navController.navigate(
+                        R.id.notificationCalendarToDiscussion,
+                        bundleNavigation
+                    )
+//                        navController.navigate(R.id.discussionFragment, bundleNavigation)
+                } catch (e: Exception) {
+                    val bundleError =
+                        bundleOf("NotificationType ${getString(R.string.error_msg)}" to e.localizedMessage)
+                    Constants.TRACKING.logEvent(Tracking.ALERT_ERROR, bundleError)
+                    Log.e(TAG, "Could not navigate to Discussion:  $e")
                 }
 
                 notificationManager.notify(0 /* ID of notification */, notificationBuilder.build())

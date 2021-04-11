@@ -152,7 +152,7 @@ object EventDetailsOwnerService {
         val mOwnerQuery =
             Constants.DB.document(Constants.EVENT_PATH + "/${eventId}/Owner/${userId}")
         val mOwnerEventQuery =
-            Constants.DB.document(Constants.COACH_PATH + "/${userId}/ClubAffiliation/${ManagerAuth.activeCoachClub!!.clubId}/CoachEvent/${eventId}")
+            Constants.DB.document(Constants.COACH_PATH + "/${userId}/ClubAffiliation/${ManagerAuth.activeCoachClubAffiliation!!.clubId}/CoachEvent/${eventId}")
 
         mParticipantListQuery.get().addOnSuccessListener { querySnapshot ->
             if (querySnapshot.documents.size > 0) {

@@ -14,6 +14,9 @@
             android:id="@+id/profileToEventDetails"
             app:destination="@id/event_detail" />
         <action
+            android:id="@+id/profileToEventDetailsOwner"
+            app:destination="@+id/event_details_owner" />
+        <action
             android:id="@+id/profileToSettings"
             app:destination="@id/settings" />
         <action
@@ -21,6 +24,7 @@
             app:destination="@id/affiliation_request" />
     </fragment>
     <include app:graph="@navigation/event_detail" />
+    <include app:graph="@navigation/event_details_owner" />
     <include app:graph="@navigation/settings" />
     <include app:graph="@navigation/affiliation_request" />
 </navigation>

@@ -20,6 +20,7 @@ import com.myfzone_sport.myf_zone.R
 import com.myfzone_sport.myf_zone.databinding.CardMessageCoachBinding
 import com.myfzone_sport.myf_zone.databinding.FragmentMessageBinding
 import com.myfzone_sport.myf_zone.fragments.message.MessageService.getImageReference
+import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth
 import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth.isAffiliated
 import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth.isConnected
 import com.myfzone_sport.myf_zone.glide.GlideApp
@@ -87,7 +88,6 @@ class MessageFragment : Fragment() {
     //region Override Methods
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d(TAG, "onCREATE")
 
         viewModel = ViewModelProvider(this).get(MessageViewModel::class.java)
 
@@ -149,6 +149,8 @@ class MessageFragment : Fragment() {
 
         binding.messageChatListNotAffiliated.setOnClickListener { navigate(R.id.messageToAffiliationRequest) }
         binding.messageChatListNotSignedIn.setOnClickListener { navigate(R.id.messageToSignUp) }
+
+        ManagerAuth.checkUserStatus()
 
         return binding.root
     }

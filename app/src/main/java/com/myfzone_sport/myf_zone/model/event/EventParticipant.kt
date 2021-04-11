@@ -53,19 +53,19 @@ data class EventParticipant(
 
     fun confirm(): EventParticipant {
         return EventParticipant().apply {
-            clubLogo = ManagerAuth.activeCoachClub!!.clubLogo
-            clubAcronym = ManagerAuth.activeCoachClub!!.clubAcronym
+            clubLogo = ManagerAuth.activeCoachClubAffiliation!!.clubLogo
+            clubAcronym = ManagerAuth.activeCoachClubAffiliation!!.clubAcronym
             coachId = ManagerAuth.activeCoach!!.id
             coachFullname =
                 "${ManagerAuth.activeCoach!!.firstName} ${ManagerAuth.activeCoach!!.lastName}"
-            sportId = ManagerAuth.activeCoachClub!!.sportId
-            sportName = ManagerAuth.activeCoachClub!!.sportName
-            if (!ManagerAuth.activeCoachClub!!.categoryId.isNullOrEmpty()) {
-                categoryId = ManagerAuth.activeCoachClub!!.categoryId
-                categoryName = ManagerAuth.activeCoachClub!!.categoryName
-                if (!ManagerAuth.activeCoachClub!!.subCategoryId.isNullOrEmpty()) {
-                    subCategoryId = ManagerAuth.activeCoachClub!!.subCategoryId
-                    subCategoryName = ManagerAuth.activeCoachClub!!.subCategoryName
+            sportId = ManagerAuth.activeCoachClubAffiliation!!.sportId
+            sportName = ManagerAuth.activeCoachClubAffiliation!!.sportName
+            if (!ManagerAuth.activeCoachClubAffiliation!!.categoryId.isNullOrEmpty()) {
+                categoryId = ManagerAuth.activeCoachClubAffiliation!!.categoryId
+                categoryName = ManagerAuth.activeCoachClubAffiliation!!.categoryName
+                if (!ManagerAuth.activeCoachClubAffiliation!!.subCategoryId.isNullOrEmpty()) {
+                    subCategoryId = ManagerAuth.activeCoachClubAffiliation!!.subCategoryId
+                    subCategoryName = ManagerAuth.activeCoachClubAffiliation!!.subCategoryName
                 }
             }
             status = "pending"

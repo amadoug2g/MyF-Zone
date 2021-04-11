@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.myfzone_sport.myf_zone.R
 import com.myfzone_sport.myf_zone.databinding.FragmentCalendarBinding
+import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth
 import com.myfzone_sport.myf_zone.model.State
 import com.myfzone_sport.myf_zone.model.event.Event
 import com.myfzone_sport.myf_zone.model.event.EventData
@@ -64,6 +65,8 @@ class CalendarFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
             Log.e(TAG, "Error in eventListener: ${e.localizedMessage}")
             toast("Erreur de chargement : ${e.localizedMessage}")
         }
+
+        ManagerAuth.checkUserStatus()
 
         return binding.root
     }

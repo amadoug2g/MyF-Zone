@@ -13,7 +13,6 @@ import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.storage.FirebaseStorage
 import com.google.maps.android.clustering.ClusterManager
 import com.myfzone_sport.myf_zone.R
-import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth
 import com.myfzone_sport.myf_zone.model.State
 import com.myfzone_sport.myf_zone.model.club.Club
 import com.myfzone_sport.myf_zone.model.event.Event
@@ -21,7 +20,6 @@ import com.myfzone_sport.myf_zone.model.event.EventOwner
 import com.myfzone_sport.myf_zone.model.event.EventParticipant
 import com.myfzone_sport.myf_zone.model.maps.BitmapHelper
 import com.myfzone_sport.myf_zone.model.maps.MapClusterItem
-import com.myfzone_sport.myf_zone.util.Constants.CLUB_PATH
 import com.myfzone_sport.myf_zone.util.Constants.DB
 import com.myfzone_sport.myf_zone.util.Constants.EVENT_PATH
 import kotlinx.coroutines.Dispatchers.IO
@@ -43,19 +41,6 @@ object MapsService {
     private val storageInstance: FirebaseStorage by lazy { FirebaseStorage.getInstance() }
     val firebaseAuth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
     private lateinit var clusterManager: ClusterManager<MapClusterItem>
-
-    fun getClubById() = flow<State<Club>> {
-        emit(State.loading())
-
-        val mClubQuery = DB.document(CLUB_PATH + "/${ManagerAuth.activeCoachClub!!.clubId}")
-
-        val snapshot = mClubQuery.get().await()
-        val club: Club = snapshot.toObject()!!
-
-        emit(State.success(club))
-    }.catch {
-        emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
-    }.flowOn(IO)
 
     fun initializeMap(
         map: GoogleMap,

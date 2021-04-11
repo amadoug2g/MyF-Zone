@@ -111,6 +111,11 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
         checkOnBoarding()
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        Log.i("MainScreen", "created result")
+    }
+
     override fun onStart() {
         super.onStart()
         LocalBroadcastManager.getInstance(this).registerReceiver(

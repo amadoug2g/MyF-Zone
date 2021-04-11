@@ -99,9 +99,9 @@
     <string name="exit_event_msg">Vous allez annuler votre participation à l\'évènement. Continuer ?</string>
     <string name="new_event">Nouvel évènement</string>
     <string name="event_title">Titre</string>
-    <string name="event_title_help">Titre</string>
+    <string name="event_title_help">Ex: Amical, Tournoi, Plateau</string>
     <string name="event_description">Description</string>
-    <string name="event_description_help">Niveau recherché, nombre d\'équipes, …</string>
+    <string name="event_description_help">Ex: Niveau recherché, nombre d\'équipes, …</string>
     <string name="select_range_text">Sélectionnez une période</string>
     <string name="no_participant_msg">Aucun participant dans cet évènement</string>
     <string name="no_event_msg">Vous n\'avez actuellement aucun évènement</string>
@@ -154,7 +154,7 @@
     <string name="privacy_policy"><a href="https://myf-zone.web.app/policy.pdf">Confidentialité</a></string>
     <string name="onBoarding_intro">L\'application My F-Zone met\nen relation les éducateurs de foot afin de :</string>
     <string name="onBoarding_create_event">Créer un évènement de type :</string>
-    <string name="onBoarding_calendar">Retrouver les détails de ces 3 types d\'évènements dans votre agenda</string>
+    <string name="onBoarding_calendar">Retrouver les détails des évènements dans l\'Agenda\n\nVos propres évènements sont marqués \nd\'une pastille bleue</string>
     <string name="onBoarding_map">Participer à des évènements à proximité de votre club depuis la Carte</string>
     <string name="onBoarding_chat">Discuter avec d\'autres éducateurs à partir de la messagerie</string>
     <string name="onBoarding_affiliation_code">À l\'aide du code d\'affiliation de ton club, inscris-toi et rejoins la communauté</string>

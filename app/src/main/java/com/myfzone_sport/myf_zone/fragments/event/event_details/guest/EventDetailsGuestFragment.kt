@@ -22,7 +22,7 @@ import com.google.android.gms.maps.MapsInitializer
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.snackbar.Snackbar
 import com.myfzone_sport.myf_zone.R
-import com.myfzone_sport.myf_zone.databinding.CardEventParticipantBinding
+import com.myfzone_sport.myf_zone.databinding.CardEventParticipantGuestBinding
 import com.myfzone_sport.myf_zone.databinding.FragmentEventDetailsGuestBinding
 import com.myfzone_sport.myf_zone.fragments.event.event_details.guest.EventDetailsGuestService.getImageReference
 import com.myfzone_sport.myf_zone.glide.GlideApp
@@ -51,7 +51,7 @@ class EventDetailsGuestFragment : Fragment() {
         private lateinit var viewModel: EventDetailsGuestViewModel
     }
 
-    class ParticipantHolder(val binding: CardEventParticipantBinding) :
+    class ParticipantHolder(val binding: CardEventParticipantGuestBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(participant: EventParticipant) {
@@ -74,7 +74,8 @@ class EventDetailsGuestFragment : Fragment() {
         companion object {
             fun from(parent: ViewGroup): ParticipantHolder {
                 val layoutInflater = LayoutInflater.from(parent.context)
-                val binding = CardEventParticipantBinding.inflate(layoutInflater, parent, false)
+                val binding =
+                    CardEventParticipantGuestBinding.inflate(layoutInflater, parent, false)
                 return ParticipantHolder(binding)
             }
         }

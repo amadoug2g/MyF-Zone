@@ -73,6 +73,7 @@ class LoginFragment : Fragment() {
         }
 
         binding.loginButton.setOnClickListener {
+            Log.i("LoginFragment", "Log In Success -1")
             signInProcess()
         }
 
@@ -99,6 +100,7 @@ class LoginFragment : Fragment() {
     private fun signInProcess() {
         if (validateForm())
             lifecycleScope.launch {
+                Log.i("LoginFragment", "Log In Success 00")
                 signInUser()
             }
     }
@@ -113,11 +115,14 @@ class LoginFragment : Fragment() {
                     showProgressBar()
                 }
                 is State.Success -> {
+                    Log.i("LoginFragment", "Log In Success 01")
                     hideProgressBar()
                     Log.i(TAG, "${state.data}")
                     toast(getString(R.string.login_message))
                     TRACKING.logEvent(Tracking.SIGN_IN_DONE, null)
                     startActivity(intentFor<MainScreen>().newTask().clearTask())
+//                    ManagerAuth.checkUserStatus()
+                    Log.i("LoginFragment", "Log In Success 02")
                 }
                 is State.Failed -> {
                     hideProgressBar()

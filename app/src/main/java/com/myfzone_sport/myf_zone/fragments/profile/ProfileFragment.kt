@@ -1,5 +1,6 @@
 package com.myfzone_sport.myf_zone.fragments.profile
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.myfzone_sport.myf_zone.R
 import com.myfzone_sport.myf_zone.databinding.FragmentProfileBinding
 import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth
@@ -51,7 +53,7 @@ class ProfileFragment : Fragment() {
         }
 
         binding.user = ManagerAuth.activeCoach
-        binding.club = ManagerAuth.activeCoachClub
+        binding.club = ManagerAuth.activeCoachClubAffiliation
 
         lifecycleScope.launch {
             loadUserEvents()
@@ -104,6 +106,32 @@ class ProfileFragment : Fragment() {
                 }
             }
         }
+    }
+    //endregion
+
+    //region Affiliation
+    private fun affiliationChoiceWindow() {
+        val items = arrayOf("Item 1", "Item 2", "Item 3")
+        //Titre - Affiliations
+        //Nouvel affiliation
+        //Statut des demandes
+
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(getString(R.string.affiliate))
+            .setItems(items) { _, _ ->
+                // Respond to item chosen
+            }
+            .show()
+
+
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(getString(R.string.affiliate))
+            .setMessage(getString(R.string.enter_event_msg))
+            .setPositiveButton(R.string.confirm_message) { _: DialogInterface, _: Int ->
+//                confirmParticipation()
+            }
+            .setNegativeButton(R.string.cancel_message) { _: DialogInterface, _: Int ->
+            }.show()
     }
     //endregion
 

@@ -26,6 +26,7 @@ import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.maps.android.clustering.ClusterManager
 import com.myfzone_sport.myf_zone.R
 import com.myfzone_sport.myf_zone.databinding.FragmentMapsBinding
+import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth
 import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth.activeCoach
 import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth.isAffiliated
 import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth.isConnected
@@ -38,7 +39,6 @@ import com.myfzone_sport.myf_zone.util.Constants.TRACKING
 import com.myfzone_sport.myf_zone.util.Tracking
 import kotlinx.android.synthetic.main.card_event_item.*
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 import org.jetbrains.anko.support.v4.toast
 import java.util.*
 
@@ -101,14 +101,6 @@ class MapsFragment : Fragment(),
         super.onCreate(savedInstanceState)
 
         viewModel = ViewModelProvider(this).get(MapsViewModel::class.java)
-
-        lifecycleScope.launch {
-            try {
-                viewModel.assignClub()
-            } catch (e: Exception) {
-                Log.i(TAG, "An error occurred: $e")
-            }
-        }
     }
 
     override fun onCreateView(
@@ -169,7 +161,6 @@ class MapsFragment : Fragment(),
                         Log.e(TAG, "ERROR: ${e.localizedMessage}")
                     }
 
-
 //                    navigate(R.id.mapsToEventDetails, bundle)
                 }
             }
@@ -183,6 +174,8 @@ class MapsFragment : Fragment(),
             Log.e(TAG, "Error in eventListener: $e")
             toast("Error in eventListener: $e")
         }
+
+        ManagerAuth.checkUserStatus()
 
         return binding.root
     }
@@ -233,6 +226,7 @@ class MapsFragment : Fragment(),
 //                        viewModel.placeEventsCluster(viewModel.map.value!!, requireContext(), list)
                         setUpClusters(viewModel.map.value!!)
                         placeUserClub()
+                        Log.i(TAG, "Club ID: 01")
                     }
                     is State.Failed -> {
                         loadingMsgEnd()
@@ -248,7 +242,7 @@ class MapsFragment : Fragment(),
         if (isConnected) {
             if (isAffiliated) {
                 viewModel.placeUserClub(
-                    viewModel.club.value!!,
+                    ManagerAuth.activeCoachClub!!,
                     viewModel.map.value!!,
                     requireContext()
                 )

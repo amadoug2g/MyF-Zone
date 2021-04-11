@@ -248,7 +248,7 @@ object EventDetailsService {
         val mParticipantListQuery = DB.collection(EVENT_PATH + "/${eventId}/Participant")
         val mOwnerQuery = DB.document(EVENT_PATH + "/${eventId}/Owner/${userId}")
         val mOwnerEventQuery =
-            DB.document(COACH_PATH + "/${userId}/ClubAffiliation/${ManagerAuth.activeCoachClub!!.clubId}/CoachEvent/${eventId}")
+            DB.document(COACH_PATH + "/${userId}/ClubAffiliation/${ManagerAuth.activeCoachClubAffiliation!!.clubId}/CoachEvent/${eventId}")
 
         mParticipantListQuery.get().addOnSuccessListener { querySnapshot ->
             if (querySnapshot.documents.size > 0) {

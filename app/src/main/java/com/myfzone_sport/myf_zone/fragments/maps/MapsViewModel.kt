@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.Marker
+import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth
 import com.myfzone_sport.myf_zone.model.State
 import com.myfzone_sport.myf_zone.model.club.Club
 import com.myfzone_sport.myf_zone.model.event.Event
@@ -49,10 +50,6 @@ class MapsViewModel : ViewModel() {
     private val _owner = MutableLiveData<EventOwner>()
     val owner: LiveData<EventOwner>
         get() = _owner
-
-    private val _club = MutableLiveData<Club>()
-    val club: LiveData<Club>
-        get() = _club
 
     private val _marker = MutableLiveData<Marker>()
     val marker: LiveData<Marker>
@@ -126,32 +123,9 @@ class MapsViewModel : ViewModel() {
         return false
     }
 
-    private fun getUserClub() =
-        MapsService.getClubById()
-
-    suspend fun assignClub() {
-        getUserClub().collect { state ->
-            when (state) {
-                is State.Loading -> {
-//                    showProgressBar()
-                }
-                is State.Success -> {
-                    _club.value = state.data
-                }
-                is State.Failed -> {
-                    val bundleTracking = bundleOf("Map Error [assignClub]" to state.message)
-                    Constants.TRACKING.logEvent(Tracking.ALERT_ERROR, bundleTracking)
-
-                    val message = "An error occurred [in assignClub]: ${state.message}"
-                    Log.i("EventDetailsViewModel", message)
-                }
-            }
-        }
-    }
-
     fun initializeMap(map: GoogleMap) {
         viewModelScope.launch {
-            MapsService.initializeMap(map, club.value)
+            MapsService.initializeMap(map, ManagerAuth.activeCoachClub)
         }
     }
 

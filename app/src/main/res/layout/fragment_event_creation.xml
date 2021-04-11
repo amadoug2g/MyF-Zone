@@ -44,7 +44,7 @@
                     android:id="@+id/event_create_title_input"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/event_title"
+                    android:hint="@string/event_title_help"
                     android:inputType="text"
                     android:text="@={event.title}" />
 
@@ -67,7 +67,7 @@
                     android:id="@+id/event_create_desc_input"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/event_description"
+                    android:hint="@string/event_description_help"
                     android:inputType="text"
                     android:text="@={event.description}" />
 

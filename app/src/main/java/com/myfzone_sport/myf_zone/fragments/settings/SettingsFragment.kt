@@ -19,7 +19,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textview.MaterialTextView
 import com.myfzone_sport.myf_zone.R
 import com.myfzone_sport.myf_zone.databinding.FragmentSettingsBinding
-import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth
 import com.myfzone_sport.myf_zone.screens.MainScreen
 import com.myfzone_sport.myf_zone.util.Constants.TRACKING
 import com.myfzone_sport.myf_zone.util.Tracking
@@ -117,7 +116,7 @@ class SettingsFragment : Fragment() {
                 TRACKING.logEvent(Tracking.LOGOUT, null)
                 viewModel.signOut()
                 toast(R.string.logout_success)
-                ManagerAuth.checkUserStatus()
+//                ManagerAuth.checkUserStatus()
                 startActivity(intentFor<MainScreen>().newTask().clearTask())
             }
             .setNegativeButton(R.string.cancel_message) { _: DialogInterface, _: Int ->

@@ -1,21 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout>
 
     <data>
 
         <variable
-            name="event"
-            type="com.myfzone_sport.myf_zone.model.event.Event" />
+            name="participant"
+            type="com.myfzone_sport.myf_zone.model.event.EventParticipant" />
     </data>
 
-    <LinearLayout
-        android:layout_width="match_parent"
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cardView_detail_profile"
+            android:id="@+id/event_detail_CardView_participant"
             android:layout_width="match_parent"
             android:layout_height="100dp"
             android:layout_marginStart="16dp"
@@ -33,45 +34,41 @@
                 android:layout_height="wrap_content">
 
                 <ImageView
-                    android:id="@+id/cardView_clubImage_profile"
+                    android:id="@+id/event_detail_participant_image"
                     android:layout_width="70dp"
                     android:layout_height="70dp"
                     android:layout_centerVertical="true"
-                    android:layout_marginStart="4dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="4dp"
-                    android:layout_marginBottom="8dp"
-                    android:contentDescription="@string/image_club"
-                    app:imageResource="@{event.eventTypeImage}" />
+                    android:layout_margin="8dp"
+                    android:contentDescription="@string/participant_image"
+                    android:src="@drawable/ic_account" />
 
                 <RelativeLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_toEndOf="@+id/cardView_clubImage_profile">
+                    android:layout_toEndOf="@+id/event_detail_participant_image">
 
                     <LinearLayout
                         android:id="@+id/event_detail_owner_info"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:layout_margin="6dp"
+                        android:layout_margin="8dp"
                         android:orientation="vertical"
                         android:padding="4dp">
 
                         <TextView
-                            android:id="@+id/cardView_clubName_profile"
+                            android:id="@+id/event_detail_owner_club"
+                            style="@style/TextAppearance.AppCompat.Title"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            style="@style/TextAppearance.AppCompat.Title"
-                            android:text="@{event.eventTypeString}" />
+                            android:text="@{@string/participant_txt + ` - ` + participant.clubAcronym + ` ` + participant.categoryName + ` ` + participant.subCategoryName}" />
 
                         <TextView
-                            android:id="@+id/cardView_clubDesc_profile"
+                            android:id="@+id/event_detail_owner_name"
+                            style="@style/ShapeAppearance.MaterialComponents.MediumComponent"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
                             android:layout_marginStart="8dp"
-                            style="@style/ShapeAppearance.MaterialComponents.MediumComponent"
-                            android:text="@{event.eventDateToDayProfile}" />
+                            android:text="@{participant.coachFullname}" />
 
                     </LinearLayout>
 
@@ -87,19 +84,14 @@
                             android:layout_height="wrap_content"
                             android:layout_alignParentEnd="true"
                             android:background="@drawable/notification_dot_blue"
-                            android:visibility="invisible"
-                            android:contentDescription="@string/notification_dot" />
+                            android:contentDescription="@string/notification_dot"
+                            android:visibility="invisible" />
 
-                        <!--                <ImageView-->
-                        <!--                    android:id="@+id/owner_message_icon"-->
-                        <!--                    android:layout_width="wrap_content"-->
-                        <!--                    android:layout_height="wrap_content"-->
-                        <!--                    android:layout_alignParentBottom="true"-->
-                        <!--                    android:layout_marginStart="4dp"-->
-                        <!--                    android:layout_marginEnd="4dp"-->
-                        <!--                    android:layout_marginBottom="16dp"-->
-                        <!--                    android:contentDescription="Quick Message"-->
-                        <!--                    android:src="@drawable/ic_message" />-->
+                        <TextView
+                            android:id="@+id/event_detail_id"
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:visibility="gone" />
 
                     </RelativeLayout>
 
