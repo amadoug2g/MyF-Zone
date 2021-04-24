@@ -91,10 +91,6 @@ class EventDetailsOwnerFragment : Fragment() {
                 }
 
                 binding.notificationDotOwner.visibility = View.VISIBLE
-
-                binding.eventDetailCardViewParticipant.setOnClickListener {
-                    Log.i(TAG, "2CLICKED ITEM $participant")
-                }
             }
         }
 
@@ -138,61 +134,73 @@ class EventDetailsOwnerFragment : Fragment() {
                 model: EventParticipant
             ) {
                 holder.bind(model)
-                holder.itemView.setOnClickListener {
-                    Log.i(TAG, "1CLICKED ITEM $position")
 
+                holder.binding.eventDetailCardViewParticipant.setOnClickListener {
+                    Log.d(TAG, "acceptParticipant ? ${viewModel.event.value}")
+                    ownerPermissionParticipant(model)
+//                    ownerPermission(position)
 
-                    MaterialAlertDialogBuilder(requireContext())
-                        .setTitle(getString(R.string.participation_title))
-                        .setMessage(getString(R.string.participation_support_text))
-                        .setNeutralButton(getString(R.string.participation_neutral)) { _: DialogInterface, _: Int ->
-                            // Respond to neutral button press
-
-                        }
-                        .setNegativeButton(getString(R.string.participation_decline)) { _: DialogInterface, _: Int ->
-                            // Respond to negative button press
-
-                            TRACKING.logEvent(
-                                Tracking.EVENT_DETAILS_OWNER_REFUSE_PARTICIPATION,
-                                null
-                            )
-
-                            viewModel.participantList.observe(
-                                viewLifecycleOwner
-                            ) { list ->
-                                viewModel.event.observe(viewLifecycleOwner) { event ->
-                                    val participant = list[position]
-                                    refuseParticipant(participant)
-                                    MessagingService.eventRefuseParticipation(
-                                        event,
-                                        participant
-                                    )
-                                }
-                            }
-                        }
-                        .setPositiveButton(getString(R.string.participation_accept)) { _: DialogInterface, _: Int ->
-                            // Respond to positive button press
-
-                            TRACKING.logEvent(
-                                Tracking.EVENT_DETAILS_OWNER_ACCEPT_PARTICIPATION,
-                                null
-                            )
-
-                            viewModel.participantList.observe(
-                                viewLifecycleOwner
-                            ) { list ->
-                                viewModel.event.observe(viewLifecycleOwner) { event ->
-                                    val participant = list[position]
-                                    acceptParticipant(participant)
-                                    MessagingService.eventAcceptParticipation(
-                                        event,
-                                        participant
-                                    )
-                                }
-                            }
-                        }
-                        .show()
                 }
+//
+//                holder.itemView.setOnClickListener {
+//                    Log.i(TAG, "1CLICKED ITEM $position")
+//
+//                    MaterialAlertDialogBuilder(requireContext())
+//                        .setTitle(getString(R.string.participation_title))
+//                        .setMessage(getString(R.string.participation_support_text))
+//                        .setNeutralButton(getString(R.string.participation_neutral)) { _: DialogInterface, _: Int ->
+//                            // Respond to neutral button press
+//
+//                        }
+//                        .setNegativeButton(getString(R.string.participation_decline)) { _: DialogInterface, _: Int ->
+//                            // Respond to negative button press
+//
+//                            TRACKING.logEvent(
+//                                Tracking.EVENT_DETAILS_OWNER_REFUSE_PARTICIPATION,
+//                                null
+//                            )
+//
+//                            viewModel.participantList.observe(
+//                                viewLifecycleOwner
+//                            ) { list ->
+//                                viewModel.event.observe(viewLifecycleOwner) { event ->
+//                                    val participant = list[position]
+//                                    refuseParticipant(participant)
+//                                    MessagingService.eventRefuseParticipation(
+//                                        event,
+//                                        participant
+//                                    )
+//                                }
+//                            }
+//                        }
+//                        .setPositiveButton(getString(R.string.participation_accept)) { _: DialogInterface, _: Int ->
+//                            // Respond to positive button press
+//
+//                            TRACKING.logEvent(
+//                                Tracking.EVENT_DETAILS_OWNER_ACCEPT_PARTICIPATION,
+//                                null
+//                            )
+//
+//                            Log.d(TAG, "acceptParticipant Success 01")
+//
+//                            viewModel.participantList.observe(
+//                                viewLifecycleOwner
+//                            ) { list ->
+//                                Log.d(TAG, "acceptParticipant Success 02")
+//                                viewModel.event.observe(viewLifecycleOwner) { event ->
+//                                    Log.d(TAG, "acceptParticipant Click")
+//                                    val participant = list[position]
+//                                    acceptParticipant(participant)
+//                                    MessagingService.eventAcceptParticipation(
+//                                        event,
+//                                        participant
+//                                    )
+//                                }
+//                            }
+//                        }
+//                        .show()
+//
+//                }
             }
 
             override fun onDataChanged() {
@@ -218,8 +226,6 @@ class EventDetailsOwnerFragment : Fragment() {
                     Log.e(TAG, "Error [onDataChanged] participant count: $e")
                 }
             }
-
-
         }
     }
 
@@ -237,6 +243,7 @@ class EventDetailsOwnerFragment : Fragment() {
         lifecycleScope.launch {
             assignOwner()
             assignEvent(savedInstanceState)
+            viewModel.assignEvent()
 //            viewModel.assignParticipants()
 //            viewModel.checkParticipationStatus()
         }
@@ -246,8 +253,6 @@ class EventDetailsOwnerFragment : Fragment() {
             setupRecyclerParameters()
             executePendingBindings()
         }
-
-        ownerAdmin()
 
         // Inflate the layout for this fragment
         return binding.root
@@ -335,11 +340,11 @@ class EventDetailsOwnerFragment : Fragment() {
                 is State.Success -> {
                     val owner = state.data
                     binding.owner = owner
-//                    GlideApp.with(this).apply {
-//                        load(getImageReference(owner.clubLogo))
-//                            .centerCrop()
-//                            .into(binding.cardEventOwner.eventDetailOwnerImage)
-//                    }
+                    GlideApp.with(this).apply {
+                        load(getImageReference(owner.clubLogo))
+                            .centerCrop()
+                            .into(binding.cardEventOwner.eventDetailOwnerImage)
+                    }
                 }
                 is State.Failed -> {
                     hideProgressBar()
@@ -476,7 +481,7 @@ class EventDetailsOwnerFragment : Fragment() {
         }
     }
 
-    fun ownerPermission(position: Int) {
+    fun ownerPermissionParticipant(participant: EventParticipant) {
 
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(getString(R.string.participation_title))
@@ -493,17 +498,12 @@ class EventDetailsOwnerFragment : Fragment() {
                     null
                 )
 
-                viewModel.participantList.observe(
-                    viewLifecycleOwner
-                ) { list ->
-                    viewModel.event.observe(viewLifecycleOwner) { event ->
-                        val participant = list[position]
-                        refuseParticipant(participant)
-                        MessagingService.eventRefuseParticipation(
-                            event,
-                            participant
-                        )
-                    }
+                viewModel.event.observe(viewLifecycleOwner) { event ->
+                    refuseParticipant(participant)
+                    MessagingService.eventRefuseParticipation(
+                        event,
+                        participant
+                    )
                 }
             }
             .setPositiveButton(getString(R.string.participation_accept)) { _: DialogInterface, _: Int ->
@@ -514,23 +514,20 @@ class EventDetailsOwnerFragment : Fragment() {
                     null
                 )
 
-                viewModel.participantList.observe(
-                    viewLifecycleOwner
-                ) { list ->
-                    viewModel.event.observe(viewLifecycleOwner) { event ->
-                        val participant = list[position]
-                        acceptParticipant(participant)
-                        MessagingService.eventAcceptParticipation(
-                            event,
-                            participant
-                        )
-                    }
+                viewModel.event.observe(viewLifecycleOwner) { event ->
+
+                    acceptParticipant(participant)
+                    MessagingService.eventAcceptParticipation(
+                        event,
+                        participant
+                    )
                 }
             }
             .show()
     }
 
     private fun acceptParticipant(participant: EventParticipant) {
+        Log.d(TAG, "acceptParticipant Starting")
         viewModel.acceptParticipant(participant)
     }
 

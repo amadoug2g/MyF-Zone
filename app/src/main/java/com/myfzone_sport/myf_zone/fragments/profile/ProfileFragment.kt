@@ -15,7 +15,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.myfzone_sport.myf_zone.R
 import com.myfzone_sport.myf_zone.databinding.FragmentProfileBinding
+import com.myfzone_sport.myf_zone.fragments.profile.ProfileService.getImageReference
 import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth
+import com.myfzone_sport.myf_zone.glide.GlideApp
 import com.myfzone_sport.myf_zone.model.State
 import com.myfzone_sport.myf_zone.model.event.Event
 import com.myfzone_sport.myf_zone.util.Constants.TRACKING
@@ -55,6 +57,8 @@ class ProfileFragment : Fragment() {
         binding.user = ManagerAuth.activeCoach
         binding.club = ManagerAuth.activeCoachClubAffiliation
 
+        loadUser()
+
         lifecycleScope.launch {
             loadUserEvents()
         }
@@ -83,6 +87,14 @@ class ProfileFragment : Fragment() {
     //endregion
 
     //region User Info
+    private fun loadUser() {
+        GlideApp.with(this).apply {
+            load(getImageReference(ManagerAuth.activeCoachClubAffiliation!!.clubLogo))
+                .centerCrop()
+                .into(binding.profileClubImage)
+        }
+    }
+
     private suspend fun loadUserEvents() {
         viewModel.getCurrentUserEvents().collect { state ->
             when (state) {

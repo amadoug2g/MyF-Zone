@@ -81,13 +81,13 @@ object EventDetailsOwnerService {
 
     fun refuseParticipant(eventId: String, participant: EventParticipant) =
         flow<State<EventParticipant>> {
-            val mAcceptParticipant = Constants.DB
+            val mRefuseParticipant = Constants.DB
                 .document(Constants.EVENT_PATH + "/${eventId}/Participant/${participant.coachId}")
             val status = setParticipantRefused()
 
             emit(State.loading())
 
-            mAcceptParticipant.set(status, SetOptions.merge()).await()
+            mRefuseParticipant.set(status, SetOptions.merge()).await()
 
             emit(State.success(participant))
         }.catch {

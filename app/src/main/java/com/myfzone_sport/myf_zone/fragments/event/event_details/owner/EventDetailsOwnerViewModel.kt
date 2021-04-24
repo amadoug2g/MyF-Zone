@@ -23,6 +23,7 @@ import kotlinx.coroutines.launch
  * Event Details Owner ViewModel class
  *
  */
+
 class EventDetailsOwnerViewModel : ViewModel() {
     private val TAG = this::class.java.simpleName
 
@@ -48,6 +49,27 @@ class EventDetailsOwnerViewModel : ViewModel() {
     fun getEvent(eventId: String) = EventDetailsOwnerService.getEvent(eventId)
 
     fun getOwnerFromEvent(eventId: String) = EventDetailsOwnerService.getOwnerFromEvent(eventId)
+
+    suspend fun assignEvent() {
+        getEvent(eventId.value!!).collect { state ->
+            when (state) {
+                is State.Loading -> {
+//                    showProgressBar()
+                }
+                is State.Success -> {
+                    _event.value = state.data
+                }
+                is State.Failed -> {
+                    val bundleTracking =
+                        bundleOf("EventDetails Error [assignEvent]" to state.message)
+                    Constants.TRACKING.logEvent(Tracking.ALERT_ERROR, bundleTracking)
+
+                    val message = "An error occurred [in assignEvent]: ${state.message}"
+                    Log.i("EventDetailsViewModel", message)
+                }
+            }
+        }
+    }
 
     fun acceptParticipant(participant: EventParticipant) {
         viewModelScope.launch {
