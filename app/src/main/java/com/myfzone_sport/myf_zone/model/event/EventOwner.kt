@@ -1,7 +1,6 @@
 package com.myfzone_sport.myf_zone.model.event
 
-import com.google.firebase.auth.FirebaseUser
-import com.myfzone_sport.myf_zone.model.coach.ClubAffiliation
+import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth
 
 data class EventOwner(
     var clubLogo: String,
@@ -51,30 +50,30 @@ data class EventOwner(
         return result
     }
 
-    fun clubToOwner(club: ClubAffiliation, coach: FirebaseUser?): EventOwner {
+    fun clubToOwner(): EventOwner {
         val owner = EventOwner()
 
         owner.apply {
-            clubLogo = club.clubLogo
-            clubAcronym = club.clubAcronym
-            coachId = coach?.uid!!
-            coachFullname = coach.displayName!!
-            sportId = club.sportId
-            sportName = club.sportName
+            clubLogo = ManagerAuth.activeCoachClubAffiliation!!.clubLogo
+            clubAcronym = ManagerAuth.activeCoachClubAffiliation!!.clubAcronym
+            coachId = ManagerAuth.activeCoach?.id!!
+            coachFullname = ManagerAuth.activeCoach!!.getName()
+            sportId = ManagerAuth.activeCoachClubAffiliation!!.sportId
+            sportName = ManagerAuth.activeCoachClubAffiliation!!.sportName
         }
 
 
-        if (club.categoryId!!.isNotEmpty() && club.categoryName!!.isNotEmpty()) {
+        if (ManagerAuth.activeCoachClubAffiliation!!.categoryId!!.isNotEmpty() && ManagerAuth.activeCoachClubAffiliation!!.categoryName!!.isNotEmpty()) {
             owner.apply {
-                categoryId = club.categoryId!!
-                categoryName = club.categoryName!!
+                categoryId = ManagerAuth.activeCoachClubAffiliation!!.categoryId!!
+                categoryName = ManagerAuth.activeCoachClubAffiliation!!.categoryName!!
             }
         }
 
-        if (club.subCategoryId!!.isNotEmpty() && club.subCategoryName!!.isNotEmpty()) {
+        if (ManagerAuth.activeCoachClubAffiliation!!.subCategoryId!!.isNotEmpty() && ManagerAuth.activeCoachClubAffiliation!!.subCategoryName!!.isNotEmpty()) {
             owner.apply {
-                subCategoryId = club.subCategoryId!!
-                subCategoryName = club.subCategoryName!!
+                subCategoryId = ManagerAuth.activeCoachClubAffiliation!!.subCategoryId!!
+                subCategoryName = ManagerAuth.activeCoachClubAffiliation!!.subCategoryName!!
             }
         }
 

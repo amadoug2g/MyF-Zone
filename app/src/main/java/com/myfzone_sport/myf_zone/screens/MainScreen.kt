@@ -531,6 +531,7 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
                 binding.infoWindowCardLayout.visibility = View.VISIBLE
                 binding.infoWindowCard.textViewIntroAgenda.visibility = View.VISIBLE
                 binding.infoWindowCard.textViewIntroMap.visibility = View.GONE
+                binding.infoWindowCard.textViewIntroMapClub.visibility = View.GONE
                 binding.infoWindowCard.textViewIntroChat.visibility = View.GONE
             }
             R.id.mapsFragment -> {
@@ -541,6 +542,7 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
 
                 binding.infoWindowCardLayout.visibility = View.VISIBLE
                 binding.infoWindowCard.textViewIntroMap.visibility = View.VISIBLE
+                binding.infoWindowCard.textViewIntroMapClub.visibility = View.VISIBLE
                 binding.infoWindowCard.textViewIntroAgenda.visibility = View.GONE
                 binding.infoWindowCard.textViewIntroChat.visibility = View.GONE
             }
@@ -553,6 +555,7 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
                 binding.infoWindowCardLayout.visibility = View.VISIBLE
                 binding.infoWindowCard.textViewIntroAgenda.visibility = View.GONE
                 binding.infoWindowCard.textViewIntroMap.visibility = View.GONE
+                binding.infoWindowCard.textViewIntroMapClub.visibility = View.GONE
                 binding.infoWindowCard.textViewIntroChat.visibility = View.VISIBLE
             }
         }

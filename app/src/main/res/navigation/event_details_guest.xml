@@ -9,7 +9,7 @@
         android:id="@+id/eventDetailsGuestFragment"
         android:name="com.myfzone_sport.myf_zone.fragments.event.event_details.guest.EventDetailsGuestFragment"
         android:label=""
-        tools:layout="@layout/fragment_event_details">
+        tools:layout="@layout/fragment_event_details_guest">
         <action
             android:id="@+id/eventDetailsToSignUp"
             app:destination="@id/login" />

@@ -42,7 +42,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <include layout="@layout/event_details_shimmer_layout" />
+                    <include layout="@layout/event_details_participant_shimmer_layout" />
 
                 </LinearLayout>
 

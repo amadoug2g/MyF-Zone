@@ -51,7 +51,7 @@ private const val ARG_PARAM1 = "eventId"
 
 class EventDetailsOwnerFragment : Fragment() {
     companion object {
-        private val TAG = this::class.java.simpleName
+        private val TAG = EventDetailsOwnerFragment::class.java.simpleName
         private var eventId: String? = null
         private var adapter: FirestoreRecyclerAdapter<EventParticipant, ParticipantHolder>? =
             null
@@ -138,69 +138,7 @@ class EventDetailsOwnerFragment : Fragment() {
                 holder.binding.eventDetailCardViewParticipant.setOnClickListener {
                     Log.d(TAG, "acceptParticipant ? ${viewModel.event.value}")
                     ownerPermissionParticipant(model)
-//                    ownerPermission(position)
-
                 }
-//
-//                holder.itemView.setOnClickListener {
-//                    Log.i(TAG, "1CLICKED ITEM $position")
-//
-//                    MaterialAlertDialogBuilder(requireContext())
-//                        .setTitle(getString(R.string.participation_title))
-//                        .setMessage(getString(R.string.participation_support_text))
-//                        .setNeutralButton(getString(R.string.participation_neutral)) { _: DialogInterface, _: Int ->
-//                            // Respond to neutral button press
-//
-//                        }
-//                        .setNegativeButton(getString(R.string.participation_decline)) { _: DialogInterface, _: Int ->
-//                            // Respond to negative button press
-//
-//                            TRACKING.logEvent(
-//                                Tracking.EVENT_DETAILS_OWNER_REFUSE_PARTICIPATION,
-//                                null
-//                            )
-//
-//                            viewModel.participantList.observe(
-//                                viewLifecycleOwner
-//                            ) { list ->
-//                                viewModel.event.observe(viewLifecycleOwner) { event ->
-//                                    val participant = list[position]
-//                                    refuseParticipant(participant)
-//                                    MessagingService.eventRefuseParticipation(
-//                                        event,
-//                                        participant
-//                                    )
-//                                }
-//                            }
-//                        }
-//                        .setPositiveButton(getString(R.string.participation_accept)) { _: DialogInterface, _: Int ->
-//                            // Respond to positive button press
-//
-//                            TRACKING.logEvent(
-//                                Tracking.EVENT_DETAILS_OWNER_ACCEPT_PARTICIPATION,
-//                                null
-//                            )
-//
-//                            Log.d(TAG, "acceptParticipant Success 01")
-//
-//                            viewModel.participantList.observe(
-//                                viewLifecycleOwner
-//                            ) { list ->
-//                                Log.d(TAG, "acceptParticipant Success 02")
-//                                viewModel.event.observe(viewLifecycleOwner) { event ->
-//                                    Log.d(TAG, "acceptParticipant Click")
-//                                    val participant = list[position]
-//                                    acceptParticipant(participant)
-//                                    MessagingService.eventAcceptParticipation(
-//                                        event,
-//                                        participant
-//                                    )
-//                                }
-//                            }
-//                        }
-//                        .show()
-//
-//                }
             }
 
             override fun onDataChanged() {

@@ -21,14 +21,33 @@
             android:indeterminateTint="@color/colorPrimary"
             android:visibility="invisible" />
 
-        <ImageView
-            android:id="@+id/profileSettings"
-            android:layout_width="30dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:layout_marginEnd="10dp"
-            android:contentDescription="@string/settings_button"
-            android:src="@drawable/ic_settings" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/affiliationListRequest"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="start"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:contentDescription="@string/affiliation_list_request"
+                android:src="@drawable/ic_view_list"
+                android:visibility="invisible" />
+
+            <ImageView
+                android:id="@+id/affiliationSettings"
+                android:layout_width="30dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_gravity="end"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:contentDescription="@string/settings_button"
+                android:src="@drawable/ic_settings" />
+        </RelativeLayout>
+
 
         <com.google.android.material.textview.MaterialTextView
             android:layout_width="wrap_content"
@@ -39,23 +58,42 @@
             android:text="@string/affiliationTextDesc"
             android:textSize="16sp" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/affiliationCodeLayout"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
-            android:layout_marginTop="32dp"
-            android:layout_marginEnd="32dp"
-            android:hint="@string/affiliation_code_text">
+            android:orientation="horizontal">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/affiliationCodeInput"
-                android:layout_width="match_parent"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/affiliationCodeLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="280dp"
                 android:layout_height="wrap_content"
-                android:inputType="text" />
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="12dp"
+                android:hint="@string/affiliation_code_text">
 
-        </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/affiliationCodeInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <ImageButton
+                android:id="@+id/info_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="48dp"
+                android:layout_marginEnd="15dp"
+                android:layout_toEndOf="@+id/affiliationCodeLayout"
+                android:background="@color/colorTransparent"
+                android:contentDescription="@string/account_button_desc"
+                android:src="@drawable/ic_info" />
+        </RelativeLayout>
+
 
         <androidx.appcompat.widget.AppCompatSpinner
             android:id="@+id/sportSpinner"
@@ -110,6 +148,27 @@
             android:layout_marginEnd="64dp"
             android:text="@string/laterTextButton"
             android:textColor="@color/colorDiscreet" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/clubAvailableText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="64dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="64dp"
+            android:text="@string/club_not_available_msg"
+            android:textAlignment="center" />
+
+        <TextView
+            android:id="@+id/contactUsText"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="64dp"
+            android:layout_marginTop="-16dp"
+            android:layout_marginEnd="64dp"
+            android:text="@string/contact_us"
+            android:textColor="@color/colorSettingEnd" />
 
     </LinearLayout>
 </layout>

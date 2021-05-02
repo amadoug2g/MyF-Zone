@@ -40,12 +40,28 @@
         <action
             android:id="@+id/affiliationRequestToSettings"
             app:destination="@id/settings" />
+        <action
+            android:id="@+id/affiliationRequestToAffiliationSuggestion"
+            app:destination="@id/affiliationSuggestionFragment" />
+        <action
+            android:id="@+id/affiliationRequestToAffiliationClubList"
+            app:destination="@id/affiliationClubList" />
     </fragment>
     <fragment
         android:id="@+id/affiliationSuccessFragment"
         android:name="com.myfzone_sport.myf_zone.fragments.affiliation.affiliation_success.AffiliationSuccessFragment"
         android:label="@string/affiliation_text"
         tools:layout="@layout/fragment_affiliation_success" />
+    <fragment
+        android:id="@+id/affiliationSuggestionFragment"
+        android:name="com.myfzone_sport.myf_zone.fragments.affiliation.affiliation_suggestion.AffiliationSuggestionFragment"
+        android:label="@string/affiliation_new_club"
+        tools:layout="@layout/fragment_affiliation_suggestion" />
+    <fragment
+        android:id="@+id/affiliationClubList"
+        android:name="com.myfzone_sport.myf_zone.fragments.affiliation.affiliation_club_list.AffiliationClubListFragment"
+        android:label="@string/affiliation_club_list"
+        tools:layout="@layout/fragment_affiliation_club_list" />
     <action
         android:id="@+id/affiliationSuccessToMaps"
         app:destination="@id/map" />

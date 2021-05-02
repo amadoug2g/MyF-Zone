@@ -17,7 +17,7 @@
 
         <variable
             name="viewModel"
-            type="com.myfzone_sport.myf_zone.fragments.event.event_details.EventDetailsViewModel" />
+            type="com.myfzone_sport.myf_zone.fragments.event.event_details.owner.EventDetailsOwnerViewModel" />
     </data>
 
     <ScrollView
@@ -41,8 +41,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
-                tools:showIn="@layout/fragment_event_details">
+                android:orientation="vertical">
 
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
@@ -183,8 +182,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
-                tools:showIn="@layout/fragment_event_details">
+                android:orientation="vertical">
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/event_detail_CardView_address"

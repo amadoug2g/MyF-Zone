@@ -51,7 +51,6 @@
             android:id="@+id/mapsToEventCreation"
             app:destination="@+id/event_creation" />
     </fragment>
-    <include app:graph="@navigation/event_detail" />
     <include app:graph="@navigation/event_details_guest" />
     <include app:graph="@navigation/event_details_owner" />
     <include app:graph="@navigation/event_details_participant" />

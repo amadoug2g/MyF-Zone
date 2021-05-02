@@ -35,6 +35,7 @@
     <string name="menu_item_message">Message</string>
     <string name="menu_item_calendar">Calendar</string>
     <string name="affiliationTextDesc">Register your affiliation code to be associated to a club</string>
+    <string name="affiliationClubTextDesc">Register your club\'s details to become a member</string>
     <string name="affiliation_code_text">Affiliation Code</string>
     <string name="sportChoice">Choose a sport</string>
     <string name="categoryChoice">Choose a category</string>
@@ -46,6 +47,7 @@
     <string name="affiliation_club_acronym">Club Acronym</string>
     <string name="affiliation_request_success_text">Affiliation request success!</string>
     <string name="affiliation_text">Club Membership</string>
+    <string name="affiliation_new_club">New Club Request</string>
     <string name="profileUserPosition">Coach</string>
     <string name="profileCategory">U19 - Élite</string>
     <string name="calendar">Calendar</string>
@@ -82,6 +84,7 @@
     <string name="participant_title">Owner - MBH</string>
     <string name="participant_name">Jose Mourinho</string>
     <string name="participant_image">Participant Image</string>
+    <string name="club_image">Club Image</string>
     <string name="participate_btn_text">I wanna participate</string>
     <string name="owner_txt">Owner</string>
     <string name="participant_txt">Participant</string>
@@ -118,6 +121,7 @@
     <string name="team_txt">Teams</string>
     <string name="nbTeam_txt">4/16</string>
     <string name="create_txt">Create</string>
+    <string name="send_txt">Send</string>
     <string name="quick_message">Direct Message</string>
     <string name="event_logo">Event Logo</string>
     <string name="floating_action_button_desc">Floating Action Button</string>
@@ -158,6 +162,22 @@
     <string name="continue_text">Continue</string>
     <string name="understood_text">I understand</string>
     <string name="versioncode">versionCode</string>
+    <string name="affiliation_code_helper">The affiliation code is made of the acronym of your club in capital letters followed by the postal code\n(Ex: PSG78100)</string>
+    <string name="club_not_available_msg">Your club is not available?</string>
+    <string name="contact_us">Contact us</string>
+    <string name="club_suggestion_name">Name</string>
+    <string name="club_suggestion_name_helper">Club / Association\'s name</string>
+    <string name="club_suggestion_acronym">Acronym</string>
+    <string name="club_suggestion_acronym_helper">Club / Association\'s acronym in capital letters</string>
+    <string name="club_suggestion_address">Address</string>
+    <string name="club_suggestion_address_helper">Club / Association\'s address</string>
+    <string name="club_suggestion_send_button">Send my club</string>
+    <string name="affiliation_list_request">request button</string>
+    <string name="onBoarding_map_club">Find the location of your club using the house icon on the map</string>
+    <string name="send_suggestion">New Club</string>
+    <string name="send_suggestion_confirmation">Send club ?</string>
+    <string name="affiliation_club_list">Club List</string>
+    <string name="suggestion_success_txt">Club sent successfully!</string>
 
 
     <!--    <string-array name="typeList">-->

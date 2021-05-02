@@ -36,9 +36,6 @@ class EventCreationViewModel : ViewModel() {
         initFields()
     }
 
-    fun checkAffiliationStatus() =
-        EventCreationService.checkAffiliationStatus()
-
     fun getOwnerForEvent() =
         EventCreationService.getOwnerForEvent()
 

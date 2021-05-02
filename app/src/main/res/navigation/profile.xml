@@ -23,7 +23,6 @@
             android:id="@+id/profileToAffiliation"
             app:destination="@id/affiliation_request" />
     </fragment>
-    <include app:graph="@navigation/event_detail" />
     <include app:graph="@navigation/event_details_owner" />
     <include app:graph="@navigation/settings" />
     <include app:graph="@navigation/affiliation_request" />

@@ -9,7 +9,7 @@
         android:id="@+id/eventDetailsOwnerFragment"
         android:name="com.myfzone_sport.myf_zone.fragments.event.event_details.owner.EventDetailsOwnerFragment"
         android:label=""
-        tools:layout="@layout/fragment_event_details">
+        tools:layout="@layout/fragment_event_details_owner">
         <action
             android:id="@+id/eventDetailsToEventEdit"
             app:destination="@id/eventEditFragment" />

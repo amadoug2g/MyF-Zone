@@ -1,6 +1,6 @@
 package com.myfzone_sport.myf_zone.fragments.event.event_creation
 
-import com.google.firebase.auth.FirebaseAuth
+import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth
 import com.myfzone_sport.myf_zone.model.State
 import com.myfzone_sport.myf_zone.model.coach.ClubAffiliation
 import com.myfzone_sport.myf_zone.model.event.Event
@@ -22,65 +22,52 @@ import kotlinx.coroutines.tasks.await
  */
 
 object EventCreationService {
-    val firebaseAuth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
 
-    fun checkAffiliationStatus() = flow<State<Boolean>> {
-        val userId = firebaseAuth.currentUser?.uid
-        val mAffiliationPath = DB
-            .collection(COACH_PATH + "/${userId}/ClubAffiliation")
+    fun getOwnerForEvent() =
+        flow<State<Pair<EventOwner, ClubAffiliation>>> {
+            val userId = ManagerAuth.activeCoach?.id
+            val mClubQuery = DB
+                .collection(COACH_PATH + "/${userId}/ClubAffiliation")
 
-        emit(State.loading())
+            emit(State.loading())
 
-        val snapshot = mAffiliationPath.get().await()
-        val status = snapshot.documents.size > 0
+            val snapshot = mClubQuery.get().await().documents[0]
+            val currentUserClub = snapshot.toObject(ClubAffiliation::class.java)!!
 
-        emit(State.success(status))
-    }.catch {
-        emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
-    }.flowOn(Dispatchers.IO)
+            val eventOwner = EventOwner().clubToOwner()
 
-    fun getOwnerForEvent() = flow<State<Pair<EventOwner, ClubAffiliation>>> {
-        val userId = firebaseAuth.currentUser?.uid
-        val mClubQuery = DB
-            .collection(COACH_PATH + "/${userId}/ClubAffiliation")
+            val pair: Pair<EventOwner, ClubAffiliation> = Pair(eventOwner, currentUserClub)
 
-        emit(State.loading())
+            emit(State.success(pair))
+        }.catch {
+            emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
+        }.flowOn(Dispatchers.IO)
 
-        val snapshot = mClubQuery.get().await().documents[0]
-        val currentUserClub = snapshot.toObject(ClubAffiliation::class.java)
+    fun createEvent(event: Event) =
+        flow<State<Event>> {
+            val mEventQuery = DB.collection(EVENT_PATH)
+            event.id = mEventQuery.document().id
 
-        val eventOwner = EventOwner().clubToOwner(currentUserClub!!, firebaseAuth.currentUser)
+            emit(State.loading())
 
-        val pair: Pair<EventOwner, ClubAffiliation> = Pair(eventOwner, currentUserClub)
+            mEventQuery.document(event.id).set(event.toMap()).await()
 
-        emit(State.success(pair))
-    }.catch {
-        emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
-    }.flowOn(Dispatchers.IO)
+            emit(State.success(event))
+        }.catch {
+            emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
+        }.flowOn(Dispatchers.IO)
 
-    fun createEvent(event: Event) = flow<State<Event>> {
-        val mEventQuery = DB.collection(EVENT_PATH)
-        event.id = mEventQuery.document().id
+    fun addOwnerToEvent(event: Event, owner: EventOwner) =
+        flow<State<Boolean>> {
+            val mEventQuery = DB
+                .document(EVENT_PATH + "/${event.id}/Owner/${owner.coachId}")
 
-        emit(State.loading())
+            mEventQuery.set(owner.toMap()).await()
 
-        mEventQuery.document(event.id).set(event.toMap()).await()
-
-        emit(State.success(event))
-    }.catch {
-        emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
-    }.flowOn(Dispatchers.IO)
-
-    fun addOwnerToEvent(event: Event, owner: EventOwner) = flow<State<Boolean>> {
-        val mEventQuery = DB
-            .document(EVENT_PATH + "/${event.id}/Owner/${owner.coachId}")
-
-        mEventQuery.set(owner.toMap()).await()
-
-        emit(State.success(true))
-    }.catch {
-        emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
-    }.flowOn(Dispatchers.IO)
+            emit(State.success(true))
+        }.catch {
+            emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
+        }.flowOn(Dispatchers.IO)
 
     fun addEventToUser(event: Event, owner: EventOwner, club: ClubAffiliation) =
         flow<State<Event>> {

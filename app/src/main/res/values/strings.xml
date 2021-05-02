@@ -42,6 +42,7 @@
     <string name="menu_item_calendar">Calendrier</string>
     <string name="hello_blank_fragment">Hello blank fragment fr</string>
     <string name="affiliationTextDesc">Rentrez votre code d\'affiliation pour vous enregistrez auprès d\'un club</string>
+    <string name="affiliationClubTextDesc">Rentrez les informations de votre club pour l\'intégrer à l\'application</string>
     <string name="affiliation_code_text">Code d\'Affiliation</string>
     <string name="sportChoice">Sélectionnez un sport</string>
     <string name="categoryChoice">Sélectionnez une categorie</string>
@@ -53,6 +54,7 @@
     <string name="affiliation_club_acronym">Acronyme du Club</string>
     <string name="affiliation_request_success_text">Demande d\'affiliation réussie !</string>
     <string name="affiliation_text">Demande d\'affiliation</string>
+    <string name="affiliation_new_club">Demande d\'ajout de club</string>
     <string name="profileUserPosition">Entraineur</string>
     <string name="profileCategory">U19 - Élite</string>
     <string name="calendar">Calendrier</string>
@@ -89,6 +91,7 @@
     <string name="participant_name">Jose Mourinho</string>
     <string name="participant_title">Organisateur - MBH</string>
     <string name="participant_image">Participant Image</string>
+    <string name="club_image">Club Image</string>
     <string name="participate_btn_text">Je veux participer</string>
     <string name="owner_txt">Organisateur</string>
     <string name="participant_txt">Participant</string>
@@ -125,6 +128,7 @@
     <string name="team_txt">Équipes</string>
     <string name="nbTeam_txt">4/16</string>
     <string name="create_txt">Créer</string>
+    <string name="send_txt">Envoyer</string>
     <string name="quick_message">Message Direct</string>
     <string name="event_logo">Event Logo</string>
     <string name="floating_action_button_desc">Floating Action Button</string>
@@ -165,6 +169,22 @@
     <string name="continue_text">Continuer</string>
     <string name="understood_text">J\'ai compris</string>
     <string name="versioncode">versionCode</string>
+    <string name="affiliation_code_helper">Le code d\'affiliation est composé de l\'acronyme de votre club en majuscule suivi du code postal.\n(Ex: PSG78100)</string>
+    <string name="club_not_available_msg">Votre club n\'est pas disponible ?</string>
+    <string name="contact_us">Contactez-nous</string>
+    <string name="club_suggestion_name">Nom</string>
+    <string name="club_suggestion_name_helper">Nom du club / de l\'association</string>
+    <string name="club_suggestion_acronym">Acronyme</string>
+    <string name="club_suggestion_acronym_helper">Initiales du club / de l\'association en majuscule</string>
+    <string name="club_suggestion_address">Adresse</string>
+    <string name="club_suggestion_address_helper">Adresse du club / de l\'assocation</string>
+    <string name="club_suggestion_send_button">Envoyer mon club</string>
+    <string name="affiliation_list_request">Bouton de demandes</string>
+    <string name="onBoarding_map_club">Retrouvez l\'emplacement de votre club grâce à l\'icône maison sur la carte</string>
+    <string name="send_suggestion">Nouveau Club</string>
+    <string name="send_suggestion_confirmation">Envoyer le club ?</string>
+    <string name="affiliation_club_list">Liste des clubs</string>
+    <string name="suggestion_success_txt">Votre club a été envoyé avec succès !</string>
 
     <string-array name="sportList">
         <item>Football</item>

@@ -26,7 +26,6 @@ import com.google.android.material.snackbar.Snackbar
 import com.myfzone_sport.myf_zone.R
 import com.myfzone_sport.myf_zone.databinding.CardEventParticipantBinding
 import com.myfzone_sport.myf_zone.databinding.FragmentEventDetailsParticipantBinding
-import com.myfzone_sport.myf_zone.fragments.event.event_details.EventDetailsService
 import com.myfzone_sport.myf_zone.glide.GlideApp
 import com.myfzone_sport.myf_zone.model.State
 import com.myfzone_sport.myf_zone.model.chat.MessagingService
@@ -62,7 +61,7 @@ class EventDetailsParticipantFragment : Fragment() {
 
                 try {
                     GlideApp.with(itemView).apply {
-                        load(EventDetailsService.getImageReference(participant.clubLogo))
+                        load(EventDetailsParticipantService.getImageReference(participant.clubLogo))
                             .placeholder(R.drawable.ic_account)
                             .centerCrop()
                             .into(binding.eventDetailParticipantImage)
@@ -169,20 +168,6 @@ class EventDetailsParticipantFragment : Fragment() {
                 val params = binding.eventDetailParticipantList.layoutParams
                 params.height = 320 * itemCount
                 binding.eventDetailParticipantList.layoutParams = params
-
-                try {
-                    lifecycleScope.launch {
-                        val count =
-                            EventDetailsService.getValidParticipantCount(viewModel.eventId.value!!)
-                        try {
-                            binding.eventDetailNbTeam.text = count
-                        } catch (e: Exception) {
-                            Log.e(TAG, "Error in [onDataChanged]: $e")
-                        }
-                    }
-                } catch (e: Exception) {
-                    Log.e(TAG, "Error [onDataChanged] participant count: $e")
-                }
             }
         }
     }
@@ -280,7 +265,7 @@ class EventDetailsParticipantFragment : Fragment() {
                     binding.owner = owner
                     Log.i(TAG, "Owner URL: ${owner.clubLogo}")
                     GlideApp.with(this).apply {
-                        load(EventDetailsService.getImageReference(owner.clubLogo))
+                        load(EventDetailsParticipantService.getImageReference(owner.clubLogo))
                             .centerCrop()
                             .into(binding.cardEventOwner.eventDetailOwnerImage)
                     }

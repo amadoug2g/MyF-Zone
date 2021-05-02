@@ -116,7 +116,6 @@
                 android:transitionName="@string/button_trans"
                 tools:ignore="OnClick" />
 
-
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/registerText"
                 android:layout_width="match_parent"

@@ -19,4 +19,5 @@ object Constants {
     const val CLUB_PATH = "Env/${ENV}/Club"
     const val EVENT_PATH = "Env/${ENV}/Event"
     const val SPORT_PATH = "Env/${ENV}/Sport"
+    const val CLUB_SUGGESTION_PATH = "Env/${ENV}/ClubSuggestion"
 }

@@ -140,7 +140,27 @@ class AffiliationRequestFragment : Fragment() {
             hideProgressBar()
         }
 
-        binding.profileSettings.setOnClickListener { navigate(R.id.affiliationRequestToSettings) }
+        binding.affiliationSettings.setOnClickListener {
+            navigate(R.id.affiliationRequestToSettings)
+        }
+
+        binding.affiliationListRequest.setOnClickListener {
+            navigate(R.id.affiliationRequestToAffiliationClubList)
+        }
+
+        binding.infoButton.setOnClickListener {
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle(getString(R.string.affiliation_code_text))
+                .setIcon(R.drawable.ic_info)
+//                .setMessage(getString(R.string.enter_event_msg))
+                .setMessage(getString(R.string.affiliation_code_helper))
+                .setPositiveButton(R.string.confirm_message) { _: DialogInterface, _: Int ->
+                }.show()
+        }
+
+        binding.contactUsText.setOnClickListener {
+            navigate(R.id.affiliationRequestToAffiliationSuggestion)
+        }
 
         return binding.root
     }
@@ -223,27 +243,28 @@ class AffiliationRequestFragment : Fragment() {
             }
         }
 
-        binding.sportSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onNothingSelected(p0: AdapterView<*>?) {
+        binding.sportSpinner.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onNothingSelected(p0: AdapterView<*>?) {
 //                validateForm()
-            }
+                }
 
-            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                if (!sportFirstPass) {
+                override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                    if (!sportFirstPass) {
 
-                    lifecycleScope.launchWhenResumed {
+                        lifecycleScope.launchWhenResumed {
 
-                        showProgressBar()
+                            showProgressBar()
 
-                        val sportObjectList = viewModel.querySportList()!!
+                            val sportObjectList = viewModel.querySportList()!!
 
-                        //region CATEGORY SPINNER HANDLER
+                            //region CATEGORY SPINNER HANDLER
 
-                        val categoryList = mutableListOf<String>()
-                        val sportId = viewModel.querySportIdFromList(
-                            sportSpinner.selectedItem.toString(),
-                            sportObjectList
-                        )!!
+                            val categoryList = mutableListOf<String>()
+                            val sportId = viewModel.querySportIdFromList(
+                                sportSpinner.selectedItem.toString(),
+                                sportObjectList
+                            )!!
                         val categoryObjectList = viewModel.queryCategoryList(sportId)!!
                         if (sportId.isNotEmpty()) {
                             for (item in categoryObjectList)

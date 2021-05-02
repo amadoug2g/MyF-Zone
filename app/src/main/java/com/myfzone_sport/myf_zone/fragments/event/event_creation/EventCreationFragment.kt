@@ -26,6 +26,8 @@ import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.myfzone_sport.myf_zone.R
 import com.myfzone_sport.myf_zone.databinding.FragmentEventCreationBinding
+import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth.isAffiliated
+import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth.isConnected
 import com.myfzone_sport.myf_zone.model.State
 import com.myfzone_sport.myf_zone.model.coach.ClubAffiliation
 import com.myfzone_sport.myf_zone.model.event.Event
@@ -45,7 +47,6 @@ class EventCreationFragment : Fragment() {
     companion object {
         private val TAG = EventCreationFragment::class.java.simpleName
 
-        private val currentUser = EventCreationService.firebaseAuth.currentUser
         private var eventDay1: String? = null
         private var eventDay2: String? = null
         private var eventTime: String? = null
@@ -71,6 +72,8 @@ class EventCreationFragment : Fragment() {
         viewModel = ViewModelProvider(this).get(
             EventCreationViewModel::class.java
         )
+
+        resetFields()
 
         binding.apply {
             lifecycleOwner = this@EventCreationFragment
@@ -158,9 +161,11 @@ class EventCreationFragment : Fragment() {
         }
 
         binding.eventCreateButton.setOnClickListener {
-            if (currentUser != null) {
-                lifecycleScope.launch {
+            if (isConnected) {
+                if (isAffiliated) {
                     createEvent()
+                } else {
+                    toast(getString(R.string.new_event_error_msg))
                 }
             } else {
                 toast(getString(R.string.new_event_error_msg))
@@ -189,29 +194,18 @@ class EventCreationFragment : Fragment() {
     override fun onStop() {
         super.onStop()
         binding.eventCreateAddressInput.hideKeyboard()
+        resetFields()
     }
     //endregion
 
     //region Event Creation
-    private suspend fun createEvent() {
-        viewModel.checkAffiliationStatus().collect { state ->
-            when (state) {
-                is State.Loading -> {
-
-                }
-                is State.Success -> {
-                    try {
-                        if (validateForm())
-                            confirmCreation()
-                    } catch (e: Exception) {
-                        toast("Error on Edit: ${e.localizedMessage}")
-                        Log.d(TAG, "Error: $e")
-                    }
-                }
-                is State.Failed -> {
-                    (getString(R.string.new_event_error_msg)).toast()
-                }
-            }
+    private fun createEvent() {
+        try {
+            if (validateForm())
+                confirmCreation()
+        } catch (e: Exception) {
+            toast("Erreur: ${e.localizedMessage}")
+            Log.d(TAG, "Error: $e")
         }
     }
 
@@ -262,7 +256,7 @@ class EventCreationFragment : Fragment() {
                 }
                 is State.Failed -> {
                     hideProgressBar()
-                    val message = "An error occurred: ${state.message}"
+                    val message = "Erreur : ${state.message}"
                     message.toast()
                 }
             }
