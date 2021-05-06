@@ -8,11 +8,15 @@ import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter
+import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.firebase.firestore.Query
 import com.myfzone_sport.myf_zone.R
+import com.myfzone_sport.myf_zone.databinding.CardEventProfileBinding
 import com.myfzone_sport.myf_zone.databinding.FragmentProfileBinding
 import com.myfzone_sport.myf_zone.fragments.profile.ProfileService.getImageReference
 import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth
@@ -22,7 +26,6 @@ import com.myfzone_sport.myf_zone.model.event.Event
 import com.myfzone_sport.myf_zone.util.Constants.TRACKING
 import com.myfzone_sport.myf_zone.util.Tracking
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 import org.jetbrains.anko.support.v4.toast
 
 class ProfileFragment : Fragment() {
@@ -31,9 +34,87 @@ class ProfileFragment : Fragment() {
         private lateinit var viewModel: ProfileViewModel
         private lateinit var binding: FragmentProfileBinding
         private lateinit var viewModelFactory: ProfileViewModelFactory
+        private var adapter: FirestoreRecyclerAdapter<Event, EventHolder>? = null
+    }
+
+    class EventHolder(val binding: CardEventProfileBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+
+        fun bind(event: Event) {
+            with(binding) {
+                binding.event = event
+
+                binding.cardViewDetailProfile.setOnClickListener {
+                    navigate(event)
+                }
+            }
+        }
+
+        companion object {
+            fun from(parent: ViewGroup): EventHolder {
+                val layoutInflater = LayoutInflater.from(parent.context)
+                val binding =
+                    CardEventProfileBinding.inflate(layoutInflater, parent, false)
+                return EventHolder(binding)
+            }
+        }
+
+        private fun navigate(event: Event) {
+            TRACKING.logEvent(Tracking.ACCOUNT_OPEN_EVENT, null)
+            val bundle = bundleOf("eventId" to event.id)
+            navigate(R.id.profileToEventDetailsOwner, bundle)
+        }
+
+        private fun navigate(destination: Int, extra: Bundle? = null) {
+            Navigation
+                .findNavController(itemView)
+                .navigate(destination, extra)
+        }
     }
 
     //region Override Methods
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        viewModelFactory = ProfileViewModelFactory()
+        viewModel = ViewModelProvider(this, viewModelFactory).get(ProfileViewModel::class.java)
+
+        val recyclerOptions = FirestoreRecyclerOptions.Builder<Event>()
+            .setQuery(
+                viewModel.getQuery().orderBy("date", Query.Direction.DESCENDING),
+                Event::class.java
+            )
+            .setLifecycleOwner(this)
+            .build()
+
+        adapter = object :
+            FirestoreRecyclerAdapter<Event, EventHolder>(recyclerOptions) {
+            override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EventHolder {
+                return EventHolder.from(parent)
+            }
+
+            override fun onBindViewHolder(
+                holder: EventHolder,
+                position: Int,
+                model: Event
+            ) {
+                holder.bind(model)
+//                if (itemCount > 0)
+//                    binding.count = itemCount
+//                else
+//                    binding.count = 0
+            }
+
+            override fun onDataChanged() {
+                binding.count = itemCount
+
+                val params = binding.profileEventRecycler.layoutParams
+                params.height = 320 * itemCount
+                binding.profileEventRecycler.layoutParams = params
+            }
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -45,22 +126,16 @@ class ProfileFragment : Fragment() {
             false
         )
 
-        viewModelFactory = ProfileViewModelFactory()
-        viewModel = ViewModelProvider(this, viewModelFactory).get(ProfileViewModel::class.java)
-
         binding.apply {
             lifecycleOwner = this@ProfileFragment
             executePendingBindings()
+            setupRecyclerParameters()
         }
 
         binding.user = ManagerAuth.activeCoach
         binding.club = ManagerAuth.activeCoachClubAffiliation
 
         loadUser()
-
-        lifecycleScope.launch {
-            loadUserEvents()
-        }
 
         binding.profileSettings.setOnClickListener {
             TRACKING.logEvent(Tracking.SETTINGS, null)
@@ -106,7 +181,8 @@ class ProfileFragment : Fragment() {
                     binding.count = eventList.size
 //                    eventList.forEach { event -> loadEventOwner(event.id, eventList) }
                     hideProgressBar()
-                    setupEventRecyclerView(eventList)
+//                    setupEventRecyclerView(eventList)
+//                    setupRecyclerParameters()
                 }
                 is State.Failed -> {
                     val bundleTracking = bundleOf("Profile Error [loadUserEvents]" to state.message)
@@ -159,14 +235,11 @@ class ProfileFragment : Fragment() {
     //endregion
 
     //region RecyclerView
-    private fun setupEventRecyclerView(eventList: MutableList<Event>) {
-        val adapter = ProfileEventAdapter()
-        adapter.submitList(eventList)
-        binding.profileEventRecycler.apply {
-            this.adapter = adapter
-            layoutManager = LinearLayoutManager(activity)
-            setHasFixedSize(true)
-        }
+    private fun setupRecyclerParameters() {
+        binding.profileEventRecycler.setHasFixedSize(false)
+        binding.profileEventRecycler.layoutManager =
+            LinearLayoutManager(requireContext())
+        binding.profileEventRecycler.adapter = adapter
     }
     //endregion
 

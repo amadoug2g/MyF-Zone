@@ -165,6 +165,8 @@ class EventDetailsOwnerFragment : Fragment() {
                 }
             }
         }
+
+        setHasOptionsMenu(true)
     }
 
     override fun onCreateView(

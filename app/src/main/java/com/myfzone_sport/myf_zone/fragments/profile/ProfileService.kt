@@ -1,6 +1,7 @@
 package com.myfzone_sport.myf_zone.fragments.profile
 
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.storage.FirebaseStorage
 import com.myfzone_sport.myf_zone.model.State
@@ -25,6 +26,7 @@ import kotlinx.coroutines.tasks.await
 
 object ProfileService {
     private val storageInstance: FirebaseStorage by lazy { FirebaseStorage.getInstance() }
+    val fireStoreInstance: FirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
     val firebaseAuth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
 
     fun getUserEventList() = flow<State<MutableList<Event>>> {
