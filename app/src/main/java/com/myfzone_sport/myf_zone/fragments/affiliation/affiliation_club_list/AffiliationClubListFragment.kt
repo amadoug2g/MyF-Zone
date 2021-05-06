@@ -16,6 +16,7 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.myfzone_sport.myf_zone.R
 import com.myfzone_sport.myf_zone.databinding.CardClubListBinding
 import com.myfzone_sport.myf_zone.databinding.FragmentAffiliationClubListBinding
+import com.myfzone_sport.myf_zone.fragments.affiliation.affiliation_club_list.AffiliationClubListService.getImageReference
 import com.myfzone_sport.myf_zone.glide.GlideApp
 import com.myfzone_sport.myf_zone.model.club.Club
 
@@ -40,7 +41,7 @@ class AffiliationClubListFragment : Fragment() {
 
                 try {
                     GlideApp.with(itemView).apply {
-                        load(AffiliationClubListService.getImageReference(club.logo))
+                        load(getImageReference(club.logo))
                             .placeholder(R.drawable.ic_account)
                             .centerCrop()
                             .into(binding.clubImage)
@@ -90,7 +91,11 @@ class AffiliationClubListFragment : Fragment() {
                 position: Int,
                 model: Club
             ) {
-                holder.bind(model)
+                if (model.name == "MFZ Guest" || model.name == "My F-Zone" || model.name == "Los Angeles Galaxy") {
+//                    toast("01")
+                } else {
+                    holder.bind(model)
+                }
             }
 
             override fun onDataChanged() {

@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="owner"
+            type="com.myfzone_sport.myf_zone.model.event.EventOwner" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/event_detail_CardView_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="8dp"
+            app:cardCornerRadius="10dp"
+            app:cardElevation="4dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal">
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/date_switch"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="Format" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/filter_range"
+                        style="@style/map_button_style"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginTop="8dp"
+                        android:backgroundTint="@color/colorAccent"
+                        android:drawableEnd="@drawable/ic_calendar"
+                        android:text="@string/select_range_text"
+                        android:visibility="gone" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/filter_date"
+                        style="@style/map_button_style"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginTop="8dp"
+                        android:backgroundTint="@color/colorAccent"
+                        android:drawableEnd="@drawable/ic_calendar_today"
+                        android:text="Sélectionnez une date" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Type" />
+
+                <CheckBox
+                    android:id="@+id/checkBox_tournament"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawableStart="@mipmap/ic_cup"
+                    android:text="Tournoi" />
+
+                <CheckBox
+                    android:id="@+id/checkBox_plateau"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawableStart="@mipmap/ic_stadium"
+                    android:text="Plateau" />
+
+                <CheckBox
+                    android:id="@+id/checkBox_friendly"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawableStart="@mipmap/ic_ball"
+                    android:text="Amical" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Catégorie" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/eventCreateTypeLayout"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp">
+
+                    <androidx.appcompat.widget.AppCompatSpinner
+                        android:id="@+id/event_create_typeSpinner"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:entries="@array/typeList"
+                        android:spinnerMode="dialog"
+                        android:visibility="invisible" />
+
+                    <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                        android:id="@+id/eventCreateTypeInput"
+                        style="@style/TextAppearance.AppCompat.Medium"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="none"
+                        android:padding="8dp"
+                        android:text="@string/friendly_event" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Sous-catégorie" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/eventCreateTeamLayout"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginEnd="16dp">
+
+                    <androidx.appcompat.widget.AppCompatSpinner
+                        android:id="@+id/event_create_teamSpinner"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:entries="@array/amicalTeamList"
+                        android:spinnerMode="dialog"
+                        android:visibility="invisible" />
+
+                    <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                        android:id="@+id/eventCreateTeamInput"
+                        style="@style/TextAppearance.AppCompat.Medium"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="none"
+                        android:padding="8dp"
+                        android:text="@string/friendly_event" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/event_create_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="32dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="Filtrer" />
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+    </LinearLayout>
+</layout>

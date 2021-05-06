@@ -34,7 +34,7 @@
                 android:layout_marginTop="10dp"
                 android:contentDescription="@string/affiliation_list_request"
                 android:src="@drawable/ic_view_list"
-                android:visibility="invisible" />
+                android:visibility="visible" />
 
             <ImageView
                 android:id="@+id/affiliationSettings"
@@ -58,7 +58,7 @@
             android:text="@string/affiliationTextDesc"
             android:textSize="16sp" />
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
@@ -71,6 +71,7 @@
                 android:layout_marginStart="32dp"
                 android:layout_marginTop="32dp"
                 android:layout_marginEnd="12dp"
+                android:layout_weight="5"
                 android:hint="@string/affiliation_code_text">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -88,11 +89,11 @@
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="48dp"
                 android:layout_marginEnd="15dp"
-                android:layout_toEndOf="@+id/affiliationCodeLayout"
+                android:layout_weight="1"
                 android:background="@color/colorTransparent"
                 android:contentDescription="@string/account_button_desc"
                 android:src="@drawable/ic_info" />
-        </RelativeLayout>
+        </LinearLayout>
 
 
         <androidx.appcompat.widget.AppCompatSpinner

@@ -63,6 +63,15 @@
             android:orientation="vertical">
 
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/filter"
+                style="@style/map_button_style"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="8dp"
+                android:backgroundTint="@color/colorAccent"
+                android:drawableEnd="@drawable/ic_filter"
+                android:text="@string/filter_text" />
+
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/filter_button"
                 style="@style/map_button_style"
                 android:layout_marginStart="15dp"
@@ -70,7 +79,8 @@
                 android:backgroundTint="@color/colorAccent"
                 android:drawableEnd="@drawable/filter_icons_all_2"
                 android:drawablePadding="0dp"
-                android:text="@{`(` + String.valueOf(viewModel.filterCount) + `) `}" />
+                android:text="@{`(` + String.valueOf(viewModel.filterCount) + `) `}"
+                android:visibility="gone" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/filter_button_ball"

@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.*
 import android.content.res.ColorStateList
 import android.os.Bundle
+import android.util.AttributeSet
 import android.util.Log
 import android.view.Menu
 import android.view.View
@@ -25,9 +26,12 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.myfzone_sport.myf_zone.R
 import com.myfzone_sport.myf_zone.databinding.ActivityMainScreenBinding
 import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth
+import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth.activeCoachClub
 import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth.isAffiliated
 import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth.isConnected
+import com.myfzone_sport.myf_zone.glide.GlideApp
 import com.myfzone_sport.myf_zone.model.chat.Chat
+import com.myfzone_sport.myf_zone.screens.MainService.getImageReference
 import com.myfzone_sport.myf_zone.setupWithNavController
 import com.myfzone_sport.myf_zone.util.Constants.TRACKING
 import com.myfzone_sport.myf_zone.util.Tracking
@@ -102,6 +106,8 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
             binding.mainLayout.isEnabled = true
         }
 
+        imageProfile()
+
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.fragmentNavHost) as NavHostFragment
         navController = navHostFragment.navController
@@ -109,6 +115,11 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
         //bottomNavBar.selectedItemId = R.id.map
         checkIntent()
         checkOnBoarding()
+    }
+
+    override fun onCreateView(name: String, context: Context, attrs: AttributeSet): View? {
+        imageProfile()
+        return super.onCreateView(name, context, attrs)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -337,6 +348,23 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
         val inputMethodManager =
             getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
+    }
+
+    private fun imageProfile() {
+        if (isConnected) {
+            if (isAffiliated) {
+                try {
+                    GlideApp.with(this).apply {
+                        load(getImageReference(activeCoachClub!!.logo))
+                            .placeholder(R.drawable.ic_account)
+                            .centerCrop()
+                            .into(binding.accountButton)
+                    }
+                } catch (e: Exception) {
+                    Log.e("Holder", "Image could not load: $e")
+                }
+            }
+        }
     }
     //endregion
 

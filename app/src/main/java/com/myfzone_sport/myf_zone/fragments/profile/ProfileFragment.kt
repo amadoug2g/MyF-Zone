@@ -1,6 +1,5 @@
 package com.myfzone_sport.myf_zone.fragments.profile
 
-import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -70,6 +69,7 @@ class ProfileFragment : Fragment() {
 
         binding.profileAffiliation.setOnClickListener {
             navigate(R.id.profileToAffiliation)
+//            affiliationChoiceWindow()
         }
 
         return binding.root
@@ -123,27 +123,38 @@ class ProfileFragment : Fragment() {
 
     //region Affiliation
     private fun affiliationChoiceWindow() {
-        val items = arrayOf("Item 1", "Item 2", "Item 3")
-        //Titre - Affiliations
-        //Nouvel affiliation
-        //Statut des demandes
+        val titleNewAffiliation = getString(R.string.title_new_affiliation)
+        val titleAffiliationList = getString(R.string.title_affiliation_list)
+        val titleClubList = getString(R.string.affiliation_club_list)
+        val items = arrayOf(titleNewAffiliation, titleAffiliationList, titleClubList)
 
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle(getString(R.string.affiliate))
-            .setItems(items) { _, _ ->
+            .setTitle(getString(R.string.membership))
+            .setItems(items) { _, selected ->
                 // Respond to item chosen
+                when (selected) {
+                    0 -> {
+                        navigate(R.id.profileToAffiliation)
+                    }
+                    1 -> {
+                        toast("Selected $titleAffiliationList")
+                    }
+                    2 -> {
+                        navigate(R.id.profileToAffiliationClubList)
+                    }
+                }
             }
             .show()
 
 
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle(getString(R.string.affiliate))
-            .setMessage(getString(R.string.enter_event_msg))
-            .setPositiveButton(R.string.confirm_message) { _: DialogInterface, _: Int ->
-//                confirmParticipation()
-            }
-            .setNegativeButton(R.string.cancel_message) { _: DialogInterface, _: Int ->
-            }.show()
+//        MaterialAlertDialogBuilder(requireContext())
+//            .setTitle(getString(R.string.affiliate))
+//            .setMessage(getString(R.string.enter_event_msg))
+//            .setPositiveButton(R.string.confirm_message) { _: DialogInterface, _: Int ->
+////                confirmParticipation()
+//            }
+//            .setNegativeButton(R.string.cancel_message) { _: DialogInterface, _: Int ->
+//            }.show()
     }
     //endregion
 

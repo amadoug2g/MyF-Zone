@@ -3,6 +3,7 @@ package com.myfzone_sport.myf_zone.screens
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.storage.FirebaseStorage
 import com.myfzone_sport.myf_zone.model.chat.Chat
 import com.myfzone_sport.myf_zone.util.Constants.COACH_PATH
 import com.myfzone_sport.myf_zone.util.Constants.DB
@@ -14,6 +15,7 @@ import com.myfzone_sport.myf_zone.util.Constants.DB
 
 object MainService {
     private val TAG = this::class.java.simpleName
+    private val storageInstance: FirebaseStorage by lazy { FirebaseStorage.getInstance() }
     private val firebaseAuth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
 
     fun addChatListener(
@@ -48,4 +50,8 @@ object MainService {
             null
         }
     }
+
+
+    fun getImageReference(path: String) =
+        storageInstance.getReference(path.removePrefix("gs://myf-zone.appspot.com"))
 }

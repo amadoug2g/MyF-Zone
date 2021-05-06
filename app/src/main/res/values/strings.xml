@@ -51,6 +51,9 @@
     <string name="affiliationRequestComment">Ce club a bien reçu votre demande d\'affiliation et vous répondra prochainement</string>
     <string name="laterTextButton">Plus tard</string>
     <string name="affiliate">S\'affilier</string>
+    <string name="membership">Affiliation</string>
+    <string name="title_new_affiliation">Nouvelle demande</string>
+    <string name="title_affiliation_list">Liste des demandes</string>
     <string name="affiliation_club_acronym">Acronyme du Club</string>
     <string name="affiliation_request_success_text">Demande d\'affiliation réussie !</string>
     <string name="affiliation_text">Demande d\'affiliation</string>

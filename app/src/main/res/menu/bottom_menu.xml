@@ -4,18 +4,21 @@
     <item
         android:id="@+id/calendar"
         android:icon="@drawable/ic_calendar"
-        android:title="@string/menu_item_calendar"
+        android:title="@string/empty_string"
         app:showAsAction="ifRoom" />
+    <!--  "@string/menu_item_calendar"  -->
     <item
         android:id="@+id/map"
         android:icon="@drawable/ic_location"
-        android:title="@string/menu_item_map"
+        android:title="@string/empty_string"
         app:showAsAction="ifRoom" />
+    <!--  "@string/menu_item_map"  -->
     <item
         android:id="@+id/message"
         android:icon="@drawable/ic_message"
-        android:title="@string/menu_item_message"
+        android:title="@string/empty_string"
         app:showAsAction="ifRoom" />
+    <!--  "@string/menu_item_message"  -->
     <item
         android:id="@+id/placeholder"
         android:title="@string/empty_string"

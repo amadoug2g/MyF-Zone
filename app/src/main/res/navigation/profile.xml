@@ -22,7 +22,15 @@
         <action
             android:id="@+id/profileToAffiliation"
             app:destination="@id/affiliation_request" />
+        <action
+            android:id="@+id/profileToAffiliationClubList"
+            app:destination="@id/affiliationClubList" />
     </fragment>
+    <fragment
+        android:id="@+id/affiliationClubList"
+        android:name="com.myfzone_sport.myf_zone.fragments.affiliation.affiliation_club_list.AffiliationClubListFragment"
+        android:label="@string/affiliation_club_list"
+        tools:layout="@layout/fragment_affiliation_club_list" />
     <include app:graph="@navigation/event_details_owner" />
     <include app:graph="@navigation/settings" />
     <include app:graph="@navigation/affiliation_request" />

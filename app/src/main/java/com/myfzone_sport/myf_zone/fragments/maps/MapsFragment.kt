@@ -118,6 +118,10 @@ class MapsFragment : Fragment(),
         viewModel.assignContext(requireContext())
         binding.viewModel = viewModel
 
+        binding.filter.setOnClickListener {
+            calendarClick()
+        }
+
         binding.filterButton.setOnClickListener {
             calendarClick()
         }
@@ -186,11 +190,6 @@ class MapsFragment : Fragment(),
         mapFragment?.getMapAsync(callback)
     }
 
-    override fun onResume() {
-        super.onResume()
-        checkEventList(viewModel.eventList.value!!)
-    }
-
     override fun onStop() {
         super.onStop()
         viewModel.marker.observe(viewLifecycleOwner) { marker ->
@@ -220,7 +219,7 @@ class MapsFragment : Fragment(),
                         loadingMsgEnd()
                         val list = state.data
                         viewModel.assignEventList(list)
-                        checkEventList(list)
+//                        checkEventList(list)
                         binding.viewModel = viewModel
 //                        viewModel.placeEvents(viewModel.map.value!!, requireContext(), list)
 //                        viewModel.placeEventsCluster(viewModel.map.value!!, requireContext(), list)
