@@ -143,7 +143,13 @@ object MapsService {
 //        map.setOnMarkerClickListener(clusterManager)
     }
 
-    fun getEvents(startDate: Long, endDate: Long) = flow<State<MutableList<Event>>> {
+    fun getEvents(
+        startDate: Long,
+        endDate: Long,
+        isFriendly: Boolean,
+        isTourney: Boolean,
+        isPlateau: Boolean
+    ) = flow<State<MutableList<Event>>> {
         emit(State.loading())
 
         val mEventQuery = DB.collection(EVENT_PATH).orderBy("date")
@@ -153,7 +159,12 @@ object MapsService {
 
         snapshot.forEach {
             val event = it.toObject<Event>()
-            if (event.date.time in startDate..endDate) eventList.add(event)
+//            if (event.date.time in startDate..endDate) eventList.add(event)
+            if (event.date.time in startDate..endDate) {
+                if (isFriendly && event.type == "friendly") eventList.add(event)
+                if (isTourney && event.type == "tournament") eventList.add(event)
+                if (isPlateau && event.type == "plateau") eventList.add(event)
+            }
         }
 
         eventList.forEach { event ->

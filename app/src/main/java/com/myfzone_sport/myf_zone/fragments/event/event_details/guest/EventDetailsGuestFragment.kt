@@ -25,6 +25,7 @@ import com.myfzone_sport.myf_zone.R
 import com.myfzone_sport.myf_zone.databinding.CardEventParticipantGuestBinding
 import com.myfzone_sport.myf_zone.databinding.FragmentEventDetailsGuestBinding
 import com.myfzone_sport.myf_zone.fragments.event.event_details.guest.EventDetailsGuestService.getImageReference
+import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth
 import com.myfzone_sport.myf_zone.glide.GlideApp
 import com.myfzone_sport.myf_zone.model.State
 import com.myfzone_sport.myf_zone.model.event.Event
@@ -148,6 +149,16 @@ class EventDetailsGuestFragment : Fragment() {
             lifecycleOwner = this@EventDetailsGuestFragment
             setupRecyclerParameters()
             executePendingBindings()
+        }
+
+        if (ManagerAuth.isConnected) {
+            if (!ManagerAuth.isAffiliated) {
+                binding.userInfoCardStatus.messageChatListNotSignedIn.visibility = View.GONE
+                binding.userInfoCardStatus.messageChatListNotAffiliated.visibility = View.VISIBLE
+            }
+        } else {
+            binding.userInfoCardStatus.messageChatListNotSignedIn.visibility = View.VISIBLE
+            binding.userInfoCardStatus.messageChatListNotAffiliated.visibility = View.GONE
         }
 
         binding.userInfoCardStatus.messageChatListNotAffiliated.setOnClickListener { navigate(R.id.eventDetailsToAffiliationRequest) }

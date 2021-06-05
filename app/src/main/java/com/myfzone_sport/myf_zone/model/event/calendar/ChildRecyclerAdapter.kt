@@ -19,14 +19,15 @@ import com.myfzone_sport.myf_zone.glide.GlideApp
 import com.myfzone_sport.myf_zone.model.event.EventCalendar
 import com.myfzone_sport.myf_zone.util.Constants.TRACKING
 import com.myfzone_sport.myf_zone.util.Tracking
-import kotlinx.android.synthetic.main.card_event_profile.view.*
+import kotlinx.android.synthetic.main.card_event_calendar.view.*
+import kotlinx.android.synthetic.main.card_event_profile.view.notificationDotOwner
 
 class ChildRecyclerAdapter(private val items: MutableList<EventCalendar>) :
     RecyclerView.Adapter<ChildRecyclerAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
-        val view = layoutInflater.inflate(R.layout.card_event_profile, parent, false)
+        val view = layoutInflater.inflate(R.layout.card_event_calendar, parent, false)
 
         return ViewHolder(
             view
@@ -76,10 +77,10 @@ class ChildRecyclerAdapter(private val items: MutableList<EventCalendar>) :
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        var titleView: TextView = view.cardView_clubName_profile
-        var descriptionView: TextView = view.cardView_clubDesc_profile
-        var clubImage: ImageView = view.cardView_clubImage_profile
-        var cardview: MaterialCardView = view.cardView_detail_profile
+        var titleView: TextView = view.cardView_eventType
+        var descriptionView: TextView = view.cardView_eventTitle
+        var clubImage: ImageView = view.cardView_eventImage
+        var cardview: MaterialCardView = view.cardView_detail_agenda
 
         fun bind(eventCalendar: EventCalendar) {
 
@@ -88,11 +89,22 @@ class ChildRecyclerAdapter(private val items: MutableList<EventCalendar>) :
                     load(eventCalendar.eventTypeImage)
                         .placeholder(R.drawable.ic_account)
                         .centerCrop()
-                        .into(itemView.cardView_clubImage_profile)
+                        .into(itemView.cardView_eventImage)
                 }
             } catch (e: Exception) {
                 Log.e("ViewHolder", "Image could not load: $e")
             }
+
+//            try {
+//                GlideApp.with(itemView).apply {
+//                    load(getImageReference(eventCalendar.owner.clubLogo))
+//                        .placeholder(R.drawable.ic_account)
+//                        .centerCrop()
+//                        .into(itemView.cardView_clubImage)
+//                }
+//            } catch (e: Exception) {
+//                Log.e("CalendarClubImage", "Image could not load: $e")
+//            }
 
             try {
                 if (ManagerAuth.isCoachOwner(eventCalendar.id)) {
@@ -102,6 +114,7 @@ class ChildRecyclerAdapter(private val items: MutableList<EventCalendar>) :
                 Log.e("ParticipantAdapter", "Image could not load: $e")
             }
 
+/*
 
 //            CoroutineScope(Main).launch {
 //                try {
@@ -132,9 +145,10 @@ class ChildRecyclerAdapter(private val items: MutableList<EventCalendar>) :
 //                    Log.e("EventStatus", "Event status could not be retrieved: $e")
 //                }
 //            }
+*/
 
-            itemView.cardView_clubName_profile.text = eventCalendar.eventTypeString
-            itemView.cardView_clubDesc_profile.text = eventCalendar.title
+            itemView.cardView_eventType.text = eventCalendar.eventTypeString
+            itemView.cardView_eventTitle.text = eventCalendar.title
         }
     }
 
@@ -143,6 +157,4 @@ class ChildRecyclerAdapter(private val items: MutableList<EventCalendar>) :
             .findNavController(view)
             .navigate(destination, extra)
     }
-
-//    private suspend fun getOwner(id: String) = MapsService.getOwnerFromEvent(id)
 }

@@ -19,8 +19,6 @@ class AffiliationRequestViewModel : ViewModel() {
     val clubList: LiveData<MutableList<Club>>
         get() = _clubList
 
-    fun getCurrentUser() = AffiliationRequestService.getCurrentUser()
-
     //region Affiliation
     fun affiliationProcess(
         code: String,

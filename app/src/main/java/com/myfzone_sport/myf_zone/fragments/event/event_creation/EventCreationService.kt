@@ -3,6 +3,7 @@ package com.myfzone_sport.myf_zone.fragments.event.event_creation
 import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth
 import com.myfzone_sport.myf_zone.model.State
 import com.myfzone_sport.myf_zone.model.coach.ClubAffiliation
+import com.myfzone_sport.myf_zone.model.coach.Coach
 import com.myfzone_sport.myf_zone.model.event.Event
 import com.myfzone_sport.myf_zone.model.event.EventOwner
 import com.myfzone_sport.myf_zone.util.Constants.COACH_PATH
@@ -83,4 +84,60 @@ object EventCreationService {
             emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
         }.flowOn(Dispatchers.IO)
 
+    fun getCoachByCategory(category: String, sportId: String) = flow<State<MutableList<Coach>>> {
+        emit(State.loading())
+
+        val userId = ManagerAuth.activeCoach?.id
+        val mCoachList = DB.collection(COACH_PATH)
+
+        val snapshot = mCoachList.get().await()
+
+        snapshot.forEach {
+            val itemsCoach = mutableListOf<Coach>()
+            val coach = it.toObject(Coach::class.java)
+
+            if (userId != coach.id) itemsCoach.add(coach)
+
+            itemsCoach.forEach { coach ->
+                val mCoachListSpecific = DB.collection(COACH_PATH + "/${coach.id}/ClubAffiliation")
+
+                val itemsAffiliation = mutableListOf<Coach>()
+                val affiliation = mCoachListSpecific.get().addOnSuccessListener { affiliation ->
+                    val snapshotAffiliation = affiliation.toObjects(ClubAffiliation::class.java)
+                    snapshotAffiliation.forEach { aff ->
+                        if (aff.categoryName == category) itemsAffiliation.add(coach)
+                    }
+                }
+
+                emit(
+                    if (itemsAffiliation.isNotEmpty()) (State.success(snapshot.toObjects(Coach::class.java)))
+                    else (State.success(mutableListOf()))
+                )
+            }
+
+        }
+
+        snapshot
+
+//        mCategoryList.get().addOnSuccessListener {
+//            val snapshot = it.documents[0]
+//
+//            val resultState =
+//                if (!snapshot.isEmpty) (State.success(snapshot.toObjects(EventParticipant::class.java))) else (State.success(
+//                    mutableListOf()
+//                ))
+//
+//            emit(resultState)
+//        }
+
+//        val resultState =
+//            if (!snapshot.isEmpty) (State.success(snapshot.toObjects(EventParticipant::class.java))) else (State.success(
+//                mutableListOf()
+//            ))
+//
+//        emit(resultState)
+//        emit(State.success(participantList))
+    }.catch {
+        emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
+    }.flowOn(Dispatchers.IO)
 }

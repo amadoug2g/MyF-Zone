@@ -140,6 +140,7 @@
     <string name="user_not_affiliated">You are not affiliated</string>
     <string name="select_filter_period">Select Range</string>
     <string name="filter_text">Filter</string>
+    <string name="filter_text_title">Filtres</string>
     <string name="no_event_found">No event in this range</string>
     <string name="event_in_range">events in this range</string>
     <string name="event_list_update">Events updated!</string>
@@ -181,6 +182,20 @@
     <string name="send_suggestion_confirmation">Send club ?</string>
     <string name="affiliation_club_list">Club List</string>
     <string name="suggestion_success_txt">Club sent successfully!</string>
+    <string name="type_filter_txt">Event type</string>
+    <string name="cat_filter_txt">Category</string>
+    <string name="sub_cat_filter_txt">Sub-Category</string>
+    <string name="select_date_text">Select a date</string>
+    <string name="format_filter_txt">Format</string>
+    <string name="filter_txt_button">Filter</string>
+    <string name="info_participation_event">Participants info</string>
+    <string name="participants_info_validate">Accepted participants accepted</string>
+    <string name="participants_info_pending">Participants pending answer</string>
+    <string name="participants_info_refused">Rejected participants</string>
+    <string name="owner_info_title">Manage participants for your event using coloured dots:</string>
+    <string name="owner_info_desc">As the organiser, only you can see which participants are rejected or pending. The participants you accept are visible to everyone.</string>
+    <string name="participants_info_desc">You can withdraw your participation by pressing the button next to your name in the list below.</string>
+    <string name="participants_info_title">Check the status of your participation with the coloured dots:</string>
 
 
     <!--    <string-array name="typeList">-->

@@ -58,6 +58,18 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/mapFilterLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/colorTransparentDiscreet"
+            android:visibility="gone">
+
+            <include
+                android:id="@+id/mapFilter"
+                layout="@layout/map_filter_list" />
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">

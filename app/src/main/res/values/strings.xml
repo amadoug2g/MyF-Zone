@@ -147,6 +147,7 @@
     <string name="user_not_affiliated">Vous n\'êtes pas affilié</string>
     <string name="select_filter_period">Sélectionnez une période</string>
     <string name="filter_text">Filtre</string>
+    <string name="filter_text_title">Filtres</string>
     <string name="no_event_found">Aucun évènement à cette période</string>
     <string name="event_in_range">évènements à cette période</string>
     <string name="event_list_update">Evènements mis à jour !</string>
@@ -188,6 +189,20 @@
     <string name="send_suggestion_confirmation">Envoyer le club ?</string>
     <string name="affiliation_club_list">Liste des clubs</string>
     <string name="suggestion_success_txt">Votre club a été envoyé avec succès !</string>
+    <string name="type_filter_txt">Type d\'évènement</string>
+    <string name="cat_filter_txt">Catégorie</string>
+    <string name="sub_cat_filter_txt">Sous-catégorie</string>
+    <string name="select_date_text">Sélectionnez une date</string>
+    <string name="format_filter_txt">Format</string>
+    <string name="filter_txt_button">Filtrer</string>
+    <string name="info_participation_event">Info participants</string>
+    <string name="participants_info_validate">Participants acceptés</string>
+    <string name="participants_info_pending">Participants en attente d\'une réponse</string>
+    <string name="participants_info_refused">Participants refusés</string>
+    <string name="owner_info_title">Gérez les participants de votre évènement à l\'aide des pastilles de couleur :</string>
+    <string name="owner_info_desc">En tant qu\'organisateur, vous seul pouvez voir quel participant est refusé ou en attente. Les participants que vous acceptez sont visibles de tous.</string>
+    <string name="participants_info_desc">Vous pouvez retirer votre participation en appuyant sur le bouton près de votre nom, présent dans la liste ci-dessous.</string>
+    <string name="participants_info_title">Vérifiez le statut de votre participation à l\'aide des pastilles de couleur :</string>
 
     <string-array name="sportList">
         <item>Football</item>

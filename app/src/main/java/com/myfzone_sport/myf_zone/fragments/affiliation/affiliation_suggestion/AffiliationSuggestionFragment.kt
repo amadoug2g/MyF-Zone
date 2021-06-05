@@ -23,6 +23,7 @@ import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.myfzone_sport.myf_zone.R
 import com.myfzone_sport.myf_zone.databinding.FragmentAffiliationSuggestionBinding
+import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth
 import com.myfzone_sport.myf_zone.model.State
 import com.myfzone_sport.myf_zone.model.club.ClubSuggestion
 import kotlinx.coroutines.flow.collect
@@ -79,6 +80,8 @@ class AffiliationSuggestionFragment : Fragment() {
         binding.clubSuggestionButton.setOnClickListener {
             sendSuggestion()
         }
+
+        ManagerAuth.checkUserStatus()
 
         return binding.root
     }

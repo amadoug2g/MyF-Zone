@@ -66,6 +66,13 @@ class CalendarFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
             toast("Erreur de chargement : ${e.localizedMessage}")
         }
 
+//        try {
+//            viewModel.addEventListenerCalendar(this::refreshRecyclerCalendar)
+//        } catch (e: Exception) {
+//            Log.e(TAG, "Error in eventListener: ${e.localizedMessage}")
+//            toast("Erreur de chargement : ${e.localizedMessage}")
+//        }
+
         ManagerAuth.checkUserStatus()
 
         return binding.root
@@ -158,6 +165,13 @@ class CalendarFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
     private fun refreshRecycler(list: MutableList<Event>) {
         eventList = viewModel.eventToCalendar(list)
         val listAdapter = ListRecyclerAdapter(eventList)
+
+        binding.parentRecyclerView.adapter = listAdapter
+    }
+
+    private fun refreshRecyclerCalendar(list: MutableList<EventSection>) {
+//        eventList = viewModel.eventToCalendar(list)
+        val listAdapter = ListRecyclerAdapter(list)
 
         binding.parentRecyclerView.adapter = listAdapter
     }

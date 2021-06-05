@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorTransparentDiscreet"
+        android:clickable="false"
+        android:focusable="false"
+        android:theme="@style/AppTheme">
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardView_detail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            app:cardCornerRadius="10dp"
+            app:cardElevation="20dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:id="@+id/info_text_card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp">
+
+                    <TextView
+                        android:id="@+id/textView_info_title"
+                        style="@style/TextAppearance.AppCompat.Medium"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginBottom="8dp"
+                        android:text="@string/participants_info_title"
+                        android:textAlignment="center"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/textView_info_pending"
+                        style="@style/TextAppearance.AppCompat.Medium"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/textView_info_title"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="8dp"
+                        android:drawablePadding="4dp"
+                        android:padding="2dp"
+                        android:text="@string/participants_info_pending"
+                        android:textAlignment="center"
+                        app:drawableStartCompat="@drawable/notification_dot_blue" />
+
+                    <TextView
+                        android:id="@+id/textView_info_validate"
+                        style="@style/TextAppearance.AppCompat.Medium"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/textView_info_pending"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="4dp"
+                        android:drawablePadding="4dp"
+                        android:padding="2dp"
+                        android:text="@string/participants_info_validate"
+                        android:textAlignment="center"
+                        app:drawableStartCompat="@drawable/notification_dot_green" />
+
+                    <TextView
+                        android:id="@+id/textView_info_refused"
+                        style="@style/TextAppearance.AppCompat.Medium"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/textView_info_validate"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="4dp"
+                        android:drawablePadding="4dp"
+                        android:padding="2dp"
+                        android:text="@string/participants_info_refused"
+                        android:textAlignment="center"
+                        app:drawableStartCompat="@drawable/notification_dot_red" />
+
+                    <TextView
+                        android:id="@+id/textView_info_desc"
+                        style="@style/TextAppearance.AppCompat.Medium"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/textView_info_refused"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginBottom="8dp"
+                        android:text="@string/participants_info_desc"
+                        android:textAlignment="center"
+                        android:textSize="16sp" />
+
+                </RelativeLayout>
+
+                <View
+                    android:id="@+id/separator"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="10dp"
+                    android:background="#c0c0c0"
+                    android:visibility="gone" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/continue_info_card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:text="@string/confirm_message" />
+            </LinearLayout>
+
+
+        </com.google.android.material.card.MaterialCardView>
+
+    </RelativeLayout>
+
+</layout>

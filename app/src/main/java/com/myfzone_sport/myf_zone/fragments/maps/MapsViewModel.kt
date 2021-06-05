@@ -69,6 +69,10 @@ class MapsViewModel : ViewModel() {
     var filterCountPlateau = MutableLiveData(0)
     var startDate = MutableLiveData<Long>(Calendar.getInstance().timeInMillis)
     var endDate = MutableLiveData<Long>(Calendar.getInstance().timeInMillis + (604800000))
+    var isFriendly = MutableLiveData<Boolean>(true)
+    var isTourney = MutableLiveData<Boolean>(true)
+    var isPlateau = MutableLiveData<Boolean>(true)
+//    , isFriendly: Boolean, isTourney: Boolean, isPlateau: Boolean
     //endregion
 
     fun assignContext(ctx: Context) {
@@ -81,6 +85,18 @@ class MapsViewModel : ViewModel() {
 
     fun assignEndDate(time: Long) {
         endDate.value = time
+    }
+
+    fun assignIsFriendly(bool: Boolean) {
+        isFriendly.value = bool
+    }
+
+    fun assignIsTourney(bool: Boolean) {
+        isTourney.value = bool
+    }
+
+    fun assignIsPlateau(bool: Boolean) {
+        isPlateau.value = bool
     }
 
     fun assignMap(googleMap: GoogleMap) {
@@ -129,7 +145,13 @@ class MapsViewModel : ViewModel() {
         }
     }
 
-    fun getEvents() = MapsService.getEvents(startDate.value!!, endDate.value!!)
+    fun getEvents() = MapsService.getEvents(
+        startDate.value!!,
+        endDate.value!!,
+        isFriendly.value!!,
+        isTourney.value!!,
+        isPlateau.value!!
+    )
 
     private suspend fun getOwner() = MapsService.getOwnerFromEvent(eventId.value!!)
 
@@ -167,17 +189,17 @@ class MapsViewModel : ViewModel() {
         _eventList.value = list
     }
 
-    fun placeEvents(
-        map: GoogleMap,
-        context: Context,
-        eventList: MutableList<Event>
-    ) = MapsService.placeEvents(map, context, eventList)
-
-    fun placeEventsCluster(
-        map: GoogleMap,
-        context: Context,
-        eventList: MutableList<Event>
-    ) = MapsService.placeEventsCluster(map, context, eventList)
+//    fun placeEvents(
+//        map: GoogleMap,
+//        context: Context,
+//        eventList: MutableList<Event>
+//    ) = MapsService.placeEvents(map, context, eventList)
+//
+//    fun placeEventsCluster(
+//        map: GoogleMap,
+//        context: Context,
+//        eventList: MutableList<Event>
+//    ) = MapsService.placeEventsCluster(map, context, eventList)
 
     fun placeUserClub(club: Club, map: GoogleMap, context: Context) =
         MapsService.placeUserClub(club, map, context)

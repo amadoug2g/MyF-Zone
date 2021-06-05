@@ -6,12 +6,10 @@ import com.google.firebase.firestore.ktx.toObject
 import com.myfzone_sport.myf_zone.model.State
 import com.myfzone_sport.myf_zone.model.club.AffiliationRequest
 import com.myfzone_sport.myf_zone.model.club.Club
-import com.myfzone_sport.myf_zone.model.coach.Coach
 import com.myfzone_sport.myf_zone.model.sport.Category
 import com.myfzone_sport.myf_zone.model.sport.Sport
 import com.myfzone_sport.myf_zone.model.sport.SubCategory
 import com.myfzone_sport.myf_zone.util.Constants.CLUB_PATH
-import com.myfzone_sport.myf_zone.util.Constants.COACH_PATH
 import com.myfzone_sport.myf_zone.util.Constants.DB
 import com.myfzone_sport.myf_zone.util.Constants.SPORT_PATH
 import kotlinx.coroutines.CoroutineScope
@@ -36,20 +34,6 @@ import java.util.*
 object AffiliationRequestService {
     private val TAG = this::class.java.simpleName
     private val firebaseAuth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
-
-    fun getCurrentUser() = flow<State<Coach>> {
-        val userId = firebaseAuth.currentUser?.uid
-        val mUserQuery = DB.document(COACH_PATH + "/${userId}")
-
-        emit(State.loading())
-
-        val snapshot = mUserQuery.get().await()
-        val currentUser = snapshot.toObject(Coach::class.java)
-
-        emit(State.success(currentUser!!))
-    }.catch {
-        emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
-    }.flowOn(IO)
 
     //region Affiliation
     fun affiliationProcess(
@@ -318,7 +302,7 @@ object AffiliationRequestService {
             DB.collection(SPORT_PATH)
                 .document(sportId)
                 .collection("Category")
-//                .orderBy("rank")
+                .orderBy("rank")
 
         return try {
             val categoryList = mutableListOf<Category>()

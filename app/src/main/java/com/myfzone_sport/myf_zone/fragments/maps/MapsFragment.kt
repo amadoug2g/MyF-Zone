@@ -47,7 +47,7 @@ import java.util.*
 class MapsFragment : Fragment(),
     GoogleMap.OnMapClickListener {
     companion object {
-        private val TAG = this::class.java.simpleName
+        private val TAG = MapsFragment::class.java.simpleName
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
         private var shortAnimationDuration: Int = 300
 
@@ -117,25 +117,33 @@ class MapsFragment : Fragment(),
 
         viewModel.assignContext(requireContext())
         binding.viewModel = viewModel
+        binding.mapFilter.viewModel = viewModel
 
         binding.filter.setOnClickListener {
             calendarClick()
+//            filterList()
         }
 
-        binding.filterButton.setOnClickListener {
+        binding.mapFilterLayout.setOnClickListener {
+//            binding.mapFilterLayout.visibility = View.GONE
+        }
+
+        binding.mapFilter.filterDate.setOnClickListener {
             calendarClick()
         }
 
-        binding.filterButtonBall.setOnClickListener {
-            calendarClick()
-        }
+        binding.mapFilter.eventFilterButton.setOnClickListener {
+            binding.mapFilterLayout.visibility = View.GONE
 
-        binding.filterButtonStadium.setOnClickListener {
-            calendarClick()
-        }
+            viewModel.assignIsTourney(binding.mapFilter.checkBoxTournament.isChecked)
+            viewModel.assignIsPlateau(binding.mapFilter.checkBoxPlateau.isChecked)
+            viewModel.assignIsFriendly(binding.mapFilter.checkBoxFriendly.isChecked)
 
-        binding.filterButtonCup.setOnClickListener {
-            calendarClick()
+            try {
+                refreshEventList()
+            } catch (e: Exception) {
+                toast("$e")
+            }
         }
 
         binding.cardEventDetail.cardViewDetail.setOnClickListener {
@@ -225,7 +233,7 @@ class MapsFragment : Fragment(),
 //                        viewModel.placeEventsCluster(viewModel.map.value!!, requireContext(), list)
                         setUpClusters(viewModel.map.value!!)
                         placeUserClub()
-                        Log.i(TAG, "Club ID: 01")
+//                        Log.i(TAG, "Club ID: 01")
                     }
                     is State.Failed -> {
                         loadingMsgEnd()
@@ -253,20 +261,20 @@ class MapsFragment : Fragment(),
         //this.hideInfoWindow()
         when (this.tag) {
             null -> {
-                Log.i(TAG, "tag = $tag")
+//                Log.i(TAG, "tag = $tag")
                 binding.cardEventDetail.cardViewTag.text = null
                 binding.cardEventDetail.cardViewDetail.visibility = View.INVISIBLE
                 crossFadeEnd()
             }
             else -> {
-                Log.i(TAG, "tag = $tag")
+//                Log.i(TAG, "tag = $tag")
                 TRACKING.logEvent(Tracking.MAP_OPEN_SMALL_EVENT_DETAILS, null)
                 binding.cardEventDetail.cardViewTag.text = this.tag as String
                 viewModel.assignEventId(this)
                 viewModel.eventId.observe(viewLifecycleOwner) { eventId ->
                     viewModel.assignEvent(eventId)
                     viewModel.getOwnerFromEvent()
-                    Log.i(TAG, "bEvent izs $eventId")
+//                    Log.i(TAG, "bEvent izs $eventId")
                     viewModel.event.observe(viewLifecycleOwner) { event ->
                         binding.cardEventDetail.event = event
                         if (!binding.cardEventDetail.cardViewDetail.isVisible) {
@@ -331,6 +339,12 @@ class MapsFragment : Fragment(),
 //            map.animateCamera(CameraUpdateFactory.zoomBy(camPosition))
             map.animateCamera(CameraUpdateFactory.newLatLngZoom(cluster.position, camPosition))
 
+//            if (map.cameraPosition.zoom == 16f) {
+//                cluster.items.forEach { item ->
+//                    Log.i(TAG, "matched : ${item.event}")
+//                }
+//            }
+
             true
         }
 
@@ -346,10 +360,10 @@ class MapsFragment : Fragment(),
     private fun addClusters() {
         viewModel.eventList.observe(viewLifecycleOwner) { list ->
             if (list.isEmpty()) {
-                Log.i(TAG, "list is empty")
+//                Log.i(TAG, "list is empty")
             } else {
 //                (viewModel.map.value!!).clear()
-                Log.i(TAG, "list is not empty: $list")
+//                Log.i(TAG, "list is not empty: $list")
                 list.forEach { event ->
                     addItems(event)
                 }
@@ -379,7 +393,7 @@ class MapsFragment : Fragment(),
                 viewModel.eventId.observe(viewLifecycleOwner) { eventId ->
                     viewModel.assignEvent(eventId)
                     viewModel.getOwnerFromEvent()
-                    Log.i(TAG, "aEvent izs $eventId")
+//                    Log.i(TAG, "aEvent izs $eventId")
                     viewModel.event.observe(viewLifecycleOwner) { event ->
                         binding.cardEventDetail.event = event
                         if (!binding.cardEventDetail.cardViewDetail.isVisible) {
@@ -391,6 +405,8 @@ class MapsFragment : Fragment(),
             }
         }
     }
+
+//    private fun Cluster.click() {}
     //endregion
 
     //region Navigation
@@ -439,6 +455,10 @@ class MapsFragment : Fragment(),
     private fun calendarClick() {
         TRACKING.logEvent(Tracking.MAP_FILTERS, null)
         setCalendar()
+    }
+
+    private fun filterList() {
+        binding.mapFilterLayout.visibility = View.VISIBLE
     }
 
     private fun setCalendar() {

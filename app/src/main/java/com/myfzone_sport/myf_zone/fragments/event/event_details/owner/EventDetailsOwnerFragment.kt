@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
+import androidx.core.view.children
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -45,6 +46,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.support.v4.toast
 import java.util.*
+
 
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "eventId"
@@ -194,12 +196,18 @@ class EventDetailsOwnerFragment : Fragment() {
             executePendingBindings()
         }
 
+        binding.infoWindowCard.continueInfoCard.setOnClickListener {
+            binding.infoWindowCardLayout.visibility = View.GONE
+
+            binding.ownerScrollView.setAllEnabled(true)
+        }
+
         // Inflate the layout for this fragment
         return binding.root
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.event_details, menu)
+        inflater.inflate(R.menu.event_owner_details, menu)
         super.onCreateOptionsMenu(menu, inflater)
     }
 
@@ -213,6 +221,10 @@ class EventDetailsOwnerFragment : Fragment() {
 
             R.id.delete_event -> {
                 deletionWindow()
+            }
+
+            R.id.info_owner_event -> {
+                infoWindow()
             }
         }
         return super.onOptionsItemSelected(item)
@@ -237,6 +249,11 @@ class EventDetailsOwnerFragment : Fragment() {
         toast(getString(R.string.event_deleted))
         requireActivity().onBackPressed()
         TRACKING.logEvent(Tracking.EVENT_MODIFICATION_CANCELLATION, null)
+    }
+
+    private fun infoWindow() {
+        binding.infoWindowCardLayout.visibility = View.VISIBLE
+        binding.ownerScrollView.setAllEnabled(false)
     }
     //endregion
 
@@ -522,6 +539,13 @@ class EventDetailsOwnerFragment : Fragment() {
     fun View.snack(message: String, duration: Int = Snackbar.LENGTH_SHORT) {
         val msg = Snackbar.make(this, message, duration)
         msg.show()
+    }
+
+    private fun View.setAllEnabled(enabled: Boolean) {
+        isEnabled = enabled
+        if (this is ViewGroup) children.forEach { child -> child.setAllEnabled(enabled) }
+        this.setOnTouchListener { _, _ -> enabled }
+        this.isNestedScrollingEnabled = enabled
     }
     //endregion
 

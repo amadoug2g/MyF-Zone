@@ -17,185 +17,204 @@
             type="com.myfzone_sport.myf_zone.model.event.EventOwner" />
     </data>
 
-    <ScrollView
+    <RelativeLayout
+        android:id="@+id/participant_main_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="?android:attr/actionBarSize"
-        android:orientation="vertical"
-        tools:context=".fragments.event.event_details.EventDetailsFragment">
+        android:layout_height="match_parent">
 
-        <LinearLayout
+        <ScrollView
+            android:id="@+id/participant_scrollView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <com.facebook.shimmer.ShimmerFrameLayout
-                android:id="@+id/event_details_participant_shimmer_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:orientation="vertical"
-                android:visibility="gone">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <include layout="@layout/event_details_participant_shimmer_layout" />
-
-                </LinearLayout>
-
-            </com.facebook.shimmer.ShimmerFrameLayout>
+            android:layout_height="match_parent"
+            android:layout_marginTop="?android:attr/actionBarSize"
+            android:orientation="vertical"
+            tools:context=".fragments.event.event_details.EventDetailsFragment">
 
             <LinearLayout
-                android:id="@+id/event_details_participant_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <ProgressBar
-                    android:id="@+id/event_detail_progressBar"
-                    style="?android:attr/progressBarStyleHorizontal"
+                <com.facebook.shimmer.ShimmerFrameLayout
+                    android:id="@+id/event_details_participant_shimmer_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:visibility="gone" />
-
-                <include
-                    android:id="@+id/event_detail_cardview_layout"
-                    layout="@layout/event_detail_cardview_title"
-                    bind:secondaryEvent="@{event}" />
-
-                <include
-                    layout="@layout/event_detail_cardview_map"
-                    bind:secondaryEvent="@{event}" />
-
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/event_detail_CardView_title"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginBottom="8dp"
-                    android:padding="8dp"
-                    android:visibility="gone"
-                    app:cardCornerRadius="10dp"
-                    app:cardElevation="4dp">
-
+                    android:layout_gravity="center"
+                    android:orientation="vertical"
+                    android:visibility="gone">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="8dp"
-                        android:layout_marginStart="4dp"
-                        android:layout_marginEnd="4dp"
-                        android:layout_weight="1"
                         android:orientation="vertical">
 
-                        <TextView
-                            style="@style/MaterialAlertDialog.MaterialComponents.Title.Text"
-                            android:layout_width="match_parent"
-                            android:layout_height="0dp"
-                            android:layout_weight="1"
-                            android:text="@string/team_txt"
-                            android:textAlignment="textStart"
-                            android:textStyle="bold" />
+                        <include layout="@layout/event_details_participant_shimmer_layout" />
 
                     </LinearLayout>
 
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="end"
-                        android:layout_margin="8dp"
-                        android:layout_marginStart="4dp"
-                        android:layout_marginEnd="4dp"
-                        android:layout_weight="1"
-                        android:orientation="horizontal">
+                </com.facebook.shimmer.ShimmerFrameLayout>
 
-                        <TextView
-                            android:id="@+id/event_detail_nbTeam"
+                <LinearLayout
+                    android:id="@+id/event_details_participant_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <ProgressBar
+                        android:id="@+id/event_detail_progressBar"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone" />
+
+                    <include
+                        android:id="@+id/event_detail_cardview_layout"
+                        layout="@layout/event_detail_cardview_title"
+                        bind:secondaryEvent="@{event}" />
+
+                    <include
+                        layout="@layout/event_detail_cardview_map"
+                        bind:secondaryEvent="@{event}" />
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/event_detail_CardView_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="8dp"
+                        android:padding="8dp"
+                        android:visibility="gone"
+                        app:cardCornerRadius="10dp"
+                        app:cardElevation="4dp">
+
+
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:textAlignment="textEnd"
-                            android:textSize="16sp"
-                            android:textStyle="normal" />
+                            android:layout_margin="8dp"
+                            android:layout_marginStart="4dp"
+                            android:layout_marginEnd="4dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
 
-                        <TextView
-                            android:id="@+id/event_detail_nbTeam_total"
+                            <TextView
+                                style="@style/MaterialAlertDialog.MaterialComponents.Title.Text"
+                                android:layout_width="match_parent"
+                                android:layout_height="0dp"
+                                android:layout_weight="1"
+                                android:text="@string/team_txt"
+                                android:textAlignment="textStart"
+                                android:textStyle="bold" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@{`/` + event.getTeamNb}"
-                            android:textAlignment="textEnd"
-                            android:textSize="16sp"
-                            android:textStyle="normal" />
-                    </LinearLayout>
+                            android:layout_gravity="end"
+                            android:layout_margin="8dp"
+                            android:layout_marginStart="4dp"
+                            android:layout_marginEnd="4dp"
+                            android:layout_weight="1"
+                            android:orientation="horizontal">
 
-                </com.google.android.material.card.MaterialCardView>
+                            <TextView
+                                android:id="@+id/event_detail_nbTeam"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textAlignment="textEnd"
+                                android:textSize="16sp"
+                                android:textStyle="normal" />
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/participateButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:padding="12dp"
-                    android:text="@string/participate_btn_text"
-                    android:textSize="20sp" />
+                            <TextView
+                                android:id="@+id/event_detail_nbTeam_total"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@{`/` + event.getTeamNb}"
+                                android:textAlignment="textEnd"
+                                android:textSize="16sp"
+                                android:textStyle="normal" />
+                        </LinearLayout>
 
-                <include
-                    android:id="@+id/cardEventOwner"
-                    layout="@layout/card_event_owner"
-                    bind:owner="@{owner}" />
+                    </com.google.android.material.card.MaterialCardView>
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/event_detail_participant_list"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_margin="4dp" />
-
-
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/event_detail_empty_list"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginBottom="8dp"
-                    android:padding="8dp"
-                    app:cardCornerRadius="10dp"
-                    app:cardElevation="4dp">
-
-
-                    <LinearLayout
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/participateButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_margin="8dp"
-                        android:layout_marginStart="4dp"
-                        android:layout_marginEnd="4dp"
-                        android:orientation="vertical">
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:padding="12dp"
+                        android:text="@string/participate_btn_text"
+                        android:textSize="20sp" />
 
-                        <TextView
-                            style="@style/MaterialAlertDialog.MaterialComponents.Title.Text"
+                    <include
+                        android:id="@+id/cardEventOwner"
+                        layout="@layout/card_event_owner"
+                        bind:owner="@{owner}" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/event_detail_participant_list"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_margin="4dp" />
+
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/event_detail_empty_list"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="8dp"
+                        android:padding="8dp"
+                        app:cardCornerRadius="10dp"
+                        app:cardElevation="4dp">
+
+
+                        <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="0dp"
+                            android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:layout_weight="1"
-                            android:text="@string/no_participant_msg"
-                            android:textAlignment="center"
-                            android:textStyle="bold" />
+                            android:layout_margin="8dp"
+                            android:layout_marginStart="4dp"
+                            android:layout_marginEnd="4dp"
+                            android:orientation="vertical">
 
-                    </LinearLayout>
+                            <TextView
+                                style="@style/MaterialAlertDialog.MaterialComponents.Title.Text"
+                                android:layout_width="match_parent"
+                                android:layout_height="0dp"
+                                android:layout_gravity="center"
+                                android:layout_weight="1"
+                                android:text="@string/no_participant_msg"
+                                android:textAlignment="center"
+                                android:textStyle="bold" />
 
-                </com.google.android.material.card.MaterialCardView>
+                        </LinearLayout>
+
+                    </com.google.android.material.card.MaterialCardView>
+
+                </LinearLayout>
 
             </LinearLayout>
 
+        </ScrollView>
 
+        <LinearLayout
+            android:id="@+id/infoWindowCardLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/colorTransparentDiscreet"
+            android:visibility="gone">
+
+            <include
+                android:id="@+id/infoWindowCard"
+                layout="@layout/info_participant_event" />
         </LinearLayout>
+    </RelativeLayout>
 
-    </ScrollView>
 </layout>

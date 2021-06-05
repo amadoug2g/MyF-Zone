@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
+import androidx.core.view.children
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -170,6 +171,8 @@ class EventDetailsParticipantFragment : Fragment() {
                 binding.eventDetailParticipantList.layoutParams = params
             }
         }
+
+        setHasOptionsMenu(true)
     }
 
     override fun onCreateView(
@@ -209,6 +212,12 @@ class EventDetailsParticipantFragment : Fragment() {
             userConversation()
         }
 
+        binding.infoWindowCard.continueInfoCard.setOnClickListener {
+            binding.infoWindowCardLayout.visibility = View.GONE
+
+            binding.participantScrollView.setAllEnabled(true)
+        }
+
         return binding.root
     }
 
@@ -220,6 +229,27 @@ class EventDetailsParticipantFragment : Fragment() {
     override fun onStop() {
         super.onStop()
         binding.eventDetailsParticipantShimmerLayout.stopShimmer()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.event_participant_details, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.info_participation_event -> {
+                infoWindow()
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+    //endregion
+
+    //region Action Bar
+    private fun infoWindow() {
+        binding.infoWindowCardLayout.visibility = View.VISIBLE
+        binding.participantScrollView.setAllEnabled(false)
     }
     //endregion
 
@@ -410,6 +440,13 @@ class EventDetailsParticipantFragment : Fragment() {
     fun View.snack(message: String, duration: Int = Snackbar.LENGTH_SHORT) {
         val msg = Snackbar.make(this, message, duration)
         msg.show()
+    }
+
+    private fun View.setAllEnabled(enabled: Boolean) {
+        isEnabled = enabled
+        if (this is ViewGroup) children.forEach { child -> child.setAllEnabled(enabled) }
+        this.setOnTouchListener { _, _ -> enabled }
+        this.isNestedScrollingEnabled = enabled
     }
     //endregion
 

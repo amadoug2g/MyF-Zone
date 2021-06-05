@@ -24,6 +24,7 @@ object ManagerAuth {
 
     var isConnected = false
     var isAffiliated = false
+    var affiliationNbr = 0
 
     var activeCoach: Coach? = null
     var activeCoachClubAffiliation: ClubAffiliation? = null
@@ -69,7 +70,6 @@ object ManagerAuth {
 
         mUserQuery.get().addOnSuccessListener {
             activeCoach = it.toObject(Coach::class.java)
-//            activeCoachMLD.value = it.toObject(Coach::class.java)
         }
     }
 
@@ -77,7 +77,7 @@ object ManagerAuth {
         val mClubQuery = DB.collection(COACH_PATH + "/${user?.uid}/ClubAffiliation")
 
         mClubQuery.get().addOnSuccessListener {
-            val snapshot = it.documents[0]
+            val snapshot = it.documents[affiliationNbr]
             activeCoachClubAffiliation = snapshot.toObject(ClubAffiliation::class.java)
 
             getActiveClub(activeCoachClubAffiliation)
@@ -100,16 +100,8 @@ object ManagerAuth {
 
         mEventsQuery.get().addOnSuccessListener {
             for (doc in it) {
-//                Log.i(TAG, "doc = $doc")
-//                Log.i(TAG, "doc ID = ${doc.id}")
                 activeCoachEvents.add(doc.id)
             }
-        }
-    }
-
-    private fun MutableList<String>.emptyList() {
-        for (i in 0..this.size) {
-            this.removeAt(0)
         }
     }
 

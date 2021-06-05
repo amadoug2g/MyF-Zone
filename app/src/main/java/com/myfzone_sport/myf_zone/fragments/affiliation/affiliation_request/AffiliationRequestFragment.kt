@@ -148,6 +148,10 @@ class AffiliationRequestFragment : Fragment() {
             navigate(R.id.affiliationRequestToAffiliationClubList)
         }
 
+        binding.clubListText.setOnClickListener {
+            navigate(R.id.affiliationRequestToAffiliationClubList)
+        }
+
         binding.infoButton.setOnClickListener {
             MaterialAlertDialogBuilder(requireContext())
                 .setTitle(getString(R.string.affiliation_code_text))

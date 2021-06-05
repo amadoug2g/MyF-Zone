@@ -25,7 +25,7 @@ object AffiliationSuggestionService {
 
             emit(State.loading())
 
-            mEventQuery.document(clubSuggestion.id).set(clubSuggestion.toMap()).await()
+            mEventQuery.document(clubSuggestion.id).set(clubSuggestion.toMapSug()).await()
 
             emit(State.success(clubSuggestion))
         }.catch {

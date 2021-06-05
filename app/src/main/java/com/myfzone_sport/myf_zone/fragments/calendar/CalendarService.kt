@@ -6,6 +6,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.ktx.toObject
+import com.google.firebase.storage.FirebaseStorage
 import com.myfzone_sport.myf_zone.model.State
 import com.myfzone_sport.myf_zone.model.event.Event
 import com.myfzone_sport.myf_zone.model.event.EventCalendar
@@ -30,6 +31,8 @@ import java.util.*
  */
 
 object CalendarService {
+
+    private val storageInstance: FirebaseStorage by lazy { FirebaseStorage.getInstance() }
     private val TAG = CalendarService::class.java.simpleName
     val firebaseAuth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
 
@@ -219,4 +222,45 @@ object CalendarService {
             null
         }
     }
+
+    fun addEventListenerCalendar(
+        onListen: (MutableList<EventSection>) -> Unit
+    ): ListenerRegistration? {
+        val now = Calendar.getInstance().time
+
+        val mUserChatQuery = DB
+            .collection(EVENT_PATH)
+        return try {
+            mUserChatQuery
+//                .orderBy("createdDate")
+                .addSnapshotListener { value, error ->
+                    if (error != null) {
+                        Log.e(TAG, "Error in addEventListener", error)
+                        return@addSnapshotListener
+                    }
+
+                    val items = mutableListOf<Event>()
+                    var itemsCal = mutableListOf<EventSection>()
+                    value?.documents?.forEach {
+
+                        try {
+                            val tempEvent = it.toObject(Event::class.java)!!
+                            if (tempEvent.date.time > now.time)
+                                items.add(it.toObject(Event::class.java)!!)
+                            itemsCal = eventToCalendar(items)
+                        } catch (e: Exception) {
+                            Log.i(TAG, "Error when fetching events: $e")
+                        }
+                    }
+
+                    onListen(itemsCal)
+                }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in addEventListener: ${e.localizedMessage}")
+            null
+        }
+    }
+
+    fun getImageReference(path: String) =
+        storageInstance.getReference(path.removePrefix("gs://myf-zone.appspot.com"))
 }

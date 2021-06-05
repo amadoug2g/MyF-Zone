@@ -51,4 +51,18 @@ data class ClubSuggestion(
 
         return result
     }
+
+    fun toMapSug(): HashMap<String, Any?> {
+        return hashMapOf(
+            "id" to id,
+            "name" to name,
+            "acronym" to acronym,
+            "address" to address,
+            "lat" to lat,
+            "lng" to lng,
+            "createdDate" to createdDate,
+            "coachId" to ManagerAuth.activeCoach?.id,
+            "coachFullname" to ManagerAuth.activeCoach?.getName()
+        )
+    }
 }

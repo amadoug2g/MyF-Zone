@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.myfzone_sport.myf_zone.model.event.Event
+import com.myfzone_sport.myf_zone.model.event.calendar.EventSection
 
 /**
  * Created by Amadou on 03/12/2020, 16:49
@@ -47,6 +48,9 @@ class CalendarViewModel : ViewModel() {
 
     fun addEventListener(onListen: (MutableList<Event>) -> Unit) =
         CalendarService.addEventListener(onListen)
+
+    fun addEventListenerCalendar(onListenCal: (MutableList<EventSection>) -> Unit) =
+        CalendarService.addEventListenerCalendar(onListenCal)
 
     fun assignEventList(list: MutableList<Event>) {
         assignCalendarList()

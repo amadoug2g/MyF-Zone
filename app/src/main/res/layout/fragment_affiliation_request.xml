@@ -34,7 +34,7 @@
                 android:layout_marginTop="10dp"
                 android:contentDescription="@string/affiliation_list_request"
                 android:src="@drawable/ic_view_list"
-                android:visibility="visible" />
+                android:visibility="invisible" />
 
             <ImageView
                 android:id="@+id/affiliationSettings"
@@ -149,6 +149,18 @@
             android:layout_marginEnd="64dp"
             android:text="@string/laterTextButton"
             android:textColor="@color/colorDiscreet" />
+
+
+        <TextView
+            android:id="@+id/clubListText"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="64dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="64dp"
+            android:text="@string/affiliation_club_list"
+            android:textColor="@color/colorSettingEnd" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/clubAvailableText"

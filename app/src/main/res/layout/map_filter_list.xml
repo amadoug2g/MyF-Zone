@@ -5,13 +5,14 @@
     <data>
 
         <variable
-            name="owner"
-            type="com.myfzone_sport.myf_zone.model.event.EventOwner" />
+            name="viewModel"
+            type="com.myfzone_sport.myf_zone.fragments.maps.MapsViewModel" />
     </data>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:gravity="center"
         android:orientation="vertical">
 
         <com.google.android.material.card.MaterialCardView
@@ -19,11 +20,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="8dp"
-            android:clickable="true"
-            android:focusable="true"
+            android:clickable="false"
+            android:focusable="false"
             android:padding="8dp"
             app:cardCornerRadius="10dp"
             app:cardElevation="4dp">
@@ -31,7 +32,19 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:paddingStart="16dp"
+                android:paddingTop="16dp"
+                android:paddingEnd="16dp"
                 android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="@string/filter_text_title"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+                    android:textColor="@color/colorDark" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -43,7 +56,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
-                        android:text="Format" />
+                        android:text="@string/format_filter_txt"
+                        android:textColor="@color/colorDark"
+                        android:visibility="gone" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/filter_range"
@@ -60,41 +75,58 @@
                         style="@style/map_button_style"
                         android:layout_marginStart="15dp"
                         android:layout_marginTop="8dp"
+                        android:layout_marginBottom="8dp"
                         android:backgroundTint="@color/colorAccent"
                         android:drawableEnd="@drawable/ic_calendar_today"
-                        android:text="Sélectionnez une date" />
+                        android:text="@string/select_date_text" />
                 </LinearLayout>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Type" />
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="@string/type_filter_txt"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                    android:textColor="@color/colorDark" />
 
                 <CheckBox
                     android:id="@+id/checkBox_tournament"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:buttonTint="@color/colorAccent"
+                    android:checked="@{viewModel.isTourney()}"
+                    android:foregroundTint="@color/colorDark"
+                    android:text="@string/tournament_event"
                     android:drawableStart="@mipmap/ic_cup"
-                    android:text="Tournoi" />
+                    android:textColor="@color/colorDark" />
 
                 <CheckBox
                     android:id="@+id/checkBox_plateau"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:buttonTint="@color/colorAccent"
+                    android:checked="@{viewModel.isPlateau()}"
+                    android:text="@string/plateau_event"
                     android:drawableStart="@mipmap/ic_stadium"
-                    android:text="Plateau" />
+                    android:textColor="@color/colorDark" />
 
                 <CheckBox
                     android:id="@+id/checkBox_friendly"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:buttonTint="@color/colorAccent"
+                    android:checked="@{viewModel.isFriendly()}"
+                    android:text="@string/friendly_event"
                     android:drawableStart="@mipmap/ic_ball"
-                    android:text="Amical" />
+                    android:textColor="@color/colorDark" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Catégorie" />
+                    android:text="@string/cat_filter_txt"
+                    android:textColor="@color/colorDark"
+                    android:visibility="gone" />
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/eventCreateTypeLayout"
@@ -103,13 +135,15 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
-                    android:layout_marginEnd="16dp">
+                    android:layout_marginEnd="16dp"
+                    android:visibility="gone">
 
                     <androidx.appcompat.widget.AppCompatSpinner
                         android:id="@+id/event_create_typeSpinner"
                         android:layout_width="0dp"
                         android:layout_height="0dp"
                         android:entries="@array/typeList"
+                        android:textColor="@color/colorDark"
                         android:spinnerMode="dialog"
                         android:visibility="invisible" />
 
@@ -118,6 +152,7 @@
                         style="@style/TextAppearance.AppCompat.Medium"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:textColor="@color/colorDark"
                         android:inputType="none"
                         android:padding="8dp"
                         android:text="@string/friendly_event" />
@@ -127,7 +162,9 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Sous-catégorie" />
+                    android:text="@string/sub_cat_filter_txt"
+                    android:textColor="@color/colorDark"
+                    android:visibility="gone" />
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/eventCreateTeamLayout"
@@ -136,7 +173,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="24dp"
-                    android:layout_marginEnd="16dp">
+                    android:layout_marginEnd="16dp"
+                    android:visibility="gone">
 
                     <androidx.appcompat.widget.AppCompatSpinner
                         android:id="@+id/event_create_teamSpinner"
@@ -157,15 +195,16 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
 
-
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/event_create_button"
+                    android:id="@+id/event_filter_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="32dp"
                     android:layout_marginEnd="16dp"
-                    android:text="Filtrer" />
+                    android:layout_marginBottom="16dp"
+                    android:backgroundTint="@color/colorAccent"
+                    android:text="@string/filter_txt_button" />
 
             </LinearLayout>
 
