@@ -94,40 +94,40 @@
                 android:text="@{`(` + String.valueOf(viewModel.filterCount) + `) `}"
                 android:visibility="gone" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/filter_button_ball"
-                style="@style/map_button_style"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
-                android:layout_marginTop="4dp"
-                android:backgroundTint="@color/colorAccent"
-                android:drawableEnd="@mipmap/ic_ball_filter"
-                android:drawablePadding="0dp"
-                android:text="@{`(` + String.valueOf(viewModel.filterCountFriendly) + `) `}"
-                android:visibility="gone" />
+<!--            <com.google.android.material.button.MaterialButton-->
+<!--                android:id="@+id/filter_button_ball"-->
+<!--                style="@style/map_button_style"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginStart="15dp"-->
+<!--                android:layout_marginTop="4dp"-->
+<!--                android:backgroundTint="@color/colorAccent"-->
+<!--                android:drawableEnd="@mipmap/ic_ball_filter"-->
+<!--                android:drawablePadding="0dp"-->
+<!--                android:text="@{`(` + String.valueOf(viewModel.filterCountFriendly) + `) `}"-->
+<!--                android:visibility="gone" />-->
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/filter_button_cup"
-                style="@style/map_button_style"
-                android:layout_marginStart="15dp"
-                android:layout_marginTop="4dp"
-                android:backgroundTint="@color/colorAccent"
-                android:drawableEnd="@mipmap/ic_cup_filter"
-                android:drawablePadding="0dp"
-                android:text="@{`(` + String.valueOf(viewModel.filterCountTourney) + `) `}"
-                android:visibility="gone" />
+<!--            <com.google.android.material.button.MaterialButton-->
+<!--                android:id="@+id/filter_button_cup"-->
+<!--                style="@style/map_button_style"-->
+<!--                android:layout_marginStart="15dp"-->
+<!--                android:layout_marginTop="4dp"-->
+<!--                android:backgroundTint="@color/colorAccent"-->
+<!--                android:drawableEnd="@mipmap/ic_cup_filter"-->
+<!--                android:drawablePadding="0dp"-->
+<!--                android:text="@{`(` + String.valueOf(viewModel.filterCountTourney) + `) `}"-->
+<!--                android:visibility="gone" />-->
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/filter_button_stadium"
-                style="@style/map_button_style"
-                android:layout_marginStart="15dp"
-                android:layout_marginTop="4dp"
-                android:backgroundTint="@color/colorAccent"
-                android:drawableEnd="@mipmap/ic_stadium_filter"
-                android:drawablePadding="0dp"
-                android:text="@{`(` + String.valueOf(viewModel.filterCountPlateau) + `) `}"
-                android:visibility="gone" />
+<!--            <com.google.android.material.button.MaterialButton-->
+<!--                android:id="@+id/filter_button_stadium"-->
+<!--                style="@style/map_button_style"-->
+<!--                android:layout_marginStart="15dp"-->
+<!--                android:layout_marginTop="4dp"-->
+<!--                android:backgroundTint="@color/colorAccent"-->
+<!--                android:drawableEnd="@mipmap/ic_stadium_filter"-->
+<!--                android:drawablePadding="0dp"-->
+<!--                android:text="@{`(` + String.valueOf(viewModel.filterCountPlateau) + `) `}"-->
+<!--                android:visibility="gone" />-->
 
         </LinearLayout>
 

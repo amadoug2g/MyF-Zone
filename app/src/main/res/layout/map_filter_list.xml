@@ -98,8 +98,8 @@
                     android:checked="@{viewModel.isTourney()}"
                     android:foregroundTint="@color/colorDark"
                     android:text="@string/tournament_event"
-                    android:drawableStart="@mipmap/ic_cup"
                     android:textColor="@color/colorDark" />
+<!--                android:drawableStart="@mipmap/ic_cup"-->
 
                 <CheckBox
                     android:id="@+id/checkBox_plateau"
@@ -108,8 +108,8 @@
                     android:buttonTint="@color/colorAccent"
                     android:checked="@{viewModel.isPlateau()}"
                     android:text="@string/plateau_event"
-                    android:drawableStart="@mipmap/ic_stadium"
                     android:textColor="@color/colorDark" />
+<!--                android:drawableStart="@mipmap/ic_stadium"-->
 
                 <CheckBox
                     android:id="@+id/checkBox_friendly"
@@ -118,8 +118,8 @@
                     android:buttonTint="@color/colorAccent"
                     android:checked="@{viewModel.isFriendly()}"
                     android:text="@string/friendly_event"
-                    android:drawableStart="@mipmap/ic_ball"
                     android:textColor="@color/colorDark" />
+<!--                android:drawableStart="@mipmap/ic_ball"-->
 
                 <TextView
                     android:layout_width="wrap_content"

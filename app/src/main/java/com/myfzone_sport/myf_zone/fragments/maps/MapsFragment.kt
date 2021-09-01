@@ -13,7 +13,6 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.observe
 import androidx.navigation.Navigation
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -46,6 +45,9 @@ import java.util.*
 @Suppress("SameParameterValue")
 class MapsFragment : Fragment(),
     GoogleMap.OnMapClickListener {
+
+    private lateinit var customClusterRenderer: ClusterRenderer
+
     companion object {
         private val TAG = MapsFragment::class.java.simpleName
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
@@ -56,7 +58,6 @@ class MapsFragment : Fragment(),
 
         //        private lateinit var clusterManager: ClusterManager<MapClusterItem>
         private lateinit var customClusterManager: ClusterManager<MyClusterItem>
-        private lateinit var customClusterRenderer: ClusterRenderer
     }
 
     //region Map Callback
@@ -504,9 +505,9 @@ class MapsFragment : Fragment(),
     private fun checkEventList(list: MutableList<Event>) {
         if (list.isEmpty()) {
             binding.filterButton.visibility = View.VISIBLE
-            binding.filterButtonBall.visibility = View.GONE
-            binding.filterButtonStadium.visibility = View.GONE
-            binding.filterButtonCup.visibility = View.GONE
+//            binding.filterButtonBall.visibility = View.GONE
+//            binding.filterButtonStadium.visibility = View.GONE
+//            binding.filterButtonCup.visibility = View.GONE
 
             viewModel.assignFilterCount(0)
         } else assignFilters(list)
@@ -518,9 +519,9 @@ class MapsFragment : Fragment(),
         var nbPlateauEvent = 0
 
         binding.filterButton.visibility = View.GONE
-        binding.filterButtonBall.visibility = View.GONE
-        binding.filterButtonStadium.visibility = View.GONE
-        binding.filterButtonCup.visibility = View.GONE
+//        binding.filterButtonBall.visibility = View.GONE
+//        binding.filterButtonStadium.visibility = View.GONE
+//        binding.filterButtonCup.visibility = View.GONE
 
         list.forEach {
             when (it.type) {
@@ -537,17 +538,17 @@ class MapsFragment : Fragment(),
         }
 
         if (nbFriendlyEvent != 0) {
-            binding.filterButtonBall.visibility = View.VISIBLE
+//            binding.filterButtonBall.visibility = View.VISIBLE
             viewModel.assignFilterFriendlyCount(nbFriendlyEvent)
         }
 
         if (nbPlateauEvent != 0) {
-            binding.filterButtonStadium.visibility = View.VISIBLE
+//            binding.filterButtonStadium.visibility = View.VISIBLE
             viewModel.assignFilterPlateauCount(nbPlateauEvent)
         }
 
         if (nbTourneyEvent != 0) {
-            binding.filterButtonCup.visibility = View.VISIBLE
+//            binding.filterButtonCup.visibility = View.VISIBLE
             viewModel.assignFilterTourneyCount(nbTourneyEvent)
         }
 

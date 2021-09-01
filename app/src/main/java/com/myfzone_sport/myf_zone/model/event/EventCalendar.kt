@@ -54,7 +54,7 @@ data class EventCalendar(
 
     val eventTypeImage: Int
         get() {
-            var result: Int = R.mipmap.ic_football_ball_icon_001
+            var result: Int = R.mipmap.ic_logo_icon
             when (type) {
                 "friendly" -> result = R.mipmap.ic_ball
                 "tournament" -> result = R.mipmap.ic_cup

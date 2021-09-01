@@ -20,4 +20,6 @@
     <color name="colorSettingEnd">#0173F7</color>
     <color name="colorInfoStart">#FFFF00</color>
     <color name="colorInfoEnd">#FF8000</color>
+    <color name="colorDesign1">#070D2A</color>
+    <color name="colorDesign2">#1C55E6</color>
 </resources>
