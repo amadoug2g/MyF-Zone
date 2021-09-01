@@ -1,66 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".HomeFragment">
-
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="12dp">
-
-        <ImageView
-            android:id="@+id/home_logo"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:src="@drawable/ic_location_accent" />
-
-        <TextView
-            android:id="@+id/home_welcome_text"
-            android:layout_width="wrap_content"
-            android:layout_marginStart="4dp"
-            android:layout_height="wrap_content"
-            android:layout_toEndOf="@id/home_logo"
-            android:fontFamily="@font/nuber_next_demi_bold_wide"
-            android:text="Bonjour Coach !"
-            android:textColor="@color/quantum_black_text"
-            android:textSize="12sp" />
-
-        <ImageView
-            android:id="@+id/home_profile_btn"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_toStartOf="@id/home_chat_btn"
-            android:src="@drawable/ic_account_home" />
-
-        <ImageView
-            android:id="@+id/home_chat_btn"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_marginStart="16dp"
-            android:layout_alignParentEnd="true"
-            android:src="@drawable/ic_chat_home" />
-
-    </RelativeLayout>
-
-    <LinearLayout
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
+        <LinearLayout xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            tools:context=".HomeFragment">
 
-        <include layout="@layout/home_close_to_club_layout" />
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="12dp">
 
-        <include layout="@layout/home_categories_layout" />
+                <ImageView
+                    android:id="@+id/home_logo"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_location_accent" />
 
-        <include layout="@layout/home_coach_event_layout" />
+                <TextView
+                    android:id="@+id/home_welcome_text"
+                    android:layout_width="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@id/home_logo"
+                    android:fontFamily="@font/nuber_next_demi_bold_wide"
+                    android:text="Bonjour Coach !"
+                    android:textColor="@color/quantum_black_text"
+                    android:textSize="12sp" />
 
-    </LinearLayout>
+                <ImageView
+                    android:id="@+id/home_profile_btn"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_toStartOf="@id/home_chat_btn"
+                    android:src="@drawable/ic_account_home" />
 
-</LinearLayout>
+                <ImageView
+                    android:id="@+id/home_chat_btn"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_alignParentEnd="true"
+                    android:src="@drawable/ic_chat_home" />
+
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:orientation="vertical">
+
+                <include layout="@layout/home_close_to_club_layout" />
+
+                <include layout="@layout/home_categories_layout" />
+
+                <include layout="@layout/home_coach_event_layout" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+</layout>

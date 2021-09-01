@@ -37,6 +37,9 @@
             android:id="@+id/calendarToProfile"
             app:destination="@id/profile" />
         <action
+            android:id="@+id/calendarToLogin2"
+            app:destination="@id/main_start" />
+        <action
             android:id="@+id/notificationCalendarToDiscussion"
             app:destination="@id/discussion" />
     </fragment>
@@ -48,4 +51,5 @@
     <include app:graph="@navigation/login" />
     <include app:graph="@navigation/event_creation" />
     <include app:graph="@navigation/discussion" />
+    <include app:graph="@navigation/main_start" />
 </navigation>

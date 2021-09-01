@@ -181,7 +181,7 @@
     <string name="club_suggestion_acronym">Acronyme</string>
     <string name="club_suggestion_acronym_helper">Initiales du club / de l\'association en majuscule</string>
     <string name="club_suggestion_address">Adresse</string>
-    <string name="club_suggestion_address_helper">Adresse du club / de l\'assocation</string>
+    <string name="club_suggestion_address_helper">Adresse du club / de l\'association</string>
     <string name="club_suggestion_send_button">Envoyer mon club</string>
     <string name="affiliation_list_request">Bouton de demandes</string>
     <string name="onBoarding_map_club">Retrouvez l\'emplacement de votre club grâce à l\'icône maison sur la carte</string>

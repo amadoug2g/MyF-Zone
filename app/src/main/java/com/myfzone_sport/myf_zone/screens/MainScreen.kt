@@ -14,7 +14,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.navigation.NavController
@@ -51,13 +50,14 @@ private const val INFO_MSG_CHAT = "onBoarding_chat"
 
 class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListener {
 
+
     companion object {
         private val TAG = MainScreen::class.java.simpleName
-        lateinit var navController: NavController
 
         private var currentNavController: LiveData<NavController>? = null
         private var doubleBackToExitPressedOnce = false
 
+        lateinit var navController: NavController
         lateinit var binding: ActivityMainScreenBinding
         private lateinit var viewModel: MainViewModel
         private val messageReceiver: BroadcastReceiver = object : BroadcastReceiver() {
@@ -240,6 +240,26 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
                     infoButton(R.id.messageFragment)
                 }
             }
+            R.id.loginFragment2 -> {
+                binding.bottomBar.visibility = View.GONE
+                binding.fabMain.visibility = View.GONE
+                binding.accountButton.visibility = View.GONE
+                binding.infoButton.visibility = View.GONE
+
+                supportActionBar!!.apply {
+                    hide()
+                }
+            }
+            R.id.homeFragment -> {
+                binding.bottomBar.visibility = View.GONE
+                binding.fabMain.visibility = View.GONE
+                binding.accountButton.visibility = View.GONE
+                binding.infoButton.visibility = View.GONE
+
+                supportActionBar!!.apply {
+                    hide()
+                }
+            }
             else -> {
                 supportActionBar!!.apply {
                     show()
@@ -273,7 +293,7 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
         )
 
         // Whenever the selected controller changes, setup the action bar.
-        controller.observe(this, Observer { navController ->
+        controller.observe(this, { navController ->
             setupActionBarWithNavController(navController)
             navController.addOnDestinationChangedListener(this)
         })
@@ -509,16 +529,18 @@ class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListen
         val bundle = bundleOf("page" to destinationId)
         when (destinationId) {
             R.id.calendarFragment -> {
-                if (isConnected) {
-                    if (isAffiliated) {
-                        navigate(R.id.calendarToProfile)
-                    } else {
-                        toast(getString(R.string.user_not_affiliated))
-                        navigate(R.id.calendarToAffiliationRequest, bundle)
-                    }
-                } else {
-                    navigate(R.id.calendarToSignUp)
-                }
+                navigate(R.id.calendarToLogin2)
+
+//                if (isConnected) {
+//                    if (isAffiliated) {
+//                        navigate(R.id.calendarToProfile)
+//                    } else {
+//                        toast(getString(R.string.user_not_affiliated))
+//                        navigate(R.id.calendarToAffiliationRequest, bundle)
+//                    }
+//                } else {
+//                    navigate(R.id.calendarToSignUp)
+//                }
             }
             R.id.mapsFragment -> {
                 if (isConnected) {
