@@ -7,7 +7,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            tools:context=".HomeFragment">
+            tools:context=".app.ui.HomeFragment">
 
             <RelativeLayout
                 android:layout_width="wrap_content"
@@ -21,6 +21,7 @@
                     android:id="@+id/home_logo"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
+                    android:contentDescription="Home Logo"
                     android:src="@drawable/ic_location_accent" />
 
                 <TextView
@@ -39,6 +40,7 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:layout_toStartOf="@id/home_chat_btn"
+                    android:contentDescription="Home Profile Button"
                     android:src="@drawable/ic_account_home" />
 
                 <ImageView
@@ -47,6 +49,7 @@
                     android:layout_height="20dp"
                     android:layout_marginStart="16dp"
                     android:layout_alignParentEnd="true"
+                    android:contentDescription="Home Chat Button"
                     android:src="@drawable/ic_chat_home" />
 
             </RelativeLayout>
