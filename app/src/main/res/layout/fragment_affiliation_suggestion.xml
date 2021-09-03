@@ -6,7 +6,7 @@
 
         <variable
             name="clubSuggestion"
-            type="com.myfzone_sport.myf_zone.model.club.ClubSuggestion" />
+            type="com.myfzone_sport.myf_zone.domain.club.ClubSuggestion" />
     </data>
 
     <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"

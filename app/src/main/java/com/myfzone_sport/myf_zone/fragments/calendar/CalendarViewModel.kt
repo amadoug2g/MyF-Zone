@@ -3,8 +3,8 @@ package com.myfzone_sport.myf_zone.fragments.calendar
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.myfzone_sport.myf_zone.model.event.Event
-import com.myfzone_sport.myf_zone.model.event.calendar.EventSection
+import com.myfzone_sport.myf_zone.domain.event.Event
+import com.myfzone_sport.myf_zone.domain.event.calendar.EventSection
 
 /**
  * Created by Amadou on 03/12/2020, 16:49

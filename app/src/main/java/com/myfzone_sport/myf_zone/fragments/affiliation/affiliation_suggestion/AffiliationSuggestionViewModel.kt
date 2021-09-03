@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.android.libraries.places.api.model.Place
-import com.myfzone_sport.myf_zone.model.club.ClubSuggestion
+import com.myfzone_sport.myf_zone.domain.club.ClubSuggestion
 
 /**
  * Created by Amadou on 24/04/2021, 19:43

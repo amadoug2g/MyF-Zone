@@ -10,11 +10,11 @@
 
         <variable
             name="event"
-            type="com.myfzone_sport.myf_zone.model.event.Event" />
+            type="com.myfzone_sport.myf_zone.domain.event.Event" />
 
         <variable
             name="owner"
-            type="com.myfzone_sport.myf_zone.model.event.EventOwner" />
+            type="com.myfzone_sport.myf_zone.domain.event.EventOwner" />
     </data>
 
     <ScrollView

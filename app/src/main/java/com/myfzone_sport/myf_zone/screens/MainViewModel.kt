@@ -1,7 +1,7 @@
 package com.myfzone_sport.myf_zone.screens
 
 import androidx.lifecycle.ViewModel
-import com.myfzone_sport.myf_zone.model.chat.Chat
+import com.myfzone_sport.myf_zone.domain.chat.Chat
 
 
 /**

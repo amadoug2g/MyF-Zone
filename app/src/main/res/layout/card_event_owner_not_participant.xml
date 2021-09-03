@@ -5,7 +5,7 @@
 
         <variable
             name="owner"
-            type="com.myfzone_sport.myf_zone.model.event.EventOwner" />
+            type="com.myfzone_sport.myf_zone.domain.event.EventOwner" />
     </data>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"

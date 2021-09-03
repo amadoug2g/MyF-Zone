@@ -10,11 +10,11 @@ import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.Marker
 import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth
-import com.myfzone_sport.myf_zone.model.State
-import com.myfzone_sport.myf_zone.model.club.Club
-import com.myfzone_sport.myf_zone.model.event.Event
-import com.myfzone_sport.myf_zone.model.event.EventOwner
-import com.myfzone_sport.myf_zone.model.maps.MyClusterItem
+import com.myfzone_sport.myf_zone.domain.State
+import com.myfzone_sport.myf_zone.domain.club.Club
+import com.myfzone_sport.myf_zone.domain.event.Event
+import com.myfzone_sport.myf_zone.domain.event.EventOwner
+import com.myfzone_sport.myf_zone.domain.maps.MyClusterItem
 import com.myfzone_sport.myf_zone.util.Constants
 import com.myfzone_sport.myf_zone.util.Tracking
 import kotlinx.coroutines.flow.collect

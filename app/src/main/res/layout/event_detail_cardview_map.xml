@@ -6,7 +6,7 @@
 
         <variable
             name="secondaryEvent"
-            type="com.myfzone_sport.myf_zone.model.event.Event" />
+            type="com.myfzone_sport.myf_zone.domain.event.Event" />
     </data>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"

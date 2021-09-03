@@ -29,7 +29,7 @@ import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth.active
 import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth.isAffiliated
 import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth.isConnected
 import com.myfzone_sport.myf_zone.glide.GlideApp
-import com.myfzone_sport.myf_zone.model.chat.Chat
+import com.myfzone_sport.myf_zone.domain.chat.Chat
 import com.myfzone_sport.myf_zone.screens.MainService.getImageReference
 import com.myfzone_sport.myf_zone.setupWithNavController
 import com.myfzone_sport.myf_zone.util.Constants.TRACKING
@@ -49,7 +49,6 @@ private const val INFO_MSG_MAP = "onBoarding_map"
 private const val INFO_MSG_CHAT = "onBoarding_chat"
 
 class MainScreen : AppCompatActivity(), NavController.OnDestinationChangedListener {
-
 
     companion object {
         private val TAG = MainScreen::class.java.simpleName

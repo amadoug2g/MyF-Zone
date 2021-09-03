@@ -3,9 +3,9 @@ package com.myfzone_sport.myf_zone.fragments.user_sign.manager
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.myfzone_sport.myf_zone.model.club.Club
-import com.myfzone_sport.myf_zone.model.coach.ClubAffiliation
-import com.myfzone_sport.myf_zone.model.coach.Coach
+import com.myfzone_sport.myf_zone.domain.club.Club
+import com.myfzone_sport.myf_zone.domain.coach.ClubAffiliation
+import com.myfzone_sport.myf_zone.domain.coach.Coach
 import com.myfzone_sport.myf_zone.util.Constants.CLUB_PATH
 import com.myfzone_sport.myf_zone.util.Constants.COACH_PATH
 import com.myfzone_sport.myf_zone.util.Constants.DB

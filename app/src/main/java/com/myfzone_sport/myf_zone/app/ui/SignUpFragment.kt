@@ -16,10 +16,7 @@ class SignUpFragment : Fragment() {
         private lateinit var binding: FragmentSignUp2Binding
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
+    //region Override Methods
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -35,6 +32,7 @@ class SignUpFragment : Fragment() {
 
         return binding.root
     }
+    //endregion
 
     //region Navigation
     private fun navigate(destination: Int, extra: Bundle? = null) {

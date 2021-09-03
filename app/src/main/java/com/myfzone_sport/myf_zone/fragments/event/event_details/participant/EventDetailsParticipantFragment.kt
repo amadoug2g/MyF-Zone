@@ -28,10 +28,10 @@ import com.myfzone_sport.myf_zone.R
 import com.myfzone_sport.myf_zone.databinding.CardEventParticipantBinding
 import com.myfzone_sport.myf_zone.databinding.FragmentEventDetailsParticipantBinding
 import com.myfzone_sport.myf_zone.glide.GlideApp
-import com.myfzone_sport.myf_zone.model.State
-import com.myfzone_sport.myf_zone.model.chat.MessagingService
-import com.myfzone_sport.myf_zone.model.event.Event
-import com.myfzone_sport.myf_zone.model.event.EventParticipant
+import com.myfzone_sport.myf_zone.domain.State
+import com.myfzone_sport.myf_zone.domain.chat.MessagingService
+import com.myfzone_sport.myf_zone.domain.event.Event
+import com.myfzone_sport.myf_zone.domain.event.EventParticipant
 import com.myfzone_sport.myf_zone.util.Constants.TRACKING
 import com.myfzone_sport.myf_zone.util.Tracking
 import kotlinx.android.synthetic.main.event_detail_cardview_map.*

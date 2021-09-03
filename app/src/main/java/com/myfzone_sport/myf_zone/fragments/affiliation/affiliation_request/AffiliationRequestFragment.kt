@@ -18,7 +18,7 @@ import androidx.navigation.Navigation
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.myfzone_sport.myf_zone.R
 import com.myfzone_sport.myf_zone.databinding.FragmentAffiliationRequestBinding
-import com.myfzone_sport.myf_zone.model.State
+import com.myfzone_sport.myf_zone.domain.State
 import com.myfzone_sport.myf_zone.screens.MainScreen
 import com.myfzone_sport.myf_zone.util.Constants.TRACKING
 import com.myfzone_sport.myf_zone.util.Tracking

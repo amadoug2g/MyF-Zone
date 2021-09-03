@@ -15,11 +15,11 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.myfzone_sport.myf_zone.R
 import com.myfzone_sport.myf_zone.databinding.FragmentCalendarBinding
 import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth
-import com.myfzone_sport.myf_zone.model.State
-import com.myfzone_sport.myf_zone.model.event.Event
-import com.myfzone_sport.myf_zone.model.event.EventData
-import com.myfzone_sport.myf_zone.model.event.calendar.EventSection
-import com.myfzone_sport.myf_zone.model.event.calendar.ListRecyclerAdapter
+import com.myfzone_sport.myf_zone.domain.State
+import com.myfzone_sport.myf_zone.domain.event.Event
+import com.myfzone_sport.myf_zone.domain.event.EventData
+import com.myfzone_sport.myf_zone.domain.event.calendar.EventSection
+import com.myfzone_sport.myf_zone.domain.event.calendar.ListRecyclerAdapter
 import kotlinx.coroutines.flow.collect
 import org.jetbrains.anko.support.v4.toast
 

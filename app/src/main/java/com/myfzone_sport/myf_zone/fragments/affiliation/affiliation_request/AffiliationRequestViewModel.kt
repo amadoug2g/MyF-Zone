@@ -3,9 +3,9 @@ package com.myfzone_sport.myf_zone.fragments.affiliation.affiliation_request
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.myfzone_sport.myf_zone.model.club.Club
-import com.myfzone_sport.myf_zone.model.sport.Category
-import com.myfzone_sport.myf_zone.model.sport.Sport
+import com.myfzone_sport.myf_zone.domain.club.Club
+import com.myfzone_sport.myf_zone.domain.sport.Category
+import com.myfzone_sport.myf_zone.domain.sport.Sport
 
 /**
  * Created by Amadou on 06/12/2020, 20:55

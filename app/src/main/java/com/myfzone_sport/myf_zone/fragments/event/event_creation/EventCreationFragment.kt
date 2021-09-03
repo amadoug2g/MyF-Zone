@@ -28,11 +28,11 @@ import com.myfzone_sport.myf_zone.R
 import com.myfzone_sport.myf_zone.databinding.FragmentEventCreationBinding
 import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth.isAffiliated
 import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth.isConnected
-import com.myfzone_sport.myf_zone.model.State
-import com.myfzone_sport.myf_zone.model.coach.ClubAffiliation
-import com.myfzone_sport.myf_zone.model.event.Event
-import com.myfzone_sport.myf_zone.model.event.EventData
-import com.myfzone_sport.myf_zone.model.event.EventOwner
+import com.myfzone_sport.myf_zone.domain.State
+import com.myfzone_sport.myf_zone.domain.coach.ClubAffiliation
+import com.myfzone_sport.myf_zone.domain.event.Event
+import com.myfzone_sport.myf_zone.domain.event.EventData
+import com.myfzone_sport.myf_zone.domain.event.EventOwner
 import com.myfzone_sport.myf_zone.util.Constants.TRACKING
 import com.myfzone_sport.myf_zone.util.Tracking
 import kotlinx.coroutines.flow.collect

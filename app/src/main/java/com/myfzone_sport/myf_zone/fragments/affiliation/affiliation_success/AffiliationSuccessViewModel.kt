@@ -5,8 +5,8 @@ import androidx.core.os.bundleOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.myfzone_sport.myf_zone.model.State
-import com.myfzone_sport.myf_zone.model.club.Club
+import com.myfzone_sport.myf_zone.domain.State
+import com.myfzone_sport.myf_zone.domain.club.Club
 import com.myfzone_sport.myf_zone.util.Constants
 import com.myfzone_sport.myf_zone.util.Tracking
 import kotlinx.coroutines.flow.collect

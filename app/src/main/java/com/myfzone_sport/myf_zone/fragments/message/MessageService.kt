@@ -5,9 +5,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
-import com.myfzone_sport.myf_zone.model.State
-import com.myfzone_sport.myf_zone.model.chat.Chat
-import com.myfzone_sport.myf_zone.model.coach.Coach
+import com.myfzone_sport.myf_zone.domain.State
+import com.myfzone_sport.myf_zone.domain.chat.Chat
+import com.myfzone_sport.myf_zone.domain.coach.Coach
 import com.myfzone_sport.myf_zone.util.Constants.COACH_PATH
 import com.myfzone_sport.myf_zone.util.Constants.DB
 import kotlinx.coroutines.Dispatchers.IO

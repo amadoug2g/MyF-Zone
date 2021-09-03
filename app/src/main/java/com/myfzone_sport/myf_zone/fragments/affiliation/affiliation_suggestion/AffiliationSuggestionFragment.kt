@@ -24,8 +24,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.myfzone_sport.myf_zone.R
 import com.myfzone_sport.myf_zone.databinding.FragmentAffiliationSuggestionBinding
 import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth
-import com.myfzone_sport.myf_zone.model.State
-import com.myfzone_sport.myf_zone.model.club.ClubSuggestion
+import com.myfzone_sport.myf_zone.domain.State
+import com.myfzone_sport.myf_zone.domain.club.ClubSuggestion
 import kotlinx.coroutines.flow.collect
 import org.jetbrains.anko.support.v4.toast
 import java.util.*

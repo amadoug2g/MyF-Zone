@@ -3,9 +3,9 @@ package com.myfzone_sport.myf_zone.fragments.affiliation.affiliation_success
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.storage.FirebaseStorage
-import com.myfzone_sport.myf_zone.model.State
-import com.myfzone_sport.myf_zone.model.club.Club
-import com.myfzone_sport.myf_zone.model.coach.ClubAffiliation
+import com.myfzone_sport.myf_zone.domain.State
+import com.myfzone_sport.myf_zone.domain.club.Club
+import com.myfzone_sport.myf_zone.domain.coach.ClubAffiliation
 import com.myfzone_sport.myf_zone.util.Constants
 import com.myfzone_sport.myf_zone.util.Constants.CLUB_PATH
 import com.myfzone_sport.myf_zone.util.Constants.DB

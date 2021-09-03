@@ -7,11 +7,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.android.libraries.places.api.model.Place
-import com.myfzone_sport.myf_zone.model.State
-import com.myfzone_sport.myf_zone.model.chat.MessagingService.Companion.eventModifyParticipation
-import com.myfzone_sport.myf_zone.model.coach.ClubAffiliation
-import com.myfzone_sport.myf_zone.model.event.Event
-import com.myfzone_sport.myf_zone.model.event.EventParticipant
+import com.myfzone_sport.myf_zone.domain.State
+import com.myfzone_sport.myf_zone.domain.chat.MessagingService.Companion.eventModifyParticipation
+import com.myfzone_sport.myf_zone.domain.coach.ClubAffiliation
+import com.myfzone_sport.myf_zone.domain.event.Event
+import com.myfzone_sport.myf_zone.domain.event.EventParticipant
 import com.myfzone_sport.myf_zone.util.Constants
 import com.myfzone_sport.myf_zone.util.Tracking
 import kotlinx.coroutines.flow.collect

@@ -27,9 +27,9 @@ import com.myfzone_sport.myf_zone.databinding.FragmentEventDetailsGuestBinding
 import com.myfzone_sport.myf_zone.fragments.event.event_details.guest.EventDetailsGuestService.getImageReference
 import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth
 import com.myfzone_sport.myf_zone.glide.GlideApp
-import com.myfzone_sport.myf_zone.model.State
-import com.myfzone_sport.myf_zone.model.event.Event
-import com.myfzone_sport.myf_zone.model.event.EventParticipant
+import com.myfzone_sport.myf_zone.domain.State
+import com.myfzone_sport.myf_zone.domain.event.Event
+import com.myfzone_sport.myf_zone.domain.event.EventParticipant
 import com.myfzone_sport.myf_zone.util.Constants.TRACKING
 import com.myfzone_sport.myf_zone.util.Tracking
 import kotlinx.android.synthetic.main.event_detail_cardview_map.*

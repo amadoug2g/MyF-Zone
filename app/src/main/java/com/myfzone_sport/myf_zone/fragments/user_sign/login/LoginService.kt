@@ -6,8 +6,8 @@ import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.messaging.FirebaseMessaging
 import com.myfzone_sport.myf_zone.fragments.user_sign.sign_up.SignUpService
-import com.myfzone_sport.myf_zone.model.State
-import com.myfzone_sport.myf_zone.model.chat.MessagingService
+import com.myfzone_sport.myf_zone.domain.State
+import com.myfzone_sport.myf_zone.domain.chat.MessagingService
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow

@@ -1,7 +1,7 @@
 package com.myfzone_sport.myf_zone.fragments.affiliation.affiliation_suggestion
 
-import com.myfzone_sport.myf_zone.model.State
-import com.myfzone_sport.myf_zone.model.club.ClubSuggestion
+import com.myfzone_sport.myf_zone.domain.State
+import com.myfzone_sport.myf_zone.domain.club.ClubSuggestion
 import com.myfzone_sport.myf_zone.util.Constants.CLUB_SUGGESTION_PATH
 import com.myfzone_sport.myf_zone.util.Constants.DB
 import kotlinx.coroutines.Dispatchers

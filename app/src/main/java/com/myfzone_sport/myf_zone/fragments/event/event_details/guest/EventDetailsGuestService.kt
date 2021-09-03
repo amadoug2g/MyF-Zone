@@ -2,9 +2,9 @@ package com.myfzone_sport.myf_zone.fragments.event.event_details.guest
 
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
-import com.myfzone_sport.myf_zone.model.State
-import com.myfzone_sport.myf_zone.model.event.Event
-import com.myfzone_sport.myf_zone.model.event.EventOwner
+import com.myfzone_sport.myf_zone.domain.State
+import com.myfzone_sport.myf_zone.domain.event.Event
+import com.myfzone_sport.myf_zone.domain.event.EventOwner
 import com.myfzone_sport.myf_zone.util.Constants.DB
 import com.myfzone_sport.myf_zone.util.Constants.EVENT_PATH
 import kotlinx.coroutines.Dispatchers.IO

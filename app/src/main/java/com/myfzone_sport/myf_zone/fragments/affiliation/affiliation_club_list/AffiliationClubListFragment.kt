@@ -16,9 +16,9 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.myfzone_sport.myf_zone.R
 import com.myfzone_sport.myf_zone.databinding.CardClubListBinding
 import com.myfzone_sport.myf_zone.databinding.FragmentAffiliationClubListBinding
+import com.myfzone_sport.myf_zone.domain.club.Club
 import com.myfzone_sport.myf_zone.fragments.affiliation.affiliation_club_list.AffiliationClubListService.getImageReference
 import com.myfzone_sport.myf_zone.glide.GlideApp
-import com.myfzone_sport.myf_zone.model.club.Club
 
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"

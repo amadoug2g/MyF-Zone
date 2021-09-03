@@ -5,7 +5,7 @@
 
         <variable
             name="message"
-            type="com.myfzone_sport.myf_zone.model.chat.Message" />
+            type="com.myfzone_sport.myf_zone.domain.chat.Message" />
     </data>
 
     <FrameLayout xmlns:tools="http://schemas.android.com/tools"

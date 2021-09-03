@@ -6,7 +6,7 @@
 
         <variable
             name="event"
-            type="com.myfzone_sport.myf_zone.model.event.Event" />
+            type="com.myfzone_sport.myf_zone.domain.event.Event" />
 
         <variable
             name="viewModel"

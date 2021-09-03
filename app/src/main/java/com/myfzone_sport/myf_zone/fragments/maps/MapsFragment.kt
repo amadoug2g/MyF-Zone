@@ -29,11 +29,11 @@ import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth
 import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth.activeCoach
 import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth.isAffiliated
 import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth.isConnected
-import com.myfzone_sport.myf_zone.model.State
-import com.myfzone_sport.myf_zone.model.event.Event
-import com.myfzone_sport.myf_zone.model.event.EventData
-import com.myfzone_sport.myf_zone.model.maps.ClusterRenderer
-import com.myfzone_sport.myf_zone.model.maps.MyClusterItem
+import com.myfzone_sport.myf_zone.domain.State
+import com.myfzone_sport.myf_zone.domain.event.Event
+import com.myfzone_sport.myf_zone.domain.event.EventData
+import com.myfzone_sport.myf_zone.domain.maps.ClusterRenderer
+import com.myfzone_sport.myf_zone.domain.maps.MyClusterItem
 import com.myfzone_sport.myf_zone.util.Constants.TRACKING
 import com.myfzone_sport.myf_zone.util.Tracking
 import kotlinx.android.synthetic.main.card_event_item.*
@@ -207,6 +207,7 @@ class MapsFragment : Fragment(),
     }
 
     override fun onMapClick(p0: LatLng?) {
+        binding.cardEventDetail
         if (binding.cardEventDetail.cardViewDetail.isVisible) {
             crossFadeEnd()
             binding.cardEventDetail.cardViewDetail.visibility = View.INVISIBLE

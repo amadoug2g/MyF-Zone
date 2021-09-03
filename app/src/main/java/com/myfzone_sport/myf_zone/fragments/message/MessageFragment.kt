@@ -19,12 +19,12 @@ import com.google.firebase.firestore.Query
 import com.myfzone_sport.myf_zone.R
 import com.myfzone_sport.myf_zone.databinding.CardMessageCoachBinding
 import com.myfzone_sport.myf_zone.databinding.FragmentMessageBinding
-import com.myfzone_sport.myf_zone.fragments.message.MessageService.getImageReference
 import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth
 import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth.isAffiliated
 import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth.isConnected
+import com.myfzone_sport.myf_zone.domain.chat.Chat
+import com.myfzone_sport.myf_zone.fragments.affiliation.affiliation_club_list.AffiliationClubListService.getImageReference
 import com.myfzone_sport.myf_zone.glide.GlideApp
-import com.myfzone_sport.myf_zone.model.chat.Chat
 import com.myfzone_sport.myf_zone.util.Constants.TRACKING
 import com.myfzone_sport.myf_zone.util.Tracking
 import kotlinx.android.synthetic.main.activity_main_screen.*

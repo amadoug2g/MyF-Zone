@@ -21,8 +21,8 @@ import com.myfzone_sport.myf_zone.databinding.FragmentProfileBinding
 import com.myfzone_sport.myf_zone.fragments.profile.ProfileService.getImageReference
 import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth
 import com.myfzone_sport.myf_zone.glide.GlideApp
-import com.myfzone_sport.myf_zone.model.State
-import com.myfzone_sport.myf_zone.model.event.Event
+import com.myfzone_sport.myf_zone.domain.State
+import com.myfzone_sport.myf_zone.domain.event.Event
 import com.myfzone_sport.myf_zone.util.Constants.TRACKING
 import com.myfzone_sport.myf_zone.util.Tracking
 import kotlinx.coroutines.flow.collect

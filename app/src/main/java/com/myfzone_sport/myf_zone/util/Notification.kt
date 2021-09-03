@@ -1,7 +1,7 @@
 package com.myfzone_sport.myf_zone.util
 
-import com.myfzone_sport.myf_zone.model.coach.Coach
-import com.myfzone_sport.myf_zone.model.event.Event
+import com.myfzone_sport.myf_zone.domain.coach.Coach
+import com.myfzone_sport.myf_zone.domain.event.Event
 
 
 /**
