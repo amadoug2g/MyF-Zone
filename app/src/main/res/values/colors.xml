@@ -22,6 +22,8 @@
     <color name="colorInfoStart">#FFFF00</color>
     <color name="colorInfoEnd">#FF8000</color>
     <color name="colorDesign1">#070D2A</color>
-    <color name="colorDesign1Transparent">#CC070D2A</color>
+    <color name="colorDesign1Transparent80">#CC070D2A</color>
+    <color name="colorDesign1Transparent75">#BF070D2A</color>
     <color name="colorDesign2">#1C55E6</color>
+    <color name="colorDesign3">#4BACEA</color>
 </resources>

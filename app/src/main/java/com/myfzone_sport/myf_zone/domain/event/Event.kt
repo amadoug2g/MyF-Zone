@@ -129,6 +129,22 @@ data class Event(
             return formatEventHour.format(formatDate.parse(date.toString())!!)
         }
 
+    val eventDateToDayNumber: String
+        get() {
+            val formatEventDay = SimpleDateFormat("d", Locale.FRANCE)
+            val formatDate = SimpleDateFormat("E MMM dd HH:mm:ss z yyyy", Locale.ENGLISH)
+
+            return formatEventDay.format(formatDate.parse(date.toString())!!)
+        }
+
+    val eventDateToMonth: String
+        get() {
+            val formatEventDay = SimpleDateFormat("MMM", Locale.FRANCE)
+            val formatDate = SimpleDateFormat("E MMM dd HH:mm:ss z yyyy", Locale.ENGLISH)
+
+            return formatEventDay.format(formatDate.parse(date.toString())!!)
+        }
+
 
 //    override fun toString(): String {
 //        return "$title - $eventTypeString, se déroulera à $address le $date (owner: ${owner})"

@@ -1,26 +1,26 @@
-package com.myfzone_sport.myf_zone.app.ui
+package com.myfzone_sport.myf_zone.app.ui.activity
 
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.NavigationUI.setupActionBarWithNavController
-import androidx.navigation.ui.setupActionBarWithNavController
 import com.myfzone_sport.myf_zone.R
+import com.myfzone_sport.myf_zone.app.ui.viewmodel.FragmentViewModel
+import com.myfzone_sport.myf_zone.app.ui.viewmodel.FragmentViewModelFactory
+import com.myfzone_sport.myf_zone.data.LocalDataSourceImpl
+import com.myfzone_sport.myf_zone.data.RemoteDataSourceImpl
+import com.myfzone_sport.myf_zone.data.RepositoryImpl
 import com.myfzone_sport.myf_zone.databinding.ActivityMainBinding
-import com.myfzone_sport.myf_zone.screens.MainScreen
+import com.myfzone_sport.myf_zone.usecases.event.GetAllEventsUseCase
 
 class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedListener {
 
@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
     companion object {
         private val TAG = MainActivity::class.java.simpleName
         private lateinit var binding: ActivityMainBinding
-        private lateinit var viewModel: ActivityViewModel
+        private lateinit var viewModel: FragmentViewModel
 
         private val messageReceiver: BroadcastReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent) {
@@ -107,6 +107,11 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
     }
 
     private fun initViewModel() {
-        viewModel = ViewModelProvider(this).get(ActivityViewModel::class.java)}
+        val localDataSource = LocalDataSourceImpl()
+        val remoteDataSource = RemoteDataSourceImpl()
+        val repository = RepositoryImpl(/*localDataSource,*/ remoteDataSource)
+        val getAllEventsUseCase = GetAllEventsUseCase(repository)
+        viewModel = ViewModelProvider(this, FragmentViewModelFactory(getAllEventsUseCase)).get(
+            FragmentViewModel::class.java)}
     //endregion
 }

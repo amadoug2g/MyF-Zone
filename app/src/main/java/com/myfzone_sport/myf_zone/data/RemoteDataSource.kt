@@ -1,5 +1,6 @@
 package com.myfzone_sport.myf_zone.data
 
+import com.myfzone_sport.myf_zone.domain.State
 import com.myfzone_sport.myf_zone.domain.club.Club
 import com.myfzone_sport.myf_zone.domain.coach.ClubAffiliation
 import com.myfzone_sport.myf_zone.domain.coach.Coach
@@ -9,6 +10,8 @@ import com.myfzone_sport.myf_zone.domain.event.EventParticipant
 import com.myfzone_sport.myf_zone.domain.sport.Category
 import com.myfzone_sport.myf_zone.domain.sport.Sport
 import com.myfzone_sport.myf_zone.domain.sport.SubCategory
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.FlowCollector
 
 interface RemoteDataSource {
 
@@ -47,7 +50,7 @@ interface RemoteDataSource {
 
     fun getEventFromId(): Club
 
-    fun getOwnerFromEvent(): EventOwner
+    suspend fun getOwnerFromEvent(eventId: String): EventOwner?
 
     fun getAllParticipantsList(): MutableList<EventParticipant>
 
@@ -83,6 +86,8 @@ interface RemoteDataSource {
     //endregion
 
     //region Event
+    fun getAllEvents(): Flow<State<MutableList<Event>>>
+
     fun getFriendlyEvents(): MutableList<Event>
 
     fun getTourneyEvents(): MutableList<Event>

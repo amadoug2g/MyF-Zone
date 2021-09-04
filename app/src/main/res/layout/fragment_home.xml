@@ -1,21 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <LinearLayout xmlns:tools="http://schemas.android.com/tools"
+
+<!--    <ScrollView-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent">-->
+
+        <RelativeLayout xmlns:tools="http://schemas.android.com/tools"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            tools:context=".app.ui.HomeFragment">
+            android:layout_height="match_parent"
+            tools:context=".app.ui.fragment.HomeFragment">
 
             <RelativeLayout
+                android:id="@+id/home_header"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="12dp"
                 android:layout_marginEnd="16dp"
-                android:layout_marginBottom="12dp">
+                android:layout_marginBottom="2dp">
 
                 <ImageView
                     android:id="@+id/home_logo"
@@ -27,8 +29,8 @@
                 <TextView
                     android:id="@+id/home_welcome_text"
                     android:layout_width="wrap_content"
-                    android:layout_marginStart="4dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
                     android:layout_toEndOf="@id/home_logo"
                     android:fontFamily="@font/nuber_next_demi_bold_wide"
                     android:text="Bonjour Coach !"
@@ -47,28 +49,58 @@
                     android:id="@+id/home_chat_btn"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:layout_marginStart="16dp"
                     android:layout_alignParentEnd="true"
+                    android:layout_marginStart="16dp"
                     android:contentDescription="Home Chat Button"
                     android:src="@drawable/ic_chat_home" />
 
             </RelativeLayout>
 
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_below="@id/home_header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="0dp"
+                android:indeterminate="true"
+                android:indeterminateBehavior="cycle"
+                android:indeterminateTint="@color/colorDesign2"
+                android:visibility="invisible" />
+
             <LinearLayout
+                android:layout_below="@id/progressBar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
                 android:orientation="vertical">
 
-                <include layout="@layout/home_close_to_club_layout" />
+                <include
+                    android:id="@+id/close_to_club_layout"
+                    layout="@layout/home_close_to_club_layout" />
 
-                <include layout="@layout/home_categories_layout" />
+                <include
+                    android:id="@+id/category_layout"
+                    layout="@layout/home_categories_layout" />
 
-                <include layout="@layout/home_coach_event_layout" />
+                <include
+                    android:id="@+id/user_event_layout"
+                    layout="@layout/home_coach_event_layout" />
 
             </LinearLayout>
 
-        </LinearLayout>
-    </ScrollView>
+            <ImageView
+                android:id="@+id/home_create_event_btn"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
+                android:layout_margin="24dp"
+                android:contentDescription="Home Create Event Button"
+                android:background="@drawable/home_create_event_btn_bg"
+                android:src="@drawable/ic_add" />
+
+        </RelativeLayout>
+<!--    </ScrollView>-->
 </layout>

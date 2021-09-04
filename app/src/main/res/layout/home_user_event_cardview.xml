@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout>
+
+    <data>
+
+        <variable
+            name="event"
+            type="com.myfzone_sport.myf_zone.domain.event.Event" />
+    </data>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="8dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+<!--                <ImageView-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="match_parent"-->
+<!--                    android:background="@color/colorDesign1"-->
+<!--                    android:contentDescription="event map"-->
+<!--                    android:scaleType="centerCrop" />-->
+
+                <ImageView
+                    android:id="@+id/event_card_bg"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_margin="8dp"
+                    android:layout_centerVertical="true"
+                    android:contentDescription="date background"
+                    android:background="@drawable/close_to_club_date_bg"
+                    android:layout_marginStart="6dp" />
+
+                <LinearLayout
+                    android:id="@+id/date_layout"
+                    android:layout_width="40dp"
+                    android:layout_margin="8dp"
+                    android:layout_centerVertical="true"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/event_card_date"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/gilroy_bold"
+                        android:text="@{event.eventDateToDayNumber}"
+                        android:textAlignment="center"
+                        android:textColor="@color/quantum_white_text"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:id="@+id/event_card_month"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/gilroy_medium"
+                        android:text="@{event.eventDateToMonth}"
+                        android:textAlignment="center"
+                        android:textAllCaps="true"
+                        android:textColor="@color/quantum_white_text"
+                        android:textSize="11sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/text_layout"
+                    android:layout_toEndOf="@id/date_layout"
+                    android:layout_width="match_parent"
+                    android:layout_marginStart="8dp"
+                    android:layout_centerVertical="true"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/event_card_dat"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/gilroy_medium"
+                        android:text="@{event.eventTypeString}"
+                        android:textColor="@color/colorDesign1Transparent75"
+                        android:textSize="11sp" />
+
+                    <TextView
+                        android:id="@+id/event_card_mont"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:fontFamily="@font/gilroy_semi_bold"
+                        android:text="@{event.title}"
+                        android:textAllCaps="true"
+                        android:textColor="@color/colorDesign1"
+                        android:textSize="13sp" />
+
+                </LinearLayout>
+
+            </RelativeLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+    </LinearLayout>
+</layout>

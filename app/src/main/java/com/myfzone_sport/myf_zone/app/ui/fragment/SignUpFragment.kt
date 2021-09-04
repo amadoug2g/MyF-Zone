@@ -1,4 +1,4 @@
-package com.myfzone_sport.myf_zone.app.ui
+package com.myfzone_sport.myf_zone.app.ui.fragment
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

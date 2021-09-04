@@ -6,7 +6,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/login_standard_x3"
-        tools:context=".app.ui.LoginFragment">
+        tools:context=".app.ui.fragment.LoginFragment">
 
         <LinearLayout
             android:layout_width="match_parent"
