@@ -1,13 +1,24 @@
 package com.myfzone_sport.myf_zone.app.ui.fragment
 
+import android.annotation.SuppressLint
+import android.graphics.Color
+import android.graphics.ColorFilter
+import android.graphics.PorterDuff
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.graphics.BlendModeColorFilterCompat
+import androidx.core.graphics.BlendModeCompat
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.snackbar.Snackbar
 import com.myfzone_sport.myf_zone.R
 import com.myfzone_sport.myf_zone.app.ui.viewmodel.FragmentViewModel
 import com.myfzone_sport.myf_zone.app.ui.adapter.CategoryEventAdapter
@@ -15,6 +26,7 @@ import com.myfzone_sport.myf_zone.app.ui.adapter.CloseToClubEventAdapter
 import com.myfzone_sport.myf_zone.app.ui.adapter.UserEventAdapter
 import com.myfzone_sport.myf_zone.databinding.FragmentHomeBinding
 import kotlinx.android.synthetic.main.home_close_to_club_layout.view.*
+import org.jetbrains.anko.support.v4.toast
 
 class HomeFragment : Fragment() {
 
@@ -45,16 +57,40 @@ class HomeFragment : Fragment() {
             false
         )
 
-        viewModel.getCloseEvents()
+//        viewModel.getCloseEvents()
         setupObservers()
         setUpRecyclerViews()
+
+        setupViews()
 
         return binding.root
     }
     //endregion
 
     //region Setups
+    private fun setupViews() {
+//        binding.homeCreateEventBtn.buttonEffect()
+
+        binding.userEventLayout.showAll.setOnClickListener {
+            val bundle = bundleOf("listType" to "userEvent")
+            navigate(R.id.homeFragmentToCategoryListFragment, bundle)
+        }
+
+        binding.categoryLayout.showAll.setOnClickListener {
+            val bundle = bundleOf("listType" to "categoryEvent")
+            navigate(R.id.homeFragmentToCategoryListFragment, bundle)
+        }
+
+        binding.homeCreateEventBtn.setOnClickListener {
+            toast("clicked new event")
+        }
+    }
+
     private fun setupObservers() {
+        viewModel.errorMessage.observe(viewLifecycleOwner, {
+            if (it.isNotEmpty()) showError()
+        })
+
         viewModel.isLoading.observe(viewLifecycleOwner, { contentIsLoading ->
             if (contentIsLoading) loadingStart() else loadingStop()
         })
@@ -76,6 +112,7 @@ class HomeFragment : Fragment() {
 
         viewModel.closeEventsList.observe(viewLifecycleOwner, {
             if (it.isNotEmpty()) adapterCloseToClub.setData(it)
+//            adapterCloseToClub.submitList(it)
         })
     }
 
@@ -104,6 +141,20 @@ class HomeFragment : Fragment() {
     }
     //endregion
 
+    //Navigation
+    private fun navigateWithView(destination: Int, extra: Bundle? = null, view: View) {
+        Navigation
+            .findNavController(view)
+            .navigate(destination, extra)
+    }
+
+    private fun navigate(destination: Int, extra: Bundle? = null) {
+        Navigation
+            .findNavController(this.requireView())
+            .navigate(destination, extra)
+    }
+    //endregion
+
     //region View Methods
     private fun loadingStart() {
         binding.progressBar.visibility = View.VISIBLE
@@ -111,6 +162,37 @@ class HomeFragment : Fragment() {
 
     private fun loadingStop() {
         binding.progressBar.visibility = View.INVISIBLE
+    }
+
+    private fun showError(message: String? = "") {
+
+        Snackbar.make(
+            binding.homeChatBtn,
+            if (!message.isNullOrEmpty()) message else viewModel.errorMessage.value.toString(),
+            Snackbar.LENGTH_LONG
+        )
+            .setTextColor(Color.WHITE)
+            .setActionTextColor(Color.CYAN)
+            .show()
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    fun View.buttonEffect() {
+        this.setOnTouchListener { v, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+//                    v.background.setColorFilter(-0x1f0b8adf, PorterDuff.Mode.SRC_ATOP)
+                    v.background.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(-0x1f0b8adf,
+                        BlendModeCompat.SRC_ATOP)
+                    v.invalidate()
+                }
+                MotionEvent.ACTION_UP -> {
+                    v.background.clearColorFilter()
+                    v.invalidate()
+                }
+            }
+            false
+        }
     }
     //endregion
 }

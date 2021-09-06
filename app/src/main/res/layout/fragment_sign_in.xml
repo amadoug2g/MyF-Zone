@@ -1,130 +1,157 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
+    <data>
+        <variable
+            name="viewModel"
+            type="com.myfzone_sport.myf_zone.app.ui.viewmodel.RegistrationViewModel" />
+    </data>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".app.ui.fragment.SignInFragment">
-
-        <LinearLayout
+        android:layout_gravity="center"
+        android:orientation="vertical">
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:orientation="vertical">
+            android:layout_marginTop="0dp"
+            android:indeterminate="true"
+            android:indeterminateBehavior="cycle"
+            android:visibility="invisible"
+            android:indeterminateTint="@color/colorDesign2" />
+
+        <ScrollView xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:context=".app.ui.fragment.SignInFragment">
 
             <LinearLayout
-                android:id="@+id/sign_up_header_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="60dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="32dp"
+                android:layout_gravity="center"
                 android:orientation="vertical">
 
-                <TextView
+
+
+                <LinearLayout
+                    android:id="@+id/sign_up_header_text"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:fontFamily="@font/nuber_next_demi_bold_wide"
-                    android:text="Connectez-vous dès maintenant !"
-                    android:textColor="@color/colorDesign1"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="60dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="32dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:fontFamily="@font/nuber_next_demi_bold_wide"
+                        android:text="Connectez-vous dès maintenant !"
+                        android:textColor="@color/colorDesign1"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:fontFamily="@font/nuber_next_regular_wide"
+                        android:text="Et participez au développement du football."
+                        android:textColor="@color/colorDesign1Transparent80"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/sign_in_email_layout"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:hint="@string/input_mail_hint"
+                    android:transitionName="@string/email_trans"
+                    app:boxBackgroundColor="@color/colorAccentTransparent">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/sign_in_email_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/gilroy_medium"
+                        android:inputType="textEmailAddress"
+                        android:text="@={viewModel.signInEmail}"
+                        android:textColor="@color/colorDesign1" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/sign_in_password_layout"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16sp"
+                    android:layout_marginEnd="16dp"
+                    android:hint="@string/input_password_hint"
+                    android:transitionName="@string/email_trans"
+                    app:boxBackgroundColor="@color/colorAccentTransparent">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/sign_in_password_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/gilroy_medium"
+                        android:inputType="textPassword"
+                        android:textColor="@color/colorDesign1" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/sign_in_btn"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:layout_gravity="bottom"
+                    android:layout_marginStart="40dp"
+                    android:layout_marginTop="130dp"
+                    android:layout_marginEnd="40dp"
+                    android:backgroundTint="@color/colorDesign2"
+                    android:fontFamily="@font/nuber_next_bold"
+                    android:text="Connexion"
+                    android:textAllCaps="false"
                     android:textSize="16sp" />
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/noAccountText"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="64dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="64dp"
                     android:fontFamily="@font/nuber_next_regular_wide"
-                    android:text="Et participez au développement du football."
+                    android:text="@string/no_account_string"
+                    android:textAlignment="center"
                     android:textColor="@color/colorDesign1Transparent80"
                     android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/sign_up_link"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="64dp"
+                    android:layout_marginTop="-16dp"
+                    android:layout_marginEnd="64dp"
+                    android:fontFamily="@font/nuber_next_bold"
+                    android:text="Me créer un compte"
+                    android:textAllCaps="false"
+                    android:textColor="@color/colorDesign2"
+                    android:textSize="16sp" />
+
             </LinearLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/sign_in_email_layout"
-                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:hint="@string/input_mail_hint"
-                android:transitionName="@string/email_trans"
-                app:boxBackgroundColor="@color/colorAccentTransparent">
+        </ScrollView>
+    </LinearLayout>
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/sign_in_email_input"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/gilroy_medium"
-                    android:inputType="textEmailAddress"
-                    android:textColor="@color/colorDesign1" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/sign_in_password_layout"
-                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16sp"
-                android:layout_marginEnd="16dp"
-                android:hint="@string/input_password_hint"
-                android:transitionName="@string/email_trans"
-                app:boxBackgroundColor="@color/colorAccentTransparent">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/sign_in_password_input"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/gilroy_medium"
-                    android:inputType="textEmailAddress"
-                    android:textColor="@color/colorDesign1" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/sign_in_btn"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:layout_gravity="bottom"
-                android:layout_marginStart="40dp"
-                android:layout_marginTop="130dp"
-                android:layout_marginEnd="40dp"
-                android:backgroundTint="@color/colorDesign2"
-                android:fontFamily="@font/nuber_next_bold"
-                android:text="Connexion"
-                android:textAllCaps="false"
-                android:textSize="16sp" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/noAccountText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="64dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="64dp"
-                android:fontFamily="@font/nuber_next_regular_wide"
-                android:text="@string/no_account_string"
-                android:textAlignment="center"
-                android:textColor="@color/colorDesign1Transparent80"
-                android:textSize="12sp" />
-
-            <TextView
-                android:id="@+id/sign_up_link"
-                style="@style/Widget.MaterialComponents.Button.TextButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="64dp"
-                android:layout_marginTop="-16dp"
-                android:layout_marginEnd="64dp"
-                android:fontFamily="@font/nuber_next_bold"
-                android:text="Me créer un compte"
-                android:textAllCaps="false"
-                android:textColor="@color/colorDesign2"
-                android:textSize="16sp" />
-
-        </LinearLayout>
-
-    </ScrollView>
 </layout>

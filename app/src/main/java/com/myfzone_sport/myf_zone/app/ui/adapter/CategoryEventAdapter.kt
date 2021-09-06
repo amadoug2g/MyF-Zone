@@ -1,11 +1,16 @@
 package com.myfzone_sport.myf_zone.app.ui.adapter
 
+import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.myfzone_sport.myf_zone.R
 import com.myfzone_sport.myf_zone.databinding.HomeCategoryCardviewBinding
 import com.myfzone_sport.myf_zone.domain.event.Event
 
@@ -42,9 +47,27 @@ class CategoryEventAdapter : RecyclerView.Adapter<CategoryEventAdapter.MyViewHol
             }
 
             binding.cardView.setOnClickListener {
-//                val action = ListFragmentDirections.listFragmentToDetailFragment(event.id)
-//                navController.navigate(action)
+                when (category) {
+                    "Matches Amicaux" -> {
+                        val bundle = bundleOf("listType" to "friendly")
+                        navigate(R.id.homeFragmentToCategoryListFragment, bundle, binding.cardView)
+                    }
+                    "Tournois" -> {
+                        val bundle = bundleOf("listType" to "tourney")
+                        navigate(R.id.homeFragmentToCategoryListFragment, bundle, binding.cardView)
+                    }
+                    "Plateaux" -> {
+                        val bundle = bundleOf("listType" to "plateau")
+                        navigate(R.id.homeFragmentToCategoryListFragment, bundle, binding.cardView)
+                    }
+                }
             }
+        }
+
+        private fun navigate(destination: Int, extra: Bundle? = null, view: View) {
+            Navigation
+                .findNavController(view)
+                .navigate(destination, extra)
         }
 
         companion object {

@@ -11,25 +11,11 @@
         tools:layout="@layout/fragment_login2">
         <action
             android:id="@+id/loginFragmentToHomeFragment"
-            app:destination="@id/homeFragment" />
+            app:destination="@id/home" />
         <action
-            android:id="@+id/loginFragmentToSignUpFragment2"
-            app:destination="@id/signUpFragment2" />
+            android:id="@+id/loginFragmentToRegistration"
+            app:destination="@id/registration" />
     </fragment>
-    <fragment
-        android:id="@+id/homeFragment"
-        android:name="com.myfzone_sport.myf_zone.app.ui.fragment.HomeFragment"
-        tools:layout="@layout/fragment_home" />
-    <fragment
-        android:id="@+id/signUpFragment2"
-        android:name="com.myfzone_sport.myf_zone.app.ui.fragment.SignUpFragment"
-        tools:layout="@layout/fragment_sign_up2">
-        <action
-            android:id="@+id/signUpFragment2ToSignInFragment"
-            app:destination="@id/signInFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/signInFragment"
-        android:name="com.myfzone_sport.myf_zone.app.ui.fragment.SignInFragment"
-        tools:layout="@layout/fragment_sign_in" />
+    <include app:graph="@navigation/home" />
+    <include app:graph="@navigation/registration" />
 </navigation>

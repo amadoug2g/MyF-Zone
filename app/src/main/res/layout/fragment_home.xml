@@ -1,106 +1,122 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-<!--    <ScrollView-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent">-->
+    <!--    <ScrollView-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="match_parent">-->
 
-        <RelativeLayout xmlns:tools="http://schemas.android.com/tools"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:context=".app.ui.fragment.HomeFragment">
+    <RelativeLayout xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".app.ui.fragment.HomeFragment">
 
-            <RelativeLayout
-                android:id="@+id/home_header"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="12dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="2dp">
-
-                <ImageView
-                    android:id="@+id/home_logo"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:contentDescription="Home Logo"
-                    android:src="@drawable/ic_location_accent" />
-
-                <TextView
-                    android:id="@+id/home_welcome_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
-                    android:layout_toEndOf="@id/home_logo"
-                    android:fontFamily="@font/nuber_next_demi_bold_wide"
-                    android:text="Bonjour Coach !"
-                    android:textColor="@color/quantum_black_text"
-                    android:textSize="12sp" />
-
-                <ImageView
-                    android:id="@+id/home_profile_btn"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_toStartOf="@id/home_chat_btn"
-                    android:contentDescription="Home Profile Button"
-                    android:src="@drawable/ic_account_home" />
-
-                <ImageView
-                    android:id="@+id/home_chat_btn"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_alignParentEnd="true"
-                    android:layout_marginStart="16dp"
-                    android:contentDescription="Home Chat Button"
-                    android:src="@drawable/ic_chat_home" />
-
-            </RelativeLayout>
-
-            <ProgressBar
-                android:id="@+id/progressBar"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_below="@id/home_header"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="0dp"
-                android:indeterminate="true"
-                android:indeterminateBehavior="cycle"
-                android:indeterminateTint="@color/colorDesign2"
-                android:visibility="invisible" />
-
-            <LinearLayout
-                android:layout_below="@id/progressBar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                android:orientation="vertical">
-
-                <include
-                    android:id="@+id/close_to_club_layout"
-                    layout="@layout/home_close_to_club_layout" />
-
-                <include
-                    android:id="@+id/category_layout"
-                    layout="@layout/home_categories_layout" />
-
-                <include
-                    android:id="@+id/user_event_layout"
-                    layout="@layout/home_coach_event_layout" />
-
-            </LinearLayout>
+        <RelativeLayout
+            android:id="@+id/home_header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="2dp">
 
             <ImageView
-                android:id="@+id/home_create_event_btn"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
+                android:id="@+id/home_logo"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:contentDescription="Home Logo"
+                android:src="@drawable/ic_location_accent" />
+
+            <TextView
+                android:id="@+id/home_welcome_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_toEndOf="@id/home_logo"
+                android:fontFamily="@font/nuber_next_demi_bold_wide"
+                android:text="Bonjour Coach !"
+                android:textColor="@color/quantum_black_text"
+                android:textSize="12sp" />
+
+            <ImageView
+                android:id="@+id/home_profile_btn"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_toStartOf="@id/home_chat_btn"
+                android:contentDescription="Home Profile Button"
+                android:src="@drawable/ic_account_home" />
+
+            <ImageView
+                android:id="@+id/home_chat_btn"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
                 android:layout_alignParentEnd="true"
-                android:layout_alignParentBottom="true"
-                android:layout_margin="24dp"
-                android:contentDescription="Home Create Event Button"
-                android:background="@drawable/home_create_event_btn_bg"
-                android:src="@drawable/ic_add" />
+                android:layout_marginStart="16dp"
+                android:contentDescription="Home Chat Button"
+                android:src="@drawable/ic_chat_home" />
 
         </RelativeLayout>
-<!--    </ScrollView>-->
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/home_header"
+            android:layout_marginTop="0dp"
+            android:indeterminate="true"
+            android:indeterminateBehavior="cycle"
+            android:indeterminateTint="@color/colorDesign2"
+            android:visibility="invisible" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/progressBar"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:orientation="vertical">
+
+            <include
+                android:id="@+id/close_to_club_layout"
+                layout="@layout/home_close_to_club_layout" />
+
+            <include
+                android:id="@+id/category_layout"
+                layout="@layout/home_categories_layout" />
+
+            <include
+                android:id="@+id/user_event_layout"
+                layout="@layout/home_coach_event_layout" />
+
+        </LinearLayout>
+
+        <ImageButton
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_margin="24dp"
+            android:background="@drawable/home_create_event_btn_bg"
+            android:contentDescription="Home Create Event Button"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_add"
+            android:visibility="invisible" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/home_create_event_btn"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_margin="24dp"
+            android:background="@drawable/home_create_event_btn_bg"
+            android:backgroundTint="@color/colorDesign2"
+            android:contentDescription="Home Create Event Button"
+            android:scaleType="center"
+            android:src="@drawable/ic_add"
+            android:visibility="visible" />
+
+    </RelativeLayout>
+    <!--    </ScrollView>-->
 </layout>

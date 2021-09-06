@@ -247,6 +247,8 @@ class AffiliationRequestFragment : Fragment() {
             }
         }
 
+        binding
+
         binding.sportSpinner.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
                 override fun onNothingSelected(p0: AdapterView<*>?) {

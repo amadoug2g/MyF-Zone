@@ -10,5 +10,5 @@ import kotlinx.coroutines.flow.Flow
  */
 
 class GetAllEventsUseCase(private val repository: Repository) {
-    operator fun invoke(): Flow<State<MutableList<Event>>> = repository.getAllEvents()
+    operator fun invoke() = repository.getAllEvents()
 }

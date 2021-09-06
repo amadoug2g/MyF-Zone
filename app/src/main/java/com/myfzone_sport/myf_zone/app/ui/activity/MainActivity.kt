@@ -16,11 +16,17 @@ import androidx.navigation.fragment.NavHostFragment
 import com.myfzone_sport.myf_zone.R
 import com.myfzone_sport.myf_zone.app.ui.viewmodel.FragmentViewModel
 import com.myfzone_sport.myf_zone.app.ui.viewmodel.FragmentViewModelFactory
+import com.myfzone_sport.myf_zone.app.ui.viewmodel.RegistrationViewModel
+import com.myfzone_sport.myf_zone.app.ui.viewmodel.RegistrationViewModelFactory
 import com.myfzone_sport.myf_zone.data.LocalDataSourceImpl
-import com.myfzone_sport.myf_zone.data.RemoteDataSourceImpl
+import com.myfzone_sport.myf_zone.app.framework.RemoteDataSourceImpl
 import com.myfzone_sport.myf_zone.data.RepositoryImpl
 import com.myfzone_sport.myf_zone.databinding.ActivityMainBinding
 import com.myfzone_sport.myf_zone.usecases.event.GetAllEventsUseCase
+import com.myfzone_sport.myf_zone.usecases.event.GetFriendlyEventsUseCase
+import com.myfzone_sport.myf_zone.usecases.event.GetPlateauEventsUseCase
+import com.myfzone_sport.myf_zone.usecases.event.GetTourneyEventsUseCase
+import com.myfzone_sport.myf_zone.usecases.registration.*
 
 class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedListener {
 
@@ -31,6 +37,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         private val TAG = MainActivity::class.java.simpleName
         private lateinit var binding: ActivityMainBinding
         private lateinit var viewModel: FragmentViewModel
+        private lateinit var registrationViewModel: RegistrationViewModel
 
         private val messageReceiver: BroadcastReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent) {
@@ -72,7 +79,17 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         destination: NavDestination,
         arguments: Bundle?
     ) {
-        TODO("Not yet implemented")
+        when (destination.id) {
+            R.id.loginFragment2 -> {
+                hideBar()
+            }
+            R.id.homeFragment -> {
+                hideBar()
+            }
+            else -> {
+                showBar()
+            }
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -110,8 +127,56 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         val localDataSource = LocalDataSourceImpl()
         val remoteDataSource = RemoteDataSourceImpl()
         val repository = RepositoryImpl(/*localDataSource,*/ remoteDataSource)
+
         val getAllEventsUseCase = GetAllEventsUseCase(repository)
-        viewModel = ViewModelProvider(this, FragmentViewModelFactory(getAllEventsUseCase)).get(
-            FragmentViewModel::class.java)}
+        val getFriendlyEventsUseCase = GetFriendlyEventsUseCase(repository)
+        val getTourneyEventsUseCase = GetTourneyEventsUseCase(repository)
+        val getPlateauEventsUseCase = GetPlateauEventsUseCase(repository)
+
+        val addUserToDatabaseUseCase = AddUserToDatabaseUseCase(repository)
+        val assignDisplayNameUseCase = AssignDisplayNameUseCase(repository)
+        val assignProfileImageUseCase = AssignProfileImageUseCase(repository)
+        val signInUserUseCase = SignInUserUseCase(repository)
+        val signUpUserUseCase = SignUpUserUseCase(repository)
+
+        viewModel = ViewModelProvider(
+            this,
+            FragmentViewModelFactory(
+                getAllEventsUseCase,
+                getFriendlyEventsUseCase,
+                getTourneyEventsUseCase,
+                getPlateauEventsUseCase
+            )
+        ).get(
+            FragmentViewModel::class.java
+        )
+
+        registrationViewModel = ViewModelProvider(
+            this,
+            RegistrationViewModelFactory(
+                addUserToDatabaseUseCase,
+                assignDisplayNameUseCase,
+                assignProfileImageUseCase,
+                signInUserUseCase,
+                signUpUserUseCase
+            )
+        ).get(
+            RegistrationViewModel::class.java
+        )
+    }
+    //endregion
+
+    //region View Methods
+    private fun hideBar() {
+        supportActionBar!!.apply {
+            hide()
+        }
+    }
+
+    private fun showBar() {
+        supportActionBar!!.apply {
+            show()
+        }
+    }
     //endregion
 }

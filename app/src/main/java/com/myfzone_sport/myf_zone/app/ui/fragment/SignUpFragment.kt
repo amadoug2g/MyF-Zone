@@ -1,20 +1,33 @@
 package com.myfzone_sport.myf_zone.app.ui.fragment
 
+import android.graphics.Color
 import android.os.Bundle
+import android.text.TextUtils
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.Navigation
+import com.google.android.material.snackbar.Snackbar
 import com.myfzone_sport.myf_zone.R
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.TRACKING
+import com.myfzone_sport.myf_zone.app.ui.viewmodel.RegistrationViewModel
 import com.myfzone_sport.myf_zone.databinding.FragmentSignUp2Binding
+import com.myfzone_sport.myf_zone.util.Tracking
+import com.myfzone_sport.myf_zone.util.Tracking.ALERT_ERROR
 
 class SignUpFragment : Fragment() {
+
+    //region Variables
+    private val viewModel by activityViewModels<RegistrationViewModel>()
 
     companion object {
         private lateinit var binding: FragmentSignUp2Binding
     }
+    //endregion
 
     //region Override Methods
     override fun onCreateView(
@@ -26,6 +39,12 @@ class SignUpFragment : Fragment() {
             R.layout.fragment_sign_up2, container, false
         )
 
+        setupObservers()
+
+        binding.signUpBtn.setOnClickListener {
+            signUp()
+        }
+
         binding.loginRegister.setOnClickListener {
             navigate(R.id.signUpFragment2ToSignInFragment)
         }
@@ -34,11 +53,111 @@ class SignUpFragment : Fragment() {
     }
     //endregion
 
+    //region Setups
+    private fun setupObservers() {
+        viewModel.errorMessage.observe(viewLifecycleOwner, {
+            if (it.isNotEmpty()) showError()
+        })
+
+//        viewModel.isLoading.observe(viewLifecycleOwner, { state ->
+//            if (state) loadingStart() else loadingStop()
+//        })
+    }
+    //endregion
+
+    //region Functions
+    private fun signUp() {
+        viewModel.signUp()
+    }
+
+    private fun validateForm(): Boolean {
+        var valid = true
+
+        val email = binding.signUpEmailInput.text.toString()
+        val password = binding.signUpPasswordInput.text.toString()
+        val firstName = binding.signUpFirstNameInput.text.toString()
+        val lastName = binding.signUpLastNameInput.text.toString()
+
+        val emailLayout = binding.signUpEmailLayout
+        val passwordLayout = binding.signUpPasswordLayout
+        val firstNameLayout = binding.signUpFirstNameLayout
+        val lastNameLayout = binding.signUpLastNameLayout
+
+        if (TextUtils.isEmpty(email)) {
+            val bundleTracking =
+                bundleOf("SignUp Email ${getString(R.string.error_msg)}" to getString(R.string.hint_required))
+            TRACKING.logEvent(ALERT_ERROR, bundleTracking)
+
+            emailLayout.error = getString(R.string.hint_required)
+            valid = false
+        } else {
+            emailLayout.error = null
+        }
+
+        if (TextUtils.isEmpty(password)) {
+            val bundleTracking =
+                bundleOf("SignUp Password ${getString(R.string.error_msg)}" to getString(R.string.hint_required))
+            TRACKING.logEvent(Tracking.ALERT_ERROR, bundleTracking)
+
+            passwordLayout.error = getString(R.string.hint_required)
+            valid = false
+        } else {
+            passwordLayout.error = null
+        }
+
+        if (TextUtils.isEmpty(firstName)) {
+            val bundleTracking =
+                bundleOf("SignUp FirstName ${getString(R.string.error_msg)}" to getString(R.string.hint_required))
+            TRACKING.logEvent(Tracking.ALERT_ERROR, bundleTracking)
+
+            firstNameLayout.error = getString(R.string.hint_required)
+            valid = false
+        } else {
+            firstNameLayout.error = null
+        }
+
+        if (TextUtils.isEmpty(lastName)) {
+            val bundleTracking =
+                bundleOf("SignUp LastName ${getString(R.string.error_msg)}" to getString(R.string.hint_required))
+            TRACKING.logEvent(Tracking.ALERT_ERROR, bundleTracking)
+
+            lastNameLayout.error = getString(R.string.hint_required)
+            valid = false
+        } else {
+            lastNameLayout.error = null
+        }
+
+        return valid
+    }
+    //endregion
+
     //region Navigation
     private fun navigate(destination: Int, extra: Bundle? = null) {
         Navigation
             .findNavController(this.requireView())
             .navigate(destination, extra)
+    }
+    //endregion
+
+    //region View Methods
+    private fun loadingStart() {
+        binding.progressBar.visibility = View.VISIBLE
+    }
+
+    private fun loadingStop() {
+        binding.progressBar.visibility = View.INVISIBLE
+    }
+
+    private fun showError(message: String? = "") {
+
+        Snackbar.make(
+            binding.signUpBtn,
+            if (!message.isNullOrEmpty()) message else viewModel.errorMessage.value.toString(),
+            Snackbar.LENGTH_LONG
+        )
+            .setTextColor(Color.WHITE)
+            .setActionTextColor(Color.CYAN)
+            .show()
     }
     //endregion
 }

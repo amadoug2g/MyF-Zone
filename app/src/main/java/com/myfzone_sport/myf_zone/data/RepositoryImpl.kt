@@ -1,5 +1,7 @@
 package com.myfzone_sport.myf_zone.data
 
+import com.google.firebase.auth.AuthResult
+import com.google.firebase.auth.FirebaseUser
 import com.myfzone_sport.myf_zone.domain.State
 import com.myfzone_sport.myf_zone.domain.club.Club
 import com.myfzone_sport.myf_zone.domain.coach.ClubAffiliation
@@ -11,16 +13,35 @@ import com.myfzone_sport.myf_zone.domain.sport.Category
 import com.myfzone_sport.myf_zone.domain.sport.Sport
 import com.myfzone_sport.myf_zone.domain.sport.SubCategory
 import kotlinx.coroutines.flow.Flow
+import java.util.*
 
 class RepositoryImpl(
 //    private val localDataSource: LocalDataSource,
     private val remoteDataSource: RemoteDataSource
 ) : Repository {
-    override fun affiliateCoach() {
-        remoteDataSource.affiliateCoach()
+    override fun affiliateCoach(
+        code: String,
+        affiliationSport: String,
+        affiliationCategory: String?,
+        affiliationSubCategory: String?
+    ) {
+        remoteDataSource.affiliateCoach(
+            code,
+            affiliationSport,
+            affiliationCategory,
+            affiliationSubCategory
+        )
     }
 
-    override fun getClubList(): MutableList<Club>? {
+    override fun sendRequestToClub(
+        clubId: String,
+        affiliationRequest: HashMap<String, Any?>,
+        removeListener: Boolean
+    ) {
+        remoteDataSource.sendRequestToClub(clubId, affiliationRequest, removeListener)
+    }
+
+    override fun getClubList(): Flow<State<MutableList<Club>>> {
         return remoteDataSource.getClubList()
     }
 
@@ -32,23 +53,23 @@ class RepositoryImpl(
         return remoteDataSource.getClubFromCode()
     }
 
-    override fun getCategoryList(): MutableList<Category>? {
-        return remoteDataSource.getCategoryList()
+    override fun getCategoryList(sportId: String): Flow<State<MutableList<Category>>> {
+        return remoteDataSource.getCategoryList(sportId)
     }
 
     override fun getCategoryId(): String {
         return remoteDataSource.getCategoryId()
     }
 
-    override fun getSubCategoryList(): MutableList<SubCategory>? {
-        return remoteDataSource.getSubCategoryList()
+    override fun getSubCategoryList(sportId: String, categoryId: String): Flow<State<MutableList<SubCategory>>> {
+        return remoteDataSource.getSubCategoryList(sportId, categoryId)
     }
 
     override fun getSubCategoryId(): String {
         return remoteDataSource.getSubCategoryId()
     }
 
-    override fun getSportList(): MutableList<Sport>? {
+    override fun getSportList(): Flow<State<MutableList<Sport>>> {
         return remoteDataSource.getSportList()
     }
 
@@ -140,15 +161,15 @@ class RepositoryImpl(
         return remoteDataSource.getAllEvents()
     }
 
-    override fun getFriendlyEvents(): MutableList<Event> {
+    override fun getFriendlyEvents(): Flow<State<MutableList<Event>>> {
         return remoteDataSource.getFriendlyEvents()
     }
 
-    override fun getTourneyEvents(): MutableList<Event> {
+    override fun getTourneyEvents(): Flow<State<MutableList<Event>>> {
         return remoteDataSource.getTourneyEvents()
     }
 
-    override fun getPlateauEvents(): MutableList<Event> {
+    override fun getPlateauEvents(): Flow<State<MutableList<Event>>> {
         return remoteDataSource.getPlateauEvents()
     }
 
@@ -184,51 +205,47 @@ class RepositoryImpl(
         remoteDataSource.notifyParticipants()
     }
 
-    override fun signInUser() {
-        remoteDataSource.signInUser()
+    override fun signInUser(email: String, password: String): Flow<State<AuthResult>> {
+        return remoteDataSource.signInUser(email, password)
     }
 
-    override fun signUpUser() {
-        remoteDataSource.signUpUser()
+    override fun signUpUser(email: String, password: String): Flow<State<AuthResult>> {
+        return remoteDataSource.signUpUser(email, password)
     }
 
-    override fun addUserToDatabase() {
-        remoteDataSource.addUserToDatabase()
+    override fun addUserToDatabase(coach: Coach): Flow<State<Coach>> {
+        return remoteDataSource.addUserToDatabase(coach)
     }
 
-    override fun assignDisplayName() {
-        remoteDataSource.assignDisplayName()
+    override fun assignDisplayName(coach: Coach): Flow<State<Boolean>> {
+        return remoteDataSource.assignDisplayName(coach)
     }
 
     override fun assignProfileImage() {
         remoteDataSource.assignProfileImage()
     }
 
-    override fun getUser(): Coach {
-        return remoteDataSource.getUser()
+    override fun getUser(user: FirebaseUser?) {
+        remoteDataSource.getUser(user)
     }
 
-    override fun getUserClub(): Club {
-        return remoteDataSource.getUserClub()
+    override fun getUserClub(affiliation: ClubAffiliation?) {
+        remoteDataSource.getUserClub(affiliation)
     }
 
-    override fun getUserAffiliation(): ClubAffiliation {
-        return remoteDataSource.getUserAffiliation()
+    override fun getUserAffiliation(user: FirebaseUser?) {
+        remoteDataSource.getUserAffiliation(user)
     }
 
     override fun getImageReference(): String {
         return remoteDataSource.getImageReference()
     }
 
-    override fun getUserEvents(): MutableList<Event> {
-        return remoteDataSource.getUserEvents()
+    override fun isUserOwner(eventId: String): Boolean {
+        return remoteDataSource.isUserOwner(eventId)
     }
 
-    override fun isUserOwner(): Boolean {
-        return remoteDataSource.isUserOwner()
-    }
-
-    override fun checkConnectedStatus(): Boolean {
-        return remoteDataSource.checkConnectedStatus()
+    override fun getUserInfo() {
+        return remoteDataSource.getUserInfo()
     }
 }

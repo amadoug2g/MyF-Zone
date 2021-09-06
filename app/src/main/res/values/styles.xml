@@ -2,13 +2,14 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.MaterialComponents.Light.DarkActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimaryDark">@color/colorSettingEnd</item>
-        <item name="colorAccent">@color/colorAccent</item>
-        <item name="colorPrimary">@color/colorSettingStart</item>
+        <item name="colorPrimaryDark">@color/colorDesign2</item>
+        <item name="colorAccent">@color/colorDesign1</item>
+        <item name="colorPrimary">@color/colorDesign3</item>
         <!--        <item name="android:actionBarStyle">@style/myTheme</item>-->
         <item name="android:windowActionBarOverlay">true</item>
         <!-- Support library compatibility -->
         <item name="windowActionBarOverlay">true</item>
+        <item name="floatingActionButtonStyle">@style/FloatingActionButtonStyle</item>
     </style>
 
     <style name="myTheme" parent="Theme.MaterialComponents.Light">
@@ -44,6 +45,15 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_alignParentTop">true</item>
         <item name="android:layout_marginTop">15dp</item>
+    </style>
+
+    <style name="FloatingActionButtonStyle" parent="Widget.MaterialComponents.FloatingActionButton">
+        <item name="shapeAppearanceOverlay">@style/FabShapeStyle</item>
+    </style>
+
+    <style name="FabShapeStyle" parent="ShapeAppearance.MaterialComponents.SmallComponent">
+        <item name="cornerSize">10%</item>
+<!--        <item name="android:radius">8dp</item>-->
     </style>
 
 </resources>
