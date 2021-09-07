@@ -6,14 +6,21 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.Navigation
 import com.google.android.material.snackbar.Snackbar
 import com.myfzone_sport.myf_zone.R
+import com.myfzone_sport.myf_zone.app.ui.activity.MainActivity
 import com.myfzone_sport.myf_zone.app.ui.viewmodel.FragmentViewModel
 import com.myfzone_sport.myf_zone.app.ui.viewmodel.RegistrationViewModel
 import com.myfzone_sport.myf_zone.databinding.FragmentSignInBinding
+import com.myfzone_sport.myf_zone.screens.MainScreen
+import org.jetbrains.anko.clearTask
+import org.jetbrains.anko.newTask
+import org.jetbrains.anko.support.v4.intentFor
+import org.jetbrains.anko.support.v4.toast
 
 class SignInFragment : Fragment() {
 
@@ -34,6 +41,7 @@ class SignInFragment : Fragment() {
             inflater, R.layout.fragment_sign_in, container, false
         )
 
+        setupViews()
         setupObservers()
 
         binding.signInBtn.setOnClickListener {
@@ -45,14 +53,49 @@ class SignInFragment : Fragment() {
     //endregion
 
     //region Setups
+    private fun setupViews() {
+        binding.viewModel = viewModel
+    }
+
     private fun setupObservers() {
-        viewModel.errorMessage.observe(viewLifecycleOwner, {
+        viewModel.errorSignInMessage.observe(viewLifecycleOwner, {
             if (it.isNotEmpty()) showError()
         })
 
-//        viewModel.isLoading.observe(viewLifecycleOwner, { state ->
-//            if (state) loadingStart() else loadingStop()
-//        })
+        viewModel.errorEmailSignUp.observe(viewLifecycleOwner, {
+            if (it) {
+                val bundleTracking = bundleOf("SignIn Email Error" to getString(R.string.hint_required))
+//                TRACKING.logEvent(ALERT_ERROR, bundleTracking)
+                binding.signInEmailLayout.error = getString(R.string.hint_required)
+            } else {
+                binding.signInEmailLayout.error = null
+            }
+        })
+
+        viewModel.errorPasswordSignUp.observe(viewLifecycleOwner, {
+            if (it) {
+                val bundleTracking = bundleOf("SignIn Password ${getString(R.string.error_msg)}" to getString(R.string.hint_required))
+//                TRACKING.logEvent(ALERT_ERROR, bundleTracking)
+                binding.signInPasswordLayout.error = getString(R.string.hint_required)
+            } else {
+                binding.signInPasswordLayout.error = null
+            }
+        })
+
+        viewModel.isSignUpLoading.observe(viewLifecycleOwner, { state ->
+            if (state) loadingStart() else loadingStop()
+        })
+
+        viewModel.successfulSignIn.observe(viewLifecycleOwner, { state ->
+            if (state) {
+                toast(getString(R.string.login_message))
+
+//                TRACKING.logEvent(Tracking.SIGN_IN_DONE, null)
+//                startActivity(intentFor<MainActivity>().newTask().clearTask())
+
+//                navigate(R.id.signInFragment2ToAffiliationRequestFragment)
+            }
+        })
     }
     //endregion
 
@@ -83,7 +126,7 @@ class SignInFragment : Fragment() {
 
         Snackbar.make(
             binding.signInBtn,
-            if (!message.isNullOrEmpty()) message else viewModel.errorMessage.value.toString(),
+            if (!message.isNullOrEmpty()) message else viewModel.errorSignInMessage.value.toString(),
             Snackbar.LENGTH_LONG
         )
             .setTextColor(Color.WHITE)

@@ -1,6 +1,7 @@
 package com.myfzone_sport.myf_zone.app.ui.fragment
 
 import android.annotation.SuppressLint
+import android.content.DialogInterface
 import android.graphics.Color
 import android.graphics.ColorFilter
 import android.graphics.PorterDuff
@@ -18,14 +19,23 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.myfzone_sport.myf_zone.R
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.TRACKING
 import com.myfzone_sport.myf_zone.app.ui.viewmodel.FragmentViewModel
 import com.myfzone_sport.myf_zone.app.ui.adapter.CategoryEventAdapter
 import com.myfzone_sport.myf_zone.app.ui.adapter.CloseToClubEventAdapter
 import com.myfzone_sport.myf_zone.app.ui.adapter.UserEventAdapter
 import com.myfzone_sport.myf_zone.databinding.FragmentHomeBinding
+import com.myfzone_sport.myf_zone.fragments.settings.SettingsFragment
+import com.myfzone_sport.myf_zone.screens.MainScreen
+import com.myfzone_sport.myf_zone.util.Constants
+import com.myfzone_sport.myf_zone.util.Tracking
 import kotlinx.android.synthetic.main.home_close_to_club_layout.view.*
+import org.jetbrains.anko.clearTask
+import org.jetbrains.anko.newTask
+import org.jetbrains.anko.support.v4.intentFor
 import org.jetbrains.anko.support.v4.toast
 
 class HomeFragment : Fragment() {
@@ -60,8 +70,8 @@ class HomeFragment : Fragment() {
 //        viewModel.getCloseEvents()
         setupObservers()
         setUpRecyclerViews()
-
         setupViews()
+
 
         return binding.root
     }
@@ -83,6 +93,7 @@ class HomeFragment : Fragment() {
 
         binding.homeCreateEventBtn.setOnClickListener {
             toast("clicked new event")
+            signOut()
         }
     }
 
@@ -156,6 +167,22 @@ class HomeFragment : Fragment() {
     //endregion
 
     //region View Methods
+    private fun signOut() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.logout)
+            .setMessage(R.string.logout_message)
+            .setPositiveButton(R.string.confirm_message) { _: DialogInterface, _: Int ->
+                TRACKING.logEvent(Tracking.LOGOUT, null)
+                viewModel.signOut()
+                toast(R.string.logout_success)
+//                ManagerAuth.checkUserStatus()
+                startActivity(intentFor<MainScreen>().newTask().clearTask())
+            }
+            .setNegativeButton(R.string.cancel_message) { _: DialogInterface, _: Int ->
+            }
+            .show()
+    }
+
     private fun loadingStart() {
         binding.progressBar.visibility = View.VISIBLE
     }

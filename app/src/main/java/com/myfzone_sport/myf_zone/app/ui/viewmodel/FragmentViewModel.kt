@@ -8,6 +8,7 @@ import com.myfzone_sport.myf_zone.usecases.event.GetAllEventsUseCase
 import com.myfzone_sport.myf_zone.usecases.event.GetFriendlyEventsUseCase
 import com.myfzone_sport.myf_zone.usecases.event.GetPlateauEventsUseCase
 import com.myfzone_sport.myf_zone.usecases.event.GetTourneyEventsUseCase
+import com.myfzone_sport.myf_zone.usecases.user.SignOutUseCase
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -16,7 +17,8 @@ class FragmentViewModel(
     private val getAllEventsUseCase: GetAllEventsUseCase,
     private val getFriendlyEventsUseCase: GetFriendlyEventsUseCase,
     private val getTourneyEventsUseCase: GetTourneyEventsUseCase,
-    private val getPlateauEventsUseCase: GetPlateauEventsUseCase
+    private val getPlateauEventsUseCase: GetPlateauEventsUseCase,
+    private val signOutUseCase: SignOutUseCase
 ) : ViewModel() {
 
     //region Variables
@@ -130,6 +132,10 @@ class FragmentViewModel(
             }
         }
     }
+
+    fun signOut() {
+        signOutUseCase.invoke()
+    }
     //endregion
 
     //region Observers
@@ -157,7 +163,8 @@ class FragmentViewModelFactory(
     private val getAllEventsUseCase: GetAllEventsUseCase,
     private val getFriendlyEventsUseCase: GetFriendlyEventsUseCase,
     private val getTourneyEventsUseCase: GetTourneyEventsUseCase,
-    private val getPlateauEventsUseCase: GetPlateauEventsUseCase
+    private val getPlateauEventsUseCase: GetPlateauEventsUseCase,
+    private val signOutUseCase: SignOutUseCase
 ) :
     ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
@@ -165,13 +172,15 @@ class FragmentViewModelFactory(
             GetAllEventsUseCase::class.java,
             GetFriendlyEventsUseCase::class.java,
             GetTourneyEventsUseCase::class.java,
-            GetPlateauEventsUseCase::class.java
+            GetPlateauEventsUseCase::class.java,
+            SignOutUseCase::class.java
         )
             .newInstance(
                 getAllEventsUseCase,
                 getFriendlyEventsUseCase,
                 getTourneyEventsUseCase,
-                getPlateauEventsUseCase
+                getPlateauEventsUseCase,
+                signOutUseCase
             )
     }
 

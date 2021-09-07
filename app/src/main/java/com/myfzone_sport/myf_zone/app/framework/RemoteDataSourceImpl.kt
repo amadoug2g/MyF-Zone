@@ -414,12 +414,12 @@ class RemoteDataSourceImpl : RemoteDataSource {
         emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
     }.flowOn(Dispatchers.IO)
 
-    override fun signUpUser(email: String, password: String) = flow<State<AuthResult>> {
+    override fun signUpUser(email: String, password: String) = flow {
         emit(State.loading())
 
         val auth = firebaseAuth.createUserWithEmailAndPassword(email, password).await()
 
-        emit(State.success(auth))
+        emit(State.success(auth.user!!))
     }.catch {
         emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
     }.flowOn(Dispatchers.IO)
@@ -539,6 +539,10 @@ class RemoteDataSourceImpl : RemoteDataSource {
             getUserClub(activeCoachClubAffiliation)
             getEventsList(user, activeCoachClubAffiliation)
         }
+    }
+
+    override fun signOut() {
+        firebaseAuth.signOut()
     }
 
     private fun getEventsList(user: FirebaseUser?, affiliation: ClubAffiliation?) {

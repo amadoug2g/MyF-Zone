@@ -209,7 +209,7 @@ class RepositoryImpl(
         return remoteDataSource.signInUser(email, password)
     }
 
-    override fun signUpUser(email: String, password: String): Flow<State<AuthResult>> {
+    override fun signUpUser(email: String, password: String): Flow<State<FirebaseUser>> {
         return remoteDataSource.signUpUser(email, password)
     }
 
@@ -247,5 +247,9 @@ class RepositoryImpl(
 
     override fun getUserInfo() {
         return remoteDataSource.getUserInfo()
+    }
+
+    override fun signOut() {
+        remoteDataSource.signOut()
     }
 }

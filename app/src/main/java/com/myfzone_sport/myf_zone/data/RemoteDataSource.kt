@@ -140,7 +140,7 @@ interface RemoteDataSource {
     //region Registration
     fun signInUser(email: String, password: String): Flow<State<AuthResult>>
 
-    fun signUpUser(email: String, password: String): Flow<State<AuthResult>>
+    fun signUpUser(email: String, password: String): Flow<State<FirebaseUser>>
 
     fun addUserToDatabase(coach: Coach): Flow<State<Coach>>
 
@@ -161,6 +161,8 @@ interface RemoteDataSource {
     fun isUserOwner(eventId: String): Boolean
 
     fun getUserInfo()
+
+    fun signOut()
     //endregion
 
     //region Map

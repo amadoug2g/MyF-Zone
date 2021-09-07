@@ -27,6 +27,7 @@ import com.myfzone_sport.myf_zone.usecases.event.GetFriendlyEventsUseCase
 import com.myfzone_sport.myf_zone.usecases.event.GetPlateauEventsUseCase
 import com.myfzone_sport.myf_zone.usecases.event.GetTourneyEventsUseCase
 import com.myfzone_sport.myf_zone.usecases.registration.*
+import com.myfzone_sport.myf_zone.usecases.user.SignOutUseCase
 
 class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedListener {
 
@@ -138,6 +139,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         val assignProfileImageUseCase = AssignProfileImageUseCase(repository)
         val signInUserUseCase = SignInUserUseCase(repository)
         val signUpUserUseCase = SignUpUserUseCase(repository)
+        val signOutUseCase = SignOutUseCase(repository)
 
         viewModel = ViewModelProvider(
             this,
@@ -145,7 +147,8 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
                 getAllEventsUseCase,
                 getFriendlyEventsUseCase,
                 getTourneyEventsUseCase,
-                getPlateauEventsUseCase
+                getPlateauEventsUseCase,
+                signOutUseCase
             )
         ).get(
             FragmentViewModel::class.java

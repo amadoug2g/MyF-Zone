@@ -16,10 +16,6 @@ class LoginFragment : Fragment() {
     }
 
     //region Override Methods
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -32,7 +28,7 @@ class LoginFragment : Fragment() {
         )
 
         binding.loginConnectBtn.setOnClickListener {
-            navigate(R.id.loginFragmentToSignUpFragment2)
+            navigate(R.id.loginFragmentToRegistration)
         }
 
         binding.loginSkipBtn.setOnClickListener {
