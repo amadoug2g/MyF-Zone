@@ -161,6 +161,14 @@ class RepositoryImpl(
         return remoteDataSource.getAllEvents()
     }
 
+    override fun getCloseEvents(): Flow<State<MutableList<Event>>> {
+        return remoteDataSource.getCloseEvents()
+    }
+
+    override fun getUserEvents(): Flow<State<MutableList<Event>>> {
+        return remoteDataSource.getUserEvents()
+    }
+
     override fun getFriendlyEvents(): Flow<State<MutableList<Event>>> {
         return remoteDataSource.getFriendlyEvents()
     }
@@ -229,10 +237,6 @@ class RepositoryImpl(
         remoteDataSource.getUser(user)
     }
 
-    override fun getUserClub(affiliation: ClubAffiliation?) {
-        remoteDataSource.getUserClub(affiliation)
-    }
-
     override fun getUserAffiliation(user: FirebaseUser?) {
         remoteDataSource.getUserAffiliation(user)
     }
@@ -245,7 +249,7 @@ class RepositoryImpl(
         return remoteDataSource.isUserOwner(eventId)
     }
 
-    override fun getUserInfo() {
+    override fun getUserInfo(): Boolean  {
         return remoteDataSource.getUserInfo()
     }
 

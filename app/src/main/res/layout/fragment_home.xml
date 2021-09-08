@@ -25,7 +25,7 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:contentDescription="Home Logo"
-                android:src="@drawable/ic_location_accent" />
+                android:src="@mipmap/logo_updated_white" />
 
             <TextView
                 android:id="@+id/home_welcome_text"

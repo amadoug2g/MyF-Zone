@@ -109,6 +109,10 @@ interface RemoteDataSource {
     //region Event
     fun getAllEvents(): Flow<State<MutableList<Event>>>
 
+    fun getCloseEvents(): Flow<State<MutableList<Event>>>
+
+    fun getUserEvents(): Flow<State<MutableList<Event>>>
+
     fun getFriendlyEvents(): Flow<State<MutableList<Event>>>
 
     fun getTourneyEvents(): Flow<State<MutableList<Event>>>
@@ -152,15 +156,13 @@ interface RemoteDataSource {
     //region User
     fun getUser(user: FirebaseUser?)
 
-    fun getUserClub(affiliation: ClubAffiliation?)
-
     fun getUserAffiliation(user: FirebaseUser?)
 
     fun getImageReference(): String
 
     fun isUserOwner(eventId: String): Boolean
 
-    fun getUserInfo()
+    fun getUserInfo(): Boolean
 
     fun signOut()
     //endregion

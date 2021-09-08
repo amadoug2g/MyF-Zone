@@ -104,30 +104,30 @@ class CategoryListFragment : Fragment() {
 
     private fun setFriendlyEventsRecycler() {
         viewModel.friendlyEventsList.observe(viewLifecycleOwner, {
-            if (it.isNotEmpty()) adapterUserEvents.setData(it) else toast("empty")
+            if (it.isNotEmpty()) adapterUserEvents.setData(it)// else toast("empty")
         })
     }
 
     private fun setPlateauEventsRecycler() {
         viewModel.plateauEventsList.observe(viewLifecycleOwner, {
-            if (it.isNotEmpty()) adapterUserEvents.setData(it) else toast("empty")
+            if (it.isNotEmpty()) adapterUserEvents.setData(it)// else toast("empty")
         })
     }
 
     private fun setTourneyEventsRecycler() {
         viewModel.tourneyEventsList.observe(viewLifecycleOwner, {
-            if (it.isNotEmpty()) adapterUserEvents.setData(it) else toast("empty")
+            if (it.isNotEmpty()) adapterUserEvents.setData(it)// else toast("empty")
         })
     }
 
     private fun setUserEventsRecycler() {
-        viewModel.closeEventsList.observe(viewLifecycleOwner, {
+        viewModel.userEventsList.observe(viewLifecycleOwner, {
             if (it.isNotEmpty()) adapterUserEvents.setData(it)
         })
     }
 
     private fun setCategoryEventsRecycler() {
-        viewModel.closeEventsList.observe(viewLifecycleOwner, {
+        viewModel.allEventsList.observe(viewLifecycleOwner, {
             if (it.isNotEmpty()) adapterUserEvents.setData(it)
         })
     }

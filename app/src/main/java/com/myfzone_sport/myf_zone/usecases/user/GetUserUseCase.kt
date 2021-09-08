@@ -1,4 +1,7 @@
 package com.myfzone_sport.myf_zone.usecases.user
 
-class GetUserUseCase {
+import com.myfzone_sport.myf_zone.data.Repository
+
+class GetUserUseCase (val repository: Repository) {
+    operator fun invoke() = repository.getUserInfo()
 }

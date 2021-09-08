@@ -3,11 +3,7 @@ package com.myfzone_sport.myf_zone.app.ui.fragment
 import android.annotation.SuppressLint
 import android.content.DialogInterface
 import android.graphics.Color
-import android.graphics.ColorFilter
-import android.graphics.PorterDuff
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -16,6 +12,7 @@ import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,16 +20,14 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.myfzone_sport.myf_zone.R
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.TRACKING
-import com.myfzone_sport.myf_zone.app.ui.viewmodel.FragmentViewModel
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoach
 import com.myfzone_sport.myf_zone.app.ui.adapter.CategoryEventAdapter
 import com.myfzone_sport.myf_zone.app.ui.adapter.CloseToClubEventAdapter
 import com.myfzone_sport.myf_zone.app.ui.adapter.UserEventAdapter
+import com.myfzone_sport.myf_zone.app.ui.viewmodel.FragmentViewModel
 import com.myfzone_sport.myf_zone.databinding.FragmentHomeBinding
-import com.myfzone_sport.myf_zone.fragments.settings.SettingsFragment
 import com.myfzone_sport.myf_zone.screens.MainScreen
-import com.myfzone_sport.myf_zone.util.Constants
 import com.myfzone_sport.myf_zone.util.Tracking
-import kotlinx.android.synthetic.main.home_close_to_club_layout.view.*
 import org.jetbrains.anko.clearTask
 import org.jetbrains.anko.newTask
 import org.jetbrains.anko.support.v4.intentFor
@@ -67,7 +62,6 @@ class HomeFragment : Fragment() {
             false
         )
 
-//        viewModel.getCloseEvents()
         setupObservers()
         setUpRecyclerViews()
         setupViews()
@@ -75,12 +69,21 @@ class HomeFragment : Fragment() {
 
         return binding.root
     }
+
+    override fun onResume() {
+        super.onResume()
+
+        viewModel.isUserConnected.observe(viewLifecycleOwner, {
+            if (it) {
+                viewModel.getUserEvents()
+                viewModel.getCloseEvents()
+            }
+        })
+    }
     //endregion
 
     //region Setups
     private fun setupViews() {
-//        binding.homeCreateEventBtn.buttonEffect()
-
         binding.userEventLayout.showAll.setOnClickListener {
             val bundle = bundleOf("listType" to "userEvent")
             navigate(R.id.homeFragmentToCategoryListFragment, bundle)
@@ -91,8 +94,16 @@ class HomeFragment : Fragment() {
             navigate(R.id.homeFragmentToCategoryListFragment, bundle)
         }
 
+        binding.homeProfileBtn.setOnClickListener {
+            checkStatusDestination("profile")
+        }
+
+        binding.homeChatBtn.setOnClickListener {
+            checkStatusDestination("chat")
+        }
+
         binding.homeCreateEventBtn.setOnClickListener {
-            toast("clicked new event")
+//            checkStatusDestination("new event")
             signOut()
         }
     }
@@ -104,6 +115,46 @@ class HomeFragment : Fragment() {
 
         viewModel.isLoading.observe(viewLifecycleOwner, { contentIsLoading ->
             if (contentIsLoading) loadingStart() else loadingStop()
+        })
+
+        viewModel.isUserConnected.observe(viewLifecycleOwner, {
+            binding.closeToClubLayout.layout.visibility = if (it) View.VISIBLE else View.GONE
+            binding.userEventLayout.layout.visibility = if (it) View.VISIBLE else View.GONE
+            binding.homeWelcomeText.text =
+                if (it) "Bonjour ${activeCoach?.firstName} !" else "Bonjour Coach !"
+
+            if (it) {
+                viewModel.getUserEvents()
+                viewModel.getCloseEvents()
+            }
+        })
+    }
+
+    private fun checkStatusDestination(destination: String) {
+        viewModel.isUserConnected.observe(viewLifecycleOwner, {
+            when (destination) {
+                "profile" -> {
+                    if (it) {
+                        navigate(R.id.homeFragmentToProfilFragment)
+                    } else {
+                        navigate(R.id.homeFragmentToRegistrationFragment)
+                    }
+                }
+                "chat" -> {
+                    if (it) {
+                        navigate(R.id.homeFragmentToMessageFragment)
+                    } else {
+                        navigate(R.id.homeFragmentToRegistrationFragment)
+                    }
+                }
+                "new event" -> {
+                    if (it) {
+                        navigate(R.id.homeFragmentToNewEventFragment)
+                    } else {
+                        navigate(R.id.homeFragmentToRegistrationFragment)
+                    }
+                }
+            }
         })
     }
     //endregion
@@ -146,8 +197,10 @@ class HomeFragment : Fragment() {
 //        binding.userEventLayout.recyclerView.setHasFixedSize(true)
 //        binding.userEventLayout.recyclerView.isNestedScrollingEnabled = true
 
-        viewModel.closeEventsList.observe(viewLifecycleOwner, {
-            if (it.isNotEmpty()) adapterUserEvents.setData(it)
+        viewModel.userEventsList.observe(viewLifecycleOwner, {
+            if (it.isNotEmpty()) {
+                adapterUserEvents.setData(it)
+            }
         })
     }
     //endregion
@@ -209,8 +262,11 @@ class HomeFragment : Fragment() {
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
 //                    v.background.setColorFilter(-0x1f0b8adf, PorterDuff.Mode.SRC_ATOP)
-                    v.background.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(-0x1f0b8adf,
-                        BlendModeCompat.SRC_ATOP)
+                    v.background.colorFilter =
+                        BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
+                            -0x1f0b8adf,
+                            BlendModeCompat.SRC_ATOP
+                        )
                     v.invalidate()
                 }
                 MotionEvent.ACTION_UP -> {

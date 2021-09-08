@@ -4,26 +4,28 @@ import android.util.Log
 import androidx.lifecycle.*
 import com.myfzone_sport.myf_zone.domain.State
 import com.myfzone_sport.myf_zone.domain.event.Event
-import com.myfzone_sport.myf_zone.usecases.event.GetAllEventsUseCase
-import com.myfzone_sport.myf_zone.usecases.event.GetFriendlyEventsUseCase
-import com.myfzone_sport.myf_zone.usecases.event.GetPlateauEventsUseCase
-import com.myfzone_sport.myf_zone.usecases.event.GetTourneyEventsUseCase
+import com.myfzone_sport.myf_zone.usecases.event.*
 import com.myfzone_sport.myf_zone.usecases.user.SignOutUseCase
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class FragmentViewModel(
+    private val getCloseEventsUseCase: GetCloseEventsUseCase,
     private val getAllEventsUseCase: GetAllEventsUseCase,
     private val getFriendlyEventsUseCase: GetFriendlyEventsUseCase,
     private val getTourneyEventsUseCase: GetTourneyEventsUseCase,
     private val getPlateauEventsUseCase: GetPlateauEventsUseCase,
+    private val getUserEventsUseCase: GetUserEventsUseCase,
     private val signOutUseCase: SignOutUseCase
 ) : ViewModel() {
 
     //region Variables
     private val _closeEventsList = MutableLiveData<MutableList<Event>>()
     val closeEventsList = _closeEventsList
+
+    private val _allEventsList = MutableLiveData<MutableList<Event>>()
+    val allEventsList = _allEventsList
 
     private val _friendlyEventsList = MutableLiveData<MutableList<Event>>()
     val friendlyEventsList = _friendlyEventsList
@@ -33,6 +35,11 @@ class FragmentViewModel(
 
     private val _plateauEventsList = MutableLiveData<MutableList<Event>>()
     val plateauEventsList = _plateauEventsList
+
+    private val _userEventsList = MutableLiveData<MutableList<Event>>()
+    val userEventsList = _userEventsList
+
+    val isUserConnected = MutableLiveData(false)
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading = _isLoading
@@ -44,7 +51,7 @@ class FragmentViewModel(
     //region Functions
     init {
         try {
-            getCloseEvents()
+            getAllEvents()
             getFriendlyEvents()
             getTourneyEvents()
             getPlateauEvents()
@@ -53,9 +60,29 @@ class FragmentViewModel(
         }
     }
 
-    private fun getCloseEvents() {
+    private fun getAllEvents() {
         viewModelScope.launch(IO) {
             getAllEventsUseCase.invoke().collect { state ->
+                when (state) {
+                    is State.Loading -> {
+                        startLoading()
+                    }
+                    is State.Success -> {
+                        onResult()
+                        _allEventsList.postValue(state.data)
+                    }
+                    is State.Failed -> {
+                        val message = "All events fetching failure: ${state.message}"
+                        onResult(message)
+                    }
+                }
+            }
+        }
+    }
+
+    fun getCloseEvents() {
+        viewModelScope.launch(IO) {
+            getCloseEventsUseCase.invoke().collect { state ->
                 when (state) {
                     is State.Loading -> {
                         startLoading()
@@ -66,6 +93,26 @@ class FragmentViewModel(
                     }
                     is State.Failed -> {
                         val message = "Close events fetching failure: ${state.message}"
+                        onResult(message)
+                    }
+                }
+            }
+        }
+    }
+
+    fun getUserEvents() {
+        viewModelScope.launch(IO) {
+            getUserEventsUseCase.invoke().collect { state ->
+                when (state) {
+                    is State.Loading -> {
+                        startLoading()
+                    }
+                    is State.Success -> {
+                        onResult()
+                        _userEventsList.postValue(state.data)
+                    }
+                    is State.Failed -> {
+                        val message = "User events fetching failure: ${state.message}"
                         onResult(message)
                     }
                 }
@@ -85,7 +132,7 @@ class FragmentViewModel(
                         _friendlyEventsList.postValue(state.data)
                     }
                     is State.Failed -> {
-                        val message = "Close events fetching failure: ${state.message}"
+                        val message = "Friendly events fetching failure: ${state.message}"
                         onResult(message)
                     }
                 }
@@ -105,7 +152,7 @@ class FragmentViewModel(
                         _tourneyEventsList.postValue(state.data)
                     }
                     is State.Failed -> {
-                        val message = "Close events fetching failure: ${state.message}"
+                        val message = "Tourney events fetching failure: ${state.message}"
                         onResult(message)
                     }
                 }
@@ -125,7 +172,7 @@ class FragmentViewModel(
                         _plateauEventsList.postValue(state.data)
                     }
                     is State.Failed -> {
-                        val message = "Close events fetching failure: ${state.message}"
+                        val message = "Plateau events fetching failure: ${state.message}"
                         onResult(message)
                     }
                 }
@@ -133,8 +180,17 @@ class FragmentViewModel(
         }
     }
 
+    fun userConnected() {
+        isUserConnected.postValue(true)
+    }
+
+    fun userNotConnected() {
+        isUserConnected.postValue(false)
+    }
+
     fun signOut() {
         signOutUseCase.invoke()
+        userNotConnected()
     }
     //endregion
 
@@ -160,26 +216,32 @@ class FragmentViewModel(
 }
 
 class FragmentViewModelFactory(
+    private val getCloseEventsUseCase: GetCloseEventsUseCase,
     private val getAllEventsUseCase: GetAllEventsUseCase,
     private val getFriendlyEventsUseCase: GetFriendlyEventsUseCase,
     private val getTourneyEventsUseCase: GetTourneyEventsUseCase,
     private val getPlateauEventsUseCase: GetPlateauEventsUseCase,
+    private val getUserEventsUseCase: GetUserEventsUseCase,
     private val signOutUseCase: SignOutUseCase
 ) :
     ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         return modelClass.getConstructor(
+            GetCloseEventsUseCase::class.java,
             GetAllEventsUseCase::class.java,
             GetFriendlyEventsUseCase::class.java,
             GetTourneyEventsUseCase::class.java,
             GetPlateauEventsUseCase::class.java,
+            GetUserEventsUseCase::class.java,
             SignOutUseCase::class.java
         )
             .newInstance(
+                getCloseEventsUseCase,
                 getAllEventsUseCase,
                 getFriendlyEventsUseCase,
                 getTourneyEventsUseCase,
                 getPlateauEventsUseCase,
+                getUserEventsUseCase,
                 signOutUseCase
             )
     }

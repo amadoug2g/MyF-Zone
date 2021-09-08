@@ -1,11 +1,16 @@
 package com.myfzone_sport.myf_zone.app.ui.adapter
 
+import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.myfzone_sport.myf_zone.R
 import com.myfzone_sport.myf_zone.databinding.HomeCloseToClubCardviewBinding
 import com.myfzone_sport.myf_zone.databinding.HomeUserEventCardviewBinding
 import com.myfzone_sport.myf_zone.domain.event.Event
@@ -46,11 +51,15 @@ class UserEventAdapter : ListAdapter<Event, UserEventAdapter.MyViewHolder>(
             }
 
             binding.cardView.setOnClickListener {
-//                val action = ListFragmentDirections.listFragmentToDetailFragment(event.id)
-//                navController.navigate(action)
-
-                Log.i("", "Clicked ${event.title}")
+//                val bundle = bundleOf("eventId" to event.id)
+//                navigate(R.id.homeFragmentToMapFragment, bundle, binding.cardView)
             }
+        }
+
+        private fun navigate(destination: Int, extra: Bundle? = null, view: View) {
+            Navigation
+                .findNavController(view)
+                .navigate(destination, extra)
         }
 
         companion object {

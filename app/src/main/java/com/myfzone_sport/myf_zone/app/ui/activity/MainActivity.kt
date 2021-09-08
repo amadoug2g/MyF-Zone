@@ -3,10 +3,10 @@ package com.myfzone_sport.myf_zone.app.ui.activity
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.AttributeSet
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
@@ -14,19 +14,14 @@ import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import com.myfzone_sport.myf_zone.R
-import com.myfzone_sport.myf_zone.app.ui.viewmodel.FragmentViewModel
-import com.myfzone_sport.myf_zone.app.ui.viewmodel.FragmentViewModelFactory
-import com.myfzone_sport.myf_zone.app.ui.viewmodel.RegistrationViewModel
-import com.myfzone_sport.myf_zone.app.ui.viewmodel.RegistrationViewModelFactory
-import com.myfzone_sport.myf_zone.data.LocalDataSourceImpl
 import com.myfzone_sport.myf_zone.app.framework.RemoteDataSourceImpl
+import com.myfzone_sport.myf_zone.app.ui.viewmodel.*
+import com.myfzone_sport.myf_zone.data.LocalDataSourceImpl
 import com.myfzone_sport.myf_zone.data.RepositoryImpl
 import com.myfzone_sport.myf_zone.databinding.ActivityMainBinding
-import com.myfzone_sport.myf_zone.usecases.event.GetAllEventsUseCase
-import com.myfzone_sport.myf_zone.usecases.event.GetFriendlyEventsUseCase
-import com.myfzone_sport.myf_zone.usecases.event.GetPlateauEventsUseCase
-import com.myfzone_sport.myf_zone.usecases.event.GetTourneyEventsUseCase
+import com.myfzone_sport.myf_zone.usecases.event.*
 import com.myfzone_sport.myf_zone.usecases.registration.*
+import com.myfzone_sport.myf_zone.usecases.user.GetUserUseCase
 import com.myfzone_sport.myf_zone.usecases.user.SignOutUseCase
 
 class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedListener {
@@ -37,7 +32,8 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
     companion object {
         private val TAG = MainActivity::class.java.simpleName
         private lateinit var binding: ActivityMainBinding
-        private lateinit var viewModel: FragmentViewModel
+        private lateinit var viewModel: ActivityViewModel
+        private lateinit var fragmentViewModel: FragmentViewModel
         private lateinit var registrationViewModel: RegistrationViewModel
 
         private val messageReceiver: BroadcastReceiver = object : BroadcastReceiver() {
@@ -54,6 +50,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
         initViews()
         initViewModel()
+        checkStatus()
     }
 
     override fun onCreateView(name: String, context: Context, attrs: AttributeSet): View? {
@@ -64,6 +61,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
     override fun onStart() {
         super.onStart()
+        viewModel.getUser()
 //        LocalBroadcastManager.getInstance(this).registerReceiver(
 //            messageReceiver,
 //            IntentFilter("MyData")
@@ -85,6 +83,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
                 hideBar()
             }
             R.id.homeFragment -> {
+                viewModel.getUser()
                 hideBar()
             }
             else -> {
@@ -129,11 +128,19 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         val remoteDataSource = RemoteDataSourceImpl()
         val repository = RepositoryImpl(/*localDataSource,*/ remoteDataSource)
 
+        //Activity View Model
+        val getUserUseCase = GetUserUseCase(repository)
+
+        //Fragment View Model
         val getAllEventsUseCase = GetAllEventsUseCase(repository)
+        val getCloseEventsUseCase = GetCloseEventsUseCase(repository)
         val getFriendlyEventsUseCase = GetFriendlyEventsUseCase(repository)
         val getTourneyEventsUseCase = GetTourneyEventsUseCase(repository)
         val getPlateauEventsUseCase = GetPlateauEventsUseCase(repository)
+        val getUserEventsUseCase = GetUserEventsUseCase(repository)
 
+
+        //Registration View Model
         val addUserToDatabaseUseCase = AddUserToDatabaseUseCase(repository)
         val assignDisplayNameUseCase = AssignDisplayNameUseCase(repository)
         val assignProfileImageUseCase = AssignProfileImageUseCase(repository)
@@ -143,11 +150,22 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
         viewModel = ViewModelProvider(
             this,
+            ActivityViewModelFactory(
+                getUserUseCase
+            )
+        ).get(
+            ActivityViewModel::class.java
+        )
+
+        fragmentViewModel = ViewModelProvider(
+            this,
             FragmentViewModelFactory(
+                getCloseEventsUseCase,
                 getAllEventsUseCase,
                 getFriendlyEventsUseCase,
                 getTourneyEventsUseCase,
                 getPlateauEventsUseCase,
+                getUserEventsUseCase,
                 signOutUseCase
             )
         ).get(
@@ -166,6 +184,12 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         ).get(
             RegistrationViewModel::class.java
         )
+    }
+
+    private fun checkStatus() {
+        viewModel.isUserConnected.observe(this, {
+            if (it) fragmentViewModel.userConnected() else fragmentViewModel.userNotConnected()
+        })
     }
     //endregion
 
