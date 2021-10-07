@@ -38,7 +38,7 @@ import com.myfzone_sport.myf_zone.util.Constants.TRACKING
 import com.myfzone_sport.myf_zone.util.Tracking
 import kotlinx.android.synthetic.main.card_event_item.*
 import kotlinx.coroutines.flow.collect
-import org.jetbrains.anko.support.v4.toast
+//import org.jetbrains.anko.support.v4.toast
 import java.util.*
 
 
@@ -143,7 +143,7 @@ class MapsFragment : Fragment(),
             try {
                 refreshEventList()
             } catch (e: Exception) {
-                toast("$e")
+//                toast("$e")
             }
         }
 
@@ -185,7 +185,7 @@ class MapsFragment : Fragment(),
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error in eventListener: $e")
-            toast("Error in eventListener: $e")
+//            toast("Error in eventListener: $e")
         }
 
         ManagerAuth.checkUserStatus()
@@ -451,7 +451,7 @@ class MapsFragment : Fragment(),
     }
 
     private fun showToast(string: String) {
-        toast(string)
+//        toast(string)
     }
 
     private fun calendarClick() {
@@ -480,7 +480,7 @@ class MapsFragment : Fragment(),
                 )
             )
             setCalendarConstraints(constraints.build())
-            setTheme(R.style.ThemeOverlay_MaterialComponents_MaterialCalendar)
+//            setTheme(R.style.ThemeOverlay_MaterialComponents_MaterialCalendar)
         }
 
         val filter = builder.build()
@@ -498,7 +498,7 @@ class MapsFragment : Fragment(),
             try {
                 refreshEventList()
             } catch (e: Exception) {
-                toast("$e")
+//                toast("$e")
             }
         }
     }

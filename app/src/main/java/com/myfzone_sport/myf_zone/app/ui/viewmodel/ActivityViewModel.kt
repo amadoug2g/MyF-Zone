@@ -3,6 +3,7 @@ package com.myfzone_sport.myf_zone.app.ui.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoach
 import com.myfzone_sport.myf_zone.usecases.event.GetAllEventsUseCase
 import com.myfzone_sport.myf_zone.usecases.event.GetFriendlyEventsUseCase
 import com.myfzone_sport.myf_zone.usecases.event.GetPlateauEventsUseCase
@@ -21,7 +22,7 @@ class ActivityViewModel(
     }
 
     fun getUser(): Boolean {
-        isUserConnected.postValue(getUserUseCase.invoke())
+        isUserConnected.postValue(activeCoach != null)
 
         return isUserConnected.value!!
     }

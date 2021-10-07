@@ -8,5 +8,11 @@
     <fragment
         android:id="@+id/categoryListFragment"
         android:name="com.myfzone_sport.myf_zone.app.ui.fragment.CategoryListFragment"
-        tools:layout="@layout/fragment_category_list" />
+        tools:layout="@layout/fragment_category_list">
+
+        <action
+            android:id="@+id/categoryListFragmentToEventDetailsFragment"
+            app:destination="@id/event_details" />
+    </fragment>
+    <include app:graph="@navigation/event_details" />
 </navigation>

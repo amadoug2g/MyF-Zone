@@ -53,7 +53,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_marginStart="16dp"
                 android:contentDescription="Home Chat Button"
-                android:src="@drawable/ic_chat_home" />
+                android:src="@mipmap/ic_nounchat_noir_2x" />
 
         </RelativeLayout>
 

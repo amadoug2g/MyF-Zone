@@ -85,6 +85,7 @@
     <string name="exit_message">Appuyez une nouvelle fois sur RETOUR  pour quitter l\'application</string>
     <string name="login_message">Connexion réussie</string>
     <string name="loading">Chargement…</string>
+    <string name="lorem">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</string>
     <string name="notification_dot">Notification Dot</string>
     <string name="teams">" équipes en tout"</string>
     <string name="friendly_event">Match amical</string>

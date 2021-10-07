@@ -59,9 +59,9 @@ interface Repository {
 
     fun leaveEvent()
 
-    fun getEventFromId(): Club
+    fun getEventFromId(eventId: String): Flow<State<Event>>
 
-    suspend fun getOwnerFromEvent(eventId: String): EventOwner?
+    fun getOwnerFromEvent(eventId: String): Flow<State<EventOwner>>
 
     fun getAllParticipantsList(): MutableList<EventParticipant>
 
@@ -152,7 +152,7 @@ interface Repository {
 
     fun isUserOwner(eventId: String): Boolean
 
-    fun getUserInfo(): Boolean
+    fun getUserInfo()
 
     fun signOut()
     //endregion

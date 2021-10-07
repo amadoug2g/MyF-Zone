@@ -1,6 +1,5 @@
 package com.myfzone_sport.myf_zone.app.ui.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.*
 import com.myfzone_sport.myf_zone.domain.State
 import com.myfzone_sport.myf_zone.domain.event.Event

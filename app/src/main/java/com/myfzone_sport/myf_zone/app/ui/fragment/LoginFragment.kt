@@ -9,6 +9,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.navigation.Navigation
 import com.myfzone_sport.myf_zone.R
 import com.myfzone_sport.myf_zone.databinding.FragmentLogin2Binding
+import com.myfzone_sport.myf_zone.screens.MainScreen.Companion.navController
 
 class LoginFragment : Fragment() {
     companion object {
@@ -36,6 +37,11 @@ class LoginFragment : Fragment() {
         }
 
         return binding.root
+    }
+
+    override fun onStart() {
+        super.onStart()
+//        navController.navigate(R.id.loginFragmentToHomeFragment)
     }
     //endregion
 

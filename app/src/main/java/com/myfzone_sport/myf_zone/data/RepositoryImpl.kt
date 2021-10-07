@@ -97,11 +97,11 @@ class RepositoryImpl(
         remoteDataSource.leaveEvent()
     }
 
-    override fun getEventFromId(): Club {
-        return remoteDataSource.getEventFromId()
+    override fun getEventFromId(eventId: String): Flow<State<Event>> {
+        return remoteDataSource.getEventFromId(eventId)
     }
 
-    override suspend fun getOwnerFromEvent(eventId: String): EventOwner? {
+    override fun getOwnerFromEvent(eventId: String): Flow<State<EventOwner>> {
         return remoteDataSource.getOwnerFromEvent(eventId)
     }
 
@@ -249,7 +249,7 @@ class RepositoryImpl(
         return remoteDataSource.isUserOwner(eventId)
     }
 
-    override fun getUserInfo(): Boolean  {
+    override fun getUserInfo()  {
         return remoteDataSource.getUserInfo()
     }
 

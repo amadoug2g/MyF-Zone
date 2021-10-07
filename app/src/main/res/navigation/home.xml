@@ -27,6 +27,9 @@
         <action
             android:id="@+id/homeFragmentToMapFragment"
             app:destination="@id/map2" />
+<!--        <action-->
+<!--            android:id="@+id/homeFragmentToEventDetailsFragment"-->
+<!--            app:destination="@id/event_details" />-->
     </fragment>
     <include app:graph="@navigation/category_list" />
     <include app:graph="@navigation/registration" />

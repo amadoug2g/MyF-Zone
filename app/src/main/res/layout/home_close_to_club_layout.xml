@@ -22,7 +22,7 @@
                 android:layout_centerVertical="true"
                 android:fontFamily="@font/nuber_next_bold"
                 android:text="Proche du Club"
-                android:textColor="@color/quantum_black_text"
+                android:textColor="@color/colorDesign1"
                 android:textSize="16sp" />
 
             <Button

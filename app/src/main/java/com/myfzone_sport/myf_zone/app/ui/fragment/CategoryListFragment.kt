@@ -12,13 +12,10 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.myfzone_sport.myf_zone.R
-import com.myfzone_sport.myf_zone.app.ui.adapter.CategoryEventAdapter
-import com.myfzone_sport.myf_zone.app.ui.adapter.CloseToClubEventAdapter
+import com.myfzone_sport.myf_zone.app.ui.adapter.CategoryListEventAdapter
 import com.myfzone_sport.myf_zone.app.ui.adapter.UserEventAdapter
 import com.myfzone_sport.myf_zone.app.ui.viewmodel.FragmentViewModel
 import com.myfzone_sport.myf_zone.databinding.FragmentCategoryListBinding
-import com.myfzone_sport.myf_zone.databinding.FragmentHomeBinding
-import org.jetbrains.anko.support.v4.toast
 
 private const val ARG_PARAM1 = "listType"
 
@@ -30,6 +27,7 @@ class CategoryListFragment : Fragment() {
         private var listType: String? = null
         private lateinit var binding: FragmentCategoryListBinding
         private lateinit var adapterUserEvents: UserEventAdapter
+        private lateinit var adapterCategoryEvents: CategoryListEventAdapter
 //        lateinit var viewModel: FragmentViewModel
     }
 
@@ -52,7 +50,6 @@ class CategoryListFragment : Fragment() {
             R.layout.fragment_category_list, container, false
         )
         setupObservers()
-        setUpRecyclerView()
         when (listType) {
             "friendly" -> {
                 setFriendlyEventsRecycler()
@@ -94,46 +91,70 @@ class CategoryListFragment : Fragment() {
     //endregion
 
     //region RecyclerView
-    private fun setUpRecyclerView() {
+    private fun setUpUserRecyclerView() {
         adapterUserEvents = UserEventAdapter()
-        binding.recyclerView.adapter = adapterUserEvents
-        binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        binding.recyclerView.setHasFixedSize(true)
-        binding.recyclerView.isNestedScrollingEnabled = true
+        binding.userRecyclerView.adapter = adapterUserEvents
+        binding.userRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        binding.userRecyclerView.setHasFixedSize(true)
+        binding.userRecyclerView.isNestedScrollingEnabled = true
+
+        binding.userRecyclerView.visibility = View.VISIBLE
+        binding.categoryRecyclerView.visibility = View.GONE
+    }
+
+    private fun setUpCategoryRecyclerView() {
+        adapterCategoryEvents = CategoryListEventAdapter()
+        binding.categoryRecyclerView.adapter = adapterCategoryEvents
+        binding.categoryRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        binding.categoryRecyclerView.setHasFixedSize(true)
+        binding.categoryRecyclerView.isNestedScrollingEnabled = true
+
+        binding.categoryRecyclerView.visibility = View.VISIBLE
+        binding.userRecyclerView.visibility = View.GONE
     }
 
     private fun setFriendlyEventsRecycler() {
+        setUpUserRecyclerView()
+
         viewModel.friendlyEventsList.observe(viewLifecycleOwner, {
             if (it.isNotEmpty()) adapterUserEvents.setData(it)// else toast("empty")
         })
     }
 
     private fun setPlateauEventsRecycler() {
+        setUpUserRecyclerView()
+
         viewModel.plateauEventsList.observe(viewLifecycleOwner, {
             if (it.isNotEmpty()) adapterUserEvents.setData(it)// else toast("empty")
         })
     }
 
     private fun setTourneyEventsRecycler() {
+        setUpUserRecyclerView()
+
         viewModel.tourneyEventsList.observe(viewLifecycleOwner, {
             if (it.isNotEmpty()) adapterUserEvents.setData(it)// else toast("empty")
         })
     }
 
     private fun setUserEventsRecycler() {
+        setUpUserRecyclerView()
+
         viewModel.userEventsList.observe(viewLifecycleOwner, {
             if (it.isNotEmpty()) adapterUserEvents.setData(it)
         })
     }
 
     private fun setCategoryEventsRecycler() {
+        setUpCategoryRecyclerView()
+
         viewModel.allEventsList.observe(viewLifecycleOwner, {
-            if (it.isNotEmpty()) adapterUserEvents.setData(it)
+            if (it.isNotEmpty()) adapterCategoryEvents.setData(it)
         })
     }
     //endregion
 
-    //Navigation
+    //region Navigation
     private fun navigate(destination: Int, extra: Bundle? = null, view: View) {
         Navigation
             .findNavController(view)
@@ -153,7 +174,7 @@ class CategoryListFragment : Fragment() {
     private fun showError(message: String? = "") {
 
         Snackbar.make(
-            binding.recyclerView,
+            binding.layout,
             if (!message.isNullOrEmpty()) message else viewModel.errorMessage.value.toString(),
             Snackbar.LENGTH_LONG
         )

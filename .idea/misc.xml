@@ -11,6 +11,7 @@
         <entry key="..\:/Users/Amadou/AndroidStudioProjects/MyF-Zone/app/src/main/res/drawable/home_scrollbar_track.xml" value="0.35555555555555557" />
         <entry key="..\:/Users/Amadou/AndroidStudioProjects/MyF-Zone/app/src/main/res/drawable/ic_account_home.xml" value="0.403125" />
         <entry key="..\:/Users/Amadou/AndroidStudioProjects/MyF-Zone/app/src/main/res/drawable/ic_add.xml" value="0.28958333333333336" />
+        <entry key="..\:/Users/Amadou/AndroidStudioProjects/MyF-Zone/app/src/main/res/drawable/ic_arrow_drop_down.xml" value="0.403125" />
         <entry key="..\:/Users/Amadou/AndroidStudioProjects/MyF-Zone/app/src/main/res/drawable/ic_chat_home.xml" value="0.403125" />
         <entry key="..\:/Users/Amadou/AndroidStudioProjects/MyF-Zone/app/src/main/res/drawable/ic_logo_updated_background.xml" value="0.20520833333333333" />
         <entry key="..\:/Users/Amadou/AndroidStudioProjects/MyF-Zone/app/src/main/res/drawable/login_btn_bg.xml" value="0.403125" />
@@ -19,12 +20,16 @@
         <entry key="..\:/Users/Amadou/AndroidStudioProjects/MyF-Zone/app/src/main/res/layout/activity_main.xml" value="0.38697916666666665" />
         <entry key="..\:/Users/Amadou/AndroidStudioProjects/MyF-Zone/app/src/main/res/layout/activity_main_screen.xml" value="0.38697916666666665" />
         <entry key="..\:/Users/Amadou/AndroidStudioProjects/MyF-Zone/app/src/main/res/layout/card_event_item.xml" value="0.21875" />
+        <entry key="..\:/Users/Amadou/AndroidStudioProjects/MyF-Zone/app/src/main/res/layout/card_event_owner_not_participant.xml" value="0.38697916666666665" />
         <entry key="..\:/Users/Amadou/AndroidStudioProjects/MyF-Zone/app/src/main/res/layout/event_detail_cardview_map.xml" value="0.38697916666666665" />
         <entry key="..\:/Users/Amadou/AndroidStudioProjects/MyF-Zone/app/src/main/res/layout/fragment_affiliation_request.xml" value="0.38697916666666665" />
         <entry key="..\:/Users/Amadou/AndroidStudioProjects/MyF-Zone/app/src/main/res/layout/fragment_calendar.xml" value="0.38697916666666665" />
         <entry key="..\:/Users/Amadou/AndroidStudioProjects/MyF-Zone/app/src/main/res/layout/fragment_category_list.xml" value="0.38697916666666665" />
-        <entry key="..\:/Users/Amadou/AndroidStudioProjects/MyF-Zone/app/src/main/res/layout/fragment_event_detail.xml" value="0.2734375" />
+        <entry key="..\:/Users/Amadou/AndroidStudioProjects/MyF-Zone/app/src/main/res/layout/fragment_event_detail.xml" value="0.38697916666666665" />
+        <entry key="..\:/Users/Amadou/AndroidStudioProjects/MyF-Zone/app/src/main/res/layout/fragment_event_details.xml" value="0.38697916666666665" />
         <entry key="..\:/Users/Amadou/AndroidStudioProjects/MyF-Zone/app/src/main/res/layout/fragment_event_details_guest.xml" value="0.38697916666666665" />
+        <entry key="..\:/Users/Amadou/AndroidStudioProjects/MyF-Zone/app/src/main/res/layout/fragment_event_details_owner.xml" value="0.38697916666666665" />
+        <entry key="..\:/Users/Amadou/AndroidStudioProjects/MyF-Zone/app/src/main/res/layout/fragment_event_participants.xml" value="0.38697916666666665" />
         <entry key="..\:/Users/Amadou/AndroidStudioProjects/MyF-Zone/app/src/main/res/layout/fragment_home.xml" value="0.38697916666666665" />
         <entry key="..\:/Users/Amadou/AndroidStudioProjects/MyF-Zone/app/src/main/res/layout/fragment_login.xml" value="0.38697916666666665" />
         <entry key="..\:/Users/Amadou/AndroidStudioProjects/MyF-Zone/app/src/main/res/layout/fragment_login2.xml" value="0.38697916666666665" />
@@ -33,7 +38,7 @@
         <entry key="..\:/Users/Amadou/AndroidStudioProjects/MyF-Zone/app/src/main/res/layout/fragment_message2.xml" value="0.38697916666666665" />
         <entry key="..\:/Users/Amadou/AndroidStudioProjects/MyF-Zone/app/src/main/res/layout/fragment_new_event.xml" value="0.259375" />
         <entry key="..\:/Users/Amadou/AndroidStudioProjects/MyF-Zone/app/src/main/res/layout/fragment_profile.xml" value="0.287962962962963" />
-        <entry key="..\:/Users/Amadou/AndroidStudioProjects/MyF-Zone/app/src/main/res/layout/fragment_profile2.xml" value="0.2734375" />
+        <entry key="..\:/Users/Amadou/AndroidStudioProjects/MyF-Zone/app/src/main/res/layout/fragment_profile2.xml" value="0.38697916666666665" />
         <entry key="..\:/Users/Amadou/AndroidStudioProjects/MyF-Zone/app/src/main/res/layout/fragment_sign_in.xml" value="0.39791666666666664" />
         <entry key="..\:/Users/Amadou/AndroidStudioProjects/MyF-Zone/app/src/main/res/layout/fragment_sign_up.xml" value="0.38697916666666665" />
         <entry key="..\:/Users/Amadou/AndroidStudioProjects/MyF-Zone/app/src/main/res/layout/fragment_sign_up2.xml" value="0.38697916666666665" />

@@ -11,15 +11,14 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.myfzone_sport.myf_zone.R
-import com.myfzone_sport.myf_zone.databinding.HomeCloseToClubCardviewBinding
 import com.myfzone_sport.myf_zone.databinding.HomeUserEventCardviewBinding
 import com.myfzone_sport.myf_zone.domain.event.Event
 
 /**
- * Created by Amadou on 04/09/2021, 13:36
+ * Created by Amadou on 08/09/2021, 21:23
  */
 
-class UserEventAdapter : ListAdapter<Event, UserEventAdapter.MyViewHolder>(
+class CategoryListEventAdapter : ListAdapter<Event, CategoryListEventAdapter.MyViewHolder>(
     TaskDiffCallBack()
 ) {
 

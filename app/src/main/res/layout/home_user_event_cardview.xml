@@ -68,7 +68,7 @@
                         android:fontFamily="@font/gilroy_medium"
                         android:text="@{event.eventDateToMonth}"
                         android:textAlignment="center"
-                        android:textAllCaps="true"
+                        android:textAllCaps="false"
                         android:textColor="@color/quantum_white_text"
                         android:textSize="11sp" />
 

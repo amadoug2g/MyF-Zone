@@ -24,6 +24,7 @@ import kotlinx.coroutines.tasks.await
  * Event Details Owner Page Service
  *
  */
+
 object EventDetailsOwnerService {
     private val TAG = this::class.java.simpleName
 

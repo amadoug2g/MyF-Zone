@@ -19,6 +19,8 @@ import com.myfzone_sport.myf_zone.app.ui.viewmodel.*
 import com.myfzone_sport.myf_zone.data.LocalDataSourceImpl
 import com.myfzone_sport.myf_zone.data.RepositoryImpl
 import com.myfzone_sport.myf_zone.databinding.ActivityMainBinding
+import com.myfzone_sport.myf_zone.usecases.detailevent.GetEventFromIdUseCase
+import com.myfzone_sport.myf_zone.usecases.detailevent.GetOwnerFromEventUseCase
 import com.myfzone_sport.myf_zone.usecases.event.*
 import com.myfzone_sport.myf_zone.usecases.registration.*
 import com.myfzone_sport.myf_zone.usecases.user.GetUserUseCase
@@ -35,6 +37,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         private lateinit var viewModel: ActivityViewModel
         private lateinit var fragmentViewModel: FragmentViewModel
         private lateinit var registrationViewModel: RegistrationViewModel
+        private lateinit var eventViewModel: EventViewModel
 
         private val messageReceiver: BroadcastReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent) {
@@ -139,7 +142,6 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         val getPlateauEventsUseCase = GetPlateauEventsUseCase(repository)
         val getUserEventsUseCase = GetUserEventsUseCase(repository)
 
-
         //Registration View Model
         val addUserToDatabaseUseCase = AddUserToDatabaseUseCase(repository)
         val assignDisplayNameUseCase = AssignDisplayNameUseCase(repository)
@@ -147,6 +149,10 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         val signInUserUseCase = SignInUserUseCase(repository)
         val signUpUserUseCase = SignUpUserUseCase(repository)
         val signOutUseCase = SignOutUseCase(repository)
+
+        //Event View Model
+        val getEventFromIdUseCase = GetEventFromIdUseCase(repository)
+        val getOwnerFromEventUseCase = GetOwnerFromEventUseCase(repository)
 
         viewModel = ViewModelProvider(
             this,
@@ -184,6 +190,14 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         ).get(
             RegistrationViewModel::class.java
         )
+
+        eventViewModel = ViewModelProvider(
+            this,
+            EventViewModelFactory(
+                getEventFromIdUseCase,
+                getOwnerFromEventUseCase
+            )
+        ).get(EventViewModel::class.java)
     }
 
     private fun checkStatus() {
