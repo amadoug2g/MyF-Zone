@@ -15,10 +15,12 @@
             android:layout_margin="8dp">
 
             <ImageView
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:src="@mipmap/ic_pffc_logo"
-                android:contentDescription="Club image" />
+                android:id="@+id/profileClubImage"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_account"
+                android:contentDescription="@string/image_club" />
 
             <TextView
                 android:layout_width="wrap_content"

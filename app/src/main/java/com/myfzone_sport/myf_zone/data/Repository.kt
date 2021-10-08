@@ -2,6 +2,7 @@ package com.myfzone_sport.myf_zone.data
 
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.storage.StorageReference
 import com.myfzone_sport.myf_zone.domain.State
 import com.myfzone_sport.myf_zone.domain.club.Club
 import com.myfzone_sport.myf_zone.domain.coach.ClubAffiliation
@@ -148,11 +149,11 @@ interface Repository {
 
     fun getUserAffiliation(user: FirebaseUser?)
 
-    fun getImageReference(): String
+    fun getImageReference(): StorageReference
 
     fun isUserOwner(eventId: String): Boolean
 
-    fun getUserInfo()
+    fun getUserInfo(): Boolean
 
     fun signOut()
     //endregion

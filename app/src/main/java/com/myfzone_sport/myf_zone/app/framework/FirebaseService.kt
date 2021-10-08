@@ -1,5 +1,7 @@
 package com.myfzone_sport.myf_zone.app.framework
 
+import android.util.Log
+import androidx.lifecycle.MutableLiveData
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -10,6 +12,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.myfzone_sport.myf_zone.domain.club.Club
 import com.myfzone_sport.myf_zone.domain.coach.ClubAffiliation
 import com.myfzone_sport.myf_zone.domain.coach.Coach
+import com.myfzone_sport.myf_zone.util.Constants
 
 /**
  * Created by Amadou on 03/09/2021, 18:30

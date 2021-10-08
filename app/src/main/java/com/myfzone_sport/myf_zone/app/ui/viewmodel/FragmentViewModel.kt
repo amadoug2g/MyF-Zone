@@ -1,9 +1,13 @@
 package com.myfzone_sport.myf_zone.app.ui.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.*
+import com.google.firebase.storage.StorageReference
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService
 import com.myfzone_sport.myf_zone.domain.State
 import com.myfzone_sport.myf_zone.domain.event.Event
 import com.myfzone_sport.myf_zone.usecases.event.*
+import com.myfzone_sport.myf_zone.usecases.user.GetImageReferenceUseCase
 import com.myfzone_sport.myf_zone.usecases.user.SignOutUseCase
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.flow.collect
@@ -16,6 +20,7 @@ class FragmentViewModel(
     private val getTourneyEventsUseCase: GetTourneyEventsUseCase,
     private val getPlateauEventsUseCase: GetPlateauEventsUseCase,
     private val getUserEventsUseCase: GetUserEventsUseCase,
+    private val getImageReferenceUseCase: GetImageReferenceUseCase,
     private val signOutUseCase: SignOutUseCase
 ) : ViewModel() {
 
@@ -39,6 +44,9 @@ class FragmentViewModel(
     val userEventsList = _userEventsList
 
     val isUserConnected = MutableLiveData(false)
+
+    private val _userImagePath = MutableLiveData<StorageReference>()
+    val userImagePath = _userImagePath
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading = _isLoading
@@ -116,6 +124,12 @@ class FragmentViewModel(
                     }
                 }
             }
+        }
+    }
+
+    fun getImageReference() {
+        viewModelScope.launch(IO) {
+            _userImagePath.postValue(getImageReferenceUseCase.invoke())
         }
     }
 
@@ -221,6 +235,7 @@ class FragmentViewModelFactory(
     private val getTourneyEventsUseCase: GetTourneyEventsUseCase,
     private val getPlateauEventsUseCase: GetPlateauEventsUseCase,
     private val getUserEventsUseCase: GetUserEventsUseCase,
+    private val getImageReferenceUseCase: GetImageReferenceUseCase,
     private val signOutUseCase: SignOutUseCase
 ) :
     ViewModelProvider.Factory {
@@ -232,6 +247,7 @@ class FragmentViewModelFactory(
             GetTourneyEventsUseCase::class.java,
             GetPlateauEventsUseCase::class.java,
             GetUserEventsUseCase::class.java,
+            GetImageReferenceUseCase::class.java,
             SignOutUseCase::class.java
         )
             .newInstance(
@@ -241,6 +257,7 @@ class FragmentViewModelFactory(
                 getTourneyEventsUseCase,
                 getPlateauEventsUseCase,
                 getUserEventsUseCase,
+                getImageReferenceUseCase,
                 signOutUseCase
             )
     }

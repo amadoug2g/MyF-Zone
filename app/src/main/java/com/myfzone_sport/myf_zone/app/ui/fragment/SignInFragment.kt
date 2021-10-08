@@ -12,11 +12,13 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.Navigation
 import com.google.android.material.snackbar.Snackbar
 import com.myfzone_sport.myf_zone.R
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.TRACKING
 import com.myfzone_sport.myf_zone.app.ui.activity.MainActivity
 import com.myfzone_sport.myf_zone.app.ui.viewmodel.FragmentViewModel
 import com.myfzone_sport.myf_zone.app.ui.viewmodel.RegistrationViewModel
 import com.myfzone_sport.myf_zone.databinding.FragmentSignInBinding
 import com.myfzone_sport.myf_zone.screens.MainScreen
+import com.myfzone_sport.myf_zone.util.Tracking
 import org.jetbrains.anko.clearTask
 import org.jetbrains.anko.newTask
 import org.jetbrains.anko.support.v4.intentFor
@@ -90,8 +92,8 @@ class SignInFragment : Fragment() {
             if (state) {
                 toast(getString(R.string.login_message))
 
-//                TRACKING.logEvent(Tracking.SIGN_IN_DONE, null)
-//                startActivity(intentFor<MainActivity>().newTask().clearTask())
+                TRACKING.logEvent(Tracking.SIGN_IN_DONE, null)
+                startActivity(intentFor<MainActivity>().newTask().clearTask())
 
 //                navigate(R.id.signInFragment2ToAffiliationRequestFragment)
             }

@@ -10,6 +10,7 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
+import com.google.firebase.storage.StorageReference
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoach
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoachClub
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoachClubAffiliation
@@ -19,6 +20,7 @@ import com.myfzone_sport.myf_zone.app.framework.FirebaseService.firebaseAuth
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.firebaseMsg
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.isAffiliated
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.isConnected
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.storageInstance
 import com.myfzone_sport.myf_zone.data.RemoteDataSource
 import com.myfzone_sport.myf_zone.domain.State
 import com.myfzone_sport.myf_zone.domain.chat.MessagingService
@@ -31,7 +33,6 @@ import com.myfzone_sport.myf_zone.domain.event.EventParticipant
 import com.myfzone_sport.myf_zone.domain.sport.Category
 import com.myfzone_sport.myf_zone.domain.sport.Sport
 import com.myfzone_sport.myf_zone.domain.sport.SubCategory
-import com.myfzone_sport.myf_zone.util.Constants
 import com.myfzone_sport.myf_zone.util.Constants.CLUB_PATH
 import com.myfzone_sport.myf_zone.util.Constants.COACH_PATH
 import com.myfzone_sport.myf_zone.util.Constants.DB
@@ -174,7 +175,7 @@ class RemoteDataSourceImpl : RemoteDataSource {
         TODO("Not yet implemented")
     }
 
-    override fun getEventFromId(eventId: String)= flow {
+    override fun getEventFromId(eventId: String) = flow {
         val mEventQuery = DB.document(EVENT_PATH + "/${eventId}")
 
         emit(State.loading())
@@ -558,13 +559,15 @@ class RemoteDataSourceImpl : RemoteDataSource {
         TODO("Not yet implemented")
     }
 
-    override fun getImageReference(): String {
-        TODO("Not yet implemented")
+    override fun getImageReference(): StorageReference {
+        return storageInstance.getReference((activeCoachClubAffiliation!!.clubLogo).removePrefix("gs://myf-zone.appspot.com"))
     }
 
     override fun isUserOwner(eventId: String): Boolean {
         return (activeCoachEvents.contains(eventId))
     }
+
+/*
 
     override fun getUserInfo() {
         firebaseAuth.addAuthStateListener {
@@ -597,36 +600,36 @@ class RemoteDataSourceImpl : RemoteDataSource {
             }
         }
     }
+*/
 
-    fun getUserStatus() {
-        firebaseAuth.addAuthStateListener {
-            when (it.currentUser == null) {
-                true -> {
+    override fun getUserInfo(): Boolean {
+        val user: FirebaseUser? = firebaseAuth.currentUser
+        return if (user != null) {
+            isConnected = true
+
+            val mAffiliationPath = firebaseFirestore
+                .collection(COACH_PATH + "/${user.uid}/ClubAffiliation")
+
+            mAffiliationPath.get().addOnSuccessListener {
+
+                if (it.documents.size > 0) {
+                    isAffiliated = true
+                    getUser(user)
+                    getUserAffiliation(user)
+                } else {
                     activeCoachEvents = mutableListOf()
-                    isConnected = false
                     isAffiliated = false
-                    activeCoach = null
                     activeCoachClubAffiliation = null
                 }
-                false -> {
-                    isConnected = true
-
-                    val mAffiliationPath = firebaseFirestore
-                        .collection(COACH_PATH + "/${it.currentUser!!.uid}/ClubAffiliation")
-
-                    mAffiliationPath.get().addOnSuccessListener { query ->
-                        if (query.documents.size > 0) {
-                            isAffiliated = true
-                            getUser(it.currentUser)
-                            getUserAffiliation(it.currentUser)
-                        } else {
-                            activeCoachEvents = mutableListOf()
-                            isAffiliated = false
-                            activeCoachClubAffiliation = null
-                        }
-                    }
-                }
             }
+            true
+        } else {
+            activeCoachEvents = mutableListOf()
+            isConnected = false
+            isAffiliated = false
+            activeCoach = null
+            activeCoachClubAffiliation = null
+            false
         }
     }
 

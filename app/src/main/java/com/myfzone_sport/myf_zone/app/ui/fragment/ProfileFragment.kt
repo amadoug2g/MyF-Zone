@@ -16,6 +16,7 @@ import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoach
 import com.myfzone_sport.myf_zone.app.ui.adapter.UserEventAdapter
 import com.myfzone_sport.myf_zone.app.ui.viewmodel.FragmentViewModel
 import com.myfzone_sport.myf_zone.databinding.FragmentProfile2Binding
+import com.myfzone_sport.myf_zone.glide.GlideApp
 
 private const val ARG_PARAM1 = "coachId"
 
@@ -57,6 +58,7 @@ class ProfileFragment : Fragment() {
     //region Setups
     private fun setupViews() {
         setupProfile()
+        viewModel.getImageReference()
 
         binding.userEventLayout.showAll.setOnClickListener {
             val bundle = bundleOf("listType" to "userEvent")
@@ -72,10 +74,22 @@ class ProfileFragment : Fragment() {
     private fun setupProfile() {
         binding.userEventLayout.layout.visibility = View.VISIBLE
 
+        viewModel.userImagePath.observe(viewLifecycleOwner, {
+            displayUserImage()
+        })
+
         try {
             binding.coachInfo.text = activeCoach!!.getName()
         } catch (e: Exception) {
             Log.i("TAG", "Error: $e")
+        }
+    }
+
+    private fun displayUserImage() {
+        GlideApp.with(this).apply {
+            load(viewModel.userImagePath.value)
+                .centerCrop()
+                .into(binding.profileClubImage)
         }
     }
     //endregion

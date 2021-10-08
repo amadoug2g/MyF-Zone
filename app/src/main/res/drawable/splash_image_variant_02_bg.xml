@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <gradient android:startColor="@color/colorDesign2"
+        android:centerColor="@color/colorDesign3"
+        android:endColor="@color/colorDesign4"/>
+
+<!--    <item-->
+<!--        android:drawable="@drawable/logo_variant_02"-->
+<!--        android:gravity="center" />-->
+
+</shape>

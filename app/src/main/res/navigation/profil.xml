@@ -13,6 +13,10 @@
         <action
             android:id="@+id/profileFragmentToCategoryListFragment"
             app:destination="@id/category_list" />
+        <action
+            android:id="@+id/profileFragmentToEventDetailsFragment"
+            app:destination="@id/event_details" />
     </fragment>
     <include app:graph="@navigation/category_list" />
+    <include app:graph="@navigation/event_details" />
 </navigation>

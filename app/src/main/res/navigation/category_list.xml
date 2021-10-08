@@ -8,6 +8,7 @@
     <fragment
         android:id="@+id/categoryListFragment"
         android:name="com.myfzone_sport.myf_zone.app.ui.fragment.CategoryListFragment"
+        android:label="CategoryListFragment"
         tools:layout="@layout/fragment_category_list">
 
         <action

@@ -5,15 +5,15 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.NavController
-import androidx.navigation.NavDestination
-import androidx.navigation.findNavController
+import androidx.navigation.*
 import androidx.navigation.fragment.NavHostFragment
 import com.myfzone_sport.myf_zone.R
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService
 import com.myfzone_sport.myf_zone.app.framework.RemoteDataSourceImpl
 import com.myfzone_sport.myf_zone.app.ui.viewmodel.*
 import com.myfzone_sport.myf_zone.data.LocalDataSourceImpl
@@ -23,6 +23,7 @@ import com.myfzone_sport.myf_zone.usecases.detailevent.GetEventFromIdUseCase
 import com.myfzone_sport.myf_zone.usecases.detailevent.GetOwnerFromEventUseCase
 import com.myfzone_sport.myf_zone.usecases.event.*
 import com.myfzone_sport.myf_zone.usecases.registration.*
+import com.myfzone_sport.myf_zone.usecases.user.GetImageReferenceUseCase
 import com.myfzone_sport.myf_zone.usecases.user.GetUserUseCase
 import com.myfzone_sport.myf_zone.usecases.user.SignOutUseCase
 
@@ -102,6 +103,8 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
     //region Init
     private fun initViews() {
+        setTheme(R.style.AppTheme)
+
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
         binding.apply {
@@ -112,8 +115,6 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         //Check User Status UC
         //Check Intent UC
         //Check OnBoarding UC
-
-//        setTheme(R.style.AppTheme)
 
         supportActionBar!!.apply {
             hide()
@@ -141,6 +142,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         val getTourneyEventsUseCase = GetTourneyEventsUseCase(repository)
         val getPlateauEventsUseCase = GetPlateauEventsUseCase(repository)
         val getUserEventsUseCase = GetUserEventsUseCase(repository)
+        val getImageReferenceUseCase = GetImageReferenceUseCase(repository)
 
         //Registration View Model
         val addUserToDatabaseUseCase = AddUserToDatabaseUseCase(repository)
@@ -163,6 +165,11 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
             ActivityViewModel::class.java
         )
 
+
+//        val navHostFragment: NavHostFragment =
+//            supportFragmentManager.findFragmentById(R.id.fragmentNavHost) as NavHostFragment
+//        navHostFragment.childFragmentManager.fragments[0]
+
         fragmentViewModel = ViewModelProvider(
             this,
             FragmentViewModelFactory(
@@ -172,6 +179,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
                 getTourneyEventsUseCase,
                 getPlateauEventsUseCase,
                 getUserEventsUseCase,
+                getImageReferenceUseCase,
                 signOutUseCase
             )
         ).get(
@@ -202,7 +210,20 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
     private fun checkStatus() {
         viewModel.isUserConnected.observe(this, {
-            if (it) fragmentViewModel.userConnected() else fragmentViewModel.userNotConnected()
+            if (it) {
+                fragmentViewModel.userConnected()
+//                val navOptions = NavOptions.Builder()
+//                    .setPopUpTo(R.id.homeFragment, true)
+//                    .build()
+
+                navController.setGraph(R.navigation.home)
+
+//                Navigation.findNavController(findViewById(R.id.fragmentNavHostView)).navigate(R.id.loginFragmentToHomeFragment, null, navOptions)
+            } else {
+//                navController.setGraph(R.navigation.main_start)
+
+                fragmentViewModel.userNotConnected()
+            }
         })
     }
     //endregion

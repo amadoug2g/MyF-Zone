@@ -3,13 +3,12 @@ package com.myfzone_sport.myf_zone.app.ui.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoach
-import com.myfzone_sport.myf_zone.usecases.event.GetAllEventsUseCase
-import com.myfzone_sport.myf_zone.usecases.event.GetFriendlyEventsUseCase
-import com.myfzone_sport.myf_zone.usecases.event.GetPlateauEventsUseCase
-import com.myfzone_sport.myf_zone.usecases.event.GetTourneyEventsUseCase
 import com.myfzone_sport.myf_zone.usecases.user.GetUserUseCase
-import com.myfzone_sport.myf_zone.usecases.user.SignOutUseCase
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.launch
 
 class ActivityViewModel(
     private val getUserUseCase: GetUserUseCase
@@ -22,7 +21,7 @@ class ActivityViewModel(
     }
 
     fun getUser(): Boolean {
-        isUserConnected.postValue(activeCoach != null)
+        isUserConnected.postValue(getUserUseCase.invoke())
 
         return isUserConnected.value!!
     }

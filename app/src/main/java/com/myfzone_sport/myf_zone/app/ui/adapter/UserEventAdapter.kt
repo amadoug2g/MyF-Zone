@@ -1,5 +1,6 @@
 package com.myfzone_sport.myf_zone.app.ui.adapter
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -7,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.navigation.Navigation
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -45,6 +47,7 @@ class UserEventAdapter : ListAdapter<Event, UserEventAdapter.MyViewHolder>(
 
     class MyViewHolder(private val binding: HomeUserEventCardviewBinding) :
         RecyclerView.ViewHolder(binding.root) {
+        @SuppressLint("RestrictedApi")
         fun bind(event: Event) {
             with(binding) {
                 binding.event = event
@@ -52,7 +55,16 @@ class UserEventAdapter : ListAdapter<Event, UserEventAdapter.MyViewHolder>(
 
             binding.cardView.setOnClickListener {
                 val bundle = bundleOf("eventId" to event.id)
-                navigate(R.id.categoryListFragmentToEventDetailsFragment, bundle, binding.cardView)
+//                when (it.findNavController().currentDestination?.label) {
+//                    "" -> {}
+//                    else -> {}
+//                }
+//                try {
+//                    Log.i("TAG", "current label: ${it.findNavController().currentDestination?.label}")
+//                } catch (e: Exception) {
+//                    Log.w("TAG", "error: ${e.localizedMessage}")
+//                }
+                navigate(R.id.categoryListFragmentToEventDetailsFragment, bundle, it)
             }
         }
 

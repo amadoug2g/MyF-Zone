@@ -2,6 +2,7 @@ package com.myfzone_sport.myf_zone.data
 
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.storage.StorageReference
 import com.myfzone_sport.myf_zone.domain.State
 import com.myfzone_sport.myf_zone.domain.club.Club
 import com.myfzone_sport.myf_zone.domain.coach.ClubAffiliation
@@ -241,7 +242,7 @@ class RepositoryImpl(
         remoteDataSource.getUserAffiliation(user)
     }
 
-    override fun getImageReference(): String {
+    override fun getImageReference(): StorageReference {
         return remoteDataSource.getImageReference()
     }
 
@@ -249,7 +250,7 @@ class RepositoryImpl(
         return remoteDataSource.isUserOwner(eventId)
     }
 
-    override fun getUserInfo()  {
+    override fun getUserInfo(): Boolean  {
         return remoteDataSource.getUserInfo()
     }
 
