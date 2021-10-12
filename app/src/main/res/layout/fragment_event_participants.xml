@@ -1,14 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".app.ui.fragment.EventParticipantsFragment">
+<layout xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:padding="16dp"
+        tools:context=".app.ui.fragment.EventParticipantsFragment">
 
-</FrameLayout>
+        <LinearLayout
+            android:id="@+id/layout_valid_coach"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:textColor="@color/colorDesign1"
+                android:text="3 Validés"
+                android:layout_marginBottom="8dp"
+                android:fontFamily="@font/nuber_next_demi_bold_wide"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/validCoachRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbarThumbHorizontal="@drawable/home_scrollbar_thumb"
+                android:scrollbarTrackHorizontal="@drawable/home_scrollbar_track" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_pending_coach"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:orientation="vertical"
+            app:layout_constraintTop_toBottomOf="@id/layout_valid_coach">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:textColor="@color/colorDesign1"
+                android:text="3 En Attente"
+                android:layout_marginBottom="8dp"
+                android:fontFamily="@font/nuber_next_demi_bold_wide"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/pendingCoachRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbarThumbHorizontal="@drawable/home_scrollbar_thumb"
+                android:scrollbarTrackHorizontal="@drawable/home_scrollbar_track" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_refused_coach"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:orientation="vertical"
+            app:layout_constraintTop_toBottomOf="@id/layout_pending_coach">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:textColor="@color/colorDesign1"
+                android:text="3 Refusés"
+                android:layout_marginBottom="8dp"
+                android:fontFamily="@font/nuber_next_demi_bold_wide"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/refusedCoachRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbarThumbHorizontal="@drawable/home_scrollbar_thumb"
+                android:scrollbarTrackHorizontal="@drawable/home_scrollbar_track" />
+        </LinearLayout>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

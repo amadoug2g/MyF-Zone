@@ -4,29 +4,38 @@ import android.annotation.SuppressLint
 import android.content.DialogInterface
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.graphics.BlendModeColorFilterCompat
-import androidx.core.graphics.BlendModeCompat
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.myfzone_sport.myf_zone.R
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.TRACKING
-import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoach
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.isConnectedLive
+import com.myfzone_sport.myf_zone.app.framework.RemoteDataSourceImpl
 import com.myfzone_sport.myf_zone.app.ui.adapter.CategoryEventAdapter
 import com.myfzone_sport.myf_zone.app.ui.adapter.CloseToClubEventAdapter
 import com.myfzone_sport.myf_zone.app.ui.adapter.UserEventAdapter
-import com.myfzone_sport.myf_zone.app.ui.viewmodel.FragmentViewModel
+import com.myfzone_sport.myf_zone.app.ui.viewmodel.HomeViewModel
+import com.myfzone_sport.myf_zone.app.ui.viewmodel.HomeViewModelFactory
+import com.myfzone_sport.myf_zone.data.RepositoryImpl
 import com.myfzone_sport.myf_zone.databinding.FragmentHomeBinding
+import com.myfzone_sport.myf_zone.domain.coach.Coach
+import com.myfzone_sport.myf_zone.domain.event.Event
 import com.myfzone_sport.myf_zone.screens.MainScreen
+import com.myfzone_sport.myf_zone.usecases.event.*
+import com.myfzone_sport.myf_zone.usecases.user.GetUserClubAffiliationUseCase
+import com.myfzone_sport.myf_zone.usecases.user.GetUserClubUseCase
+import com.myfzone_sport.myf_zone.usecases.user.GetUserUseCase
+import com.myfzone_sport.myf_zone.usecases.user.SignOutUseCase
 import com.myfzone_sport.myf_zone.util.Tracking
 import org.jetbrains.anko.clearTask
 import org.jetbrains.anko.newTask
@@ -35,19 +44,55 @@ import org.jetbrains.anko.support.v4.toast
 
 class HomeFragment : Fragment() {
 
-    private val viewModel by activityViewModels<FragmentViewModel>()
+    //region Variables
+//    private val viewModel by activityViewModels<FragmentViewModel>()
 
     companion object {
         private lateinit var binding: FragmentHomeBinding
         private lateinit var adapterCloseToClub: CloseToClubEventAdapter
         private lateinit var adapterCategory: CategoryEventAdapter
         private lateinit var adapterUserEvents: UserEventAdapter
-        lateinit var viewModel: FragmentViewModel
+
+
+        private lateinit var viewModel: HomeViewModel
+        private lateinit var viewModelFactory: HomeViewModelFactory
+//        lateinit var viewModel: FragmentViewModel
     }
+    //endregion
 
     //region Override Methods
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val remoteDataSource = RemoteDataSourceImpl()
+        val repository = RepositoryImpl(/*localDataSource,*/ remoteDataSource)
+
+        //View Model
+        val getCloseEventsUseCase = GetCloseEventsUseCase(repository)
+        val getFriendlyEventsUseCase = GetFriendlyEventsUseCase(repository)
+        val getAllEventsUseCase = GetAllEventsUseCase(repository)
+        val getTourneyEventsUseCase = GetTourneyEventsUseCase(repository)
+        val getPlateauEventsUseCase = GetPlateauEventsUseCase(repository)
+        val getUserEventsUseCase = GetUserEventsUseCase(repository)
+        val getUserUseCase = GetUserUseCase(repository)
+        val getUserClubUseCase = GetUserClubUseCase(repository)
+        val getUserAffiliationUseCase = GetUserClubAffiliationUseCase(repository)
+        val signOutUseCase = SignOutUseCase(repository)
+
+        viewModelFactory = HomeViewModelFactory(
+            getCloseEventsUseCase,
+            getAllEventsUseCase,
+            getFriendlyEventsUseCase,
+            getTourneyEventsUseCase,
+            getPlateauEventsUseCase,
+            getUserEventsUseCase,
+            getUserUseCase,
+            getUserClubUseCase,
+            getUserAffiliationUseCase,
+            signOutUseCase
+        )
+        viewModel = ViewModelProvider(this, viewModelFactory).get(HomeViewModel::class.java)
+
     }
 
     override fun onCreateView(
@@ -62,28 +107,28 @@ class HomeFragment : Fragment() {
             false
         )
 
-        setupObservers()
-        setUpRecyclerViews()
         setupViews()
-
+        setupObservers()
+//        viewModel.getUserEvents()
+//        viewModel.getCloseEvents()
 
         return binding.root
     }
 
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+
+    }
+
     override fun onResume() {
         super.onResume()
-
-        viewModel.isUserConnected.observe(viewLifecycleOwner, {
-            if (it) {
-                viewModel.getUserEvents()
-                viewModel.getCloseEvents()
-            }
-        })
     }
     //endregion
 
     //region Setups
     private fun setupViews() {
+        setUpRecyclerViews()
+
         binding.userEventLayout.showAll.setOnClickListener {
             val bundle = bundleOf("listType" to "userEvent")
             navigate(R.id.homeFragmentToCategoryListFragment, bundle)
@@ -108,6 +153,7 @@ class HomeFragment : Fragment() {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun setupObservers() {
         viewModel.errorMessage.observe(viewLifecycleOwner, {
             if (it.isNotEmpty()) showError()
@@ -117,21 +163,115 @@ class HomeFragment : Fragment() {
             if (contentIsLoading) loadingStart() else loadingStop()
         })
 
-        viewModel.isUserConnected.observe(viewLifecycleOwner, {
-            binding.closeToClubLayout.layout.visibility = if (it) View.VISIBLE else View.GONE
-            binding.userEventLayout.layout.visibility = if (it) View.VISIBLE else View.GONE
-            binding.homeWelcomeText.text =
-                if (it) "Bonjour ${activeCoach?.firstName} !" else "Bonjour Coach !"
+//        activeCoachLive.observe(viewLifecycleOwner, {
+//            if (it != null) {
+//                binding.closeToClubLayout.layout.visibility = View.VISIBLE
+//                binding.userEventLayout.layout.visibility = View.VISIBLE
+//
+//                binding.homeWelcomeText.text = "Bonjour ${it.firstName} !"
+//            } else {
+//                binding.closeToClubLayout.layout.visibility = View.GONE
+//                binding.userEventLayout.layout.visibility = View.GONE
+//
+//                binding.homeWelcomeText.text = "Bonjour Coach !"
+//            }
+//        })
 
-            if (it) {
+//        activeCoachClubAffiliationLive.observe(viewLifecycleOwner, MyCoachAffiliationCoach())
+//        viewModel.coach.observe(viewLifecycleOwner, MyCoachObserver())
+//        viewModel.coachAffiliation.observe(viewLifecycleOwner, MyCoachAffiliationObserver())
+        viewModel.coach.observe(viewLifecycleOwner, {
+            if (it != null) {
+                binding.closeToClubLayout.layout.visibility = View.VISIBLE
+                binding.userEventLayout.layout.visibility = View.VISIBLE
+
+                binding.homeWelcomeText.text = "Bonjour ${it.firstName} !"
+            } else {
+                binding.closeToClubLayout.layout.visibility = View.GONE
+                binding.userEventLayout.layout.visibility = View.GONE
+
+                binding.homeWelcomeText.text = "Bonjour Coach !"
+            }
+        })
+
+        viewModel.coachAffiliation.observe(viewLifecycleOwner, {
+            if (it != null) {
                 viewModel.getUserEvents()
                 viewModel.getCloseEvents()
             }
         })
+
+//        activeCoachClubAffiliationLive.observe(viewLifecycleOwner, {
+//            if (it != null) {
+//                viewModel.getUserEvents()
+//                viewModel.getCloseEvents()
+//            }
+//        })
+    }
+    //endregion
+
+    //region RecyclerView
+    private fun setUpRecyclerViews() {
+        setUpCloseToClubRecycler()
+        setUpCategoryRecycler()
+        setUpUserEventsRecycler()
+    }
+
+    private fun setUpCloseToClubRecycler() {
+        adapterCloseToClub = CloseToClubEventAdapter()
+        binding.closeToClubLayout.recyclerView.adapter = adapterCloseToClub
+        binding.closeToClubLayout.recyclerView.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+
+        viewModel.closeEventsList.observe(viewLifecycleOwner, {
+            adapterCloseToClub.setData(it)
+        })
+
+//        viewModel.closeEventsList.observe(viewLifecycleOwner, MyCloseEventObserver())
+    }
+
+    private fun setUpCategoryRecycler() {
+        adapterCategory = CategoryEventAdapter()
+        binding.categoryLayout.recyclerView.adapter = adapterCategory
+        binding.categoryLayout.recyclerView.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+
+        val categoryList = mutableListOf("Matches Amicaux", "Tournois", "Plateaux")
+
+        adapterCategory.setData(categoryList)
+    }
+
+    private fun setUpUserEventsRecycler() {
+        adapterUserEvents = UserEventAdapter()
+        binding.userEventLayout.recyclerView.adapter = adapterUserEvents
+        binding.userEventLayout.recyclerView.layoutManager =
+            LinearLayoutManager(requireContext())
+//        binding.userEventLayout.recyclerView.setHasFixedSize(true)
+//        binding.userEventLayout.recyclerView.isNestedScrollingEnabled = true
+
+//        viewModel.userEventsList.observe(viewLifecycleOwner, MyUserEventObserver())
+
+        viewModel.userEventsList.observe(viewLifecycleOwner, {
+            adapterUserEvents.setData(it)
+        })
+    }
+    //endregion
+
+    //region Navigation
+    private fun navigateWithView(destination: Int, extra: Bundle? = null, view: View) {
+        Navigation
+            .findNavController(view)
+            .navigate(destination, extra)
+    }
+
+    private fun navigate(destination: Int, extra: Bundle? = null) {
+        Navigation
+            .findNavController(this.requireView())
+            .navigate(destination, extra)
     }
 
     private fun checkStatusDestination(destination: String) {
-        viewModel.isUserConnected.observe(viewLifecycleOwner, {
+        isConnectedLive.observe(viewLifecycleOwner, {
             when (destination) {
                 "profile" -> {
                     if (it) {
@@ -156,66 +296,6 @@ class HomeFragment : Fragment() {
                 }
             }
         })
-    }
-    //endregion
-
-    //region RecyclerView
-    private fun setUpRecyclerViews() {
-        setUpCloseToClubRecycler()
-        setUpCategoryRecycler()
-        setUpUserEventsRecycler()
-    }
-
-    private fun setUpCloseToClubRecycler() {
-        adapterCloseToClub = CloseToClubEventAdapter()
-        binding.closeToClubLayout.recyclerView.adapter = adapterCloseToClub
-        binding.closeToClubLayout.recyclerView.layoutManager =
-            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-
-        viewModel.closeEventsList.observe(viewLifecycleOwner, {
-            if (it.isNotEmpty()) adapterCloseToClub.setData(it)
-//            adapterCloseToClub.submitList(it)
-        })
-    }
-
-    private fun setUpCategoryRecycler() {
-        adapterCategory = CategoryEventAdapter()
-        binding.categoryLayout.recyclerView.adapter = adapterCategory
-        binding.categoryLayout.recyclerView.layoutManager =
-            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-
-        val categoryList = mutableListOf("Matches Amicaux", "Tournois", "Plateaux")
-
-        adapterCategory.setData(categoryList)
-    }
-
-    private fun setUpUserEventsRecycler() {
-        adapterUserEvents = UserEventAdapter()
-        binding.userEventLayout.recyclerView.adapter = adapterUserEvents
-        binding.userEventLayout.recyclerView.layoutManager =
-            LinearLayoutManager(requireContext())
-//        binding.userEventLayout.recyclerView.setHasFixedSize(true)
-//        binding.userEventLayout.recyclerView.isNestedScrollingEnabled = true
-
-        viewModel.userEventsList.observe(viewLifecycleOwner, {
-            if (it.isNotEmpty()) {
-                adapterUserEvents.setData(it)
-            }
-        })
-    }
-    //endregion
-
-    //Navigation
-    private fun navigateWithView(destination: Int, extra: Bundle? = null, view: View) {
-        Navigation
-            .findNavController(view)
-            .navigate(destination, extra)
-    }
-
-    private fun navigate(destination: Int, extra: Bundle? = null) {
-        Navigation
-            .findNavController(this.requireView())
-            .navigate(destination, extra)
     }
     //endregion
 
@@ -245,7 +325,6 @@ class HomeFragment : Fragment() {
     }
 
     private fun showError(message: String? = "") {
-
         Snackbar.make(
             binding.homeChatBtn,
             if (!message.isNullOrEmpty()) message else viewModel.errorMessage.value.toString(),
@@ -255,26 +334,45 @@ class HomeFragment : Fragment() {
             .setActionTextColor(Color.CYAN)
             .show()
     }
+    //endregion
 
-    @SuppressLint("ClickableViewAccessibility")
-    fun View.buttonEffect() {
-        this.setOnTouchListener { v, event ->
-            when (event.action) {
-                MotionEvent.ACTION_DOWN -> {
-//                    v.background.setColorFilter(-0x1f0b8adf, PorterDuff.Mode.SRC_ATOP)
-                    v.background.colorFilter =
-                        BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
-                            -0x1f0b8adf,
-                            BlendModeCompat.SRC_ATOP
-                        )
-                    v.invalidate()
-                }
-                MotionEvent.ACTION_UP -> {
-                    v.background.clearColorFilter()
-                    v.invalidate()
-                }
+    //region Observer Classes
+    class MyCoachObserver : Observer<Coach?> {
+        @SuppressLint("SetTextI18n")
+        override fun onChanged(it: Coach?) {
+            if (it != null) {
+                binding.closeToClubLayout.layout.visibility = View.VISIBLE
+                binding.userEventLayout.layout.visibility = View.VISIBLE
+
+                binding.homeWelcomeText.text = "Bonjour ${it.firstName} !"
+            } else {
+                binding.closeToClubLayout.layout.visibility = View.GONE
+                binding.userEventLayout.layout.visibility = View.GONE
+
+                binding.homeWelcomeText.text = "Bonjour Coach !"
             }
-            false
+        }
+    }
+
+//    class MyCoachAffiliationObserver : Observer<ClubAffiliation?> {
+//        override fun onChanged(it: ClubAffiliation?) {
+//            if (it != null) {
+//                viewModel.getUserEvents()
+//                viewModel.getCloseEvents()
+//            }
+//        }
+//    }
+
+    class MyCloseEventObserver : Observer<MutableList<Event>> {
+        override fun onChanged(it: MutableList<Event>) {
+            adapterCloseToClub.setData(it)
+        }
+    }
+
+    class MyUserEventObserver : Observer<MutableList<Event>> {
+        override fun onChanged(it: MutableList<Event>) {
+            adapterUserEvents.setData(it)
+            Log.i("TAG onChanged", "onChanged list: $it.")
         }
     }
     //endregion

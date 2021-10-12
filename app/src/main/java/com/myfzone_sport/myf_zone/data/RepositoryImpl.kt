@@ -234,12 +234,24 @@ class RepositoryImpl(
         remoteDataSource.assignProfileImage()
     }
 
-    override fun getUser(user: FirebaseUser?) {
-        remoteDataSource.getUser(user)
+    override fun getUserStatus(): Boolean {
+        return remoteDataSource.getUserStatus()
     }
 
-    override fun getUserAffiliation(user: FirebaseUser?) {
-        remoteDataSource.getUserAffiliation(user)
+    override fun getUser(): Flow<State<Coach>> {
+        return remoteDataSource.getUser()
+    }
+
+    override fun getUserAffiliation(): Flow<State<ClubAffiliation?>> {
+        return remoteDataSource.getUserAffiliation()
+    }
+
+    override fun getUserClub(): Flow<State<Club?>> {
+        return remoteDataSource.getUserClub()
+    }
+
+    override fun getUserEventList(): Flow<State<Boolean>> {
+        return remoteDataSource.getUserEventList()
     }
 
     override fun getImageReference(): StorageReference {
@@ -248,10 +260,6 @@ class RepositoryImpl(
 
     override fun isUserOwner(eventId: String): Boolean {
         return remoteDataSource.isUserOwner(eventId)
-    }
-
-    override fun getUserInfo(): Boolean  {
-        return remoteDataSource.getUserInfo()
     }
 
     override fun signOut() {

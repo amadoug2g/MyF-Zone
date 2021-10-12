@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -13,7 +12,14 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.*
 import androidx.navigation.fragment.NavHostFragment
 import com.myfzone_sport.myf_zone.R
-import com.myfzone_sport.myf_zone.app.framework.FirebaseService
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoachClubAffiliationLive
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoachClubLive
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoachEventsLive
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoachLive
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.affiliationNbrLive
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.checkUserStatus
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.isAffiliatedLive
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.isConnectedLive
 import com.myfzone_sport.myf_zone.app.framework.RemoteDataSourceImpl
 import com.myfzone_sport.myf_zone.app.ui.viewmodel.*
 import com.myfzone_sport.myf_zone.data.LocalDataSourceImpl
@@ -23,9 +29,7 @@ import com.myfzone_sport.myf_zone.usecases.detailevent.GetEventFromIdUseCase
 import com.myfzone_sport.myf_zone.usecases.detailevent.GetOwnerFromEventUseCase
 import com.myfzone_sport.myf_zone.usecases.event.*
 import com.myfzone_sport.myf_zone.usecases.registration.*
-import com.myfzone_sport.myf_zone.usecases.user.GetImageReferenceUseCase
-import com.myfzone_sport.myf_zone.usecases.user.GetUserUseCase
-import com.myfzone_sport.myf_zone.usecases.user.SignOutUseCase
+import com.myfzone_sport.myf_zone.usecases.user.*
 
 class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedListener {
 
@@ -52,20 +56,17 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        checkUserStatus()
         initViews()
-        initViewModel()
-        checkStatus()
-    }
-
-    override fun onCreateView(name: String, context: Context, attrs: AttributeSet): View? {
-        //Check Show Image Profile if connected
-
-        return super.onCreateView(name, context, attrs)
+        initViewModels()
     }
 
     override fun onStart() {
         super.onStart()
-        viewModel.getUser()
+        viewModel.getUserStatus()
+
+        setupObservers()
+
 //        LocalBroadcastManager.getInstance(this).registerReceiver(
 //            messageReceiver,
 //            IntentFilter("MyData")
@@ -87,7 +88,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
                 hideBar()
             }
             R.id.homeFragment -> {
-                viewModel.getUser()
+                viewModel.getUserStatus()
                 hideBar()
             }
             else -> {
@@ -127,13 +128,13 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 //        setupActionBarWithNavController(findNavController(R.id.fragmentNavHostView))
     }
 
-    private fun initViewModel() {
+    private fun initViewModels() {
         val localDataSource = LocalDataSourceImpl()
         val remoteDataSource = RemoteDataSourceImpl()
         val repository = RepositoryImpl(/*localDataSource,*/ remoteDataSource)
 
         //Activity View Model
-        val getUserUseCase = GetUserUseCase(repository)
+        val getUserStatusUseCase = GetUserStatusUseCase(repository)
 
         //Fragment View Model
         val getAllEventsUseCase = GetAllEventsUseCase(repository)
@@ -143,6 +144,10 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         val getPlateauEventsUseCase = GetPlateauEventsUseCase(repository)
         val getUserEventsUseCase = GetUserEventsUseCase(repository)
         val getImageReferenceUseCase = GetImageReferenceUseCase(repository)
+        val getUserUseCase = GetUserUseCase(repository)
+        val getUserClubUseCase = GetUserClubUseCase(repository)
+        val getUserAffiliationUseCase = GetUserClubAffiliationUseCase(repository)
+        val getUserEventListUseCase = GetUserEventListUseCase(repository)
 
         //Registration View Model
         val addUserToDatabaseUseCase = AddUserToDatabaseUseCase(repository)
@@ -159,7 +164,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         viewModel = ViewModelProvider(
             this,
             ActivityViewModelFactory(
-                getUserUseCase
+                getUserStatusUseCase
             )
         ).get(
             ActivityViewModel::class.java
@@ -180,6 +185,10 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
                 getPlateauEventsUseCase,
                 getUserEventsUseCase,
                 getImageReferenceUseCase,
+                getUserUseCase,
+                getUserClubUseCase,
+                getUserAffiliationUseCase,
+                getUserEventListUseCase,
                 signOutUseCase
             )
         ).get(
@@ -208,23 +217,30 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         ).get(EventViewModel::class.java)
     }
 
-    private fun checkStatus() {
+    private fun setupObservers() {
         viewModel.isUserConnected.observe(this, {
             if (it) {
+                fragmentViewModel.getUser()
+//                fragmentViewModel.getQuery()
+                fragmentViewModel.getUserClub()
+                fragmentViewModel.getUserAffiliation()
                 fragmentViewModel.userConnected()
-//                val navOptions = NavOptions.Builder()
-//                    .setPopUpTo(R.id.homeFragment, true)
-//                    .build()
-
                 navController.setGraph(R.navigation.home)
-
-//                Navigation.findNavController(findViewById(R.id.fragmentNavHostView)).navigate(R.id.loginFragmentToHomeFragment, null, navOptions)
+                fragmentViewModel.getUserEvents()
+                fragmentViewModel.getCloseEvents()
+                fragmentViewModel.getUserEventList()
             } else {
-//                navController.setGraph(R.navigation.main_start)
-
                 fragmentViewModel.userNotConnected()
+                navController.setGraph(R.navigation.main_start)
             }
         })
+
+//        isAffiliatedLive.observe(this, {
+//            if (it) {
+//                fragmentViewModel.getUserEvents()
+//                fragmentViewModel.getCloseEvents()
+//            }
+//        })
     }
     //endregion
 

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp">
+
+        <ImageView
+            android:id="@+id/event_participant_image"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_centerVertical="true"
+            android:contentDescription="@string/lorem"
+            android:src="@drawable/ic_account_home" />
+
+        <TextView
+            android:id="@+id/event_participant_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="8dp"
+            android:layout_toEndOf="@id/event_participant_image"
+            android:fontFamily="@font/gilroy_semi_bold"
+            android:text="Abou Dambele"
+            android:textColor="@color/colorDesign1"
+            android:textSize="14sp" />
+
+        <ImageView
+            android:id="@+id/event_participant_action_button_01"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_centerVertical="true"
+            android:padding="3dp"
+            android:scaleType="centerCrop"
+            android:layout_marginEnd="8dp"
+            android:layout_toStartOf="@id/event_participant_action_button_02"
+            android:background="@drawable/accept_blue_bg_shape"
+            android:contentDescription="@string/lorem"
+            android:src="@drawable/accept_2x_blue" />
+
+        <ImageView
+            android:id="@+id/event_participant_action_button_02"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:padding="3dp"
+            android:scaleType="centerCrop"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/refuse_red_bg_shape"
+            android:contentDescription="@string/lorem"
+            android:src="@drawable/refuse_2x" />
+
+    </RelativeLayout>
+</layout>

@@ -12,9 +12,12 @@ import com.myfzone_sport.myf_zone.databinding.FragmentLogin2Binding
 import com.myfzone_sport.myf_zone.screens.MainScreen.Companion.navController
 
 class LoginFragment : Fragment() {
+
+    //region Variables
     companion object {
         private lateinit var binding: FragmentLogin2Binding
     }
+    //endregion
 
     //region Override Methods
     override fun onCreateView(

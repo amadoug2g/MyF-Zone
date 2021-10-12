@@ -9,5 +9,10 @@
         android:id="@+id/mapFragment"
         android:name="com.myfzone_sport.myf_zone.app.ui.fragment.MapFragment"
         tools:layout="@layout/fragment_map"
-        android:label="MapFragment" />
+        android:label="Map2">
+        <action
+            android:id="@+id/mapFragmentToEventDetailsFragment"
+            app:destination="@id/event_details" />
+    </fragment>
+    <include app:graph="@navigation/event_details" />
 </navigation>

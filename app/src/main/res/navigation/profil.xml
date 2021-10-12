@@ -9,7 +9,7 @@
         android:id="@+id/profileFragment"
         android:name="com.myfzone_sport.myf_zone.app.ui.fragment.ProfileFragment"
         tools:layout="@layout/fragment_profile2"
-        android:label="ProfileFragment" >
+        android:label="Profil" >
         <action
             android:id="@+id/profileFragmentToCategoryListFragment"
             app:destination="@id/category_list" />

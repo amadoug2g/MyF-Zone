@@ -22,6 +22,7 @@ private const val ARG_PARAM1 = "coachId"
 
 class ProfileFragment : Fragment() {
 
+    //region Variables
     private val viewModel by activityViewModels<FragmentViewModel>()
 
     companion object {
@@ -29,6 +30,7 @@ class ProfileFragment : Fragment() {
         private lateinit var binding: FragmentProfile2Binding
         private lateinit var adapterUserEvents: UserEventAdapter
     }
+    //endregion
 
     //region Override Methods
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -126,7 +128,7 @@ class ProfileFragment : Fragment() {
     }
     //endregion
 
-    //Navigation
+    //region Navigation
     private fun navigateWithView(destination: Int, extra: Bundle? = null, view: View) {
         Navigation
             .findNavController(view)

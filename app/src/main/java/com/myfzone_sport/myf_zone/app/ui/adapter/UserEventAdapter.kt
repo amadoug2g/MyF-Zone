@@ -47,7 +47,7 @@ class UserEventAdapter : ListAdapter<Event, UserEventAdapter.MyViewHolder>(
 
     class MyViewHolder(private val binding: HomeUserEventCardviewBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        @SuppressLint("RestrictedApi")
+//        @SuppressLint("RestrictedApi")
         fun bind(event: Event) {
             with(binding) {
                 binding.event = event
@@ -55,16 +55,13 @@ class UserEventAdapter : ListAdapter<Event, UserEventAdapter.MyViewHolder>(
 
             binding.cardView.setOnClickListener {
                 val bundle = bundleOf("eventId" to event.id)
-//                when (it.findNavController().currentDestination?.label) {
-//                    "" -> {}
-//                    else -> {}
-//                }
-//                try {
-//                    Log.i("TAG", "current label: ${it.findNavController().currentDestination?.label}")
-//                } catch (e: Exception) {
-//                    Log.w("TAG", "error: ${e.localizedMessage}")
-//                }
-                navigate(R.id.categoryListFragmentToEventDetailsFragment, bundle, it)
+                when (it.findNavController().currentDestination?.label) {
+                    "Category List" -> navigate(R.id.categoryListFragmentToEventDetailsFragment, bundle, it)
+                    "Profil" -> navigate(R.id.profileFragmentToEventDetailsFragment, bundle, it)
+                    "Home" -> navigate(R.id.homeFragmentToEventDetailsFragment, bundle, it)
+                    "Map2" -> navigate(R.id.mapFragmentToEventDetailsFragment, bundle, it)
+                    else -> {}
+                }
             }
         }
 

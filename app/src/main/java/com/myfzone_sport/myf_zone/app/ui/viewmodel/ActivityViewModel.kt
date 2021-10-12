@@ -6,37 +6,37 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoach
-import com.myfzone_sport.myf_zone.usecases.user.GetUserUseCase
+import com.myfzone_sport.myf_zone.domain.State
+import com.myfzone_sport.myf_zone.usecases.user.*
 import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class ActivityViewModel(
-    private val getUserUseCase: GetUserUseCase
+    private val getUserStatusUseCase: GetUserStatusUseCase
 ) : ViewModel() {
 
     var isUserConnected = MutableLiveData(false)
 
     init {
-        getUser()
+        getUserStatus()
     }
 
-    fun getUser(): Boolean {
-        isUserConnected.postValue(getUserUseCase.invoke())
-
-        return isUserConnected.value!!
+    fun getUserStatus() {
+        isUserConnected.postValue(getUserStatusUseCase.invoke())
     }
 }
 
 class ActivityViewModelFactory(
-    private val getUserUseCase: GetUserUseCase
+    private val getUserStatusUseCase: GetUserStatusUseCase
 ) :
     ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         return modelClass.getConstructor(
-            GetUserUseCase::class.java
+            GetUserStatusUseCase::class.java
         )
             .newInstance(
-                getUserUseCase
+                getUserStatusUseCase
             )
     }
 

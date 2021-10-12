@@ -155,15 +155,19 @@ interface RemoteDataSource {
     //endregion
 
     //region User
-    fun getUser(user: FirebaseUser?)
+    fun getUserStatus(): Boolean
 
-    fun getUserAffiliation(user: FirebaseUser?)
+    fun getUser(): Flow<State<Coach>>
+
+    fun getUserClub(): Flow<State<Club?>>
+
+    fun getUserAffiliation(): Flow<State<ClubAffiliation?>>
+
+    fun getUserEventList(): Flow<State<Boolean>>
 
     fun getImageReference(): StorageReference
 
     fun isUserOwner(eventId: String): Boolean
-
-    fun getUserInfo(): Boolean
 
     fun signOut()
     //endregion

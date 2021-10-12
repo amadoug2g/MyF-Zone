@@ -33,7 +33,7 @@ class CloseToClubEventAdapter : ListAdapter<Event, CloseToClubEventAdapter.MyVie
     }
 
     fun setData(list: MutableList<Event>) {
-        this.eventList = list
+        if (list.isNotEmpty()) this.eventList = list
         notifyDataSetChanged()
     }
 

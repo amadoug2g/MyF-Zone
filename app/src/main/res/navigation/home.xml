@@ -8,6 +8,7 @@
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.myfzone_sport.myf_zone.app.ui.fragment.HomeFragment"
+        android:label="Home"
         tools:layout="@layout/fragment_home">
         <action
             android:id="@+id/homeFragmentToCategoryListFragment"
@@ -27,9 +28,9 @@
         <action
             android:id="@+id/homeFragmentToMapFragment"
             app:destination="@id/map2" />
-<!--        <action-->
-<!--            android:id="@+id/homeFragmentToEventDetailsFragment"-->
-<!--            app:destination="@id/event_details" />-->
+        <action
+            android:id="@+id/homeFragmentToEventDetailsFragment"
+            app:destination="@id/event_details" />
     </fragment>
     <include app:graph="@navigation/category_list" />
     <include app:graph="@navigation/registration" />
@@ -37,4 +38,5 @@
     <include app:graph="@navigation/profil" />
     <include app:graph="@navigation/message2" />
     <include app:graph="@navigation/map2" />
+    <include app:graph="@navigation/event_details" />
 </navigation>

@@ -6,6 +6,7 @@ import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.userProfileChangeRequest
+import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
@@ -14,12 +15,18 @@ import com.google.firebase.storage.StorageReference
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoach
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoachClub
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoachClubAffiliation
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoachClubAffiliationLive
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoachClubLive
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoachEvents
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoachEventsLive
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoachLive
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.affiliationNbr
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.firebaseAuth
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.firebaseMsg
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.isAffiliated
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.isAffiliatedLive
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.isConnected
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.isConnectedLive
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.storageInstance
 import com.myfzone_sport.myf_zone.data.RemoteDataSource
 import com.myfzone_sport.myf_zone.domain.State
@@ -256,7 +263,7 @@ class RemoteDataSourceImpl : RemoteDataSource {
 
     override fun getAllEvents(): Flow<State<MutableList<Event>>> = flow {
         emit(State.loading())
-//        val now = Calendar.getInstance().time
+        val now = Calendar.getInstance().time
 
         val mEventQuery = firebaseFirestore.collection(EVENT_PATH).orderBy("date").limit(15)
 
@@ -265,8 +272,8 @@ class RemoteDataSourceImpl : RemoteDataSource {
 
         snapshot.forEach {
             val event = it.toObject<Event>()
-//            if (event.date.time > now.time)
-            eventList.add(event)
+            if (event.date.time > now.time)
+                eventList.add(event)
         }
 
 //        eventList.forEach { event ->
@@ -357,6 +364,42 @@ class RemoteDataSourceImpl : RemoteDataSource {
         emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
     }.flowOn(Dispatchers.IO)
 
+    fun addEventListener(
+        onListen: (MutableList<Event>) -> Unit
+    ): ListenerRegistration? {
+        val now = Calendar.getInstance().time
+
+        val mUserChatQuery = DB
+            .collection(EVENT_PATH)
+        return try {
+            mUserChatQuery
+//                .orderBy("createdDate")
+                .addSnapshotListener { value, error ->
+                    if (error != null) {
+                        Log.e(TAG, "Error in addEventListener", error)
+                        return@addSnapshotListener
+                    }
+
+                    val items = mutableListOf<Event>()
+                    value?.documents?.forEach {
+
+                        try {
+                            val tempEvent = it.toObject(Event::class.java)!!
+                            if (tempEvent.date.time > now.time)
+                                items.add(it.toObject(Event::class.java)!!)
+                        } catch (e: Exception) {
+                            Log.i(TAG, "Error when fetching events: $e")
+                        }
+                    }
+
+                    onListen(items)
+                }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in addEventListener: ${e.localizedMessage}")
+            null
+        }
+    }
+
     override fun getFriendlyEvents(): Flow<State<MutableList<Event>>> = flow {
         emit(State.loading())
 //        val now = Calendar.getInstance().time
@@ -380,6 +423,8 @@ class RemoteDataSourceImpl : RemoteDataSource {
 //            event.owner = owner!!
 //            event.participants = participantList!!
 //        }
+
+        Log.i("TAG getFriendlyEvents", "eventlist count: ${eventList.size}")
 
         emit(State.success(eventList))
     }.catch {
@@ -567,52 +612,179 @@ class RemoteDataSourceImpl : RemoteDataSource {
         return (activeCoachEvents.contains(eventId))
     }
 
-/*
+    override fun getUser(): Flow<State<Coach>> = flow {
+        val user: FirebaseUser? = firebaseAuth.currentUser
+        val mUserQuery = firebaseFirestore.document(COACH_PATH + "/${user?.uid}")
 
-    override fun getUserInfo() {
-        firebaseAuth.addAuthStateListener {
-            when (it.currentUser == null) {
-                true -> {
-                    activeCoachEvents = mutableListOf()
-                    isConnected = false
-                    isAffiliated = false
-                    activeCoach = null
-                    activeCoachClubAffiliation = null
-                }
-                false -> {
-                    isConnected = true
+        emit(State.loading())
 
-                    val mAffiliationPath = firebaseFirestore
-                        .collection(COACH_PATH + "/${it.currentUser!!.uid}/ClubAffiliation")
+        val snapshotUser = mUserQuery.get().await()
 
-                    mAffiliationPath.get().addOnSuccessListener { query ->
-                        if (query.documents.size > 0) {
-                            isAffiliated = true
-                            getUser(it.currentUser)
-                            getUserAffiliation(it.currentUser)
-                        } else {
-                            activeCoachEvents = mutableListOf()
-                            isAffiliated = false
-                            activeCoachClubAffiliation = null
-                        }
-                    }
-                }
-            }
+        val coach = snapshotUser.toObject(Coach::class.java)!!
+
+        emit(State.success(coach))
+    }.catch {
+        emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
+    }.flowOn(Dispatchers.IO)
+
+    override fun getUserClub(): Flow<State<Club?>> = flow {
+        val user: FirebaseUser? = firebaseAuth.currentUser
+        val mClubQuery = firebaseFirestore.collection(COACH_PATH + "/${user?.uid}/ClubAffiliation")
+
+        emit(State.loading())
+
+        val snapshotClub = mClubQuery.get().await()
+
+        val club = snapshotClub.documents[0].toObject(Club::class.java)
+
+        emit(State.Success(club))
+    }.catch {
+        emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
+    }.flowOn(Dispatchers.IO)
+
+    override fun getUserAffiliation(): Flow<State<ClubAffiliation?>> = flow {
+        val mAffiliationClubQuery =
+            firebaseFirestore.document(CLUB_PATH + "/${activeCoachClubAffiliation?.clubId}")
+
+        emit(State.loading())
+
+        val snapshotAffiliation = mAffiliationClubQuery.get().await()
+
+        val affiliation = snapshotAffiliation.toObject(ClubAffiliation::class.java)
+
+        emit(State.Success(affiliation))
+    }.catch {
+        emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
+    }.flowOn(Dispatchers.IO)
+
+    override fun getUserEventList() = flow {
+        val user: FirebaseUser? = firebaseAuth.currentUser
+//        activeCoachEvents = mutableListOf()
+
+        val mEventListQuery =
+            firebaseFirestore.collection(COACH_PATH + "/${user?.uid}/ClubAffiliation/${activeCoachClubAffiliation?.clubId}/CoachEvent")
+
+        emit(State.loading())
+
+        val snapshotEventList = mEventListQuery.get().await()
+
+        snapshotEventList.forEach {
+            if (!activeCoachEvents.contains(it.id)) activeCoachEvents.add(it.id)
         }
-    }
-*/
 
-    override fun getUserInfo(): Boolean {
+        emit(State.Success(true))
+    }.catch {
+        emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
+    }.flowOn(Dispatchers.IO)
+
+    fun getCurrentUserAll(): Flow<State<Boolean>> = flow {
+        //region Path
+        activeCoachEvents = mutableListOf()
+        val user: FirebaseUser? = firebaseAuth.currentUser
+        val mUserQuery = firebaseFirestore.document(COACH_PATH + "/${user?.uid}")
+        val mClubQuery = firebaseFirestore.collection(COACH_PATH + "/${user?.uid}/ClubAffiliation")
+        val mAffiliationClubQuery =
+            firebaseFirestore.document(CLUB_PATH + "/${activeCoachClubAffiliation?.clubId}")
+        val mEventListQuery =
+            firebaseFirestore.collection(COACH_PATH + "/${user?.uid}/ClubAffiliation/${activeCoachClubAffiliation?.clubId}/CoachEvent")
+        //endregion
+
+        emit(State.loading())
+
+        //region SnapShot
+        val snapshotUser = mUserQuery.get().await()
+        val snapshotClub = mClubQuery.get().await()
+        val snapshotAffiliation = mAffiliationClubQuery.get().await()
+        val snapshotEventList = mEventListQuery.get().await()
+        //endregion
+
+        //region Query
+        val club = snapshotClub.documents[0].toObject(Club::class.java)
+        val coach = snapshotUser.toObject(Coach::class.java)
+        val affiliation = snapshotAffiliation.toObject(ClubAffiliation::class.java)
+        //endregion
+
+        //region Assign
+        snapshotEventList.forEach {
+            if (!activeCoachEvents.contains(it.id)) activeCoachEvents.add(it.id)
+        }
+
+        activeCoach = coach
+        activeCoachClub = club
+        activeCoachClubAffiliation = affiliation
+        //endregion
+
+//        emit(State.Success(club))
+//        emit(State.success(coach))
+//        emit(State.Success(affiliation))
+
+        emit(State.Success(true))
+    }.catch {
+        emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
+    }.flowOn(Dispatchers.IO)
+
+    override fun getUserStatus(): Boolean {
         val user: FirebaseUser? = firebaseAuth.currentUser
         return if (user != null) {
             isConnected = true
+            isConnectedLive.postValue(true)
+            getUserInfo()
 
+            true
+        } else {
+            activeCoachEvents = mutableListOf()
+            isConnected = false
+            isAffiliated = false
+            activeCoach = null
+            activeCoachClubAffiliation = null
+
+
+            activeCoachEventsLive.postValue(mutableListOf())
+            isAffiliatedLive.postValue(false)
+            isConnectedLive.postValue(false)
+            activeCoachLive.postValue(null)
+            activeCoachClubAffiliationLive.postValue(null)
+
+            false
+        }
+    }
+
+    /*override*/ suspend fun getUserAffiliationStatus(): Boolean {
+        val mAffiliationPath =
+            firebaseFirestore.collection(COACH_PATH + "/${firebaseAuth.currentUser!!.uid}/ClubAffiliation")
+
+        val snapshot = mAffiliationPath.get().await()
+
+        return if (snapshot.isEmpty) {
+            isAffiliated = true
+
+            snapshot.isEmpty
+        } else {
+            activeCoachEvents = mutableListOf()
+            isAffiliated = false
+            activeCoachClubAffiliation = null
+
+            snapshot.isEmpty
+        }
+
+//            return (snapshot.isEmpty)
+    }
+
+    override fun signOut() {
+        firebaseAuth.signOut()
+    }
+
+    private fun getUserInfo(): Boolean {
+        val user: FirebaseUser? = firebaseAuth.currentUser
+        return if (user != null) {
             val mAffiliationPath = firebaseFirestore
                 .collection(COACH_PATH + "/${user.uid}/ClubAffiliation")
 
             mAffiliationPath.get().addOnSuccessListener {
 
                 if (it.documents.size > 0) {
+
+                    isAffiliatedLive.postValue(true)
                     isAffiliated = true
                     getUser(user)
                     getUserAffiliation(user)
@@ -620,6 +792,10 @@ class RemoteDataSourceImpl : RemoteDataSource {
                     activeCoachEvents = mutableListOf()
                     isAffiliated = false
                     activeCoachClubAffiliation = null
+
+                    activeCoachEventsLive.postValue(mutableListOf())
+                    isAffiliatedLive.postValue(false)
+                    activeCoachClubAffiliationLive.postValue(null)
                 }
             }
             true
@@ -629,32 +805,37 @@ class RemoteDataSourceImpl : RemoteDataSource {
             isAffiliated = false
             activeCoach = null
             activeCoachClubAffiliation = null
+
+            activeCoachEventsLive.postValue(mutableListOf())
+            isAffiliatedLive.postValue(false)
+            isConnectedLive.postValue(false)
+            activeCoachLive.postValue(null)
+            activeCoachClubAffiliationLive.postValue(null)
+
             false
         }
     }
 
-    override fun getUser(user: FirebaseUser?) {
+    private fun getUser(user: FirebaseUser?) {
         val mUserQuery = firebaseFirestore.document(COACH_PATH + "/${user?.uid}")
 
         mUserQuery.get().addOnSuccessListener {
             activeCoach = it.toObject(Coach::class.java)
+            activeCoachLive.postValue(it.toObject(Coach::class.java))
         }
     }
 
-    override fun getUserAffiliation(user: FirebaseUser?) {
+    private fun getUserAffiliation(user: FirebaseUser?) {
         val mClubQuery = firebaseFirestore.collection(COACH_PATH + "/${user?.uid}/ClubAffiliation")
 
         mClubQuery.get().addOnSuccessListener {
             val snapshot = it.documents[affiliationNbr]
             activeCoachClubAffiliation = snapshot.toObject(ClubAffiliation::class.java)
+            activeCoachClubAffiliationLive.postValue(snapshot.toObject(ClubAffiliation::class.java))
 
             getUserClub(activeCoachClubAffiliation)
             getEventsList(user, activeCoachClubAffiliation)
         }
-    }
-
-    override fun signOut() {
-        firebaseAuth.signOut()
     }
 
     private fun getUserClub(affiliation: ClubAffiliation?) {
@@ -662,17 +843,23 @@ class RemoteDataSourceImpl : RemoteDataSource {
 
         mClubQuery.get().addOnSuccessListener {
             activeCoachClub = it.toObject(Club::class.java)
+            activeCoachClubLive.postValue(it.toObject(Club::class.java))
         }
     }
 
     private fun getEventsList(user: FirebaseUser?, affiliation: ClubAffiliation?) {
         activeCoachEvents = mutableListOf()
+        activeCoachEventsLive.postValue(mutableListOf())
+
         val mEventsQuery =
             firebaseFirestore.collection(COACH_PATH + "/${user?.uid}/ClubAffiliation/${affiliation?.clubId}/CoachEvent")
 
         mEventsQuery.get().addOnSuccessListener {
             for (doc in it) {
                 if (!activeCoachEvents.contains(doc.id)) activeCoachEvents.add(doc.id)
+                if (activeCoachEventsLive.value?.contains(doc.id) == false) activeCoachEventsLive.value?.add(
+                    doc.id
+                )
             }
         }
     }
