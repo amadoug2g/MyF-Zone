@@ -91,7 +91,8 @@ class HomeFragment : Fragment() {
             getUserAffiliationUseCase,
             signOutUseCase
         )
-        viewModel = ViewModelProvider(this, viewModelFactory).get(HomeViewModel::class.java)
+        viewModel = ViewModelProvider(this, viewModelFactory)
+            .get(HomeViewModel::class.java)
 
     }
 

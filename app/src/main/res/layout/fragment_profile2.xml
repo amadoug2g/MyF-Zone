@@ -7,121 +7,310 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <LinearLayout
+        <ProgressBar
+            android:id="@+id/profile_progressBar"
+            style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:layout_margin="8dp">
+            android:layout_marginTop="0dp"
+            android:indeterminate="true"
+            android:indeterminateBehavior="cycle"
+            android:indeterminateTint="@color/colorPrimary"
+            android:visibility="invisible" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
             <ImageView
-                android:id="@+id/profileClubImage"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:layout_gravity="center"
-                android:src="@drawable/ic_account"
-                android:contentDescription="@string/image_club" />
+                android:id="@+id/exit_profile"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_alignParentStart="true"
+                android:layout_gravity="start"
+                android:layout_marginStart="10dp"
+                android:contentDescription="@string/membership_button"
+                android:src="@drawable/exit_button_2x"
+                android:visibility="visible" />
 
-            <TextView
+            <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/nuber_next_bold"
-                android:text="Nom de votre club"
-                android:gravity="center"
-                android:textColor="@color/colorDesign1"
-                android:textSize="16sp" />
+                android:layout_alignParentEnd="true">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/nuber_next_regular_wide"
-                android:text="Entraineur du club"
-                android:gravity="center"
-                android:textColor="@color/colorDesign1Transparent80"
-                android:textSize="12sp" />
+                <ImageView
+                    android:id="@+id/profile_notifications"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginEnd="16dp"
+                    android:contentDescription="notification button"
+                    android:src="@drawable/notification_bell_2x" />
+                <ImageView
 
-        </LinearLayout>
+                    android:id="@+id/profile_settings"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginEnd="16dp"
+                    android:contentDescription="@string/settings_button"
+                    android:src="@drawable/settings_gear_2x" />
+            </androidx.appcompat.widget.LinearLayoutCompat>
+        </RelativeLayout>
 
-        <LinearLayout
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_margin="8dp">
+            android:layout_height="wrap_content">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/nuber_next_bold"
-                android:text="Mes informations"
-                android:textColor="@color/colorDesign1"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/coach_info"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/nuber_next_regular_wide"
-                android:text="Mes informations"
-                android:textColor="@color/colorDesign1Transparent80"
-                android:textSize="12sp" />
-
-        </LinearLayout>
-
-        <include
-            android:id="@+id/user_event_layout"
-            layout="@layout/home_coach_event_layout" />
-
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:orientation="vertical">
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="30dp"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/participation_title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"
-                    android:fontFamily="@font/nuber_next_bold"
-                    android:text="Mes participations"
-                    android:textColor="@color/colorDesign1"
-                    android:textSize="16sp" />
-
-                <Button
-                    android:id="@+id/participation_show_all"
-                    style="@style/Widget.MaterialComponents.Button.TextButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentTop="true"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"
-                    android:layout_margin="0dp"
-                    android:fontFamily="@font/nuber_next_bold"
-                    android:letterSpacing="0.01"
-                    android:padding="0dp"
-                    android:text="Tout afficher"
-                    android:textAllCaps="false"
-                    android:textColor="@color/colorDesign2"
-                    android:textSize="12sp" />
-
-            </RelativeLayout>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/participation_recyclerView"
+            <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fadeScrollbars="true"
-                android:scrollbarThumbHorizontal="@drawable/home_scrollbar_thumb"
-                android:scrollbarTrackHorizontal="@drawable/home_scrollbar_track"
-                android:scrollbars="horizontal" />
+                android:orientation="vertical">
 
-        </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_gravity="center"
+                            android:layout_weight="1"
+                            android:layout_alignParentEnd="true"
+                            android:contentDescription="affiliation status"
+                            android:src="@drawable/arrow_left_2x" />
+
+                        <RelativeLayout
+                            android:foregroundGravity="center"
+                            android:gravity="center"
+                            android:layout_width="70dp"
+                            android:layout_height="70dp">
+
+                            <ImageView
+                                android:id="@+id/profileClubImage"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:contentDescription="@string/image_club"
+                                android:src="@drawable/ic_account" />
+
+                            <ImageView
+                                android:id="@+id/affiliation_status_valid"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:layout_alignParentEnd="true"
+                                android:layout_alignParentTop="true"
+                                android:contentDescription="affiliation status valid"
+                                android:src="@drawable/affiliation_check_2x" />
+
+                            <ImageView
+                                android:id="@+id/affiliation_status_pending"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:layout_alignParentEnd="true"
+                                android:contentDescription="affiliation status pending"
+                                android:src="@drawable/affiliation_refresh_2x"
+                                android:visibility="gone" />
+
+                            <ImageView
+                                android:id="@+id/affiliation_status_refused"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:layout_alignParentEnd="true"
+                                android:contentDescription="affiliation status refused"
+                                android:src="@drawable/affiliation_alert_triangle_2x"
+                                android:visibility="gone" />
+
+                        </RelativeLayout>
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_weight="1"
+                            android:layout_gravity="center"
+                            android:layout_alignParentEnd="true"
+                            android:contentDescription="affiliation status"
+                            android:src="@drawable/arrow_right_2x" />
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:layout_marginBottom="8dp"
+                        android:fontFamily="@font/nuber_next_demi_bold_wide"
+                        android:gravity="center"
+                        android:text="Votre demande est en cours"
+                        android:textColor="#e6701c"
+                        android:textSize="12sp"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:layout_marginBottom="8dp"
+                        android:fontFamily="@font/nuber_next_bold"
+                        android:gravity="center"
+                        android:text="Votre demande a été réfusée"
+                        android:textColor="#e61c1c"
+                        android:textSize="12sp"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/profile_club_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/nuber_next_bold"
+                        android:gravity="center"
+                        android:text="Nom de votre club"
+                        android:textColor="@color/colorDesign1"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/nuber_next_regular_wide"
+                        android:gravity="center"
+                        android:text="Entraineur du club"
+                        android:textColor="@color/colorDesign1Transparent80"
+                        android:textSize="12sp" />
+
+                </LinearLayout>
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/layout_stars"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:layout_margin="8dp">
+
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:layout_marginEnd="4dp"
+                        android:src="@drawable/star_2x_filled"/>
+
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:layout_marginEnd="4dp"
+                        android:src="@drawable/star_2x_filled"/>
+
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:layout_marginEnd="4dp"
+                        android:src="@drawable/star_2x_filled"/>
+
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:layout_marginEnd="4dp"
+                        android:src="@drawable/star_2x_filled"/>
+
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:layout_marginEnd="4dp"
+                        android:src="@drawable/star_3x_filled"/>
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/nuber_next_bold"
+                        android:text="Mes informations"
+                        android:textColor="@color/colorDesign1"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/coach_info"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/nuber_next_regular_wide"
+                        android:text="Mes informations"
+                        android:textColor="@color/colorDesign1Transparent80"
+                        android:textSize="12sp" />
+
+                </LinearLayout>
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="8dp">
+                    <include
+                        android:id="@+id/user_event_layout"
+                        layout="@layout/home_coach_event_layout" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+                    android:id="@+id/user_participation_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/participation_title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentStart="true"
+                            android:layout_centerVertical="true"
+                            android:fontFamily="@font/nuber_next_bold"
+                            android:text="Mes participations"
+                            android:textColor="@color/colorDesign1"
+                            android:textSize="16sp" />
+
+                        <Button
+                            android:id="@+id/participation_show_all"
+                            style="@style/Widget.MaterialComponents.Button.TextButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentTop="true"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:layout_margin="0dp"
+                            android:fontFamily="@font/nuber_next_bold"
+                            android:letterSpacing="0.01"
+                            android:padding="0dp"
+                            android:text="Tout afficher"
+                            android:textAllCaps="false"
+                            android:textColor="@color/colorDesign2"
+                            android:textSize="12sp" />
+
+                    </RelativeLayout>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/participation_recyclerView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+
+                </LinearLayout>
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+        </androidx.core.widget.NestedScrollView>
 
     </LinearLayout>
 

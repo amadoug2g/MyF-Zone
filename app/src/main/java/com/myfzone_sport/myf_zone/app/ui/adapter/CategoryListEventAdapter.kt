@@ -51,7 +51,7 @@ class CategoryListEventAdapter : ListAdapter<Event, CategoryListEventAdapter.MyV
 
             binding.cardView.setOnClickListener {
                 val bundle = bundleOf("eventId" to event.id)
-                navigate(R.id.categoryListFragmentToEventDetailsFragment, bundle, binding.cardView)
+                navigate(R.id.categoryListFragmentToEventDetailsParticipantFragment, bundle, binding.cardView)
             }
         }
 

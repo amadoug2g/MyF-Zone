@@ -196,6 +196,7 @@
     <string name="owner_info_desc">As the organiser, only you can see which participants are rejected or pending. The participants you accept are visible to everyone.</string>
     <string name="participants_info_desc">You can withdraw your participation by pressing the button next to your name in the list below.</string>
     <string name="participants_info_title">Check the status of your participation with the coloured dots:</string>
+    <string name="code_affiliation_txt">Je m’affilie avec un code</string>
 
 
     <!--    <string-array name="typeList">-->

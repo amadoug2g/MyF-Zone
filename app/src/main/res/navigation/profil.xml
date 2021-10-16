@@ -16,7 +16,15 @@
         <action
             android:id="@+id/profileFragmentToEventDetailsFragment"
             app:destination="@id/event_details" />
+        <action
+            android:id="@+id/profileFragmentToSettingsFragment"
+            app:destination="@id/settings2" />
+        <action
+            android:id="@+id/profileFragmentToNotificationsFragment"
+            app:destination="@id/notifications" />
     </fragment>
     <include app:graph="@navigation/category_list" />
     <include app:graph="@navigation/event_details" />
+    <include app:graph="@navigation/settings2" />
+    <include app:graph="@navigation/notifications" />
 </navigation>

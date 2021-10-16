@@ -40,6 +40,7 @@ import com.myfzone_sport.myf_zone.domain.event.EventParticipant
 import com.myfzone_sport.myf_zone.domain.sport.Category
 import com.myfzone_sport.myf_zone.domain.sport.Sport
 import com.myfzone_sport.myf_zone.domain.sport.SubCategory
+import com.myfzone_sport.myf_zone.util.Constants
 import com.myfzone_sport.myf_zone.util.Constants.CLUB_PATH
 import com.myfzone_sport.myf_zone.util.Constants.COACH_PATH
 import com.myfzone_sport.myf_zone.util.Constants.DB
@@ -174,13 +175,32 @@ class RemoteDataSourceImpl : RemoteDataSource {
         TODO("Not yet implemented")
     }
 
-    override fun joinEvent() {
-        TODO("Not yet implemented")
-    }
+    override fun joinEvent(eventId: String, participant: EventParticipant) = flow {
+        val mParticipantQuery = Constants.DB
+            .document(EVENT_PATH + "/${eventId}/Participant/${participant.coachId}")
 
-    override fun leaveEvent() {
-        TODO("Not yet implemented")
-    }
+        emit(State.loading())
+
+        mParticipantQuery.set(participant.toMap()).await()
+
+        emit(State.success(participant))
+    }.catch {
+        emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
+    }.flowOn(Dispatchers.IO)
+
+    override fun leaveEvent(eventId: String) = flow {
+        val userId = firebaseAuth.currentUser?.uid
+        val mParticipantQuery = DB
+            .document(EVENT_PATH + "/${eventId}/Participant/${userId}")
+
+        emit(State.loading())
+
+        mParticipantQuery.delete().await()
+
+        emit(State.success(true))
+    }.catch {
+        emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
+    }.flowOn(Dispatchers.IO)
 
     override fun getEventFromId(eventId: String) = flow {
         val mEventQuery = DB.document(EVENT_PATH + "/${eventId}")
@@ -209,9 +229,23 @@ class RemoteDataSourceImpl : RemoteDataSource {
         emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
     }.flowOn(Dispatchers.IO)
 
-    override fun getAllParticipantsList(): MutableList<EventParticipant> {
-        TODO("Not yet implemented")
-    }
+    override fun getAllParticipantsList(eventId: String) =
+        flow<State<MutableList<EventParticipant>>> {
+            emit(State.loading())
+
+            val mParticipantList = DB.collection(EVENT_PATH + "/${eventId}/Participant")
+
+            val snapshot = mParticipantList.get().await()
+
+            val resultState =
+                if (!snapshot.isEmpty) (State.success(snapshot.toObjects(EventParticipant::class.java))) else (State.success(
+                    mutableListOf()
+                ))
+
+            emit(resultState)
+        }.catch {
+            emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
+        }.flowOn(Dispatchers.IO)
 
     override fun getValidParticipantsList(): MutableList<EventParticipant> {
         TODO("Not yet implemented")
@@ -505,9 +539,25 @@ class RemoteDataSourceImpl : RemoteDataSource {
         TODO("Not yet implemented")
     }
 
-    override fun getOwnerToken() {
-        TODO("Not yet implemented")
-    }
+    override fun getOwnerToken(ownerId: String) = flow<State<MutableList<String>>> {
+        val mOwnerTokenQuery = Constants.DB.document(Constants.COACH_PATH + "/${ownerId}")
+
+        val snapshot = mOwnerTokenQuery.get().await()
+        val user: Coach = snapshot.toObject()!!
+
+        val tokenList = mutableListOf<String>()
+
+        if (!user.devices.isNullOrEmpty()) {
+            user.devices.forEach { tokenList.add(it) }
+            emit(State.success(tokenList))
+            Log.i(TAG, "Tokens: $tokenList")
+        } else {
+            emit(State.success(mutableListOf()))
+            Log.i(TAG, "Tokens: list is empty")
+        }
+    }.catch {
+        emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
+    }.flowOn(Dispatchers.IO)
 
     override fun getParticipantsToken() {
         TODO("Not yet implemented")
@@ -604,8 +654,8 @@ class RemoteDataSourceImpl : RemoteDataSource {
         TODO("Not yet implemented")
     }
 
-    override fun getImageReference(): StorageReference {
-        return storageInstance.getReference((activeCoachClubAffiliation!!.clubLogo).removePrefix("gs://myf-zone.appspot.com"))
+    override fun getImageReference(path: String): StorageReference {
+        return storageInstance.getReference((path).removePrefix("gs://myf-zone.appspot.com"))
     }
 
     override fun isUserOwner(eventId: String): Boolean {

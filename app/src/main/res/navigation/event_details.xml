@@ -8,7 +8,7 @@
 
     <fragment
         android:id="@+id/eventDetailsFragment"
-        android:name="com.myfzone_sport.myf_zone.app.ui.fragment.EventDetailsFragment"
+        android:name="com.myfzone_sport.myf_zone.app.ui.fragment.EventDetailsParticipantFragment"
         tools:layout="@layout/fragment_event_details"
         android:label="ProfileFragment"/>
 <!--        <action-->

@@ -204,6 +204,7 @@
     <string name="owner_info_desc">En tant qu\'organisateur, vous seul pouvez voir quel participant est refusé ou en attente. Les participants que vous acceptez sont visibles de tous.</string>
     <string name="participants_info_desc">Vous pouvez retirer votre participation en appuyant sur le bouton près de votre nom, présent dans la liste ci-dessous.</string>
     <string name="participants_info_title">Vérifiez le statut de votre participation à l\'aide des pastilles de couleur :</string>
+    <string name="code_affiliation_txt">Je m’affilie avec un code</string>
 
     <string-array name="sportList">
         <item>Football</item>

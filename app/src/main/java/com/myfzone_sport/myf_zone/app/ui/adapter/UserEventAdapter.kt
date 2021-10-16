@@ -56,7 +56,8 @@ class UserEventAdapter : ListAdapter<Event, UserEventAdapter.MyViewHolder>(
             binding.cardView.setOnClickListener {
                 val bundle = bundleOf("eventId" to event.id)
                 when (it.findNavController().currentDestination?.label) {
-                    "Category List" -> navigate(R.id.categoryListFragmentToEventDetailsFragment, bundle, it)
+//                    "Category List" -> navigate(R.id.categoryListFragmentToEventDetailsFragment, bundle, it)
+                    "Category List" -> navigate(R.id.categoryListFragmentToEventDetailsParticipantFragment, bundle, it)
                     "Profil" -> navigate(R.id.profileFragmentToEventDetailsFragment, bundle, it)
                     "Home" -> navigate(R.id.homeFragmentToEventDetailsFragment, bundle, it)
                     "Map2" -> navigate(R.id.mapFragmentToEventDetailsFragment, bundle, it)

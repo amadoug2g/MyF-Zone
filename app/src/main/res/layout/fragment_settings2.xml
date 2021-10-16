@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/settings_background"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:layout_marginTop="15dp">
+
+            <ImageView
+                android:id="@+id/exit_settings"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_alignParentStart="true"
+                android:layout_gravity="start"
+                android:layout_marginStart="10dp"
+                android:contentDescription="@string/membership_button"
+                android:src="@drawable/exit_button_2x_white"
+                android:visibility="visible" />
+
+        </RelativeLayout>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="?android:attr/actionBarSize"
+            android:background="@drawable/settings_background"
+            tools:context=".fragments.settings.SettingsFragment">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/about_us"
+                    style="@style/TextAppearance.AppCompat.Headline"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:fontFamily="@font/nuber_next_demi_bold_wide"
+                    android:layout_marginTop="100dp"
+                    android:layout_marginBottom="30dp"
+                    android:text="@string/about_us"
+                    android:textColor="@android:color/darker_gray" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/app_review"
+                    style="@style/TextAppearance.AppCompat.Headline"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:fontFamily="@font/nuber_next_demi_bold_wide"
+                    android:layout_marginBottom="30dp"
+                    android:text="@string/app_review"
+                    android:visibility="gone"
+                    android:textColor="@android:color/darker_gray" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/privacy_policy"
+                    style="@style/TextAppearance.AppCompat.Headline"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:fontFamily="@font/nuber_next_demi_bold_wide"
+                    android:layout_marginBottom="30dp"
+                    android:text="@string/privacy_policy"
+                    android:textColorLink="@android:color/white" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/cgu"
+                    style="@style/TextAppearance.AppCompat.Headline"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="30dp"
+                    android:textSize="16sp"
+                    android:fontFamily="@font/nuber_next_demi_bold_wide"
+                    android:text="@string/CGU"
+                    android:textColorLink="@android:color/white" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/os_settings"
+                    style="@style/TextAppearance.AppCompat.Headline"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:fontFamily="@font/nuber_next_demi_bold_wide"
+                    android:layout_marginBottom="30dp"
+                    android:text="@string/os_settings_text"
+                    android:textColor="@android:color/white" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/logout"
+                    style="@style/TextAppearance.AppCompat.Headline"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:fontFamily="@font/nuber_next_demi_bold_wide"
+                    android:layout_marginBottom="30dp"
+                    android:text="@string/logout"
+                    android:textColor="@android:color/white" />
+
+
+            </LinearLayout>
+        </ScrollView>
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+
+</layout>

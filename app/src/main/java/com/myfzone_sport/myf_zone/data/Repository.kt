@@ -3,6 +3,8 @@ package com.myfzone_sport.myf_zone.data
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.storage.StorageReference
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoachClubAffiliation
 import com.myfzone_sport.myf_zone.domain.State
 import com.myfzone_sport.myf_zone.domain.club.Club
 import com.myfzone_sport.myf_zone.domain.coach.ClubAffiliation
@@ -56,15 +58,15 @@ interface Repository {
 
     fun refuseParticipant()
 
-    fun joinEvent()
+    fun joinEvent(eventId: String, participant: EventParticipant): Flow<State<EventParticipant>>
 
-    fun leaveEvent()
+    fun leaveEvent(eventId: String): Flow<State<Boolean>>
 
     fun getEventFromId(eventId: String): Flow<State<Event>>
 
     fun getOwnerFromEvent(eventId: String): Flow<State<EventOwner>>
 
-    fun getAllParticipantsList(): MutableList<EventParticipant>
+    fun getAllParticipantsList(eventId: String): Flow<State<MutableList<EventParticipant>>>
 
     fun getValidParticipantsList(): MutableList<EventParticipant>
 
@@ -123,7 +125,7 @@ interface Repository {
     //endregion
 
     //region Notification
-    fun getOwnerToken()
+    fun getOwnerToken(ownerId: String): Flow<State<MutableList<String>>>
 
     fun getParticipantsToken()
 
@@ -155,7 +157,7 @@ interface Repository {
 
     fun getUserEventList(): Flow<State<Boolean>>
 
-    fun getImageReference(): StorageReference
+    fun getImageReference(path: String = activeCoachClubAffiliation!!.clubLogo): StorageReference
 
     fun isUserOwner(eventId: String): Boolean
 

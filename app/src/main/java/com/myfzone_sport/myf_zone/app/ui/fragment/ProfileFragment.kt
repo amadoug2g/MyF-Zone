@@ -13,9 +13,13 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.myfzone_sport.myf_zone.R
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoach
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoachClub
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoachClubAffiliation
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoachClubAffiliationLive
 import com.myfzone_sport.myf_zone.app.ui.adapter.UserEventAdapter
 import com.myfzone_sport.myf_zone.app.ui.viewmodel.FragmentViewModel
 import com.myfzone_sport.myf_zone.databinding.FragmentProfile2Binding
+import com.myfzone_sport.myf_zone.domain.coach.ClubAffiliation
 import com.myfzone_sport.myf_zone.glide.GlideApp
 
 private const val ARG_PARAM1 = "coachId"
@@ -29,6 +33,7 @@ class ProfileFragment : Fragment() {
         private var coachId: String? = null
         private lateinit var binding: FragmentProfile2Binding
         private lateinit var adapterUserEvents: UserEventAdapter
+        private lateinit var adapterUserEvents2: UserEventAdapter
     }
     //endregion
 
@@ -51,7 +56,7 @@ class ProfileFragment : Fragment() {
 
         setupViews()
         setUpUserEventsRecycler()
-//        setUpParticipationEventsRecycler()
+        setUpParticipationEventsRecycler()
 
         return binding.root
     }
@@ -60,7 +65,7 @@ class ProfileFragment : Fragment() {
     //region Setups
     private fun setupViews() {
         setupProfile()
-        viewModel.getImageReference()
+        viewModel.getImageReference(activeCoachClub!!.logo)
 
         binding.userEventLayout.showAll.setOnClickListener {
             val bundle = bundleOf("listType" to "userEvent")
@@ -71,6 +76,12 @@ class ProfileFragment : Fragment() {
             val bundle = bundleOf("listType" to "userParticipation")
             navigate(R.id.profileFragmentToCategoryListFragment, bundle)
         }
+
+        binding.exitProfile.setOnClickListener { requireActivity().onBackPressed() }
+
+        binding.profileSettings.setOnClickListener { navigate(R.id.profileFragmentToSettingsFragment) }
+
+        binding.profileNotifications.setOnClickListener { navigate(R.id.profileFragmentToNotificationsFragment) }
     }
 
     private fun setupProfile() {
@@ -102,8 +113,8 @@ class ProfileFragment : Fragment() {
         binding.userEventLayout.recyclerView.adapter = adapterUserEvents
         binding.userEventLayout.recyclerView.layoutManager =
             LinearLayoutManager(requireContext())
-//        binding.userEventLayout.recyclerView.setHasFixedSize(true)
-//        binding.userEventLayout.recyclerView.isNestedScrollingEnabled = true
+        binding.userEventLayout.recyclerView.setHasFixedSize(false)
+        binding.userEventLayout.recyclerView.isNestedScrollingEnabled = false
 
         viewModel.userEventsList.observe(viewLifecycleOwner, {
             if (it.isNotEmpty()) {
@@ -113,16 +124,16 @@ class ProfileFragment : Fragment() {
     }
 
     private fun setUpParticipationEventsRecycler() {
-        adapterUserEvents = UserEventAdapter()
-        binding.participationRecyclerView.adapter = adapterUserEvents
+        adapterUserEvents2 = UserEventAdapter()
+        binding.participationRecyclerView.adapter = adapterUserEvents2
         binding.participationRecyclerView.layoutManager =
             LinearLayoutManager(requireContext())
-        binding.userEventLayout.recyclerView.setHasFixedSize(true)
-        binding.userEventLayout.recyclerView.isNestedScrollingEnabled = true
+        binding.userEventLayout.recyclerView.setHasFixedSize(false)
+        binding.userEventLayout.recyclerView.isNestedScrollingEnabled = false
 
         viewModel.userEventsList.observe(viewLifecycleOwner, {
             if (it.isNotEmpty()) {
-                adapterUserEvents.setData(it)
+                adapterUserEvents2.setData(it)
             }
         })
     }

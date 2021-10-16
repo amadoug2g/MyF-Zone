@@ -6,6 +6,8 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoachClubAffiliation
 import com.myfzone_sport.myf_zone.domain.State
 import com.myfzone_sport.myf_zone.domain.club.Club
 import com.myfzone_sport.myf_zone.domain.coach.ClubAffiliation
@@ -66,15 +68,15 @@ interface RemoteDataSource {
 
     fun refuseParticipant()
 
-    fun joinEvent()
+    fun joinEvent(eventId: String, participant: EventParticipant): Flow<State<EventParticipant>>
 
-    fun leaveEvent()
+    fun leaveEvent(eventId: String): Flow<State<Boolean>>
 
     fun getEventFromId(eventId: String): Flow<State<Event>>
 
     fun getOwnerFromEvent(eventId: String): Flow<State<EventOwner>>
 
-    fun getAllParticipantsList(): MutableList<EventParticipant>
+    fun getAllParticipantsList(eventId: String): Flow<State<MutableList<EventParticipant>>>
 
     fun getValidParticipantsList(): MutableList<EventParticipant>
 
@@ -133,7 +135,7 @@ interface RemoteDataSource {
     //endregion
 
     //region Notification
-    fun getOwnerToken()
+    fun getOwnerToken(ownerId: String): Flow<State<MutableList<String>>>
 
     fun getParticipantsToken()
 
@@ -165,7 +167,7 @@ interface RemoteDataSource {
 
     fun getUserEventList(): Flow<State<Boolean>>
 
-    fun getImageReference(): StorageReference
+    fun getImageReference(path: String = activeCoachClubAffiliation!!.clubLogo): StorageReference
 
     fun isUserOwner(eventId: String): Boolean
 

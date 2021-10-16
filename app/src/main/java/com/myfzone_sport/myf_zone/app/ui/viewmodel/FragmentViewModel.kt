@@ -243,9 +243,9 @@ class FragmentViewModel(
     //endregion
 
     //region User
-    fun getImageReference() {
+    fun getImageReference(path: String) {
         viewModelScope.launch(IO) {
-            _userImagePath.postValue(getImageReferenceUseCase.invoke())
+            _userImagePath.postValue(getImageReferenceUseCase.invoke(path))
         }
     }
 

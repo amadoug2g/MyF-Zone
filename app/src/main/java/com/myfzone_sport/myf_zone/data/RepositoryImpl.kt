@@ -3,6 +3,8 @@ package com.myfzone_sport.myf_zone.data
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.storage.StorageReference
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoachClubAffiliation
 import com.myfzone_sport.myf_zone.domain.State
 import com.myfzone_sport.myf_zone.domain.club.Club
 import com.myfzone_sport.myf_zone.domain.coach.ClubAffiliation
@@ -90,12 +92,12 @@ class RepositoryImpl(
         remoteDataSource.refuseParticipant()
     }
 
-    override fun joinEvent() {
-        remoteDataSource.joinEvent()
+    override fun joinEvent(eventId: String, participant: EventParticipant): Flow<State<EventParticipant>> {
+        return remoteDataSource.joinEvent(eventId, participant)
     }
 
-    override fun leaveEvent() {
-        remoteDataSource.leaveEvent()
+    override fun leaveEvent(eventId: String): Flow<State<Boolean>> {
+        return remoteDataSource.leaveEvent(eventId)
     }
 
     override fun getEventFromId(eventId: String): Flow<State<Event>> {
@@ -106,8 +108,8 @@ class RepositoryImpl(
         return remoteDataSource.getOwnerFromEvent(eventId)
     }
 
-    override fun getAllParticipantsList(): MutableList<EventParticipant> {
-        return remoteDataSource.getAllParticipantsList()
+    override fun getAllParticipantsList(eventId: String): Flow<State<MutableList<EventParticipant>>> {
+        return remoteDataSource.getAllParticipantsList(eventId)
     }
 
     override fun getValidParticipantsList(): MutableList<EventParticipant> {
@@ -198,8 +200,8 @@ class RepositoryImpl(
         remoteDataSource.getOwnerForNewEvent()
     }
 
-    override fun getOwnerToken() {
-        remoteDataSource.getOwnerToken()
+    override fun getOwnerToken(ownerId: String): Flow<State<MutableList<String>>> {
+        return remoteDataSource.getOwnerToken(ownerId)
     }
 
     override fun getParticipantsToken() {
@@ -254,8 +256,8 @@ class RepositoryImpl(
         return remoteDataSource.getUserEventList()
     }
 
-    override fun getImageReference(): StorageReference {
-        return remoteDataSource.getImageReference()
+    override fun getImageReference(path: String): StorageReference {
+        return remoteDataSource.getImageReference(path)
     }
 
     override fun isUserOwner(eventId: String): Boolean {

@@ -8,6 +8,7 @@
     <fragment
         android:id="@+id/eventParticipantsFragment"
         android:name="com.myfzone_sport.myf_zone.app.ui.fragment.EventParticipantsFragment"
-        tools:layout="@layout/fragment_event_participants" />
-    <include app:graph="@navigation/profil" />
+        tools:layout="@layout/fragment_event_participants_list"
+        android:label="EventParticipantsFragment" />
+<!--    <include app:graph="@navigation/profil" />-->
 </navigation>
