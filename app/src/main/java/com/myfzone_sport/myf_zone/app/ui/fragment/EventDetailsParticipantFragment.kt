@@ -1,5 +1,6 @@
 package com.myfzone_sport.myf_zone.app.ui.fragment
 
+import android.content.DialogInterface
 import android.graphics.Color
 import android.graphics.text.LineBreaker.JUSTIFICATION_MODE_INTER_WORD
 import android.os.Build
@@ -7,14 +8,17 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.myfzone_sport.myf_zone.R
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.TRACKING
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.isConnected
 import com.myfzone_sport.myf_zone.app.framework.RemoteDataSourceImpl
 import com.myfzone_sport.myf_zone.app.ui.viewmodel.EventDetailsParticipantViewModel
 import com.myfzone_sport.myf_zone.app.ui.viewmodel.EventDetailsParticipantViewModelFactory
@@ -25,17 +29,20 @@ import com.myfzone_sport.myf_zone.usecases.detailevent.*
 import com.myfzone_sport.myf_zone.usecases.notification.GetOwnerTokenUseCase
 import com.myfzone_sport.myf_zone.usecases.user.GetImageReferenceUseCase
 import com.myfzone_sport.myf_zone.util.Tracking
+import org.jetbrains.anko.backgroundColor
 
 private const val ARG_PARAM1 = "eventId"
 
 class EventDetailsParticipantFragment : Fragment() {
 
+    //region Variables
     companion object {
         private lateinit var binding: FragmentEventDetailsBinding
         private lateinit var viewModel: EventDetailsParticipantViewModel
         private lateinit var viewModelFactory: EventDetailsParticipantViewModelFactory
         private var eventId: String? = null
     }
+    //endregion
 
     //region Override Methods
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,7 +56,6 @@ class EventDetailsParticipantFragment : Fragment() {
         val remoteDataSource = RemoteDataSourceImpl()
         val repository = RepositoryImpl(remoteDataSource)
 
-        //View Model
         val getEventFromIdUseCase = GetEventFromIdUseCase(repository)
         val getImageReferenceUseCase = GetImageReferenceUseCase(repository)
         val getOwnerFromEventUseCase = GetOwnerFromEventUseCase(repository)
@@ -82,10 +88,6 @@ class EventDetailsParticipantFragment : Fragment() {
             inflater, R.layout.fragment_event_details, container, false
         )
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            binding.eventDetailDescription.justificationMode = JUSTIFICATION_MODE_INTER_WORD
-        }
-
         setupViews()
 
         setupObservers()
@@ -96,7 +98,43 @@ class EventDetailsParticipantFragment : Fragment() {
 
     //region Setups
     private fun setupViews() {
+
+        if (isConnected) {
+            binding.eventDetailBtnLayout.visibility = View.VISIBLE
+            binding.eventDetailContactLayout.visibility = View.VISIBLE
+//            viewModel.isCoachParticipant()
+        } else {
+            binding.eventDetailBtnLayout.visibility = View.GONE
+            binding.eventDetailContactLayout.visibility = View.GONE
+        }
+
+//        viewModel.isUserParticipating.observe(viewLifecycleOwner, { isParticipant ->
+//            if (isParticipant) {
+//                binding.eventDetailParticipateBtn.text = "Quitter l'évènement"
+//            } else {
+//                binding.eventDetailParticipateBtn.text = "Participer à cet évènement"
+//            }
+//
+//            binding.eventDetailParticipateBtn.setOnClickListener {
+//                if (isParticipant) {
+//                    joinEventDialog()
+//                } else {
+//                    leaveEventDialog()
+//                }
+//            }
+//        })
+
+        viewModel.eventParticipants
+
+        binding.eventDetailParticipateBtn.setOnClickListener {
+//            if (viewModel.is)
+        }
+
         setupEvent()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            binding.eventDetailDescription.justificationMode = JUSTIFICATION_MODE_INTER_WORD
+        }
 
         val bundle = bundleOf("eventId" to eventId)
         binding.participantList.setOnClickListener {
@@ -106,13 +144,45 @@ class EventDetailsParticipantFragment : Fragment() {
                 bundle
             )
         }
-//        binding.participantList.setOnClickListener { toast("tapped")  }
 
         viewModel.event.observe(viewLifecycleOwner, { event ->
             val participantCount =
                 "Participants (${viewModel.validParticipantCount.value}/${event.nbTeam})"
             binding.participantCount.text = participantCount
         })
+    }
+
+    private fun joinEventDialog() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(getString(R.string.participation_title))
+            .setMessage(getString(R.string.participation_support_text))
+            .setNegativeButton(getString(R.string.participation_decline)) { _: DialogInterface, _: Int ->
+                // Respond to negative button press
+
+//                TRACKING.logEvent(Tracking.EVENT_DETAILS_OWNER_REFUSE_PARTICIPATION, null)
+
+            }
+            .setPositiveButton(getString(R.string.participation_accept)) { _: DialogInterface, _: Int ->
+                // Respond to positive button press
+                viewModel.coachStatus(true)
+
+                TRACKING.logEvent(Tracking.EVENT_DETAILS_OWNER_ACCEPT_PARTICIPATION, null)
+            }
+            .show()
+    }
+
+    private fun leaveEventDialog() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(getString(R.string.participation_title))
+            .setMessage(getString(R.string.participation_support_text))
+            .setNegativeButton(getString(R.string.participation_decline)) { _: DialogInterface, _: Int ->
+//                TRACKING.logEvent(Tracking.EVENT_DETAILS_OWNER_REFUSE_PARTICIPATION, null)
+            }
+            .setPositiveButton(getString(R.string.participation_accept)) { _: DialogInterface, _: Int ->
+                viewModel.coachStatus(false)
+//                TRACKING.logEvent(Tracking.EVENT_DETAILS_OWNER_ACCEPT_PARTICIPATION, null)
+            }
+            .show()
     }
 
     private fun setupObservers() {

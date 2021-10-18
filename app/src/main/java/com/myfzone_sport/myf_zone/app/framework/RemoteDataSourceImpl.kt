@@ -297,16 +297,16 @@ class RemoteDataSourceImpl : RemoteDataSource {
 
     override fun getAllEvents(): Flow<State<MutableList<Event>>> = flow {
         emit(State.loading())
-        val now = Calendar.getInstance().time
+//        val now = Calendar.getInstance().time
 
-        val mEventQuery = firebaseFirestore.collection(EVENT_PATH).orderBy("date").limit(15)
+        val mEventQuery = firebaseFirestore.collection(EVENT_PATH).orderBy("date")//.limit(15)
 
         val snapshot = mEventQuery.get().await()
         val eventList: MutableList<Event> = mutableListOf()
 
         snapshot.forEach {
             val event = it.toObject<Event>()
-            if (event.date.time > now.time)
+//            if (event.date.time > now.time)
                 eventList.add(event)
         }
 
@@ -718,11 +718,16 @@ class RemoteDataSourceImpl : RemoteDataSource {
 
         val snapshotEventList = mEventListQuery.get().await()
 
+        val result = mutableListOf<String>()
+
         snapshotEventList.forEach {
-            if (!activeCoachEvents.contains(it.id)) activeCoachEvents.add(it.id)
+//            if (!activeCoachEvents.contains(it.id)) activeCoachEvents.add(it.id)
+            result.add(it.id)
         }
 
-        emit(State.Success(true))
+        activeCoachEvents = result
+
+        emit(State.Success(result))
     }.catch {
         emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
     }.flowOn(Dispatchers.IO)

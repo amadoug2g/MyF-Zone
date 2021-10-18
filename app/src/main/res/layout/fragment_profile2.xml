@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout>
 
+    <data>
+        <variable
+            name="coach"
+            type="com.myfzone_sport.myf_zone.domain.coach.Coach" />
+
+        <variable
+            name="club"
+            type="com.myfzone_sport.myf_zone.domain.club.Club" />
+    </data>
+
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/layout2"
         android:layout_width="match_parent"
@@ -8,7 +18,7 @@
         android:orientation="vertical">
 
         <ProgressBar
-            android:id="@+id/profile_progressBar"
+            android:id="@+id/progressBar"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -169,7 +179,7 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/nuber_next_bold"
                         android:gravity="center"
-                        android:text="Nom de votre club"
+                        android:text="@{club.name}"
                         android:textColor="@color/colorDesign1"
                         android:textSize="16sp" />
 
@@ -242,7 +252,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/nuber_next_regular_wide"
-                        android:text="Mes informations"
+                        android:text="@{coach.name}"
                         android:textColor="@color/colorDesign1Transparent80"
                         android:textSize="12sp" />
 

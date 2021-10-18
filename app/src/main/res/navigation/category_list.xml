@@ -10,14 +10,9 @@
         android:name="com.myfzone_sport.myf_zone.app.ui.fragment.CategoryListFragment"
         android:label="Category List"
         tools:layout="@layout/fragment_category_list">
-
-<!--        <action-->
-<!--            android:id="@+id/categoryListFragmentToEventDetailsFragment"-->
-<!--            app:destination="@id/event_details" />-->
         <action
             android:id="@+id/categoryListFragmentToEventDetailsParticipantFragment"
             app:destination="@id/event_details_for_participant" />
     </fragment>
-<!--    <include app:graph="@navigation/event_details" />-->
     <include app:graph="@navigation/event_details_for_participant" />
 </navigation>

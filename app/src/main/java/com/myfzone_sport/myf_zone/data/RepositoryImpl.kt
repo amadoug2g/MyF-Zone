@@ -252,7 +252,7 @@ class RepositoryImpl(
         return remoteDataSource.getUserClub()
     }
 
-    override fun getUserEventList(): Flow<State<Boolean>> {
+    override fun getUserEventList(): Flow<State<MutableList<String>>> {
         return remoteDataSource.getUserEventList()
     }
 

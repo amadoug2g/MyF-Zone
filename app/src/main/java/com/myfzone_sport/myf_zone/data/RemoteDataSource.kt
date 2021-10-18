@@ -165,7 +165,7 @@ interface RemoteDataSource {
 
     fun getUserAffiliation(): Flow<State<ClubAffiliation?>>
 
-    fun getUserEventList(): Flow<State<Boolean>>
+    fun getUserEventList(): Flow<State<MutableList<String>>>
 
     fun getImageReference(path: String = activeCoachClubAffiliation!!.clubLogo): StorageReference
 

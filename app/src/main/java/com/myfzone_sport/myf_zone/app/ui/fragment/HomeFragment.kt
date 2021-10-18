@@ -19,6 +19,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.myfzone_sport.myf_zone.R
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.TRACKING
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoachEvents
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.isConnectedLive
 import com.myfzone_sport.myf_zone.app.framework.RemoteDataSourceImpl
 import com.myfzone_sport.myf_zone.app.ui.adapter.CategoryEventAdapter
@@ -32,10 +33,7 @@ import com.myfzone_sport.myf_zone.domain.coach.Coach
 import com.myfzone_sport.myf_zone.domain.event.Event
 import com.myfzone_sport.myf_zone.screens.MainScreen
 import com.myfzone_sport.myf_zone.usecases.event.*
-import com.myfzone_sport.myf_zone.usecases.user.GetUserClubAffiliationUseCase
-import com.myfzone_sport.myf_zone.usecases.user.GetUserClubUseCase
-import com.myfzone_sport.myf_zone.usecases.user.GetUserUseCase
-import com.myfzone_sport.myf_zone.usecases.user.SignOutUseCase
+import com.myfzone_sport.myf_zone.usecases.user.*
 import com.myfzone_sport.myf_zone.util.Tracking
 import org.jetbrains.anko.clearTask
 import org.jetbrains.anko.newTask
@@ -45,55 +43,19 @@ import org.jetbrains.anko.support.v4.toast
 class HomeFragment : Fragment() {
 
     //region Variables
-//    private val viewModel by activityViewModels<FragmentViewModel>()
-
     companion object {
         private lateinit var binding: FragmentHomeBinding
         private lateinit var adapterCloseToClub: CloseToClubEventAdapter
         private lateinit var adapterCategory: CategoryEventAdapter
         private lateinit var adapterUserEvents: UserEventAdapter
-
-
         private lateinit var viewModel: HomeViewModel
         private lateinit var viewModelFactory: HomeViewModelFactory
-//        lateinit var viewModel: FragmentViewModel
     }
     //endregion
 
     //region Override Methods
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        val remoteDataSource = RemoteDataSourceImpl()
-        val repository = RepositoryImpl(/*localDataSource,*/ remoteDataSource)
-
-        //View Model
-        val getCloseEventsUseCase = GetCloseEventsUseCase(repository)
-        val getFriendlyEventsUseCase = GetFriendlyEventsUseCase(repository)
-        val getAllEventsUseCase = GetAllEventsUseCase(repository)
-        val getTourneyEventsUseCase = GetTourneyEventsUseCase(repository)
-        val getPlateauEventsUseCase = GetPlateauEventsUseCase(repository)
-        val getUserEventsUseCase = GetUserEventsUseCase(repository)
-        val getUserUseCase = GetUserUseCase(repository)
-        val getUserClubUseCase = GetUserClubUseCase(repository)
-        val getUserAffiliationUseCase = GetUserClubAffiliationUseCase(repository)
-        val signOutUseCase = SignOutUseCase(repository)
-
-        viewModelFactory = HomeViewModelFactory(
-            getCloseEventsUseCase,
-            getAllEventsUseCase,
-            getFriendlyEventsUseCase,
-            getTourneyEventsUseCase,
-            getPlateauEventsUseCase,
-            getUserEventsUseCase,
-            getUserUseCase,
-            getUserClubUseCase,
-            getUserAffiliationUseCase,
-            signOutUseCase
-        )
-        viewModel = ViewModelProvider(this, viewModelFactory)
-            .get(HomeViewModel::class.java)
-
     }
 
     override fun onCreateView(
@@ -108,6 +70,7 @@ class HomeFragment : Fragment() {
             false
         )
 
+        setupViewModel()
         setupViews()
         setupObservers()
 //        viewModel.getUserEvents()
@@ -115,20 +78,40 @@ class HomeFragment : Fragment() {
 
         return binding.root
     }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
-    }
-
-    override fun onResume() {
-        super.onResume()
-    }
     //endregion
 
     //region Setups
+    private fun setupViewModel() {
+        val remoteDataSource = RemoteDataSourceImpl()
+        val repository = RepositoryImpl(remoteDataSource)
+
+        val getAllEventsUseCase = GetAllEventsUseCase(repository)
+        val getUserUseCase = GetUserUseCase(repository)
+        val getUserEventListUseCase = GetUserEventListUseCase(repository)
+        val getUserClubUseCase = GetUserClubUseCase(repository)
+        val getUserAffiliationUseCase = GetUserClubAffiliationUseCase(repository)
+
+        viewModelFactory = HomeViewModelFactory(
+            getAllEventsUseCase,
+            getUserUseCase,
+            getUserEventListUseCase,
+            getUserClubUseCase,
+            getUserAffiliationUseCase
+        )
+
+        viewModel = ViewModelProvider(this, viewModelFactory)
+            .get(HomeViewModel::class.java)
+    }
+
     private fun setupViews() {
+        binding.apply {
+            lifecycleOwner = this@HomeFragment
+            executePendingBindings()
+        }
+
         setUpRecyclerViews()
+        binding.homeLogo.setImageResource(R.mipmap.logo_updated_white)
+        binding.homeChatBtn.setImageResource(R.mipmap.ic_nounchat_noir_2x)
 
         binding.userEventLayout.showAll.setOnClickListener {
             val bundle = bundleOf("listType" to "userEvent")
@@ -150,7 +133,7 @@ class HomeFragment : Fragment() {
 
         binding.homeCreateEventBtn.setOnClickListener {
 //            checkStatusDestination("new event")
-            signOut()
+//            signOut()
         }
     }
 
@@ -164,23 +147,6 @@ class HomeFragment : Fragment() {
             if (contentIsLoading) loadingStart() else loadingStop()
         })
 
-//        activeCoachLive.observe(viewLifecycleOwner, {
-//            if (it != null) {
-//                binding.closeToClubLayout.layout.visibility = View.VISIBLE
-//                binding.userEventLayout.layout.visibility = View.VISIBLE
-//
-//                binding.homeWelcomeText.text = "Bonjour ${it.firstName} !"
-//            } else {
-//                binding.closeToClubLayout.layout.visibility = View.GONE
-//                binding.userEventLayout.layout.visibility = View.GONE
-//
-//                binding.homeWelcomeText.text = "Bonjour Coach !"
-//            }
-//        })
-
-//        activeCoachClubAffiliationLive.observe(viewLifecycleOwner, MyCoachAffiliationCoach())
-//        viewModel.coach.observe(viewLifecycleOwner, MyCoachObserver())
-//        viewModel.coachAffiliation.observe(viewLifecycleOwner, MyCoachAffiliationObserver())
         viewModel.coach.observe(viewLifecycleOwner, {
             if (it != null) {
                 binding.closeToClubLayout.layout.visibility = View.VISIBLE
@@ -194,20 +160,6 @@ class HomeFragment : Fragment() {
                 binding.homeWelcomeText.text = "Bonjour Coach !"
             }
         })
-
-        viewModel.coachAffiliation.observe(viewLifecycleOwner, {
-            if (it != null) {
-                viewModel.getUserEvents()
-                viewModel.getCloseEvents()
-            }
-        })
-
-//        activeCoachClubAffiliationLive.observe(viewLifecycleOwner, {
-//            if (it != null) {
-//                viewModel.getUserEvents()
-//                viewModel.getCloseEvents()
-//            }
-//        })
     }
     //endregion
 
@@ -225,10 +177,8 @@ class HomeFragment : Fragment() {
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
 
         viewModel.closeEventsList.observe(viewLifecycleOwner, {
-            adapterCloseToClub.setData(it)
+            if (it.isNotEmpty()) adapterCloseToClub.setData(it)
         })
-
-//        viewModel.closeEventsList.observe(viewLifecycleOwner, MyCloseEventObserver())
     }
 
     private fun setUpCategoryRecycler() {
@@ -247,10 +197,6 @@ class HomeFragment : Fragment() {
         binding.userEventLayout.recyclerView.adapter = adapterUserEvents
         binding.userEventLayout.recyclerView.layoutManager =
             LinearLayoutManager(requireContext())
-//        binding.userEventLayout.recyclerView.setHasFixedSize(true)
-//        binding.userEventLayout.recyclerView.isNestedScrollingEnabled = true
-
-//        viewModel.userEventsList.observe(viewLifecycleOwner, MyUserEventObserver())
 
         viewModel.userEventsList.observe(viewLifecycleOwner, {
             adapterUserEvents.setData(it)
@@ -301,22 +247,6 @@ class HomeFragment : Fragment() {
     //endregion
 
     //region View Methods
-    private fun signOut() {
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle(R.string.logout)
-            .setMessage(R.string.logout_message)
-            .setPositiveButton(R.string.confirm_message) { _: DialogInterface, _: Int ->
-                TRACKING.logEvent(Tracking.LOGOUT, null)
-                viewModel.signOut()
-                toast(R.string.logout_success)
-//                ManagerAuth.checkUserStatus()
-                startActivity(intentFor<MainScreen>().newTask().clearTask())
-            }
-            .setNegativeButton(R.string.cancel_message) { _: DialogInterface, _: Int ->
-            }
-            .show()
-    }
-
     private fun loadingStart() {
         binding.progressBar.visibility = View.VISIBLE
     }

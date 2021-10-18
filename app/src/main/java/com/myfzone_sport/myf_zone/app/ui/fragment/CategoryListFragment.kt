@@ -2,34 +2,39 @@ package com.myfzone_sport.myf_zone.app.ui.fragment
 
 import android.graphics.Color
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.myfzone_sport.myf_zone.R
+import com.myfzone_sport.myf_zone.app.framework.RemoteDataSourceImpl
 import com.myfzone_sport.myf_zone.app.ui.adapter.CategoryListEventAdapter
 import com.myfzone_sport.myf_zone.app.ui.adapter.UserEventAdapter
-import com.myfzone_sport.myf_zone.app.ui.viewmodel.FragmentViewModel
+import com.myfzone_sport.myf_zone.app.ui.viewmodel.*
+import com.myfzone_sport.myf_zone.data.RepositoryImpl
 import com.myfzone_sport.myf_zone.databinding.FragmentCategoryListBinding
+import com.myfzone_sport.myf_zone.usecases.event.GetAllEventsUseCase
 
 private const val ARG_PARAM1 = "listType"
 
 class CategoryListFragment : Fragment() {
-    private val viewModel by activityViewModels<FragmentViewModel>()
 
+    //region Variables
     companion object {
         private val TAG = this::class.java.simpleName
         private var listType: String? = null
         private lateinit var binding: FragmentCategoryListBinding
+        private lateinit var viewModel: CategoryListViewModel
+        private lateinit var viewModelFactory: CategoryListViewModelFactory
         private lateinit var adapterUserEvents: UserEventAdapter
         private lateinit var adapterCategoryEvents: CategoryListEventAdapter
-//        lateinit var viewModel: FragmentViewModel
     }
+    //endregion
 
     //region Override Methods
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,12 +49,45 @@ class CategoryListFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // Inflate the layout for this fragment
         binding = DataBindingUtil.inflate(
             inflater,
             R.layout.fragment_category_list, container, false
         )
+
+        setupViewModel()
+        setupViews()
         setupObservers()
+
+        return binding.root
+    }
+    //endregion
+
+    //region Setups
+    private fun setupViewModel() {
+        binding.apply {
+            lifecycleOwner = this@CategoryListFragment
+            executePendingBindings()
+        }
+
+        val remoteDataSource = RemoteDataSourceImpl()
+        val repository = RepositoryImpl(remoteDataSource)
+
+        val getAllEventsUseCase = GetAllEventsUseCase(repository)
+
+        viewModelFactory = CategoryListViewModelFactory(
+            getAllEventsUseCase
+        )
+
+        viewModel = ViewModelProvider(this, viewModelFactory)
+            .get(CategoryListViewModel::class.java)
+    }
+
+    private fun setupViews() {
+        binding.apply {
+            lifecycleOwner = this@CategoryListFragment
+            executePendingBindings()
+        }
+
         when (listType) {
             "friendly" -> {
                 setFriendlyEventsRecycler()
@@ -61,6 +99,9 @@ class CategoryListFragment : Fragment() {
                 setPlateauEventsRecycler()
             }
             "userEvent" -> {
+                viewModel.allEventsList.observe(viewLifecycleOwner, { list ->
+                    viewModel.getUserEvents(list)
+                })
                 setUserEventsRecycler()
             }
             "categoryEvent" -> {
@@ -73,12 +114,8 @@ class CategoryListFragment : Fragment() {
             "coachParticipation" -> {
             }
         }
-
-        return binding.root
     }
-    //endregion
 
-    //region Setups
     private fun setupObservers() {
         viewModel.errorMessage.observe(viewLifecycleOwner, {
             if (it.isNotEmpty()) showError()
@@ -93,47 +130,44 @@ class CategoryListFragment : Fragment() {
     //region RecyclerView
     private fun setUpUserRecyclerView() {
         adapterUserEvents = UserEventAdapter()
-        binding.userRecyclerView.adapter = adapterUserEvents
-        binding.userRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-        binding.userRecyclerView.setHasFixedSize(true)
-        binding.userRecyclerView.isNestedScrollingEnabled = true
-
-        binding.userRecyclerView.visibility = View.VISIBLE
-        binding.categoryRecyclerView.visibility = View.GONE
+        binding.eventRecyclerView.adapter = adapterUserEvents
+        binding.eventRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        binding.eventRecyclerView.setHasFixedSize(true)
+        binding.eventRecyclerView.isNestedScrollingEnabled = true
     }
 
     private fun setUpCategoryRecyclerView() {
         adapterCategoryEvents = CategoryListEventAdapter()
-        binding.categoryRecyclerView.adapter = adapterCategoryEvents
-        binding.categoryRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-        binding.categoryRecyclerView.setHasFixedSize(true)
-        binding.categoryRecyclerView.isNestedScrollingEnabled = true
-
-        binding.categoryRecyclerView.visibility = View.VISIBLE
-        binding.userRecyclerView.visibility = View.GONE
+        binding.eventRecyclerView.adapter = adapterCategoryEvents
+        binding.eventRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        binding.eventRecyclerView.setHasFixedSize(true)
+        binding.eventRecyclerView.isNestedScrollingEnabled = true
     }
 
     private fun setFriendlyEventsRecycler() {
         setUpUserRecyclerView()
 
-        viewModel.friendlyEventsList.observe(viewLifecycleOwner, {
-            if (it.isNotEmpty()) adapterUserEvents.setData(it)// else toast("empty")
+//        viewModel.friendlyEventsList.observe(viewLifecycleOwner, {
+        viewModel.friendlyEventsNotOwnedList.observe(viewLifecycleOwner, {
+            if (it.isNotEmpty()) adapterUserEvents.setData(it)
         })
     }
 
     private fun setPlateauEventsRecycler() {
         setUpUserRecyclerView()
 
-        viewModel.plateauEventsList.observe(viewLifecycleOwner, {
-            if (it.isNotEmpty()) adapterUserEvents.setData(it)// else toast("empty")
+//        viewModel.plateauEventsList.observe(viewLifecycleOwner, {
+        viewModel.plateauEventsNotOwnedList.observe(viewLifecycleOwner, {
+            if (it.isNotEmpty()) adapterUserEvents.setData(it)
         })
     }
 
     private fun setTourneyEventsRecycler() {
         setUpUserRecyclerView()
 
-        viewModel.tourneyEventsList.observe(viewLifecycleOwner, {
-            if (it.isNotEmpty()) adapterUserEvents.setData(it)// else toast("empty")
+//        viewModel.tourneyEventsList.observe(viewLifecycleOwner, {
+        viewModel.tourneyEventsNotOwnedList.observe(viewLifecycleOwner, {
+            if (it.isNotEmpty()) adapterUserEvents.setData(it)
         })
     }
 
@@ -148,7 +182,7 @@ class CategoryListFragment : Fragment() {
     private fun setCategoryEventsRecycler() {
         setUpCategoryRecyclerView()
 
-        viewModel.allEventsList.observe(viewLifecycleOwner, {
+        viewModel.allEventsNotOwnedList.observe(viewLifecycleOwner, {
             if (it.isNotEmpty()) adapterCategoryEvents.setData(it)
         })
     }
@@ -164,11 +198,11 @@ class CategoryListFragment : Fragment() {
 
     //region View Methods
     private fun loadingStart() {
-//        binding.progressBar.visibility = View.VISIBLE
+        binding.progressBar.visibility = View.VISIBLE
     }
 
     private fun loadingStop() {
-//        binding.progressBar.visibility = View.INVISIBLE
+        binding.progressBar.visibility = View.INVISIBLE
     }
 
     private fun showError(message: String? = "") {

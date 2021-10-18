@@ -21,6 +21,7 @@
         tools:ignore="AllowBackup">
         <activity
             android:name=".app.ui.activity.MainActivity"
+            android:configChanges="orientation"
             android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -46,12 +47,12 @@
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/colorAccent" />
 
-        <activity
-            android:name=".screens.MainScreen"
-            android:configChanges="orientation|keyboardHidden"
-            android:screenOrientation="portrait">
+<!--        <activity-->
+<!--            android:name=".screens.MainScreen"-->
+<!--            android:configChanges="orientation|keyboardHidden"-->
+<!--            android:screenOrientation="portrait">-->
 
-        </activity>
+<!--        </activity>-->
 
         <service
             android:name=".domain.chat.MessagingService"

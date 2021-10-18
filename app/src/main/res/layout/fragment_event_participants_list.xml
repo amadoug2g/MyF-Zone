@@ -1,104 +1,128 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".app.ui.fragment.EventParticipantsFragment">
+        android:layout_height="wrap_content">
 
-        <ProgressBar
-            android:id="@+id/progressBar"
-            style="?android:attr/progressBarStyleHorizontal"
+        <androidx.appcompat.widget.LinearLayoutCompat xmlns:tools="http://schemas.android.com/tools"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="0dp"
-            android:indeterminate="true"
-            android:indeterminateBehavior="cycle"
-            android:indeterminateTint="@color/colorDesign2"
-            android:visibility="invisible"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <LinearLayout
-            android:id="@+id/valid_coach_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_height="match_parent"
             android:orientation="vertical"
-            android:padding="16dp"
-            app:layout_constraintTop_toBottomOf="@+id/progressBar"
-            app:layout_constraintTop_toTopOf="parent">
+            tools:context=".app.ui.fragment.EventParticipantsFragment">
 
-            <TextView
-                android:id="@+id/valid_coach_title"
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
+                android:layout_marginTop="0dp"
+                android:indeterminate="true"
+                android:indeterminateBehavior="cycle"
+                android:indeterminateTint="@color/colorDesign2"
+                android:visibility="invisible"/>
+
+            <TextView
+                android:id="@+id/participant_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="48dp"
                 android:fontFamily="@font/nuber_next_demi_bold_wide"
-                android:text="3 Validés"
+                android:gravity="center"
+                android:text="Participants (24/24)"
                 android:textColor="@color/colorDesign1"
                 android:textSize="16sp" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/valid_coach_recycler_view"
+            <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:scrollbarThumbHorizontal="@drawable/home_scrollbar_thumb"
-                android:scrollbarTrackHorizontal="@drawable/home_scrollbar_track" />
-        </LinearLayout>
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:orientation="vertical">
 
-        <LinearLayout
-            android:id="@+id/pending_coach_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp"
-            app:layout_constraintTop_toBottomOf="@id/valid_coach_layout">
+                <LinearLayout
+                    android:id="@+id/valid_coach_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/pending_coach_title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:fontFamily="@font/nuber_next_demi_bold_wide"
-                android:text="3 En Attente"
-                android:textColor="@color/colorDesign1"
-                android:textSize="16sp" />
+                    <TextView
+                        android:id="@+id/valid_coach_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:fontFamily="@font/nuber_next_demi_bold_wide"
+                        android:text="3 Validés"
+                        android:textColor="@color/colorDesign1"
+                        android:textSize="16sp" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/pending_coach_recycler_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:scrollbarThumbHorizontal="@drawable/home_scrollbar_thumb"
-                android:scrollbarTrackHorizontal="@drawable/home_scrollbar_track" />
-        </LinearLayout>
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/valid_coach_recycler_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:scrollbarThumbHorizontal="@drawable/home_scrollbar_thumb"
+                        android:scrollbarTrackHorizontal="@drawable/home_scrollbar_track" />
 
-        <LinearLayout
-            android:id="@+id/refused_coach_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp"
-            app:layout_constraintTop_toBottomOf="@id/pending_coach_layout">
+                </LinearLayout>
 
-            <TextView
-                android:id="@+id/refused_coach_title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:fontFamily="@font/nuber_next_demi_bold_wide"
-                android:text="3 Refusés"
-                android:textColor="@color/colorDesign1"
-                android:textSize="16sp" />
+                <LinearLayout
+                    android:id="@+id/pending_coach_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:orientation="vertical"
+                    app:layout_constraintTop_toBottomOf="@id/valid_coach_layout">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/refused_coach_recycler_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:scrollbarThumbHorizontal="@drawable/home_scrollbar_thumb"
-                android:scrollbarTrackHorizontal="@drawable/home_scrollbar_track" />
-        </LinearLayout>
+                    <TextView
+                        android:id="@+id/pending_coach_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:fontFamily="@font/nuber_next_demi_bold_wide"
+                        android:text="3 En Attente"
+                        android:textColor="@color/colorDesign1"
+                        android:textSize="16sp" />
 
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/pending_coach_recycler_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:scrollbarThumbHorizontal="@drawable/home_scrollbar_thumb"
+                        android:scrollbarTrackHorizontal="@drawable/home_scrollbar_track" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/refused_coach_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/refused_coach_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:fontFamily="@font/nuber_next_demi_bold_wide"
+                        android:text="3 Refusés"
+                        android:textColor="@color/colorDesign1"
+                        android:textSize="16sp" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/refused_coach_recycler_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:scrollbarThumbHorizontal="@drawable/home_scrollbar_thumb"
+                        android:scrollbarTrackHorizontal="@drawable/home_scrollbar_track" />
+
+                </LinearLayout>
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </androidx.core.widget.NestedScrollView>
+
 </layout>

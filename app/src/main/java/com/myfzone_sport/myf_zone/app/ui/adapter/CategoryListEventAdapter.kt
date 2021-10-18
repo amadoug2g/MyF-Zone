@@ -11,6 +11,9 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.myfzone_sport.myf_zone.R
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoach
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.isAffiliated
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.isConnected
 import com.myfzone_sport.myf_zone.databinding.HomeUserEventCardviewBinding
 import com.myfzone_sport.myf_zone.domain.event.Event
 
@@ -50,8 +53,22 @@ class CategoryListEventAdapter : ListAdapter<Event, CategoryListEventAdapter.MyV
             }
 
             binding.cardView.setOnClickListener {
-                val bundle = bundleOf("eventId" to event.id)
-                navigate(R.id.categoryListFragmentToEventDetailsParticipantFragment, bundle, binding.cardView)
+                val bundle = bundleOf("eventId" to event.id, "coachRole" to "owner")
+                navigate(R.id.categoryListFragmentToEventDetailsParticipantFragment, bundle, it)
+
+//                if (isConnected) {
+//                    if (isAffiliated) {
+//                        if (viewModel.owner.value?.coachId == activeCoach?.id) {
+//                            navigate(R.id.mapsToEventDetailsOwner, bundle, it)
+//                        } else {
+//                            navigate(R.id.mapsToEventDetailsParticipant, bundle, it)
+//                        }
+//                    } else {
+//                        navigate(R.id.mapsToEventDetailsGuest, bundle, it)
+//                    }
+//                } else {
+//                    navigate(R.id.mapsToEventDetailsGuest, bundle, it)
+//                }
             }
         }
 

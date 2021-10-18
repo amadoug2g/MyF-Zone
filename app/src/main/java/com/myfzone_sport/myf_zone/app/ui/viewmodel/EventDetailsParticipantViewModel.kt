@@ -145,6 +145,7 @@ class EventDetailsParticipantViewModel(
                         _eventParticipants.postValue(state.data)
                         getValidCount(state.data)
                         getValidList(state.data)
+                        isCoachParticipant(state.data)
                     }
                     is State.Failed -> {
                         val message = "Event participants fetching failure: ${state.message}"
@@ -205,8 +206,17 @@ class EventDetailsParticipantViewModel(
             if (participant.status == "valid") validParticipantList.value?.add(participant)
     }
 
-    fun isCoachParticipant(participant: EventParticipant): Boolean {
-        return participant.coachId == activeCoach?.id
+    fun isCoachParticipant(list: MutableList<EventParticipant> = _eventParticipants.value!!) {
+        var result = false
+
+        for (participant in list)
+            if (participant.coachId == activeCoach?.id) result = true
+
+        _isUserParticipating.postValue(result)
+    }
+
+    fun coachStatus(value: Boolean) {
+        _isUserParticipating.postValue(value)
     }
 
     fun isCoachInParticipantList(): Boolean {

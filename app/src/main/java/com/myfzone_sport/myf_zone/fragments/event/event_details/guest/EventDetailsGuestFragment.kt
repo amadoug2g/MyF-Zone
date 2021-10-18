@@ -38,7 +38,6 @@ import kotlinx.coroutines.launch
 import org.jetbrains.anko.support.v4.toast
 import java.util.*
 
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "eventId"
 
 class EventDetailsGuestFragment : Fragment() {

@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/event_details_for_owner">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/event_details_for_owner"
+    app:startDestination="@id/eventDetailsOwnerFragment">
 
+    <fragment
+        android:id="@+id/eventDetailsOwnerFragment"
+        android:name="com.myfzone_sport.myf_zone.app.ui.fragment.EventDetailsOwnerFragment"
+        tools:layout="@layout/fragment_event_details_owner2"
+        android:label="EventDetailsOwnerFragment" >
+        <action
+            android:id="@+id/eventDetailsOwnerToEventParticipantsOwner"
+            app:destination="@id/event_participants_owner" />
+    </fragment>
+    <include app:graph="@navigation/event_participants_owner" />
 </navigation>

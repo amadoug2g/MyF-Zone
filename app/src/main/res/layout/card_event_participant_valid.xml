@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <layout>
+
+    <data>
+
+        <variable
+            name="participant"
+            type="com.myfzone_sport.myf_zone.domain.event.EventParticipant" />
+    </data>
+
     <RelativeLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="wrap_content"
@@ -25,7 +33,7 @@
             android:textSize="14sp"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:text="Abou Dambele"/>
+            android:text="@{participant.coachFullname}"/>
 
         <ImageView
             android:id="@+id/event_participant_action_button"

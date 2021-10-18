@@ -1,6 +1,5 @@
 package com.myfzone_sport.myf_zone.app.ui.adapter
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -13,7 +12,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.myfzone_sport.myf_zone.R
-import com.myfzone_sport.myf_zone.databinding.HomeCloseToClubCardviewBinding
 import com.myfzone_sport.myf_zone.databinding.HomeUserEventCardviewBinding
 import com.myfzone_sport.myf_zone.domain.event.Event
 
@@ -47,21 +45,37 @@ class UserEventAdapter : ListAdapter<Event, UserEventAdapter.MyViewHolder>(
 
     class MyViewHolder(private val binding: HomeUserEventCardviewBinding) :
         RecyclerView.ViewHolder(binding.root) {
-//        @SuppressLint("RestrictedApi")
+        //        @SuppressLint("RestrictedApi")
         fun bind(event: Event) {
             with(binding) {
                 binding.event = event
             }
 
             binding.cardView.setOnClickListener {
-                val bundle = bundleOf("eventId" to event.id)
+                val bundle = bundleOf("eventId" to event.id, "coachRole" to "owner")
                 when (it.findNavController().currentDestination?.label) {
 //                    "Category List" -> navigate(R.id.categoryListFragmentToEventDetailsFragment, bundle, it)
-                    "Category List" -> navigate(R.id.categoryListFragmentToEventDetailsParticipantFragment, bundle, it)
-                    "Profil" -> navigate(R.id.profileFragmentToEventDetailsFragment, bundle, it)
-                    "Home" -> navigate(R.id.homeFragmentToEventDetailsFragment, bundle, it)
+                    "Category List" -> {
+                        navigate(
+                            R.id.categoryListFragmentToEventDetailsParticipantFragment,
+                            bundle,
+                            it
+                        )
+                        Log.i("user adapter","user adapter: Category List")
+                    }
+                    "Profil" -> {
+                        navigate(R.id.profileFragmentToEventDetailsFragment, bundle, it)
+                        Log.i("user adapter","user adapter: Profil")
+                    }
+//                    "Home" -> navigate(R.id.homeFragmentToEventDetailsFragment, bundle, it)
+                    "Home" -> {
+                        navigate(R.id.homeFragmentToEventDetailsOwner, bundle, it)
+                        Log.i("user adapter","user adapter: Home")
+                    }
                     "Map2" -> navigate(R.id.mapFragmentToEventDetailsFragment, bundle, it)
-                    else -> {}
+                    else -> {
+                        Log.i("user adapter","user adapter: else")
+                    }
                 }
             }
         }
@@ -84,12 +98,12 @@ class UserEventAdapter : ListAdapter<Event, UserEventAdapter.MyViewHolder>(
 
     class TaskDiffCallBack : DiffUtil.ItemCallback<Event>() {
         override fun areItemsTheSame(oldItem: Event, newItem: Event): Boolean {
-            Log.d("TAG",Thread.currentThread().name)
+            Log.d("TAG", Thread.currentThread().name)
             return oldItem.id == newItem.id;
         }
 
         override fun areContentsTheSame(oldItem: Event, newItem: Event): Boolean {
-            Log.d("TAG",Thread.currentThread().name)
+            Log.d("TAG", Thread.currentThread().name)
             return oldItem == newItem
         }
     }

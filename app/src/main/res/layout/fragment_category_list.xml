@@ -2,25 +2,32 @@
 <layout>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/layout"
-        android:layout_margin="8dp"
         android:orientation="vertical">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/userRecyclerView"
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:scrollbarThumbHorizontal="@drawable/home_scrollbar_thumb"
-            android:scrollbarTrackHorizontal="@drawable/home_scrollbar_track" />
+            android:layout_marginTop="0dp"
+            android:indeterminate="true"
+            android:indeterminateBehavior="cycle"
+            android:indeterminateTint="@color/colorDesign2"
+            android:visibility="invisible" />
+
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/categoryRecyclerView"
+            android:id="@+id/event_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:scrollbarThumbHorizontal="@drawable/home_scrollbar_thumb"
-            android:scrollbarTrackHorizontal="@drawable/home_scrollbar_track" />
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:scrollbarThumbVertical="@drawable/home_scrollbar_thumb"
+            android:scrollbarTrackVertical="@drawable/home_scrollbar_track"
+            android:scrollbars="vertical"/>
 
     </LinearLayout>
 </layout>

@@ -2,9 +2,18 @@ package com.myfzone_sport.myf_zone.app.ui.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.*
+import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.StorageReference
 import com.myfzone_sport.myf_zone.domain.State
 import com.myfzone_sport.myf_zone.domain.event.EventParticipant
+import com.myfzone_sport.myf_zone.fragments.event.event_details.guest.EventDetailsGuestService
 import com.myfzone_sport.myf_zone.usecases.detailevent.GetAllParticipantsFromEventUseCase
+import com.myfzone_sport.myf_zone.usecases.user.GetImageReferenceUseCase
+import com.myfzone_sport.myf_zone.util.Constants
+import com.myfzone_sport.myf_zone.util.Constants.EVENT_PATH
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
@@ -13,7 +22,8 @@ import kotlinx.coroutines.launch
  */
 
 class EventParticipantsViewModel(
-    private val getAllParticipantsFromEventUseCase: GetAllParticipantsFromEventUseCase
+    private val getAllParticipantsFromEventUseCase: GetAllParticipantsFromEventUseCase,
+    private val getImageReferenceUseCase: GetImageReferenceUseCase
 ) : ViewModel() {
 
     //region Variables
@@ -28,6 +38,10 @@ class EventParticipantsViewModel(
 
     private val _eventParticipantsRefused = MutableLiveData<MutableList<EventParticipant>>()
     val eventParticipantsRefused = _eventParticipantsRefused
+
+    private val firebaseFirestore = Firebase.firestore
+    private val _userImagePath = MutableLiveData<StorageReference>()
+    val userImagePath: LiveData<StorageReference> = _userImagePath
 
     private val eventId = MutableLiveData<String>()
     val coachRole = MutableLiveData<String>()
@@ -96,6 +110,40 @@ class EventParticipantsViewModel(
 
         _eventParticipantsRefused.postValue(result)
     }
+
+    fun getQuery(eventId: String): CollectionReference {
+        return firebaseFirestore
+            .collection(EVENT_PATH)
+            .document(eventId)
+            .collection("Participant")
+    }
+
+    fun getValidQuery(eventId: String): CollectionReference {
+        return firebaseFirestore
+            .collection(EVENT_PATH)
+            .document(eventId)
+            .collection("Participant")
+    }
+
+    fun getPendingQuery(eventId: String): CollectionReference {
+        return firebaseFirestore
+            .collection(EVENT_PATH)
+            .document(eventId)
+            .collection("Participant")
+    }
+
+    fun getRefusedQuery(eventId: String): CollectionReference {
+        return firebaseFirestore
+            .collection(EVENT_PATH)
+            .document(eventId)
+            .collection("Participant")
+    }
+
+    fun getImageReference(path: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _userImagePath.postValue(getImageReferenceUseCase.invoke(path))
+        }
+    }
     //endregion
 
     //region Observers
@@ -120,14 +168,17 @@ class EventParticipantsViewModel(
 }
 
 class EventParticipantsViewModelFactory(
-    private val getAllParticipantsFromEventUseCase: GetAllParticipantsFromEventUseCase
+    private val getAllParticipantsFromEventUseCase: GetAllParticipantsFromEventUseCase,
+    private val getImageReferenceUseCase: GetImageReferenceUseCase
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         return modelClass.getConstructor(
-            GetAllParticipantsFromEventUseCase::class.java
+            GetAllParticipantsFromEventUseCase::class.java,
+            GetImageReferenceUseCase::class.java,
         )
             .newInstance(
-                getAllParticipantsFromEventUseCase
+                getAllParticipantsFromEventUseCase,
+                getImageReferenceUseCase,
             )
     }
 }

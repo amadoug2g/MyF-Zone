@@ -4,29 +4,16 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.AttributeSet
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.*
 import androidx.navigation.fragment.NavHostFragment
 import com.myfzone_sport.myf_zone.R
-import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoachClubAffiliationLive
-import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoachClubLive
-import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoachEventsLive
-import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoachLive
-import com.myfzone_sport.myf_zone.app.framework.FirebaseService.affiliationNbrLive
-import com.myfzone_sport.myf_zone.app.framework.FirebaseService.checkUserStatus
-import com.myfzone_sport.myf_zone.app.framework.FirebaseService.isAffiliatedLive
-import com.myfzone_sport.myf_zone.app.framework.FirebaseService.isConnectedLive
 import com.myfzone_sport.myf_zone.app.framework.RemoteDataSourceImpl
 import com.myfzone_sport.myf_zone.app.ui.viewmodel.*
-import com.myfzone_sport.myf_zone.data.LocalDataSourceImpl
 import com.myfzone_sport.myf_zone.data.RepositoryImpl
 import com.myfzone_sport.myf_zone.databinding.ActivityMainBinding
-import com.myfzone_sport.myf_zone.usecases.detailevent.GetEventFromIdUseCase
-import com.myfzone_sport.myf_zone.usecases.detailevent.GetOwnerFromEventUseCase
 import com.myfzone_sport.myf_zone.usecases.event.*
 import com.myfzone_sport.myf_zone.usecases.registration.*
 import com.myfzone_sport.myf_zone.usecases.user.*
@@ -56,14 +43,14 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        checkUserStatus()
-        initViews()
+        setupViews()
         initViewModels()
     }
 
     override fun onStart() {
         super.onStart()
         viewModel.getUserStatus()
+        viewModel.checkUserStatus()
 
         setupObservers()
 
@@ -88,7 +75,6 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
                 hideBar()
             }
             R.id.homeFragment -> {
-                viewModel.getUserStatus()
                 hideBar()
             }
             else -> {
@@ -103,7 +89,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
     //endregion
 
     //region Init
-    private fun initViews() {
+    private fun setupViews() {
         setTheme(R.style.AppTheme)
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
@@ -129,118 +115,28 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
     }
 
     private fun initViewModels() {
-        val localDataSource = LocalDataSourceImpl()
         val remoteDataSource = RemoteDataSourceImpl()
-        val repository = RepositoryImpl(/*localDataSource,*/ remoteDataSource)
+        val repository = RepositoryImpl(remoteDataSource)
 
         //Activity View Model
         val getUserStatusUseCase = GetUserStatusUseCase(repository)
 
-        //Fragment View Model
-        val getAllEventsUseCase = GetAllEventsUseCase(repository)
-        val getCloseEventsUseCase = GetCloseEventsUseCase(repository)
-        val getFriendlyEventsUseCase = GetFriendlyEventsUseCase(repository)
-        val getTourneyEventsUseCase = GetTourneyEventsUseCase(repository)
-        val getPlateauEventsUseCase = GetPlateauEventsUseCase(repository)
-        val getUserEventsUseCase = GetUserEventsUseCase(repository)
-        val getImageReferenceUseCase = GetImageReferenceUseCase(repository)
-        val getUserUseCase = GetUserUseCase(repository)
-        val getUserClubUseCase = GetUserClubUseCase(repository)
-        val getUserAffiliationUseCase = GetUserClubAffiliationUseCase(repository)
-        val getUserEventListUseCase = GetUserEventListUseCase(repository)
-
-        //Registration View Model
-        val addUserToDatabaseUseCase = AddUserToDatabaseUseCase(repository)
-        val assignDisplayNameUseCase = AssignDisplayNameUseCase(repository)
-        val assignProfileImageUseCase = AssignProfileImageUseCase(repository)
-        val signInUserUseCase = SignInUserUseCase(repository)
-        val signUpUserUseCase = SignUpUserUseCase(repository)
-        val signOutUseCase = SignOutUseCase(repository)
-
-        //Event View Model
-        val getEventFromIdUseCase = GetEventFromIdUseCase(repository)
-        val getOwnerFromEventUseCase = GetOwnerFromEventUseCase(repository)
-
-        viewModel = ViewModelProvider(
-            this,
-            ActivityViewModelFactory(
-                getUserStatusUseCase
-            )
-        ).get(
-            ActivityViewModel::class.java
-        )
+        viewModel = ViewModelProvider(this, ActivityViewModelFactory(getUserStatusUseCase)).get(ActivityViewModel::class.java)
 
 
 //        val navHostFragment: NavHostFragment =
 //            supportFragmentManager.findFragmentById(R.id.fragmentNavHost) as NavHostFragment
 //        navHostFragment.childFragmentManager.fragments[0]
-
-        fragmentViewModel = ViewModelProvider(
-            this,
-            FragmentViewModelFactory(
-                getCloseEventsUseCase,
-                getAllEventsUseCase,
-                getFriendlyEventsUseCase,
-                getTourneyEventsUseCase,
-                getPlateauEventsUseCase,
-                getUserEventsUseCase,
-                getImageReferenceUseCase,
-                getUserUseCase,
-                getUserClubUseCase,
-                getUserAffiliationUseCase,
-                getUserEventListUseCase,
-                signOutUseCase
-            )
-        ).get(
-            FragmentViewModel::class.java
-        )
-
-        registrationViewModel = ViewModelProvider(
-            this,
-            RegistrationViewModelFactory(
-                addUserToDatabaseUseCase,
-                assignDisplayNameUseCase,
-                assignProfileImageUseCase,
-                signInUserUseCase,
-                signUpUserUseCase
-            )
-        ).get(
-            RegistrationViewModel::class.java
-        )
-
-        eventViewModel = ViewModelProvider(
-            this,
-            EventViewModelFactory(
-                getEventFromIdUseCase,
-                getOwnerFromEventUseCase
-            )
-        ).get(EventViewModel::class.java)
     }
 
     private fun setupObservers() {
         viewModel.isUserConnected.observe(this, {
             if (it) {
-                fragmentViewModel.getUser()
-//                fragmentViewModel.getQuery()
-                fragmentViewModel.getUserClub()
-                fragmentViewModel.getUserAffiliation()
-                fragmentViewModel.userConnected()
                 navController.setGraph(R.navigation.home)
-                fragmentViewModel.getUserEvents()
-                fragmentViewModel.getCloseEvents()
-                fragmentViewModel.getUserEventList()
             } else {
-                fragmentViewModel.userNotConnected()
                 navController.setGraph(R.navigation.main_start)
             }
         })
-
-//        isAffiliatedLive.observe(this, {
-//            if (it) {
-//                fragmentViewModel.getUserEvents()
-//                fragmentViewModel.getCloseEvents()
-//            }
-//        })
     }
     //endregion
 
