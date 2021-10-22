@@ -5,13 +5,19 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
 import com.myfzone_sport.myf_zone.R
+import com.myfzone_sport.myf_zone.databinding.FragmentEventDetailsDoneBinding
+import com.myfzone_sport.myf_zone.databinding.FragmentEventDetailsGuest2Binding
 
 private const val ARG_PARAM1 = "param1"
 
 class EventDetailsDoneFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
+
+    companion object {
+        private lateinit var binding: FragmentEventDetailsDoneBinding
+        private var param1: String? = null
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,8 +29,14 @@ class EventDetailsDoneFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_event_details_done, container, false)
+    ): View {
+        binding = DataBindingUtil.inflate(
+        inflater,
+        R.layout.fragment_event_details_done,
+        container,
+        false
+    )
+
+        return binding.root
     }
 }

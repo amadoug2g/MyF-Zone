@@ -9,13 +9,19 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import com.google.android.material.snackbar.Snackbar
 import com.myfzone_sport.myf_zone.R
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.TRACKING
-import com.myfzone_sport.myf_zone.app.ui.viewmodel.RegistrationViewModel
+import com.myfzone_sport.myf_zone.app.framework.RemoteDataSourceImpl
+import com.myfzone_sport.myf_zone.app.ui.viewmodel.*
+import com.myfzone_sport.myf_zone.data.RepositoryImpl
 import com.myfzone_sport.myf_zone.databinding.FragmentSignUp2Binding
+import com.myfzone_sport.myf_zone.usecases.registration.AddUserToDatabaseUseCase
+import com.myfzone_sport.myf_zone.usecases.registration.AssignDisplayNameUseCase
+import com.myfzone_sport.myf_zone.usecases.registration.AssignProfileImageUseCase
+import com.myfzone_sport.myf_zone.usecases.registration.SignUpUserUseCase
 import com.myfzone_sport.myf_zone.util.Tracking
 import com.myfzone_sport.myf_zone.util.Tracking.ALERT_ERROR
 import org.jetbrains.anko.support.v4.toast
@@ -23,10 +29,10 @@ import org.jetbrains.anko.support.v4.toast
 class SignUpFragment : Fragment() {
 
     //region Variables
-    private val viewModel by activityViewModels<RegistrationViewModel>()
-
     companion object {
         private lateinit var binding: FragmentSignUp2Binding
+        private lateinit var viewModel: SignUpViewModel
+        private lateinit var viewModelFactory: SignUpViewModelFactory
     }
     //endregion
 
@@ -39,9 +45,9 @@ class SignUpFragment : Fragment() {
             inflater,
             R.layout.fragment_sign_up2, container, false
         )
-
-        setupObservers()
+        setupViewModel()
         setupViews()
+        setupObservers()
 
         binding.signUpBtn.setOnClickListener {
             signUp()
@@ -56,16 +62,41 @@ class SignUpFragment : Fragment() {
     //endregion
 
     //region Setups
+    private fun setupViewModel() {
+        binding.apply {
+            lifecycleOwner = this@SignUpFragment
+            executePendingBindings()
+        }
+
+        val remoteDataSource = RemoteDataSourceImpl()
+        val repository = RepositoryImpl(remoteDataSource)
+
+        val addUserToDatabaseUseCase = AddUserToDatabaseUseCase(repository)
+        val assignDisplayNameUseCase = AssignDisplayNameUseCase(repository)
+        val assignProfileImageUseCase = AssignProfileImageUseCase(repository)
+        val signUpUserUseCase = SignUpUserUseCase(repository)
+
+        viewModelFactory = SignUpViewModelFactory(
+            addUserToDatabaseUseCase,
+            assignDisplayNameUseCase,
+            assignProfileImageUseCase,
+            signUpUserUseCase
+        )
+
+        viewModel = ViewModelProvider(this, viewModelFactory).get(
+            SignUpViewModel::class.java)
+    }
+
     private fun setupViews() {
         binding.viewModel = viewModel
     }
 
     private fun setupObservers() {
-        viewModel.errorSignUpMessage.observe(viewLifecycleOwner, {
+        viewModel.errorMessage.observe(viewLifecycleOwner, {
             if (it.isNotEmpty()) showError()
         })
 
-        viewModel.errorEmailSignUp.observe(viewLifecycleOwner, {
+        viewModel.errorMessageEmail.observe(viewLifecycleOwner, {
             if (it) {
                 val bundleTracking = bundleOf("SignUp Email Error" to getString(R.string.hint_required))
 //                TRACKING.logEvent(ALERT_ERROR, bundleTracking)
@@ -75,7 +106,7 @@ class SignUpFragment : Fragment() {
             }
         })
 
-        viewModel.errorPasswordSignUp.observe(viewLifecycleOwner, {
+        viewModel.errorMessagePassword.observe(viewLifecycleOwner, {
             if (it) {
                 val bundleTracking = bundleOf("SignUp Password ${getString(R.string.error_msg)}" to getString(R.string.hint_required))
 //                TRACKING.logEvent(ALERT_ERROR, bundleTracking)
@@ -85,7 +116,7 @@ class SignUpFragment : Fragment() {
             }
         })
 
-        viewModel.errorFirstNameSignUp.observe(viewLifecycleOwner, {
+        viewModel.errorMessageFirstName.observe(viewLifecycleOwner, {
             if (it) {
                 val bundleTracking = bundleOf("SignUp FirstName ${getString(R.string.error_msg)}" to getString(R.string.hint_required))
 //                TRACKING.logEvent(ALERT_ERROR, bundleTracking)
@@ -95,7 +126,7 @@ class SignUpFragment : Fragment() {
             }
         })
 
-        viewModel.errorLastNameSignUp.observe(viewLifecycleOwner, {
+        viewModel.errorMessageLastName.observe(viewLifecycleOwner, {
             if (it) {
                 val bundleTracking = bundleOf("SignUp LastName ${getString(R.string.error_msg)}" to getString(R.string.hint_required))
 //                TRACKING.logEvent(ALERT_ERROR, bundleTracking)
@@ -105,7 +136,7 @@ class SignUpFragment : Fragment() {
             }
         })
 
-        viewModel.isSignUpLoading.observe(viewLifecycleOwner, { state ->
+        viewModel.isLoading.observe(viewLifecycleOwner, { state ->
             if (state) loadingStart() else loadingStop()
         })
 
@@ -210,7 +241,7 @@ class SignUpFragment : Fragment() {
 
         Snackbar.make(
             binding.signUpBtn,
-            if (!message.isNullOrEmpty()) message else viewModel.errorSignUpMessage.value.toString(),
+            if (!message.isNullOrEmpty()) message else viewModel.errorMessage.value.toString(),
             Snackbar.LENGTH_LONG
         )
             .setTextColor(Color.WHITE)

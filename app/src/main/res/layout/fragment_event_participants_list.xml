@@ -12,6 +12,30 @@
             android:orientation="vertical"
             tools:context=".app.ui.fragment.EventParticipantsFragment">
 
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageButton
+                    android:id="@+id/back_arrow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/ic_round_arrow_back_ios_new"/>
+
+                <TextView
+                    android:id="@+id/participant_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:fontFamily="@font/nuber_next_demi_bold_wide"
+                    android:gravity="center"
+                    android:text="Participants"
+                    android:textColor="@color/colorDesign1"
+                    android:textSize="16sp" />
+
+            </RelativeLayout>
+
             <ProgressBar
                 android:id="@+id/progressBar"
                 style="?android:attr/progressBarStyleHorizontal"
@@ -22,17 +46,6 @@
                 android:indeterminateBehavior="cycle"
                 android:indeterminateTint="@color/colorDesign2"
                 android:visibility="invisible"/>
-
-            <TextView
-                android:id="@+id/participant_title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="48dp"
-                android:fontFamily="@font/nuber_next_demi_bold_wide"
-                android:gravity="center"
-                android:text="Participants (24/24)"
-                android:textColor="@color/colorDesign1"
-                android:textSize="16sp" />
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"

@@ -27,9 +27,6 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         private val TAG = MainActivity::class.java.simpleName
         private lateinit var binding: ActivityMainBinding
         private lateinit var viewModel: ActivityViewModel
-        private lateinit var fragmentViewModel: FragmentViewModel
-        private lateinit var registrationViewModel: RegistrationViewModel
-        private lateinit var eventViewModel: EventViewModel
 
         private val messageReceiver: BroadcastReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent) {

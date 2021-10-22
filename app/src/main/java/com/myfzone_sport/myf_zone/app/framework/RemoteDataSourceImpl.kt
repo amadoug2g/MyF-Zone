@@ -523,21 +523,61 @@ class RemoteDataSourceImpl : RemoteDataSource {
         emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
     }.flowOn(Dispatchers.IO)
 
-    override fun createEvent() {
-        TODO("Not yet implemented")
-    }
+    override fun createEvent(event: Event) = flow {
+            val mEventQuery = DB.collection(EVENT_PATH)
+            event.id = mEventQuery.document().id
 
-    override fun addNewEventToUser() {
-        TODO("Not yet implemented")
-    }
+            emit(State.loading())
 
-    override fun addOwnerToEvent() {
-        TODO("Not yet implemented")
-    }
+            mEventQuery.document(event.id).set(event.toMap()).await()
 
-    override fun getOwnerForNewEvent() {
-        TODO("Not yet implemented")
-    }
+            emit(State.success(event))
+        }.catch {
+            emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
+        }.flowOn(Dispatchers.IO)
+
+    override fun addNewEventToUser(event: Event, owner: EventOwner, club: ClubAffiliation) = flow<State<Event>> {
+            val mCoachEventQuery = DB
+                .document(COACH_PATH + "/${owner.coachId}/ClubAffiliation/${club.clubId}/CoachEvent/${event.id}")
+
+            emit(State.loading())
+
+            mCoachEventQuery.set(event.toMap()).await()
+
+            emit(State.success(event))
+        }.catch {
+            emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
+        }.flowOn(Dispatchers.IO)
+
+    override fun addOwnerToEvent(event: Event, owner: EventOwner) = flow<State<Boolean>> {
+            val mEventQuery = DB
+                .document(EVENT_PATH + "/${event.id}/Owner/${owner.coachId}")
+
+            mEventQuery.set(owner.toMap()).await()
+
+            emit(State.success(true))
+        }.catch {
+            emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
+        }.flowOn(Dispatchers.IO)
+
+    override fun getOwnerForNewEvent() = flow {
+            val userId = activeCoach?.id
+            val mClubQuery = DB
+                .collection(COACH_PATH + "/${userId}/ClubAffiliation")
+
+            emit(State.loading())
+
+            val snapshot = mClubQuery.get().await().documents[0]
+            val currentUserClub = snapshot.toObject(ClubAffiliation::class.java)!!
+
+            val eventOwner = EventOwner().clubToOwner()
+
+            val pair: Pair<EventOwner, ClubAffiliation> = Pair(eventOwner, currentUserClub)
+
+            emit(State.success(pair))
+        }.catch {
+            emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
+        }.flowOn(Dispatchers.IO)
 
     override fun getOwnerToken(ownerId: String) = flow<State<MutableList<String>>> {
         val mOwnerTokenQuery = Constants.DB.document(Constants.COACH_PATH + "/${ownerId}")

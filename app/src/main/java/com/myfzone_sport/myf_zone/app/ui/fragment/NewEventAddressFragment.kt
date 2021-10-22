@@ -13,13 +13,14 @@ class NewEventAddressFragment : Fragment() {
 
     companion object {
         private lateinit var binding: FragmentNewEventAddressBinding
+//        private lateinit var viewModel: NewEventAddressViewModel
+//        private lateinit var viewModelFactory: NewEventViewModelAddressFactory
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // Inflate the layout for this fragment
         binding = DataBindingUtil.inflate(
             inflater,
             R.layout.fragment_new_event_address,
@@ -27,6 +28,14 @@ class NewEventAddressFragment : Fragment() {
             false
         )
 
+        setupViews()
+
         return binding.root
+    }
+
+    private fun setupViews() {
+        binding.exitNewEventAddress.setOnClickListener {
+            requireActivity().onBackPressed()
+        }
     }
 }

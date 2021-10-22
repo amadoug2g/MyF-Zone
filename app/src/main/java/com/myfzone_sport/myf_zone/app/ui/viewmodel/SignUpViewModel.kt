@@ -5,84 +5,61 @@ import androidx.lifecycle.*
 import com.myfzone_sport.myf_zone.domain.State
 import com.myfzone_sport.myf_zone.domain.coach.Coach
 import com.myfzone_sport.myf_zone.usecases.registration.*
-import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.util.*
 
 /**
- * Created by Amadou on 04/09/2021, 16:01
+ * Created by Amadou on 18/10/2021, 22:40
  */
 
-class RegistrationViewModel(
+class SignUpViewModel(
     private val addUserToDatabaseUseCase: AddUserToDatabaseUseCase,
     private val assignDisplayNameUseCase: AssignDisplayNameUseCase,
     private val assignProfileImageUseCase: AssignProfileImageUseCase,
-    private val signInUserUseCase: SignInUserUseCase,
     private val signUpUserUseCase: SignUpUserUseCase
-) : ViewModel() {
+): ViewModel() {
 
     //region Variables
-    //region Sign Up Variables
     val signUpEmail = MutableLiveData<String>()
     val signUpPassword = MutableLiveData<String>()
     val signUpFirstName = MutableLiveData<String>()
     val signUpLastName = MutableLiveData<String>()
 
-    private val _isSignUpLoading = MutableLiveData<Boolean>()
-    val isSignUpLoading = _isSignUpLoading
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading = _isLoading
 
-    private val _errorSignUpMessage = MutableLiveData<String>()
-    val errorSignUpMessage: LiveData<String> = _errorSignUpMessage
+    private val _errorMessage = MutableLiveData<String>()
+    val errorMessage: LiveData<String> = _errorMessage
 
-    private val _errorEmailSignUp = MutableLiveData(false)
-    val errorEmailSignUp = _errorEmailSignUp
+    private val _errorMessageEmail = MutableLiveData(false)
+    val errorMessageEmail = _errorMessageEmail
 
-    private val _errorPasswordSignUp = MutableLiveData(false)
-    val errorPasswordSignUp = _errorPasswordSignUp
+    private val _errorMessagePassword = MutableLiveData(false)
+    val errorMessagePassword = _errorMessagePassword
 
-    private val _errorFirstNameSignUp = MutableLiveData(false)
-    val errorFirstNameSignUp = _errorFirstNameSignUp
+    private val _errorMessageFirstName = MutableLiveData(false)
+    val errorMessageFirstName = _errorMessageFirstName
 
-    private val _errorLastNameSignUp = MutableLiveData(false)
-    val errorLastNameSignUp = _errorLastNameSignUp
+    private val _errorMessageLastName = MutableLiveData(false)
+    val errorMessageLastName = _errorMessageLastName
 
     private val _successfulSignUp = MutableLiveData(false)
     val successfulSignUp = _successfulSignUp
     //endregion
 
-    //region Sign In Variables
-    val signInEmail = MutableLiveData<String>()
-    val signInPassword = MutableLiveData<String>()
-
-    private val _isSignInLoading = MutableLiveData<Boolean>()
-    val isSignInLoading = _isSignInLoading
-
-    private val _errorSignInMessage = MutableLiveData<String>()
-    val errorSignInMessage: LiveData<String> = _errorSignInMessage
-
-    private val _errorEmailSignIn = MutableLiveData(false)
-    val errorEmailSignIn = _errorEmailSignIn
-
-    private val _errorPasswordSignIn = MutableLiveData(false)
-    val errorPasswordSignIn = _errorPasswordSignIn
-
-    private val _successfulSignIn = MutableLiveData(false)
-    val successfulSignIn = _successfulSignIn
-    //endregion
-    //endregion
-
-    //region Sign Up
+    //region Function
     fun signUp() {
         if (validateSignUpForm()) {
-            signUpUser(signInEmail.value!!, signInPassword.value!!)
+            signUpUser(signUpEmail.value!!, signUpPassword.value!!)
         } else {
             onSignUpResult("Fill all sign up fields!")
         }
     }
 
     private fun signUpUser(email: String, password: String) {
-        viewModelScope.launch(IO) {
+        viewModelScope.launch(Dispatchers.IO) {
             signUpUserUseCase.invoke(email, password).collect { state ->
                 when (state) {
                     is State.Loading -> {
@@ -110,16 +87,16 @@ class RegistrationViewModel(
     }
 
     private fun validateSignUpForm(): Boolean {
-        _errorEmailSignUp.value = TextUtils.isEmpty(signUpEmail.value)
-        _errorPasswordSignUp.value = TextUtils.isEmpty(signUpPassword.value)
-        _errorFirstNameSignUp.value = TextUtils.isEmpty(signUpFirstName.value)
-        _errorLastNameSignUp.value = TextUtils.isEmpty(signUpLastName.value)
+        _errorMessageEmail.value = TextUtils.isEmpty(signUpEmail.value)
+        _errorMessagePassword.value = TextUtils.isEmpty(signUpPassword.value)
+        _errorMessageFirstName.value = TextUtils.isEmpty(signUpFirstName.value)
+        _errorMessageLastName.value = TextUtils.isEmpty(signUpLastName.value)
 
-        return (!_errorEmailSignUp.value!! && !_errorPasswordSignUp.value!! && !_errorFirstNameSignUp.value!! && !_errorLastNameSignUp.value!!)
+        return (!_errorMessageEmail.value!! && !_errorMessagePassword.value!! && !_errorMessageFirstName.value!! && !_errorMessageLastName.value!!)
     }
 
     private fun addUserToDatabase(coach: Coach) {
-        viewModelScope.launch(IO) {
+        viewModelScope.launch(Dispatchers.IO) {
             addUserToDatabaseUseCase.invoke(coach).collect { state ->
                 when (state) {
                     is State.Loading -> {
@@ -138,7 +115,7 @@ class RegistrationViewModel(
     }
 
     private fun assignUserName(coach: Coach) {
-        viewModelScope.launch(IO) {
+        viewModelScope.launch(Dispatchers.IO) {
             assignDisplayNameUseCase.invoke(coach).collect { state ->
                 when (state) {
                     is State.Loading -> {
@@ -158,16 +135,16 @@ class RegistrationViewModel(
     }
 
     private fun onSignUpResult(message: String = "") {
-        _errorSignUpMessage.postValue(message)
+        _errorMessage.postValue(message)
         stopSignUpLoading()
     }
 
     private fun startSignUpLoading() {
-        _isSignUpLoading.postValue(true)
+        _isLoading.postValue(true)
     }
 
     private fun stopSignUpLoading() {
-        _isSignUpLoading.postValue(false)
+        _isLoading.postValue(false)
     }
 
     private fun signUpComplete() {
@@ -175,67 +152,12 @@ class RegistrationViewModel(
 
     }
     //endregion
-
-    //region Sign In
-    fun signIn() {
-        if (validateSignInForm()) {
-            signInUser(signInEmail.value!!, signInPassword.value!!)
-        } else {
-            onSignInResult("Fill all sign in fields!")
-        }
-    }
-
-    private fun signInUser(email: String, password: String) {
-        viewModelScope.launch(IO) {
-            signInUserUseCase.invoke(email, password).collect { state ->
-                when (state) {
-                    is State.Loading -> {
-                        startSignInLoading()
-                    }
-                    is State.Success -> {
-                        signInComplete()
-                        onSignInResult()
-                    }
-                    is State.Failed -> {
-                        val message = "Sign in failure: ${state.message}"
-                        onSignInResult(message)
-                    }
-                }
-            }
-        }
-    }
-
-    private fun validateSignInForm(): Boolean {
-        _errorEmailSignIn.value = TextUtils.isEmpty(signInEmail.value)
-        _errorPasswordSignIn.value = TextUtils.isEmpty(signInPassword.value)
-
-        return (!_errorEmailSignIn.value!! && !_errorPasswordSignIn.value!!)
-    }
-
-    private fun onSignInResult(message: String = "") {
-        _errorSignInMessage.postValue(message)
-        stopSignInLoading()
-    }
-
-    private fun startSignInLoading() {
-        _isSignInLoading.postValue(true)
-    }
-
-    private fun stopSignInLoading() {
-        _isSignInLoading.postValue(false)
-    }
-
-    private fun signInComplete() {
-        _successfulSignIn.postValue(true)
-    }
-    //endregion
 }
 
-class RegistrationViewModelFactory(
+class SignUpViewModelFactory(
     private val addUserToDatabaseUseCase: AddUserToDatabaseUseCase,
     private val assignDisplayNameUseCase: AssignDisplayNameUseCase,
     private val assignProfileImageUseCase: AssignProfileImageUseCase,
-    private val signInUserUseCase: SignInUserUseCase,
     private val signUpUserUseCase: SignUpUserUseCase
 ) :
     ViewModelProvider.Factory {
@@ -244,14 +166,12 @@ class RegistrationViewModelFactory(
             AddUserToDatabaseUseCase::class.java,
             AssignDisplayNameUseCase::class.java,
             AssignProfileImageUseCase::class.java,
-            SignInUserUseCase::class.java,
             SignUpUserUseCase::class.java,
         )
             .newInstance(
                 addUserToDatabaseUseCase,
                 assignDisplayNameUseCase,
                 assignProfileImageUseCase,
-                signInUserUseCase,
                 signUpUserUseCase
             )
     }

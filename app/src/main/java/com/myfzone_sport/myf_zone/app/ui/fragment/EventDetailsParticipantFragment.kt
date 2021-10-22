@@ -53,6 +53,29 @@ class EventDetailsParticipantFragment : Fragment() {
             eventId = it.getString(ARG_PARAM1)
         }
 
+        setupViewModel()
+
+        viewModel.assignEventId(eventId!!)
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = DataBindingUtil.inflate(
+            inflater, R.layout.fragment_event_details, container, false
+        )
+
+        setupViews()
+
+        setupObservers()
+
+        return binding.root
+    }
+    //endregion
+
+    //region Setups
+    private fun setupViewModel() {
         val remoteDataSource = RemoteDataSourceImpl()
         val repository = RepositoryImpl(remoteDataSource)
 
@@ -76,28 +99,14 @@ class EventDetailsParticipantFragment : Fragment() {
 
         viewModel = ViewModelProvider(this, viewModelFactory)
             .get(EventDetailsParticipantViewModel::class.java)
-
-        viewModel.assignEventId(eventId!!)
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding = DataBindingUtil.inflate(
-            inflater, R.layout.fragment_event_details, container, false
-        )
-
-        setupViews()
-
-        setupObservers()
-
-        return binding.root
-    }
-    //endregion
-
-    //region Setups
     private fun setupViews() {
+        binding.backArrow.background = null
+
+        binding.backArrow.setOnClickListener {
+            requireActivity().onBackPressed()
+        }
 
         if (isConnected) {
             binding.eventDetailBtnLayout.visibility = View.VISIBLE
@@ -243,18 +252,6 @@ class EventDetailsParticipantFragment : Fragment() {
             .setTextColor(Color.WHITE)
             .setActionTextColor(Color.CYAN)
             .show()
-    }
-
-    private fun showProgressBar() {
-        binding.eventDetailsParticipantShimmerLayout.startShimmer()
-        binding.eventDetailsParticipantShimmerLayout.visibility = View.VISIBLE
-        binding.eventDetailsParticipantShimmerLayout.visibility = View.GONE
-    }
-
-    private fun hideProgressBar() {
-        binding.eventDetailsParticipantShimmerLayout.stopShimmer()
-        binding.eventDetailsParticipantShimmerLayout.visibility = View.GONE
-        binding.eventDetailsParticipantShimmerLayout.visibility = View.VISIBLE
     }
 
     private fun displayUserImage() {

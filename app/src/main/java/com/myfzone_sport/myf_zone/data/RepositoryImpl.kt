@@ -184,20 +184,20 @@ class RepositoryImpl(
         return remoteDataSource.getPlateauEvents()
     }
 
-    override fun createEvent() {
-        remoteDataSource.createEvent()
+    override fun createEvent(event: Event): Flow<State<Event>> {
+        return remoteDataSource.createEvent(event)
     }
 
-    override fun addNewEventToUser() {
-        remoteDataSource.addNewEventToUser()
+    override fun addNewEventToUser(event: Event, owner: EventOwner, club: ClubAffiliation): Flow<State<Event>> {
+        return remoteDataSource.addNewEventToUser(event, owner, club)
     }
 
-    override fun addOwnerToEvent() {
-        remoteDataSource.addOwnerToEvent()
+    override fun addOwnerToEvent(event: Event, owner: EventOwner): Flow<State<Boolean>> {
+        return remoteDataSource.addOwnerToEvent(event, owner)
     }
 
-    override fun getOwnerForNewEvent() {
-        remoteDataSource.getOwnerForNewEvent()
+    override fun getOwnerForNewEvent(): Flow<State<Pair<EventOwner, ClubAffiliation>>> {
+        return remoteDataSource.getOwnerForNewEvent()
     }
 
     override fun getOwnerToken(ownerId: String): Flow<State<MutableList<String>>> {

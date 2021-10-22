@@ -9,6 +9,6 @@ import kotlinx.coroutines.flow.Flow
  * Created by Amadou on 03/09/2021, 19:03
  */
 
-class GetAllEventsUseCase(private val repository: Repository) {
+class GetAllEventsUseCase(val repository: Repository) {
     operator fun invoke() = repository.getAllEvents()
 }

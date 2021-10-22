@@ -8,16 +8,18 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import com.google.android.material.snackbar.Snackbar
 import com.myfzone_sport.myf_zone.R
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.TRACKING
+import com.myfzone_sport.myf_zone.app.framework.RemoteDataSourceImpl
 import com.myfzone_sport.myf_zone.app.ui.activity.MainActivity
-import com.myfzone_sport.myf_zone.app.ui.viewmodel.FragmentViewModel
-import com.myfzone_sport.myf_zone.app.ui.viewmodel.RegistrationViewModel
+import com.myfzone_sport.myf_zone.app.ui.viewmodel.*
+import com.myfzone_sport.myf_zone.data.RepositoryImpl
 import com.myfzone_sport.myf_zone.databinding.FragmentSignInBinding
-import com.myfzone_sport.myf_zone.screens.MainScreen
+import com.myfzone_sport.myf_zone.usecases.registration.SignInUserUseCase
+import com.myfzone_sport.myf_zone.usecases.user.*
 import com.myfzone_sport.myf_zone.util.Tracking
 import org.jetbrains.anko.clearTask
 import org.jetbrains.anko.newTask
@@ -27,10 +29,10 @@ import org.jetbrains.anko.support.v4.toast
 class SignInFragment : Fragment() {
 
     //region Variables
-    private val viewModel by activityViewModels<RegistrationViewModel>()
-
     companion object {
         private lateinit var binding: FragmentSignInBinding
+        private lateinit var viewModel: SignInViewModel
+        private lateinit var viewModelFactory: SignInViewModelFactory
     }
     //endregion
 
@@ -43,6 +45,7 @@ class SignInFragment : Fragment() {
             inflater, R.layout.fragment_sign_in, container, false
         )
 
+        setupViewModel()
         setupViews()
         setupObservers()
 
@@ -50,21 +53,44 @@ class SignInFragment : Fragment() {
             signIn()
         }
 
+        binding.signUpLink.setOnClickListener {
+            requireActivity().onBackPressed()
+        }
+
         return binding.root
     }
     //endregion
 
     //region Setups
+    private fun setupViewModel() {
+        binding.apply {
+            lifecycleOwner = this@SignInFragment
+            executePendingBindings()
+        }
+
+        val remoteDataSource = RemoteDataSourceImpl()
+        val repository = RepositoryImpl(remoteDataSource)
+
+        val signInUserUseCase = SignInUserUseCase(repository)
+
+        viewModelFactory = SignInViewModelFactory(
+            signInUserUseCase
+        )
+
+        viewModel = ViewModelProvider(this, viewModelFactory).get(
+            SignInViewModel::class.java)
+    }
+
     private fun setupViews() {
         binding.viewModel = viewModel
     }
 
     private fun setupObservers() {
-        viewModel.errorSignInMessage.observe(viewLifecycleOwner, {
+        viewModel.errorMessage.observe(viewLifecycleOwner, {
             if (it.isNotEmpty()) showError()
         })
 
-        viewModel.errorEmailSignUp.observe(viewLifecycleOwner, {
+        viewModel.errorMessageEmail.observe(viewLifecycleOwner, {
             if (it) {
                 val bundleTracking = bundleOf("SignIn Email Error" to getString(R.string.hint_required))
 //                TRACKING.logEvent(ALERT_ERROR, bundleTracking)
@@ -74,9 +100,9 @@ class SignInFragment : Fragment() {
             }
         })
 
-        viewModel.errorPasswordSignUp.observe(viewLifecycleOwner, {
+        viewModel.errorMessagePassword.observe(viewLifecycleOwner, {
             if (it) {
-                val bundleTracking = bundleOf("SignIn Password ${getString(R.string.error_msg)}" to getString(R.string.hint_required))
+                val bundleTracking = bundleOf("SignIn Password Error" to getString(R.string.hint_required))
 //                TRACKING.logEvent(ALERT_ERROR, bundleTracking)
                 binding.signInPasswordLayout.error = getString(R.string.hint_required)
             } else {
@@ -84,8 +110,8 @@ class SignInFragment : Fragment() {
             }
         })
 
-        viewModel.isSignUpLoading.observe(viewLifecycleOwner, { state ->
-            if (state) loadingStart() else loadingStop()
+        viewModel.isLoading.observe(viewLifecycleOwner, { contentIsLoading ->
+            if (contentIsLoading) loadingStart() else loadingStop()
         })
 
         viewModel.successfulSignIn.observe(viewLifecycleOwner, { state ->
@@ -128,7 +154,7 @@ class SignInFragment : Fragment() {
 
         Snackbar.make(
             binding.signInBtn,
-            if (!message.isNullOrEmpty()) message else viewModel.errorSignInMessage.value.toString(),
+            if (!message.isNullOrEmpty()) message else viewModel.errorMessage.value.toString(),
             Snackbar.LENGTH_LONG
         )
             .setTextColor(Color.WHITE)

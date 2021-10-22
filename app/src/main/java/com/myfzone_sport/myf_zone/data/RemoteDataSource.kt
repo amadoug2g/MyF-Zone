@@ -125,13 +125,13 @@ interface RemoteDataSource {
     //endregion
 
     //region New Event
-    fun createEvent()
+    fun createEvent(event: Event): Flow<State<Event>>
 
-    fun addNewEventToUser()
+    fun addNewEventToUser(event: Event, owner: EventOwner, club: ClubAffiliation): Flow<State<Event>>
 
-    fun addOwnerToEvent()
+    fun addOwnerToEvent(event: Event, owner: EventOwner): Flow<State<Boolean>>
 
-    fun getOwnerForNewEvent()
+    fun getOwnerForNewEvent(): Flow<State<Pair<EventOwner, ClubAffiliation>>>
     //endregion
 
     //region Notification

@@ -6,7 +6,7 @@
 
         <variable
             name="viewModel"
-            type="com.myfzone_sport.myf_zone.app.ui.viewmodel.RegistrationViewModel" />
+            type="com.myfzone_sport.myf_zone.app.ui.viewmodel.SignInViewModel" />
     </data>
 
     <LinearLayout
@@ -16,7 +16,7 @@
         android:orientation="vertical">
 
         <ProgressBar
-            android:id="@+id/progressBar"
+            android:id="@+id/progress_bar"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -125,7 +125,7 @@
                     android:textSize="16sp" />
 
                 <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/noAccountText"
+                    android:id="@+id/no_account_tText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="64dp"

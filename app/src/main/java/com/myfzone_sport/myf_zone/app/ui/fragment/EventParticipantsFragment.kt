@@ -39,6 +39,7 @@ import org.jetbrains.anko.support.v4.toast
 
 private const val ARG_PARAM1 = "eventId"
 private const val ARG_PARAM2 = "coachRole"
+private const val ARG_PARAM3 = "teamNb"
 
 class EventParticipantsFragment : Fragment() {
 
@@ -49,6 +50,7 @@ class EventParticipantsFragment : Fragment() {
         private lateinit var viewModelFactory: EventParticipantsViewModelFactory
         private var eventId: String? = null
         private var coachRole: String? = null
+        private var teamNb: String? = null
         private var validAdapter: FirestoreRecyclerAdapter<EventParticipant, ValidParticipantHolder>? = null
         private var pendingAdapter: FirestoreRecyclerAdapter<EventParticipant, PendingParticipantHolder>? = null
         private var refusedAdapter: FirestoreRecyclerAdapter<EventParticipant, RefusedParticipantHolder>? = null
@@ -164,6 +166,7 @@ class EventParticipantsFragment : Fragment() {
         arguments?.let {
             eventId = it.getString(ARG_PARAM1)
             coachRole = it.getString(ARG_PARAM2)
+            teamNb = it.getString(ARG_PARAM3)
         }
 
         val remoteDataSource = RemoteDataSourceImpl()
@@ -297,12 +300,19 @@ class EventParticipantsFragment : Fragment() {
 
     private fun setupViews() {
 //        setVisibleRecyclers()
+        binding.backArrow.background = null
+
+        binding.backArrow.setOnClickListener {
+            requireActivity().onBackPressed()
+        }
+
         setupValidRecyclerParameters()
         setupPendingRecyclerParameters()
         setupRefusedRecyclerParameters()
 
         viewModel.eventParticipants.observe(viewLifecycleOwner, {
             binding.participantTitle.text = "Participants (${it.size}/?)"
+//            binding.participantTitle.text = "Participants (${it.size}/$teamNb)"
         })
 
         viewModel.eventParticipantsValid.observe(viewLifecycleOwner, {

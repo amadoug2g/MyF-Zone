@@ -88,30 +88,44 @@ class CategoryListFragment : Fragment() {
             executePendingBindings()
         }
 
+        binding.backArrow.background = null
+
+        binding.backArrow.setOnClickListener {
+            requireActivity().onBackPressed()
+        }
+
         when (listType) {
             "friendly" -> {
                 setFriendlyEventsRecycler()
+                binding.pageTitle.text = "Match Amicaux"
             }
             "tourney" -> {
                 setTourneyEventsRecycler()
+                binding.pageTitle.text = "Tournois"
             }
             "plateau" -> {
                 setPlateauEventsRecycler()
+                binding.pageTitle.text = "Plateaux"
             }
             "userEvent" -> {
                 viewModel.allEventsList.observe(viewLifecycleOwner, { list ->
                     viewModel.getUserEvents(list)
                 })
+                binding.pageTitle.text = "Vos évènements"
                 setUserEventsRecycler()
             }
             "categoryEvent" -> {
                 setCategoryEventsRecycler()
+                binding.pageTitle.text = "Évènements"
             }
             "userParticipation" -> {
+                binding.pageTitle.text = "Vos participations"
             }
             "coachEvent" -> {
+                binding.pageTitle.text = "Ses évènements"
             }
             "coachParticipation" -> {
+                binding.pageTitle.text = "Ses participations"
             }
         }
     }

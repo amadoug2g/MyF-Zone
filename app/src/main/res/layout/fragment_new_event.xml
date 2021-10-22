@@ -2,6 +2,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <data>
+
+        <variable
+            name="event"
+            type="com.myfzone_sport.myf_zone.domain.event.Event" />
+    </data>
+
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -13,7 +20,7 @@
             android:layout_marginTop="16dp">
 
             <ImageView
-                android:id="@+id/exitProfile"
+                android:id="@+id/exit_new_event"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_alignParentStart="true"
@@ -23,20 +30,6 @@
                 android:src="@drawable/exit_button_2x"
                 android:visibility="visible" />
 
-            <androidx.appcompat.widget.LinearLayoutCompat
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true">
-
-                <ImageView
-
-                    android:id="@+id/profileSettings"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_marginEnd="16dp"
-                    android:contentDescription="@string/settings_button"
-                    android:src="@drawable/settings_gear_2x" />
-            </androidx.appcompat.widget.LinearLayoutCompat>
         </RelativeLayout>
 
         <ScrollView
@@ -69,6 +62,17 @@
                     android:textColor="@color/colorDesign1Transparent80"
                     android:textSize="12sp" />
 
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:indeterminate="true"
+                    android:indeterminateBehavior="cycle"
+                    android:indeterminateTint="@color/colorDesign2"
+                    android:visibility="invisible" />
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -78,16 +82,30 @@
                     android:fontFamily="@font/gilroy_medium"
                     android:text="Titre"
                     android:textColor="@color/colorDesign1Transparent75"
-                    android:textSize="12sp" />
+                    android:textSize="12sp"
+                    android:visibility="gone" />
 
-                <androidx.appcompat.widget.AppCompatSpinner
-                    android:id="@+id/sportSpinner"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/sign_in_email_layout"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="11dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="32dp"
                     android:layout_marginEnd="16dp"
-                    android:entries="@array/sportList"
-                    android:spinnerMode="dialog" />
+                    android:hint="@string/event_title"
+                    android:transitionName="@string/email_trans"
+                    app:boxBackgroundColor="@color/colorAccentTransparent">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/sign_in_email_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/gilroy_medium"
+                        android:inputType="textEmailAddress"
+                        android:textColor="@color/colorDesign1" />
+
+                </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/login_email_layout"
@@ -95,7 +113,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
-                    android:layout_marginTop="32dp"
+                    android:layout_marginTop="24dp"
                     android:layout_marginEnd="16dp"
                     android:hint="Description"
                     android:transitionName="@string/email_trans"

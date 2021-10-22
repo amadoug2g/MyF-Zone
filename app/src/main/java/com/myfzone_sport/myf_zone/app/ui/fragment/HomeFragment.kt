@@ -132,8 +132,7 @@ class HomeFragment : Fragment() {
         }
 
         binding.homeCreateEventBtn.setOnClickListener {
-//            checkStatusDestination("new event")
-//            signOut()
+            checkStatusDestination("new event")
         }
     }
 
@@ -200,6 +199,8 @@ class HomeFragment : Fragment() {
 
         viewModel.userEventsList.observe(viewLifecycleOwner, {
             adapterUserEvents.setData(it)
+
+            binding.userEventLayout.title.text = "Vos évènements (${it.size})"
         })
     }
     //endregion

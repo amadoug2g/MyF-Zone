@@ -167,6 +167,7 @@ class ProfileFragment : Fragment() {
             if (it.isNotEmpty()) {
                 adapterUserEvents.setData(it)
             }
+            binding.userEventLayout.title.text = "Mes évènements (${it.size})"
         })
     }
 
@@ -182,6 +183,7 @@ class ProfileFragment : Fragment() {
             if (it.isNotEmpty()) {
                 adapterUserParticipations.setData(it)
             }
+            binding.participationTitle.text = "Mes participations (${it.size})"
         })
     }
     //endregion
