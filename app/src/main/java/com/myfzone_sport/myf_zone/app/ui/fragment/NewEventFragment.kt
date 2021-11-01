@@ -1,20 +1,34 @@
 package com.myfzone_sport.myf_zone.app.ui.fragment
 
+import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.content.Context
+import android.content.DialogInterface
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
+import android.widget.ArrayAdapter
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.widget.Autocomplete
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.myfzone_sport.myf_zone.R
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.TRACKING
 import com.myfzone_sport.myf_zone.app.framework.RemoteDataSourceImpl
 import com.myfzone_sport.myf_zone.app.ui.viewmodel.NewEventViewModel
 import com.myfzone_sport.myf_zone.app.ui.viewmodel.NewEventViewModelFactory
@@ -25,12 +39,31 @@ import com.myfzone_sport.myf_zone.usecases.newevent.AddNewEventToUserUseCase
 import com.myfzone_sport.myf_zone.usecases.newevent.AddOwnerToEventUseCase
 import com.myfzone_sport.myf_zone.usecases.newevent.CreateEventUseCase
 import com.myfzone_sport.myf_zone.usecases.newevent.GetOwnerForNewEventUseCase
+import com.myfzone_sport.myf_zone.util.Constants
+import com.myfzone_sport.myf_zone.util.Tracking
+import com.myfzone_sport.myf_zone.util.Tracking.ALERT_ERROR
+import org.jetbrains.anko.sdk27.coroutines.onItemSelectedListener
+import org.jetbrains.anko.support.v4.toast
 import java.text.SimpleDateFormat
 import java.util.*
 
 class NewEventFragment : Fragment() {
 
     //region Variables
+    private val activityLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val data: Intent? = result.data
+                if (data != null) {
+                    val place = Autocomplete.getPlaceFromIntent(data)
+                    binding.eventCreateAddressInput.setText(place.address)
+                    event.address = place.address!!
+                    event.lat = place.latLng?.latitude!!
+                    event.lng = place.latLng?.longitude!!
+                }
+            }
+        }
+
     companion object {
         private lateinit var binding: FragmentNewEventBinding
         private lateinit var viewModel: NewEventViewModel
@@ -62,6 +95,24 @@ class NewEventFragment : Fragment() {
 
         return binding.root
     }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
+                if (data != null) {
+                    val place = Autocomplete.getPlaceFromIntent(data)
+                    binding.eventCreateAddressInput.setText(place.address)
+//                    viewModel.setEventAddress(place)
+//                    viewModel.assignAddress(place)
+                    event.address = place.address!!
+                    event.lat = place.latLng?.latitude!!
+                    event.lng = place.latLng?.longitude!!
+
+                    binding.progressBar.hideKeyboard()
+                }
+            }
+        }
+    }
     //endregion
 
     //region Setups
@@ -86,8 +137,11 @@ class NewEventFragment : Fragment() {
     }
 
     private fun setupViews() {
-//        setStartDate()
-        Places.initialize(requireContext(), getString(R.string.google_maps_key))
+
+        binding.viewModel = viewModel
+
+        setStartDate()
+        setupFields()
 
         binding.apply {
             lifecycleOwner = this@NewEventFragment
@@ -96,6 +150,22 @@ class NewEventFragment : Fragment() {
 
         binding.exitNewEvent.setOnClickListener {
             requireActivity().onBackPressed()
+        }
+
+        binding.eventCreateDayPicker.setOnClickListener {
+            selectDate()
+        }
+
+        binding.eventCreateTimePicker.setOnClickListener {
+            selectTime()
+        }
+
+        binding.eventCreateAddressInput.setOnClickListener {
+            setupAddressIntent(viewModel.fields.value!!)
+        }
+
+        binding.eventCreateButton.setOnClickListener {
+            confirmCreation()
         }
     }
 
@@ -107,44 +177,66 @@ class NewEventFragment : Fragment() {
         viewModel.isLoading.observe(viewLifecycleOwner, { contentIsLoading ->
             if (contentIsLoading) loadingStart() else loadingStop()
         })
-    }
 
-    private fun setupEventClicks() {
-        binding.eventCreateDayPicker.setOnClickListener {
-            selectDate()
-        }
+        viewModel.errorMessageTitle.observe(viewLifecycleOwner, {
+            if (it) {
+                val bundleTracking = bundleOf("New Event Title Error" to getString(R.string.hint_required))
+                TRACKING.logEvent(ALERT_ERROR, bundleTracking)
+                binding.titleLayout.error = getString(R.string.hint_required)
+            } else {
+                binding.titleLayout.error = null
+            }
+        })
 
-        binding.eventCreateDateLayout.setEndIconOnClickListener {
-            selectDate()
-        }
+        viewModel.errorMessageDesc.observe(viewLifecycleOwner, {
+            if (it) {
+                val bundleTracking = bundleOf("New Event Description Error" to getString(R.string.hint_required))
+                TRACKING.logEvent(ALERT_ERROR, bundleTracking)
+                binding.descriptionLayout.error = getString(R.string.hint_required)
+            } else {
+                binding.descriptionLayout.error = null
+            }
+        })
 
-        binding.eventCreateTimePicker.setOnClickListener {
-            selectTime()
-        }
-
-        binding.eventCreateTimeLayout.setEndIconOnClickListener {
-            selectTime()
-        }
-
-//        binding.eventCreateTypeInput.setOnClickListener {
-//            binding.eventCreateTypeSpinner.performClick()
-//        }
-//
-//        binding.eventCreateTypeLayout.setEndIconOnClickListener {
-//            binding.eventCreateTypeSpinner.performClick()
-//        }
-//
-//        binding.eventCreateTeamInput.setOnClickListener {
-//            binding.eventCreateTeamSpinner.performClick()
-//        }
-//
-//        binding.eventCreateTeamLayout.setEndIconOnClickListener {
-//            binding.eventCreateTeamSpinner.performClick()
-//        }
+        viewModel.successfulEventCreation.observe(viewLifecycleOwner, { state ->
+            if (state) {
+                Constants.TRACKING.logEvent(Tracking.EVENT_CREATION_DONE, null)
+                (getString(R.string.event_created)).toast()
+                requireActivity().onBackPressed()
+            }
+        })
     }
 
     private fun setupFields() {
+        Places.initialize(requireContext(), getString(R.string.google_maps_key))
 
+        binding.typeSpinner.setSelection(0)
+        binding.teamNumberSpinner.setSelection(0)
+
+        binding.typeSpinner.onItemSelectedListener {
+            onItemSelected { _, _, _, selected ->
+                val longVal: Long = 0
+                if (selected == longVal) {
+                    val list = resources.getStringArray(R.array.amicalTeamList)
+                    val adapter = ArrayAdapter(requireContext(), R.layout.simple_layout_file, list)
+                    binding.teamNumberSpinner.isEnabled = false
+                    binding.teamNumberSpinner.adapter = adapter
+                } else {
+                    val list = resources.getStringArray(R.array.teamList)
+                    val adapter = ArrayAdapter(requireContext(), R.layout.simple_layout_file, list)
+                    binding.teamNumberSpinner.isEnabled = true
+                    binding.teamNumberSpinner.adapter = adapter
+                }
+            }
+        }
+    }
+
+    private fun setupAddressIntent(fields: MutableList<Place.Field>) {
+        val intent = Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, fields)
+            .setHint(getString(R.string.enter_address_hint))
+            .build(requireContext())
+
+        activityLauncher.launch(intent)
     }
     //endregion
 
@@ -164,6 +256,7 @@ class NewEventFragment : Fragment() {
                 binding.eventCreateDayPicker.text =
                     SimpleDateFormat("dd/MM/y", Locale.FRANCE).format(cal.time).toEditable()
                 eventDay1 = SimpleDateFormat("E MMM dd", Locale.ENGLISH).format(cal.time)
+
                 eventDay2 = SimpleDateFormat("z yyyy", Locale.ENGLISH).format(cal.time)
             },
             year,
@@ -191,6 +284,25 @@ class NewEventFragment : Fragment() {
             true
         ).show()
     }
+
+    private fun confirmCreation() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(getString(R.string.create_event))
+            .setMessage(getString(R.string.create_event_confirmation))
+            .setIcon(R.drawable.ic_info)
+            .setPositiveButton(getString(R.string.create_txt)) { _: DialogInterface, _: Int ->
+                createEvent()
+            }.setNegativeButton(getString(R.string.cancel_message)) { _: DialogInterface, _: Int ->
+            }.show()
+    }
+
+    private fun createEvent() {
+        viewModel.assignEventText(event)
+        viewModel.setEventDate(eventDay1!!, eventDay2!!, eventTime!!, event)
+        viewModel.setEventType(binding.typeSpinner.selectedItem.toString(), event)
+        viewModel.setEventTeam(binding.teamNumberSpinner.selectedItem.toString().toInt(), event)
+        viewModel.newEvent(event)
+    }
     //endregion
 
     //region Navigation
@@ -206,6 +318,10 @@ class NewEventFragment : Fragment() {
         binding.eventCreateDayPicker.text = getString(R.string.event_creation_date_btn).toEditable()
         binding.eventCreateTimePicker.text =
             getString(R.string.event_creation_time_btn).toEditable()
+    }
+
+    private fun String.toast() {
+        toast(this)
     }
 
     private fun loadingStart() {
@@ -229,5 +345,10 @@ class NewEventFragment : Fragment() {
     }
 
     private fun String.toEditable(): Editable = Editable.Factory.getInstance().newEditable(this)
+
+    private fun View.hideKeyboard() {
+        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(windowToken, 0)
+    }
     //endregion
 }

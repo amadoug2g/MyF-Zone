@@ -17,6 +17,7 @@ import com.myfzone_sport.myf_zone.R
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoach
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoachClub
 import com.myfzone_sport.myf_zone.app.framework.RemoteDataSourceImpl
+import com.myfzone_sport.myf_zone.app.ui.adapter.CategoryListEventAdapter
 import com.myfzone_sport.myf_zone.app.ui.adapter.UserEventAdapter
 import com.myfzone_sport.myf_zone.app.ui.viewmodel.*
 import com.myfzone_sport.myf_zone.data.RepositoryImpl
@@ -36,7 +37,7 @@ class ProfileFragment : Fragment() {
         private lateinit var binding: FragmentProfile2Binding
         private lateinit var viewModel: ProfileViewModel
         private lateinit var viewModelFactory: ProfileViewModelFactory
-        private lateinit var adapterUserEvents: UserEventAdapter
+        private lateinit var adapterUserEvents: CategoryListEventAdapter
         private lateinit var adapterUserParticipations: UserEventAdapter
     }
     //endregion
@@ -129,6 +130,15 @@ class ProfileFragment : Fragment() {
         viewModel.isLoading.observe(viewLifecycleOwner, { contentIsLoading ->
             if (contentIsLoading) loadingStart() else loadingStop()
         })
+
+        viewModel.coach.observe(viewLifecycleOwner, {
+            binding.coach = it
+        })
+
+        viewModel.coachClub.observe(viewLifecycleOwner, {
+            binding.club = it
+            Log.i("TAG","it! $it")
+        })
     }
 
     private fun setupProfile() {
@@ -156,7 +166,7 @@ class ProfileFragment : Fragment() {
 
     //region RecyclerView
     private fun setUpUserEventsRecycler() {
-        adapterUserEvents = UserEventAdapter()
+        adapterUserEvents = CategoryListEventAdapter()
         binding.userEventLayout.recyclerView.adapter = adapterUserEvents
         binding.userEventLayout.recyclerView.layoutManager =
             LinearLayoutManager(requireContext())

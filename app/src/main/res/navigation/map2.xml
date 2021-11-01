@@ -12,7 +12,7 @@
         android:label="Map2">
         <action
             android:id="@+id/mapFragmentToEventDetailsFragment"
-            app:destination="@id/event_details" />
+            app:destination="@id/event_details_for_participant" />
     </fragment>
-    <include app:graph="@navigation/event_details" />
+    <include app:graph="@navigation/event_details_for_participant" />
 </navigation>

@@ -89,7 +89,6 @@
                         app:layout_constraintTop_toTopOf="parent">
 
                         <ImageView
-                            android:id="@+id/event_detail_map"
                             android:layout_width="match_parent"
                             android:layout_height="110dp"
                             android:background="@color/colorDesign1Transparent80"
@@ -97,6 +96,13 @@
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
+
+                        <include
+                            android:id="@+id/event_detail_map"
+                            layout="@layout/event_map_preview"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"/>
 
                         <ImageView
                             android:id="@+id/event_detail_date"

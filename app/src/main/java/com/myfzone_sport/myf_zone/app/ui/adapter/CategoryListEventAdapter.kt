@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.navigation.Navigation
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -53,8 +54,21 @@ class CategoryListEventAdapter : ListAdapter<Event, CategoryListEventAdapter.MyV
             }
 
             binding.cardView.setOnClickListener {
-                val bundle = bundleOf("eventId" to event.id, "coachRole" to "owner")
-                navigate(R.id.categoryListFragmentToEventDetailsParticipantFragment, bundle, it)
+                val bundle = bundleOf("eventId" to event.id)
+                when (it.findNavController().currentDestination?.label) {
+                    "Category List" -> {
+                        if (isConnected && isAffiliated) {
+                            navigate(R.id.categoryListFragmentToEventDetailsParticipantFragment, bundle, it)
+                        } else {
+                            navigate(R.id.categoryListFragmentToEventDetailsGuestFragment, bundle, it)
+                        }
+                    }
+                    "Profil" -> {
+                        navigate(R.id.profileFragmentToEventDetailsOwnerFragment, bundle, it)
+                    }
+                    else -> {
+                    }
+                }
 
 //                if (isConnected) {
 //                    if (isAffiliated) {

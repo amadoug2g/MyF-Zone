@@ -20,7 +20,33 @@
     
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageButton
+                android:id="@+id/back_arrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_centerVertical="true"
+                android:src="@drawable/ic_round_arrow_back_ios_new"/>
+
+            <TextView
+                android:id="@+id/page_title"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:fontFamily="@font/nuber_next_demi_bold_wide"
+                android:gravity="center"
+                android:text="Détails"
+                android:textColor="@color/colorDesign1"
+                android:textSize="16sp" />
+        </RelativeLayout>
+
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -64,7 +90,6 @@
                         app:layout_constraintTop_toTopOf="parent">
 
                         <ImageView
-                            android:id="@+id/event_detail_map"
                             android:layout_width="match_parent"
                             android:layout_height="110dp"
                             android:background="@color/colorDesign1Transparent80"
@@ -72,6 +97,13 @@
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
+
+                        <include
+                            android:id="@+id/event_detail_map"
+                            layout="@layout/event_map_preview"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"/>
 
                         <ImageView
                             android:id="@+id/event_detail_date"

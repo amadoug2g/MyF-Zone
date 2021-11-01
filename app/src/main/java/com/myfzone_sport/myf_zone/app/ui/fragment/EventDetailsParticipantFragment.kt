@@ -1,19 +1,23 @@
 package com.myfzone_sport.myf_zone.app.ui.fragment
 
 import android.content.DialogInterface
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.text.LineBreaker.JUSTIFICATION_MODE_INTER_WORD
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.MapsInitializer
+import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.myfzone_sport.myf_zone.R
@@ -24,12 +28,13 @@ import com.myfzone_sport.myf_zone.app.ui.viewmodel.EventDetailsParticipantViewMo
 import com.myfzone_sport.myf_zone.app.ui.viewmodel.EventDetailsParticipantViewModelFactory
 import com.myfzone_sport.myf_zone.data.RepositoryImpl
 import com.myfzone_sport.myf_zone.databinding.FragmentEventDetailsBinding
+import com.myfzone_sport.myf_zone.domain.event.Event
 import com.myfzone_sport.myf_zone.glide.GlideApp
 import com.myfzone_sport.myf_zone.usecases.detailevent.*
 import com.myfzone_sport.myf_zone.usecases.notification.GetOwnerTokenUseCase
 import com.myfzone_sport.myf_zone.usecases.user.GetImageReferenceUseCase
 import com.myfzone_sport.myf_zone.util.Tracking
-import org.jetbrains.anko.backgroundColor
+import java.util.*
 
 private const val ARG_PARAM1 = "eventId"
 
@@ -66,7 +71,7 @@ class EventDetailsParticipantFragment : Fragment() {
             inflater, R.layout.fragment_event_details, container, false
         )
 
-        setupViews()
+        setupViews(savedInstanceState)
 
         setupObservers()
 
@@ -101,7 +106,7 @@ class EventDetailsParticipantFragment : Fragment() {
             .get(EventDetailsParticipantViewModel::class.java)
     }
 
-    private fun setupViews() {
+    private fun setupViews(savedInstanceState: Bundle?) {
         binding.backArrow.background = null
 
         binding.backArrow.setOnClickListener {
@@ -139,7 +144,11 @@ class EventDetailsParticipantFragment : Fragment() {
 //            if (viewModel.is)
         }
 
-        setupEvent()
+        binding.eventDetailContactLayout.setOnClickListener {
+            navigate(R.id.eventDetailsToMessageFragment)
+        }
+
+        setupEvent(savedInstanceState)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             binding.eventDetailDescription.justificationMode = JUSTIFICATION_MODE_INTER_WORD
@@ -158,6 +167,34 @@ class EventDetailsParticipantFragment : Fragment() {
             val participantCount =
                 "Participants (${viewModel.validParticipantCount.value}/${event.nbTeam})"
             binding.participantCount.text = participantCount
+        })
+    }
+
+    private fun setupObservers() {
+        viewModel.errorMessage.observe(viewLifecycleOwner, {
+            if (it.isNotEmpty()) showError()
+        })
+
+        viewModel.isLoading.observe(viewLifecycleOwner, { contentIsLoading ->
+            if (contentIsLoading) loadingStart() else loadingStop()
+        })
+    }
+    //endregion
+
+    //region Event
+    private fun setupEvent(savedInstanceState: Bundle?) {
+        viewModel.event.observe(viewLifecycleOwner, { event ->
+            binding.event = event
+            mapPreview(event, savedInstanceState)
+        })
+
+        viewModel.userImagePath.observe(viewLifecycleOwner, {
+            displayUserImage()
+        })
+
+        viewModel.eventOwner.observe(viewLifecycleOwner, { owner ->
+            binding.owner = owner
+            viewModel.getImageReference(owner.clubLogo)
         })
     }
 
@@ -194,29 +231,36 @@ class EventDetailsParticipantFragment : Fragment() {
             .show()
     }
 
-    private fun setupObservers() {
-        viewModel.errorMessage.observe(viewLifecycleOwner, {
-            if (it.isNotEmpty()) showError()
-        })
+    private fun mapPreview(event: Event, savedInstanceState: Bundle?) {
+        binding.eventDetailMap.eventDetailMap.onCreate(savedInstanceState)
+        binding.eventDetailMap.eventDetailMap.onResume()
 
-        viewModel.isLoading.observe(viewLifecycleOwner, { contentIsLoading ->
-            if (contentIsLoading) loadingStart() else loadingStop()
-        })
-    }
+        MapsInitializer.initialize(requireActivity().applicationContext)
 
-    private fun setupEvent() {
-        viewModel.event.observe(viewLifecycleOwner, { event ->
-            binding.event = event
-        })
+        binding.eventDetailMap.eventDetailMap.getMapAsync { map ->
+            val markerOptions = MarkerOptions().apply {
+                position(event.getPosition())
+                snippet(event.address)
+            }
 
-        viewModel.userImagePath.observe(viewLifecycleOwner, {
-            displayUserImage()
-        })
+            map.apply {
+                uiSettings.apply {
+                    setAllGesturesEnabled(false)
+                    isZoomControlsEnabled = false
+                    isRotateGesturesEnabled = false
+                    isScrollGesturesEnabled = false
+                    isScrollGesturesEnabledDuringRotateOrZoom = false
+                    isZoomControlsEnabled = false
+                    isTiltGesturesEnabled = false
+                }
 
-        viewModel.eventOwner.observe(viewLifecycleOwner, { owner ->
-            binding.owner = owner
-            viewModel.getImageReference(owner.clubLogo)
-        })
+                setPadding(0, 0, 0, 40)
+                addMarker(markerOptions)
+                moveCamera(CameraUpdateFactory.newLatLngZoom(event.getPosition(), 14f))
+                setOnMapClickListener { redirectToMap(event.address) }
+                setOnMarkerClickListener { true }
+            }
+        }
     }
     //endregion
 
@@ -225,6 +269,16 @@ class EventDetailsParticipantFragment : Fragment() {
         Navigation
             .findNavController(this.requireView())
             .navigate(destination, extra)
+    }
+
+    private fun redirectToMap(position: String) {
+        val uri =
+            java.lang.String.format(
+                Locale.FRANCE,
+                "geo:0,0?q=$position"
+            )
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(uri))
+        requireContext().startActivity(intent)
     }
     //endregion
 

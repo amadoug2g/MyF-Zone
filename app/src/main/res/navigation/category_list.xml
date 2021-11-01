@@ -13,6 +13,14 @@
         <action
             android:id="@+id/categoryListFragmentToEventDetailsParticipantFragment"
             app:destination="@id/event_details_for_participant" />
+        <action
+            android:id="@+id/categoryListFragmentToEventDetailsOwnerFragment"
+            app:destination="@id/event_details_for_owner" />
+        <action
+            android:id="@+id/categoryListFragmentToEventDetailsGuestFragment"
+            app:destination="@id/event_details_for_guest" />
     </fragment>
     <include app:graph="@navigation/event_details_for_participant" />
+    <include app:graph="@navigation/event_details_for_owner" />
+    <include app:graph="@navigation/event_details_for_guest" />
 </navigation>

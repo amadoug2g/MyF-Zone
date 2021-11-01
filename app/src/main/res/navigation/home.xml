@@ -30,7 +30,7 @@
             app:destination="@id/map2" />
         <action
             android:id="@+id/homeFragmentToEventDetailsFragment"
-            app:destination="@id/event_details" />
+            app:destination="@id/event_details_for_participant" />
         <action
             android:id="@+id/homeFragmentToEventDetailsOwner"
             app:destination="@id/event_details_for_owner" />
@@ -41,6 +41,6 @@
     <include app:graph="@navigation/profil" />
     <include app:graph="@navigation/message2" />
     <include app:graph="@navigation/map2" />
-    <include app:graph="@navigation/event_details" />
+    <include app:graph="@navigation/event_details_for_participant" />
     <include app:graph="@navigation/event_details_for_owner" />
 </navigation>

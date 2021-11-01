@@ -6,13 +6,13 @@ apply plugin: 'com.google.gms.google-services'
 apply plugin: "androidx.navigation.safeargs.kotlin"
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
     buildToolsVersion "30.0.2"
 
     defaultConfig {
         applicationId "com.myfzone_sport.myf_zone"
         minSdkVersion 21
-        targetSdkVersion 30
+        targetSdkVersion 31
         versionCode 23
         versionName "1.1.4"
 
@@ -123,7 +123,7 @@ dependencies {
     implementation 'com.firebaseui:firebase-ui-firestore:4.1.0'
     implementation 'androidx.paging:paging-runtime-ktx:3.0.1'
     //messaging
-    implementation 'com.google.firebase:firebase-messaging:22.0.0'
+    implementation 'com.google.firebase:firebase-messaging:21.1.0'
     //functions
     implementation 'com.google.firebase:firebase-functions-ktx:20.0.1'
 }

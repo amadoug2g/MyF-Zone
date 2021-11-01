@@ -13,6 +13,10 @@
         <action
             android:id="@+id/eventDetailsToEventParticipants"
             app:destination="@id/event_participants" />
+        <action
+            android:id="@+id/eventDetailsToMessageFragment"
+            app:destination="@id/message2" />
     </fragment>
     <include app:graph="@navigation/event_participants" />
+    <include app:graph="@navigation/message2" />
 </navigation>

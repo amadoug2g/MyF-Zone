@@ -75,6 +75,10 @@ class HomeViewModel(
     //region Functions
     init {
         getUser()
+        initializeHome()
+    }
+
+    fun initializeHome() {
         getUserAffiliation()
         getAllEvents()
     }
@@ -115,7 +119,7 @@ class HomeViewModel(
                 resultNotOwner.add(event)
             }
 
-        _userEventsList.postValue(resultOwner)
+        _userEventsList.postValue(resultOwner.asReversed())
 
         getCloseEvents(resultNotOwner, club)
     }

@@ -2,6 +2,18 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <data>
+
+        <variable
+            name="event"
+            type="com.myfzone_sport.myf_zone.domain.event.Event" />
+
+        <variable
+            name="validCount"
+            type="Integer" />
+
+    </data>
+
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -30,7 +42,7 @@
                     android:layout_height="48dp"
                     android:fontFamily="@font/nuber_next_demi_bold_wide"
                     android:gravity="center"
-                    android:text="Participants"
+                    android:text="@{`Participants (` + String.valueOf(validCount) + `/` + String.valueOf(event.nbTeam) + `)`}"
                     android:textColor="@color/colorDesign1"
                     android:textSize="16sp" />
 
@@ -66,65 +78,12 @@
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="8dp"
                         android:fontFamily="@font/nuber_next_demi_bold_wide"
-                        android:text="3 Validés"
+                        android:text="@{String.valueOf(validCount) + ` Validés`}"
                         android:textColor="@color/colorDesign1"
                         android:textSize="16sp" />
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/valid_coach_recycler_view"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:scrollbarThumbHorizontal="@drawable/home_scrollbar_thumb"
-                        android:scrollbarTrackHorizontal="@drawable/home_scrollbar_track" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/pending_coach_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="24dp"
-                    android:orientation="vertical"
-                    app:layout_constraintTop_toBottomOf="@id/valid_coach_layout">
-
-                    <TextView
-                        android:id="@+id/pending_coach_title"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
-                        android:fontFamily="@font/nuber_next_demi_bold_wide"
-                        android:text="3 En Attente"
-                        android:textColor="@color/colorDesign1"
-                        android:textSize="16sp" />
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/pending_coach_recycler_view"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:scrollbarThumbHorizontal="@drawable/home_scrollbar_thumb"
-                        android:scrollbarTrackHorizontal="@drawable/home_scrollbar_track" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/refused_coach_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="24dp"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/refused_coach_title"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
-                        android:fontFamily="@font/nuber_next_demi_bold_wide"
-                        android:text="3 Refusés"
-                        android:textColor="@color/colorDesign1"
-                        android:textSize="16sp" />
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/refused_coach_recycler_view"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:scrollbarThumbHorizontal="@drawable/home_scrollbar_thumb"

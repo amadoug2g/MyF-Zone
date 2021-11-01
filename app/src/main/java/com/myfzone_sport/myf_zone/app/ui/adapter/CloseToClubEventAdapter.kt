@@ -1,11 +1,18 @@
 package com.myfzone_sport.myf_zone.app.ui.adapter
 
+import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
+import androidx.navigation.Navigation
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.myfzone_sport.myf_zone.R
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService
 import com.myfzone_sport.myf_zone.databinding.HomeCloseToClubCardviewBinding
 import com.myfzone_sport.myf_zone.domain.event.Event
 
@@ -45,11 +52,15 @@ class CloseToClubEventAdapter : ListAdapter<Event, CloseToClubEventAdapter.MyVie
             }
 
             binding.cardView.setOnClickListener {
-//                val action = ListFragmentDirections.listFragmentToDetailFragment(event.id)
-//                navController.navigate(action)
-
-                Log.i("", "Clicked ${event.title}")
+                val bundle = bundleOf("eventId" to event.id)
+                navigate(R.id.homeFragmentToEventDetailsFragment, bundle, it)
             }
+        }
+
+        private fun navigate(destination: Int, extra: Bundle? = null, view: View) {
+            Navigation
+                .findNavController(view)
+                .navigate(destination, extra)
         }
 
         companion object {
@@ -64,12 +75,12 @@ class CloseToClubEventAdapter : ListAdapter<Event, CloseToClubEventAdapter.MyVie
 
     class TaskDiffCallBack : DiffUtil.ItemCallback<Event>() {
         override fun areItemsTheSame(oldItem: Event, newItem: Event): Boolean {
-            Log.d("TAG", Thread.currentThread().name)
+//            Log.d("TAG", Thread.currentThread().name)
             return oldItem.id == newItem.id;
         }
 
         override fun areContentsTheSame(oldItem: Event, newItem: Event): Boolean {
-            Log.d("TAG", Thread.currentThread().name)
+//            Log.d("TAG", Thread.currentThread().name)
             return oldItem == newItem
         }
     }

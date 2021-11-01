@@ -10,6 +10,7 @@
         android:visibility="gone">
 
         <RelativeLayout
+            android:id="@+id/relative_layout"
             android:layout_width="match_parent"
             android:layout_height="30dp"
             android:orientation="horizontal">
@@ -43,7 +44,6 @@
                 android:textSize="12sp" />
 
         </RelativeLayout>
-
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"

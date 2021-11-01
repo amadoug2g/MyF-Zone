@@ -307,7 +307,7 @@ class RemoteDataSourceImpl : RemoteDataSource {
         snapshot.forEach {
             val event = it.toObject<Event>()
 //            if (event.date.time > now.time)
-                eventList.add(event)
+            eventList.add(event)
         }
 
 //        eventList.forEach { event ->
@@ -524,19 +524,20 @@ class RemoteDataSourceImpl : RemoteDataSource {
     }.flowOn(Dispatchers.IO)
 
     override fun createEvent(event: Event) = flow {
-            val mEventQuery = DB.collection(EVENT_PATH)
-            event.id = mEventQuery.document().id
+        val mEventQuery = DB.collection(EVENT_PATH)
+        event.id = mEventQuery.document().id
 
-            emit(State.loading())
+        emit(State.loading())
 
-            mEventQuery.document(event.id).set(event.toMap()).await()
+        mEventQuery.document(event.id).set(event.toMap()).await()
 
-            emit(State.success(event))
-        }.catch {
-            emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
-        }.flowOn(Dispatchers.IO)
+        emit(State.success(event))
+    }.catch {
+        emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
+    }.flowOn(Dispatchers.IO)
 
-    override fun addNewEventToUser(event: Event, owner: EventOwner, club: ClubAffiliation) = flow<State<Event>> {
+    override fun addNewEventToUser(event: Event, owner: EventOwner, club: ClubAffiliation) =
+        flow {
             val mCoachEventQuery = DB
                 .document(COACH_PATH + "/${owner.coachId}/ClubAffiliation/${club.clubId}/CoachEvent/${event.id}")
 
@@ -550,34 +551,35 @@ class RemoteDataSourceImpl : RemoteDataSource {
         }.flowOn(Dispatchers.IO)
 
     override fun addOwnerToEvent(event: Event, owner: EventOwner) = flow<State<Boolean>> {
-            val mEventQuery = DB
-                .document(EVENT_PATH + "/${event.id}/Owner/${owner.coachId}")
+        val mEventQuery = DB
+            .document(EVENT_PATH + "/${event.id}/Owner/${owner.coachId}")
 
-            mEventQuery.set(owner.toMap()).await()
+        mEventQuery.set(owner.toMap()).await()
 
-            emit(State.success(true))
-        }.catch {
-            emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
-        }.flowOn(Dispatchers.IO)
+        emit(State.success(true))
+    }.catch {
+        emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
+    }.flowOn(Dispatchers.IO)
 
     override fun getOwnerForNewEvent() = flow {
-            val userId = activeCoach?.id
-            val mClubQuery = DB
-                .collection(COACH_PATH + "/${userId}/ClubAffiliation")
+        val userId = activeCoach?.id
 
-            emit(State.loading())
+        val mClubQuery = DB
+            .collection(COACH_PATH + "/${userId}/ClubAffiliation")
 
-            val snapshot = mClubQuery.get().await().documents[0]
-            val currentUserClub = snapshot.toObject(ClubAffiliation::class.java)!!
+        emit(State.loading())
 
-            val eventOwner = EventOwner().clubToOwner()
+        val snapshot = mClubQuery.get().await().documents[0]
+        val currentUserClub = snapshot.toObject(ClubAffiliation::class.java)!!
 
-            val pair: Pair<EventOwner, ClubAffiliation> = Pair(eventOwner, currentUserClub)
+        val eventOwner = EventOwner().clubToOwner()
 
-            emit(State.success(pair))
-        }.catch {
-            emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
-        }.flowOn(Dispatchers.IO)
+        val pair: Pair<EventOwner, ClubAffiliation> = Pair(eventOwner, currentUserClub)
+
+        emit(State.success(pair))
+    }.catch {
+        emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
+    }.flowOn(Dispatchers.IO)
 
     override fun getOwnerToken(ownerId: String) = flow<State<MutableList<String>>> {
         val mOwnerTokenQuery = Constants.DB.document(Constants.COACH_PATH + "/${ownerId}")
@@ -719,13 +721,16 @@ class RemoteDataSourceImpl : RemoteDataSource {
 
     override fun getUserClub(): Flow<State<Club?>> = flow {
         val user: FirebaseUser? = firebaseAuth.currentUser
-        val mClubQuery = firebaseFirestore.collection(COACH_PATH + "/${user?.uid}/ClubAffiliation")
+        val userId = activeCoach?.id
+        val mClubQuery = firebaseFirestore.collection(COACH_PATH + "/${userId}/ClubAffiliation")
 
         emit(State.loading())
 
         val snapshotClub = mClubQuery.get().await()
 
         val club = snapshotClub.documents[0].toObject(Club::class.java)
+
+        Log.i("TAG","state club! $club")
 
         emit(State.Success(club))
     }.catch {
@@ -741,6 +746,8 @@ class RemoteDataSourceImpl : RemoteDataSource {
         val snapshotAffiliation = mAffiliationClubQuery.get().await()
 
         val affiliation = snapshotAffiliation.toObject(ClubAffiliation::class.java)
+
+        Log.i("TAG","state affiliation! $affiliation")
 
         emit(State.Success(affiliation))
     }.catch {

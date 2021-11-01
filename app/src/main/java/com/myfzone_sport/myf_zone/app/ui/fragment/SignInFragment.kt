@@ -21,6 +21,7 @@ import com.myfzone_sport.myf_zone.databinding.FragmentSignInBinding
 import com.myfzone_sport.myf_zone.usecases.registration.SignInUserUseCase
 import com.myfzone_sport.myf_zone.usecases.user.*
 import com.myfzone_sport.myf_zone.util.Tracking
+import com.myfzone_sport.myf_zone.util.Tracking.ALERT_ERROR
 import org.jetbrains.anko.clearTask
 import org.jetbrains.anko.newTask
 import org.jetbrains.anko.support.v4.intentFor
@@ -37,6 +38,12 @@ class SignInFragment : Fragment() {
     //endregion
 
     //region Override Methods
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        setupViewModel()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -45,7 +52,6 @@ class SignInFragment : Fragment() {
             inflater, R.layout.fragment_sign_in, container, false
         )
 
-        setupViewModel()
         setupViews()
         setupObservers()
 
@@ -93,7 +99,7 @@ class SignInFragment : Fragment() {
         viewModel.errorMessageEmail.observe(viewLifecycleOwner, {
             if (it) {
                 val bundleTracking = bundleOf("SignIn Email Error" to getString(R.string.hint_required))
-//                TRACKING.logEvent(ALERT_ERROR, bundleTracking)
+                TRACKING.logEvent(ALERT_ERROR, bundleTracking)
                 binding.signInEmailLayout.error = getString(R.string.hint_required)
             } else {
                 binding.signInEmailLayout.error = null
@@ -103,7 +109,7 @@ class SignInFragment : Fragment() {
         viewModel.errorMessagePassword.observe(viewLifecycleOwner, {
             if (it) {
                 val bundleTracking = bundleOf("SignIn Password Error" to getString(R.string.hint_required))
-//                TRACKING.logEvent(ALERT_ERROR, bundleTracking)
+                TRACKING.logEvent(ALERT_ERROR, bundleTracking)
                 binding.signInPasswordLayout.error = getString(R.string.hint_required)
             } else {
                 binding.signInPasswordLayout.error = null

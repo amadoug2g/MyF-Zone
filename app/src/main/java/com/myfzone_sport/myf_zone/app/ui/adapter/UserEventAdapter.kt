@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.myfzone_sport.myf_zone.R
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.isAffiliated
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.isConnected
 import com.myfzone_sport.myf_zone.databinding.HomeUserEventCardviewBinding
 import com.myfzone_sport.myf_zone.domain.event.Event
 
@@ -52,29 +54,23 @@ class UserEventAdapter : ListAdapter<Event, UserEventAdapter.MyViewHolder>(
             }
 
             binding.cardView.setOnClickListener {
-                val bundle = bundleOf("eventId" to event.id, "coachRole" to "owner")
+                val bundle = bundleOf("eventId" to event.id)
                 when (it.findNavController().currentDestination?.label) {
-//                    "Category List" -> navigate(R.id.categoryListFragmentToEventDetailsFragment, bundle, it)
                     "Category List" -> {
-                        navigate(
-                            R.id.categoryListFragmentToEventDetailsParticipantFragment,
-                            bundle,
-                            it
-                        )
-                        Log.i("user adapter","user adapter: Category List")
+                        if (isConnected && isAffiliated) {
+                            navigate(R.id.categoryListFragmentToEventDetailsParticipantFragment, bundle, it)
+                        } else {
+                            navigate(R.id.categoryListFragmentToEventDetailsGuestFragment, bundle, it)
+                        }
                     }
                     "Profil" -> {
                         navigate(R.id.profileFragmentToEventDetailsFragment, bundle, it)
-                        Log.i("user adapter","user adapter: Profil")
                     }
-//                    "Home" -> navigate(R.id.homeFragmentToEventDetailsFragment, bundle, it)
                     "Home" -> {
                         navigate(R.id.homeFragmentToEventDetailsOwner, bundle, it)
-                        Log.i("user adapter","user adapter: Home")
                     }
                     "Map2" -> navigate(R.id.mapFragmentToEventDetailsFragment, bundle, it)
                     else -> {
-                        Log.i("user adapter","user adapter: else")
                     }
                 }
             }

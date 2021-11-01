@@ -1,5 +1,7 @@
 package com.myfzone_sport.myf_zone.domain.event
 
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoach
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoachClubAffiliation
 import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth
 
 data class EventOwner(
@@ -54,26 +56,26 @@ data class EventOwner(
         val owner = EventOwner()
 
         owner.apply {
-            clubLogo = ManagerAuth.activeCoachClubAffiliation!!.clubLogo
-            clubAcronym = ManagerAuth.activeCoachClubAffiliation!!.clubAcronym
-            coachId = ManagerAuth.activeCoach?.id!!
-            coachFullname = ManagerAuth.activeCoach!!.getName()
-            sportId = ManagerAuth.activeCoachClubAffiliation!!.sportId
-            sportName = ManagerAuth.activeCoachClubAffiliation!!.sportName
+            clubLogo = activeCoachClubAffiliation!!.clubLogo
+            clubAcronym = activeCoachClubAffiliation!!.clubAcronym
+            coachId = activeCoach?.id!!
+            coachFullname = activeCoach!!.getName()
+            sportId = activeCoachClubAffiliation!!.sportId
+            sportName = activeCoachClubAffiliation!!.sportName
         }
 
 
-        if (ManagerAuth.activeCoachClubAffiliation!!.categoryId!!.isNotEmpty() && ManagerAuth.activeCoachClubAffiliation!!.categoryName!!.isNotEmpty()) {
+        if (activeCoachClubAffiliation!!.categoryId!!.isNotEmpty() && activeCoachClubAffiliation!!.categoryName!!.isNotEmpty()) {
             owner.apply {
-                categoryId = ManagerAuth.activeCoachClubAffiliation!!.categoryId!!
-                categoryName = ManagerAuth.activeCoachClubAffiliation!!.categoryName!!
+                categoryId = activeCoachClubAffiliation!!.categoryId!!
+                categoryName = activeCoachClubAffiliation!!.categoryName!!
             }
         }
 
-        if (ManagerAuth.activeCoachClubAffiliation!!.subCategoryId!!.isNotEmpty() && ManagerAuth.activeCoachClubAffiliation!!.subCategoryName!!.isNotEmpty()) {
+        if (activeCoachClubAffiliation!!.subCategoryId!!.isNotEmpty() && activeCoachClubAffiliation!!.subCategoryName!!.isNotEmpty()) {
             owner.apply {
-                subCategoryId = ManagerAuth.activeCoachClubAffiliation!!.subCategoryId!!
-                subCategoryName = ManagerAuth.activeCoachClubAffiliation!!.subCategoryName!!
+                subCategoryId = activeCoachClubAffiliation!!.subCategoryId!!
+                subCategoryName = activeCoachClubAffiliation!!.subCategoryName!!
             }
         }
 

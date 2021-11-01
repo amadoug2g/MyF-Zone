@@ -8,8 +8,8 @@
     <fragment
         android:id="@+id/eventDetailsOwnerFragment"
         android:name="com.myfzone_sport.myf_zone.app.ui.fragment.EventDetailsOwnerFragment"
-        tools:layout="@layout/fragment_event_details_owner2"
-        android:label="EventDetailsOwnerFragment" >
+        android:label="EventDetailsOwnerFragment"
+        tools:layout="@layout/fragment_event_details_owner2">
         <action
             android:id="@+id/eventDetailsOwnerToEventParticipantsOwner"
             app:destination="@id/event_participants_owner" />

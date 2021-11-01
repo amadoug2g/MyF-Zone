@@ -1,25 +1,18 @@
 package com.myfzone_sport.myf_zone.app.ui.fragment
 
-import android.annotation.SuppressLint
-import android.content.DialogInterface
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.myfzone_sport.myf_zone.R
-import com.myfzone_sport.myf_zone.app.framework.FirebaseService.TRACKING
-import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoachEvents
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.isConnectedLive
 import com.myfzone_sport.myf_zone.app.framework.RemoteDataSourceImpl
 import com.myfzone_sport.myf_zone.app.ui.adapter.CategoryEventAdapter
@@ -29,16 +22,10 @@ import com.myfzone_sport.myf_zone.app.ui.viewmodel.HomeViewModel
 import com.myfzone_sport.myf_zone.app.ui.viewmodel.HomeViewModelFactory
 import com.myfzone_sport.myf_zone.data.RepositoryImpl
 import com.myfzone_sport.myf_zone.databinding.FragmentHomeBinding
-import com.myfzone_sport.myf_zone.domain.coach.Coach
-import com.myfzone_sport.myf_zone.domain.event.Event
-import com.myfzone_sport.myf_zone.screens.MainScreen
 import com.myfzone_sport.myf_zone.usecases.event.*
 import com.myfzone_sport.myf_zone.usecases.user.*
-import com.myfzone_sport.myf_zone.util.Tracking
-import org.jetbrains.anko.clearTask
-import org.jetbrains.anko.newTask
-import org.jetbrains.anko.support.v4.intentFor
 import org.jetbrains.anko.support.v4.toast
+import java.util.*
 
 class HomeFragment : Fragment() {
 
@@ -50,19 +37,21 @@ class HomeFragment : Fragment() {
         private lateinit var adapterUserEvents: UserEventAdapter
         private lateinit var viewModel: HomeViewModel
         private lateinit var viewModelFactory: HomeViewModelFactory
+        private lateinit var greeting: String
     }
     //endregion
 
     //region Override Methods
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        setupViewModel()
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // Inflate the layout for this fragment
         binding = DataBindingUtil.inflate(
             inflater,
             R.layout.fragment_home,
@@ -70,13 +59,16 @@ class HomeFragment : Fragment() {
             false
         )
 
-        setupViewModel()
         setupViews()
         setupObservers()
-//        viewModel.getUserEvents()
-//        viewModel.getCloseEvents()
 
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        viewModel.initializeHome()
     }
     //endregion
 
@@ -104,6 +96,15 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupViews() {
+        greeting = when (Calendar.HOUR_OF_DAY) {
+            in 5..17 -> {
+                "Bonjour"
+            }
+            else -> {
+                "Bonsoir"
+            }
+        }
+
         binding.apply {
             lifecycleOwner = this@HomeFragment
             executePendingBindings()
@@ -136,7 +137,6 @@ class HomeFragment : Fragment() {
         }
     }
 
-    @SuppressLint("SetTextI18n")
     private fun setupObservers() {
         viewModel.errorMessage.observe(viewLifecycleOwner, {
             if (it.isNotEmpty()) showError()
@@ -199,19 +199,12 @@ class HomeFragment : Fragment() {
 
         viewModel.userEventsList.observe(viewLifecycleOwner, {
             adapterUserEvents.setData(it)
-
             binding.userEventLayout.title.text = "Vos évènements (${it.size})"
         })
     }
     //endregion
 
     //region Navigation
-    private fun navigateWithView(destination: Int, extra: Bundle? = null, view: View) {
-        Navigation
-            .findNavController(view)
-            .navigate(destination, extra)
-    }
-
     private fun navigate(destination: Int, extra: Bundle? = null) {
         Navigation
             .findNavController(this.requireView())
@@ -265,47 +258,6 @@ class HomeFragment : Fragment() {
             .setTextColor(Color.WHITE)
             .setActionTextColor(Color.CYAN)
             .show()
-    }
-    //endregion
-
-    //region Observer Classes
-    class MyCoachObserver : Observer<Coach?> {
-        @SuppressLint("SetTextI18n")
-        override fun onChanged(it: Coach?) {
-            if (it != null) {
-                binding.closeToClubLayout.layout.visibility = View.VISIBLE
-                binding.userEventLayout.layout.visibility = View.VISIBLE
-
-                binding.homeWelcomeText.text = "Bonjour ${it.firstName} !"
-            } else {
-                binding.closeToClubLayout.layout.visibility = View.GONE
-                binding.userEventLayout.layout.visibility = View.GONE
-
-                binding.homeWelcomeText.text = "Bonjour Coach !"
-            }
-        }
-    }
-
-//    class MyCoachAffiliationObserver : Observer<ClubAffiliation?> {
-//        override fun onChanged(it: ClubAffiliation?) {
-//            if (it != null) {
-//                viewModel.getUserEvents()
-//                viewModel.getCloseEvents()
-//            }
-//        }
-//    }
-
-    class MyCloseEventObserver : Observer<MutableList<Event>> {
-        override fun onChanged(it: MutableList<Event>) {
-            adapterCloseToClub.setData(it)
-        }
-    }
-
-    class MyUserEventObserver : Observer<MutableList<Event>> {
-        override fun onChanged(it: MutableList<Event>) {
-            adapterUserEvents.setData(it)
-            Log.i("TAG onChanged", "onChanged list: $it.")
-        }
     }
     //endregion
 }

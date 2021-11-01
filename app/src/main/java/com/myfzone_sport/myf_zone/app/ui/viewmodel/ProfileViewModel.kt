@@ -1,5 +1,6 @@
 package com.myfzone_sport.myf_zone.app.ui.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.*
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.storage.StorageReference
@@ -78,18 +79,63 @@ class ProfileViewModel(
 
     private fun getUser() {
         viewModelScope.launch {
-            getUserUseCase.load().stateIn(viewModelScope).collect { state ->
+            getUserUseCase.load().collect { state ->
                 when (state) {
                     is State.Loading -> {
                         startLoading()
                     }
                     is State.Success -> {
                         onResult()
+                        getUserClub()
+                        getUserClubAffiliation()
                         _coach.postValue(state.data)
                         getAllEvents(state.data)
                     }
                     is State.Failed -> {
                         val message = "User update failed: ${state.message}"
+                        onResult(message)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun getUserClub() {
+        viewModelScope.launch {
+            getUserClubUseCase.invoke().collect { state ->
+                when (state) {
+                    is State.Loading -> {
+                        startLoading()
+                    }
+                    is State.Success -> {
+                        onResult()
+
+                        Log.i("TAG","state.data club: ${state.data}")
+                        _coachClub.postValue(state.data!!)
+                    }
+                    is State.Failed -> {
+                        val message = "Club update failed: ${state.message}"
+                        onResult(message)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun getUserClubAffiliation() {
+        viewModelScope.launch {
+            getUserAffiliationUseCase.invoke().collect { state ->
+                when (state) {
+                    is State.Loading -> {
+                        startLoading()
+                    }
+                    is State.Success -> {
+                        onResult()
+                        Log.i("TAG","state.data aff: ${state.data}")
+                        _coachAffiliation.postValue(state.data!!)
+                    }
+                    is State.Failed -> {
+                        val message = "Affiliation update failed: ${state.message}"
                         onResult(message)
                     }
                 }
@@ -132,7 +178,7 @@ class ProfileViewModel(
         getParticipationList(coach, resultNotOwner)
 
         _allEventsNotOwnedList.postValue(resultNotOwner)
-        _userEventsList.postValue(resultOwner)
+        _userEventsList.postValue(resultOwner.asReversed())
     }
 
     private fun getParticipationList(coach: Coach, list: MutableList<Event>) {

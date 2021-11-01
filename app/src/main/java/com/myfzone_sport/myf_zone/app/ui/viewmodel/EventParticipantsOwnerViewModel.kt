@@ -11,16 +11,16 @@ import com.myfzone_sport.myf_zone.domain.event.EventParticipant
 import com.myfzone_sport.myf_zone.usecases.detailevent.GetAllParticipantsFromEventUseCase
 import com.myfzone_sport.myf_zone.usecases.detailevent.GetEventFromIdUseCase
 import com.myfzone_sport.myf_zone.usecases.user.GetImageReferenceUseCase
-import com.myfzone_sport.myf_zone.util.Constants.EVENT_PATH
+import com.myfzone_sport.myf_zone.util.Constants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 /**
- * Created by Amadou on 16/10/2021, 19:48
+ * Created by Amadou on 01/11/2021, 12:40
  */
 
-class EventParticipantsViewModel(
+class EventParticipantsOwnerViewModel(
     private val getEventFromIdUseCase: GetEventFromIdUseCase,
     private val getAllParticipantsFromEventUseCase: GetAllParticipantsFromEventUseCase,
     private val getImageReferenceUseCase: GetImageReferenceUseCase
@@ -34,6 +34,12 @@ class EventParticipantsViewModel(
 
     private val _eventParticipantsValid = MutableLiveData<MutableList<EventParticipant>>()
     val eventParticipantsValid = _eventParticipantsValid
+
+    private val _eventParticipantsPending = MutableLiveData<MutableList<EventParticipant>>()
+    val eventParticipantsPending = _eventParticipantsPending
+
+    private val _eventParticipantsRefused = MutableLiveData<MutableList<EventParticipant>>()
+    val eventParticipantsRefused = _eventParticipantsRefused
 
     private val firebaseFirestore = Firebase.firestore
 
@@ -85,6 +91,8 @@ class EventParticipantsViewModel(
                         eventParticipants.postValue(state.data)
 
                         assignValidParticipants(state.data)
+                        assignPendingParticipants(state.data)
+                        assignRefusedParticipants(state.data)
                     }
                     is State.Failed -> {
                         val message = "Event participants fetching failure: ${state.message}"
@@ -103,9 +111,25 @@ class EventParticipantsViewModel(
         _eventParticipantsValid.postValue(result)
     }
 
+    private fun assignPendingParticipants(list: MutableList<EventParticipant>) {
+        val result = mutableListOf<EventParticipant>()
+        for (participant in list)
+            if (participant.status == "pending") result.add(participant)
+
+        _eventParticipantsPending.postValue(result)
+    }
+
+    private fun assignRefusedParticipants(list: MutableList<EventParticipant>) {
+        val result = mutableListOf<EventParticipant>()
+        for (participant in list)
+            if (participant.status == "refused") result.add(participant)
+
+        _eventParticipantsRefused.postValue(result)
+    }
+
     fun getQuery(eventId: String): CollectionReference {
         return firebaseFirestore
-            .collection(EVENT_PATH)
+            .collection(Constants.EVENT_PATH)
             .document(eventId)
             .collection("Participant")
     }
@@ -138,7 +162,7 @@ class EventParticipantsViewModel(
     //endregion
 }
 
-class EventParticipantsViewModelFactory(
+class EventParticipantsOwnerViewModelFactory(
     private val getEventFromIdUseCase: GetEventFromIdUseCase,
     private val getAllParticipantsFromEventUseCase: GetAllParticipantsFromEventUseCase,
     private val getImageReferenceUseCase: GetImageReferenceUseCase
