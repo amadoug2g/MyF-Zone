@@ -69,12 +69,7 @@ class SignInFragment : Fragment() {
 
     //region Setups
     private fun setupViewModel() {
-        binding.apply {
-            lifecycleOwner = this@SignInFragment
-            executePendingBindings()
-        }
-
-        val remoteDataSource = RemoteDataSourceImpl()
+                val remoteDataSource = RemoteDataSourceImpl()
         val repository = RepositoryImpl(remoteDataSource)
 
         val signInUserUseCase = SignInUserUseCase(repository)
@@ -89,6 +84,11 @@ class SignInFragment : Fragment() {
 
     private fun setupViews() {
         binding.viewModel = viewModel
+
+        binding.apply {
+            lifecycleOwner = this@SignInFragment
+            executePendingBindings()
+        }
     }
 
     private fun setupObservers() {

@@ -6,10 +6,13 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
 import com.myfzone_sport.myf_zone.domain.State
+import com.myfzone_sport.myf_zone.domain.chat.MessagingService
 import com.myfzone_sport.myf_zone.domain.event.Event
 import com.myfzone_sport.myf_zone.domain.event.EventParticipant
+import com.myfzone_sport.myf_zone.usecases.detailevent.AcceptParticipantUseCase
 import com.myfzone_sport.myf_zone.usecases.detailevent.GetAllParticipantsFromEventUseCase
 import com.myfzone_sport.myf_zone.usecases.detailevent.GetEventFromIdUseCase
+import com.myfzone_sport.myf_zone.usecases.detailevent.RefuseParticipantUseCase
 import com.myfzone_sport.myf_zone.usecases.user.GetImageReferenceUseCase
 import com.myfzone_sport.myf_zone.util.Constants
 import kotlinx.coroutines.Dispatchers
@@ -23,7 +26,9 @@ import kotlinx.coroutines.launch
 class EventParticipantsOwnerViewModel(
     private val getEventFromIdUseCase: GetEventFromIdUseCase,
     private val getAllParticipantsFromEventUseCase: GetAllParticipantsFromEventUseCase,
-    private val getImageReferenceUseCase: GetImageReferenceUseCase
+    private val getImageReferenceUseCase: GetImageReferenceUseCase,
+    private val acceptParticipantUseCase: AcceptParticipantUseCase,
+    private val refuseParticipantUseCase: RefuseParticipantUseCase
 ) : ViewModel() {
 
     //region Variables
@@ -87,12 +92,13 @@ class EventParticipantsOwnerViewModel(
                         startLoading()
                     }
                     is State.Success -> {
-                        onResult()
-                        eventParticipants.postValue(state.data)
+                        val participantList = state.data
+                        eventParticipants.postValue(participantList)
 
-                        assignValidParticipants(state.data)
-                        assignPendingParticipants(state.data)
-                        assignRefusedParticipants(state.data)
+                        assignValidParticipants(participantList)
+                        assignPendingParticipants(participantList)
+                        assignRefusedParticipants(participantList)
+                        onResult()
                     }
                     is State.Failed -> {
                         val message = "Event participants fetching failure: ${state.message}"
@@ -125,6 +131,56 @@ class EventParticipantsOwnerViewModel(
             if (participant.status == "refused") result.add(participant)
 
         _eventParticipantsRefused.postValue(result)
+    }
+
+    fun acceptParticipant(eventId: String, participant: EventParticipant) {
+        viewModelScope.launch {
+            acceptParticipantUseCase.invoke(eventId, participant).collect { state ->
+                when (state) {
+                    is State.Loading -> {
+                        startLoading()
+                    }
+                    is State.Success -> {
+//                        notifyParticipantAccepted(_event.value!!, state.data)
+                        getParticipants(eventId)
+                        onResult()
+                    }
+                    is State.Failed -> {
+                        val message = "Accepting participant failure: ${state.message}"
+                        onResult(message)
+                    }
+                }
+            }
+        }
+    }
+
+    fun refuseParticipant(eventId: String, participant: EventParticipant) {
+        viewModelScope.launch {
+            refuseParticipantUseCase.invoke(eventId, participant).collect { state ->
+                when (state) {
+                    is State.Loading -> {
+                        startLoading()
+                    }
+                    is State.Success -> {
+//                        notifyParticipantRefused(_event.value!!, state.data)
+                        getParticipants(eventId)
+                        onResult()
+                    }
+                    is State.Failed -> {
+                        val message = "Refusing participant failure: ${state.message}"
+                        onResult(message)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun notifyParticipantAccepted(event: Event, participant: EventParticipant) {
+        MessagingService.eventAcceptParticipation(event, participant)
+    }
+
+    private fun notifyParticipantRefused(event: Event, participant: EventParticipant) {
+        MessagingService.eventRefuseParticipation(event, participant)
     }
 
     fun getQuery(eventId: String): CollectionReference {
@@ -165,18 +221,24 @@ class EventParticipantsOwnerViewModel(
 class EventParticipantsOwnerViewModelFactory(
     private val getEventFromIdUseCase: GetEventFromIdUseCase,
     private val getAllParticipantsFromEventUseCase: GetAllParticipantsFromEventUseCase,
-    private val getImageReferenceUseCase: GetImageReferenceUseCase
+    private val getImageReferenceUseCase: GetImageReferenceUseCase,
+    private val acceptParticipantUseCase: AcceptParticipantUseCase,
+    private val refuseParticipantUseCase: RefuseParticipantUseCase
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         return modelClass.getConstructor(
             GetEventFromIdUseCase::class.java,
             GetAllParticipantsFromEventUseCase::class.java,
             GetImageReferenceUseCase::class.java,
+            AcceptParticipantUseCase::class.java,
+            RefuseParticipantUseCase::class.java
         )
             .newInstance(
                 getEventFromIdUseCase,
                 getAllParticipantsFromEventUseCase,
                 getImageReferenceUseCase,
+                acceptParticipantUseCase,
+                refuseParticipantUseCase
             )
     }
 }

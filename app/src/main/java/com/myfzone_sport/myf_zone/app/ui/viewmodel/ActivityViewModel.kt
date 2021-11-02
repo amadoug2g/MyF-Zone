@@ -24,14 +24,16 @@ class ActivityViewModel(
     private val getUserStatusUseCase: GetUserStatusUseCase
 ) : ViewModel() {
 
-    var isUserConnected = MutableLiveData(false)
+    var isUserConnected = MutableLiveData<Boolean>()
 
     init {
         getUserStatus()
     }
 
-    fun getUserStatus() {
-        isUserConnected.postValue(getUserStatusUseCase.invoke())
+    fun getUserStatus(): Boolean {
+        val result = getUserStatusUseCase.invoke()
+        isUserConnected.postValue(result)
+        return result
     }
 
     fun checkUserStatus() {
@@ -118,5 +120,4 @@ class ActivityViewModelFactory(
                 getUserStatusUseCase
             )
     }
-
 }

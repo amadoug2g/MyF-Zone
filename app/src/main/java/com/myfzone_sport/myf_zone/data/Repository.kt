@@ -54,9 +54,9 @@ interface Repository {
     //endregion
 
     //region Event Detail
-    fun acceptParticipant()
+    fun acceptParticipant(eventId: String, participant: EventParticipant): Flow<State<EventParticipant>>
 
-    fun refuseParticipant()
+    fun refuseParticipant(eventId: String, participant: EventParticipant): Flow<State<EventParticipant>>
 
     fun joinEvent(eventId: String, participant: EventParticipant): Flow<State<EventParticipant>>
 

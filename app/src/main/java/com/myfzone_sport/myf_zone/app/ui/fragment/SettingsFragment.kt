@@ -20,6 +20,7 @@ import com.google.android.material.textview.MaterialTextView
 import com.myfzone_sport.myf_zone.R
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.TRACKING
 import com.myfzone_sport.myf_zone.app.framework.RemoteDataSourceImpl
+import com.myfzone_sport.myf_zone.app.ui.activity.MainActivity
 import com.myfzone_sport.myf_zone.app.ui.viewmodel.SettingsViewModel
 import com.myfzone_sport.myf_zone.app.ui.viewmodel.SettingsViewModelViewModelFactory
 import com.myfzone_sport.myf_zone.data.RepositoryImpl
@@ -46,15 +47,7 @@ class SettingsFragment : Fragment() {
     //region Override Methods
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val remoteDataSource = RemoteDataSourceImpl()
-        val repository = RepositoryImpl(remoteDataSource)
-
-        val signOutUseCase = SignOutUseCase(repository)
-
-        viewModelFactory = SettingsViewModelViewModelFactory(signOutUseCase)
-
-        viewModel = ViewModelProvider(this, viewModelFactory)
-            .get(SettingsViewModel::class.java)
+        setupViewModel()
     }
 
     override fun onCreateView(
@@ -69,12 +62,25 @@ class SettingsFragment : Fragment() {
         )
 
         setupViews()
+        setupObservers()
 
         return binding.root
     }
     //endregion
 
     //region Setups
+    private fun setupViewModel() {
+        val remoteDataSource = RemoteDataSourceImpl()
+        val repository = RepositoryImpl(remoteDataSource)
+
+        val signOutUseCase = SignOutUseCase(repository)
+
+        viewModelFactory = SettingsViewModelViewModelFactory(signOutUseCase)
+
+        viewModel = ViewModelProvider(this, viewModelFactory)
+            .get(SettingsViewModel::class.java)
+    }
+
     private fun setupViews() {
         binding.exitSettings.setOnClickListener { requireActivity().onBackPressed() }
 
@@ -96,10 +102,31 @@ class SettingsFragment : Fragment() {
             TRACKING.logEvent(Tracking.OS_SETTINGS, null)
 //            val intent = Intent(Settings.ACTION_SETTINGS)
 //            startActivityForResult(intent, 0)
-            val dialogIntent = Intent(Settings.ACTION_SETTINGS)
-            dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            startActivity(dialogIntent)
+            navigateToSettings()
         }
+    }
+
+    private fun setupObservers() {
+        viewModel.successfulSignOut.observe(viewLifecycleOwner, {
+            if (it) {
+                toast(R.string.logout_success)
+                startActivity(intentFor<MainActivity>().newTask().clearTask())
+            }
+        })
+    }
+    //endregion
+
+    //region Navigation
+    private fun navigate(destination: Int, extra: Bundle? = null) {
+        Navigation
+            .findNavController(this.requireView())
+            .navigate(destination, extra)
+    }
+
+    private fun navigateToSettings() {
+        val dialogIntent = Intent(Settings.ACTION_SETTINGS)
+        dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        startActivity(dialogIntent)
     }
     //endregion
 
@@ -108,15 +135,8 @@ class SettingsFragment : Fragment() {
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.logout)
             .setMessage(R.string.logout_message)
-            .setPositiveButton(R.string.confirm_message) { _: DialogInterface, _: Int ->
-                Constants.TRACKING.logEvent(Tracking.LOGOUT, null)
-//                viewModel.signOut()
-                toast(R.string.logout_success)
-//                ManagerAuth.checkUserStatus()
-                startActivity(intentFor<MainScreen>().newTask().clearTask())
-            }
-            .setNegativeButton(R.string.cancel_message) { _: DialogInterface, _: Int ->
-            }
+            .setPositiveButton(R.string.confirm_message) { _: DialogInterface, _: Int -> viewModel.signOut() }
+            .setNegativeButton(R.string.cancel_message) { _: DialogInterface, _: Int -> }
             .show()
     }
 
@@ -138,11 +158,4 @@ class SettingsFragment : Fragment() {
     }
     //endregion
 
-    //region Navigation
-    private fun navigate(destination: Int, extra: Bundle? = null) {
-        Navigation
-            .findNavController(this.requireView())
-            .navigate(destination, extra)
-    }
-    //endregion
 }

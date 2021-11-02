@@ -441,7 +441,7 @@ class EventDetailsOwnerFragment : Fragment() {
 
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(getString(R.string.participation_title))
-            .setMessage(getString(R.string.participation_support_text))
+            .setMessage(getString(R.string.accept_coach_text))
             .setNeutralButton(getString(R.string.participation_neutral)) { _: DialogInterface, _: Int ->
                 // Respond to neutral button press
 

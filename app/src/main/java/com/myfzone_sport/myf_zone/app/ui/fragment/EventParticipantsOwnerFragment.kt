@@ -17,11 +17,10 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.myfzone_sport.myf_zone.R
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.TRACKING
 import com.myfzone_sport.myf_zone.app.framework.RemoteDataSourceImpl
 import com.myfzone_sport.myf_zone.app.ui.viewmodel.EventParticipantsOwnerViewModel
 import com.myfzone_sport.myf_zone.app.ui.viewmodel.EventParticipantsOwnerViewModelFactory
-import com.myfzone_sport.myf_zone.app.ui.viewmodel.EventParticipantsViewModel
-import com.myfzone_sport.myf_zone.app.ui.viewmodel.EventParticipantsViewModelFactory
 import com.myfzone_sport.myf_zone.data.RepositoryImpl
 import com.myfzone_sport.myf_zone.databinding.CardEventParticipantPendingBinding
 import com.myfzone_sport.myf_zone.databinding.CardEventParticipantRefusedBinding
@@ -29,10 +28,12 @@ import com.myfzone_sport.myf_zone.databinding.CardEventParticipantValidBinding
 import com.myfzone_sport.myf_zone.databinding.FragmentEventParticipantsOwnerBinding
 import com.myfzone_sport.myf_zone.domain.event.EventParticipant
 import com.myfzone_sport.myf_zone.glide.GlideApp
+import com.myfzone_sport.myf_zone.usecases.detailevent.AcceptParticipantUseCase
 import com.myfzone_sport.myf_zone.usecases.detailevent.GetAllParticipantsFromEventUseCase
 import com.myfzone_sport.myf_zone.usecases.detailevent.GetEventFromIdUseCase
+import com.myfzone_sport.myf_zone.usecases.detailevent.RefuseParticipantUseCase
 import com.myfzone_sport.myf_zone.usecases.user.GetImageReferenceUseCase
-import org.jetbrains.anko.support.v4.toast
+import com.myfzone_sport.myf_zone.util.Tracking
 
 private const val ARG_PARAM1 = "eventId"
 
@@ -193,11 +194,8 @@ class EventParticipantsOwnerFragment : Fragment() {
             }
 
             override fun onDataChanged() {
-                binding.validCoachRecyclerView.visibility =
-                    if (itemCount == 0) View.VISIBLE else View.GONE
-
                 val params = binding.validCoachRecyclerView.layoutParams
-                params.height = 320 * itemCount
+                params.height = 120 * itemCount
                 binding.validCoachRecyclerView.layoutParams = params
             }
         }
@@ -250,7 +248,7 @@ class EventParticipantsOwnerFragment : Fragment() {
 
             override fun onDataChanged() {
                 val params = binding.refusedCoachRecyclerView.layoutParams
-                params.height = 320 * itemCount
+                params.height = 120 * itemCount
                 binding.refusedCoachRecyclerView.layoutParams = params
             }
         }
@@ -282,11 +280,15 @@ class EventParticipantsOwnerFragment : Fragment() {
         val getEventFromIdUseCase = GetEventFromIdUseCase(repository)
         val getAllParticipantsFromEventUseCase = GetAllParticipantsFromEventUseCase(repository)
         val getImageReferenceUseCase = GetImageReferenceUseCase(repository)
+        val acceptParticipantUseCase = AcceptParticipantUseCase(repository)
+        val refuseParticipantUseCase = RefuseParticipantUseCase(repository)
 
         viewModelFactory = EventParticipantsOwnerViewModelFactory(
             getEventFromIdUseCase,
             getAllParticipantsFromEventUseCase,
-            getImageReferenceUseCase
+            getImageReferenceUseCase,
+            acceptParticipantUseCase,
+            refuseParticipantUseCase
         )
 
         viewModel = ViewModelProvider(this, viewModelFactory)
@@ -333,24 +335,15 @@ class EventParticipantsOwnerFragment : Fragment() {
     }
     //endregion
 
-
     //region Event Actions
     fun ownerAccept(participant: EventParticipant) {
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(getString(R.string.participation_title))
-            .setMessage(getString(R.string.participation_support_text))
-            .setNeutralButton(getString(R.string.participation_neutral)) { _: DialogInterface, _: Int ->
-                // Respond to neutral button press
-
-            }
-            .setNegativeButton(getString(R.string.participation_decline)) { _: DialogInterface, _: Int ->
-//                Constants.TRACKING.logEvent(Tracking.EVENT_DETAILS_OWNER_REFUSE_PARTICIPATION, null)
-                toast("valid refuse")
-            }
+            .setMessage(getString(R.string.accept_coach_text))
+            .setNeutralButton(getString(R.string.participation_neutral)) { _: DialogInterface, _: Int -> }
             .setPositiveButton(getString(R.string.participation_accept)) { _: DialogInterface, _: Int ->
-                // Respond to positive button press
-
-//                Constants.TRACKING.logEvent(Tracking.EVENT_DETAILS_OWNER_ACCEPT_PARTICIPATION, null)
+                TRACKING.logEvent(Tracking.EVENT_DETAILS_OWNER_ACCEPT_PARTICIPATION, null)
+                viewModel.acceptParticipant(eventId!!, participant)
             }
             .show()
     }
@@ -358,65 +351,14 @@ class EventParticipantsOwnerFragment : Fragment() {
     fun ownerRefuse(participant: EventParticipant) {
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(getString(R.string.participation_title))
-            .setMessage(getString(R.string.participation_support_text))
-            .setNeutralButton(getString(R.string.participation_neutral)) { _: DialogInterface, _: Int ->
-                // Respond to neutral button press
-
-            }
-            .setNegativeButton(getString(R.string.participation_decline)) { _: DialogInterface, _: Int ->
-//                Constants.TRACKING.logEvent(Tracking.EVENT_DETAILS_OWNER_REFUSE_PARTICIPATION, null)
-            }
-            .setPositiveButton(getString(R.string.participation_accept)) { _: DialogInterface, _: Int ->
-//                Constants.TRACKING.logEvent(Tracking.EVENT_DETAILS_OWNER_ACCEPT_PARTICIPATION, null)
+            .setMessage(getString(R.string.refuse_coach_text))
+            .setNeutralButton(getString(R.string.participation_neutral)) { _: DialogInterface, _: Int -> }
+            .setNegativeButton(getString(R.string.participation_refuse)) { _: DialogInterface, _: Int ->
+                TRACKING.logEvent(Tracking.EVENT_DETAILS_OWNER_REFUSE_PARTICIPATION, null)
+                viewModel.refuseParticipant(eventId!!, participant)
             }
             .show()
     }
-
-//    fun ownerAccept(participant: EventParticipant) {
-//
-//        MaterialAlertDialogBuilder(requireContext())
-//            .setTitle(getString(R.string.participation_title))
-//            .setMessage(getString(R.string.participation_support_text))
-//            .setNeutralButton(getString(R.string.participation_neutral)) { _: DialogInterface, _: Int ->
-//                // Respond to neutral button press
-//
-//            }
-//            .setNegativeButton(getString(R.string.participation_decline)) { _: DialogInterface, _: Int ->
-//                // Respond to negative button press
-//
-//                Constants.TRACKING.logEvent(
-//                    Tracking.EVENT_DETAILS_OWNER_REFUSE_PARTICIPATION,
-//                    null
-//                )
-//
-//                EventDetailsOwnerFragment.viewModel.event.observe(viewLifecycleOwner) { event ->
-//                    refuseParticipant(participant)
-//                    MessagingService.eventRefuseParticipation(
-//                        event,
-//                        participant
-//                    )
-//                }
-//            }
-//            .setPositiveButton(getString(R.string.participation_accept)) { _: DialogInterface, _: Int ->
-//                // Respond to positive button press
-//
-//                Constants.TRACKING.logEvent(
-//                    Tracking.EVENT_DETAILS_OWNER_ACCEPT_PARTICIPATION,
-//                    null
-//                )
-//
-//                EventDetailsOwnerFragment.viewModel.event.observe(viewLifecycleOwner) { event ->
-//
-//                    acceptParticipant(participant)
-//                    MessagingService.eventAcceptParticipation(
-//                        event,
-//                        participant
-//                    )
-//                }
-//            }
-//            .show()
-//    }
-
     //endregion
 
     //region RecyclerViews

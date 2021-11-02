@@ -7,6 +7,7 @@ import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.userProfileChangeRequest
 import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
@@ -167,16 +168,50 @@ class RemoteDataSourceImpl : RemoteDataSource {
         TODO("Not yet implemented")
     }
 
-    override fun acceptParticipant() {
-        TODO("Not yet implemented")
+    override fun acceptParticipant(eventId: String, participant: EventParticipant) =
+        flow {
+            val mAcceptParticipant = DB
+                .document(EVENT_PATH + "/${eventId}/Participant/${participant.coachId}")
+            val status = setParticipantAccepted()
+
+            emit(State.loading())
+
+            mAcceptParticipant.set(status, SetOptions.merge()).await()
+
+            emit(State.success(participant))
+        }.catch {
+            emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
+        }.flowOn(Dispatchers.IO)
+
+    private fun setParticipantAccepted(): HashMap<String, Any?> {
+        return hashMapOf(
+            "status" to "validate"
+        )
     }
 
-    override fun refuseParticipant() {
-        TODO("Not yet implemented")
+    override fun refuseParticipant(eventId: String, participant: EventParticipant) =
+        flow {
+            val mRefuseParticipant = DB
+                .document(EVENT_PATH + "/${eventId}/Participant/${participant.coachId}")
+            val status = setParticipantRefused()
+
+            emit(State.loading())
+
+            mRefuseParticipant.set(status, SetOptions.merge()).await()
+
+            emit(State.success(participant))
+        }.catch {
+            emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
+        }.flowOn(Dispatchers.IO)
+
+    private fun setParticipantRefused(): HashMap<String, Any?> {
+        return hashMapOf(
+            "status" to "refused"
+        )
     }
 
     override fun joinEvent(eventId: String, participant: EventParticipant) = flow {
-        val mParticipantQuery = Constants.DB
+        val mParticipantQuery = DB
             .document(EVENT_PATH + "/${eventId}/Participant/${participant.coachId}")
 
         emit(State.loading())

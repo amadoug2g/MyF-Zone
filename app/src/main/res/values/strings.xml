@@ -119,9 +119,11 @@
     <string name="delete_event">Supprimer l\'évènement</string>
     <string name="delete_txt">Supprimer</string>
     <string name="participation_title">Participation</string>
-    <string name="participation_support_text">Accepter cet éducateur dans votre évènement ?</string>
+    <string name="accept_coach_text">Accepter cet éducateur dans votre évènement ?</string>
+    <string name="refuse_coach_text">Retirer cet éducateur de votre évènement ?</string>
     <string name="participation_neutral">Annuler</string>
     <string name="participation_decline">Refuser</string>
+    <string name="participation_refuse">Retirer</string>
     <string name="participation_accept">Accepter</string>
     <string name="delete_event_confirmation">Vous êtes sur le point de supprimer cet évènement. Continuer ?</string>
     <string name="edit_event_confirmation">Vous allez modifier cet l\'évènement. Continuer ?</string>

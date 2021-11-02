@@ -42,23 +42,8 @@ class HomeViewModel(
     private val _coachClub = MutableLiveData<Club>()
     val coachClub: LiveData<Club> = _coachClub
 
-    private val _coachEventList = MutableLiveData<MutableList<String>>()
-    val coachEventList: LiveData<MutableList<String>> = _coachEventList
-
-    private val _allEventsList = MutableLiveData<MutableList<Event>>()
-    val allEventsList: LiveData<MutableList<Event>> = _allEventsList
-
     private val _closeEventsList = MutableLiveData<MutableList<Event>>()
     val closeEventsList: LiveData<MutableList<Event>> = _closeEventsList
-
-    private val _friendlyEventsList = MutableLiveData<MutableList<Event>>()
-    val friendlyEventsList: LiveData<MutableList<Event>> = _friendlyEventsList
-
-    private val _tourneyEventsList = MutableLiveData<MutableList<Event>>()
-    val tourneyEventsList: LiveData<MutableList<Event>> = _tourneyEventsList
-
-    private val _plateauEventsList = MutableLiveData<MutableList<Event>>()
-    val plateauEventsList: LiveData<MutableList<Event>> = _plateauEventsList
 
     private val _userEventsList = MutableLiveData<MutableList<Event>>()
     val userEventsList: LiveData<MutableList<Event>> = _userEventsList
@@ -69,7 +54,7 @@ class HomeViewModel(
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String> = _errorMessage
 
-    val isUserConnected = MutableLiveData(false)
+    private val isUserConnected = MutableLiveData(false)
     //endregion
 
     //region Functions
@@ -79,7 +64,7 @@ class HomeViewModel(
     }
 
     fun initializeHome() {
-        getUserAffiliation()
+//        getUserAffiliation()
         getAllEvents()
     }
 
@@ -91,9 +76,10 @@ class HomeViewModel(
                         startLoading()
                     }
                     is State.Success -> {
+                        val eventList = state.data
+
+                        getUserClub(eventList)
                         onResult()
-                        _allEventsList.postValue(state.data)
-                        getUserClub(state.data)
                     }
                     is State.Failed -> {
                         val message = "All events fetching failed: ${state.message}"
@@ -147,34 +133,6 @@ class HomeViewModel(
         _closeEventsList.postValue(result)
     }
 
-    private fun getFriendlyEvents(list: MutableList<Event>) {
-        val result = mutableListOf<Event>()
-        for (event in list)
-            if (event.type == "friendly") result.add(event)
-
-        _friendlyEventsList.postValue(result)
-    }
-
-    private fun getTourneyEvents(list: MutableList<Event>) {
-        val result = mutableListOf<Event>()
-        for (event in list)
-            if (event.type == "tournament") result.add(event)
-
-        _tourneyEventsList.postValue(result)
-    }
-
-    private fun getPlateauEvents(list: MutableList<Event>) {
-        val result = mutableListOf<Event>()
-        for (event in list)
-            if (event.type == "plateau") result.add(event)
-
-        _plateauEventsList.postValue(result)
-    }
-
-    private fun isUserOwner(eventId: String): Boolean {
-        return (activeCoachEvents.contains(eventId))
-    }
-
     private fun getUser() {
         viewModelScope.launch {
             getUserUseCase.load().stateIn(viewModelScope).collect { state ->
@@ -183,8 +141,11 @@ class HomeViewModel(
                         startLoading()
                     }
                     is State.Success -> {
+                        val coach = state.data
+
+                        _coach.postValue(coach)
+                        initializeHome()
                         onResult()
-                        _coach.postValue(state.data)
 
 //                        if (state.data != null) {
 //                            getUserAffiliation()
@@ -210,8 +171,10 @@ class HomeViewModel(
                         startLoading()
                     }
                     is State.Success -> {
+                        val affiliation = state.data!!
+
+                        _coachAffiliation.postValue(affiliation)
                         onResult()
-                        _coachAffiliation.postValue(state.data)
                     }
                     is State.Failed -> {
                         val message = "Affiliation update failed: ${state.message}"
@@ -230,9 +193,13 @@ class HomeViewModel(
                         startLoading()
                     }
                     is State.Success -> {
+                        val club = state.data
+
+                        if (club != null) {
+                            _coachClub.postValue(club)
+                            getUserEventList(list, club)
+                        }
                         onResult()
-                        _coachClub.postValue(state.data)
-                        if (state.data != null) getUserEventList(list, state.data)
                     }
                     is State.Failed -> {
                         val message = "Club fetching failed: ${state.message}"
@@ -251,9 +218,10 @@ class HomeViewModel(
                         startLoading()
                     }
                     is State.Success -> {
-                        onResult()
-                        _coachEventList.postValue(state.data)
+                        val coachEventList = state.data
+
                         sortOwnerEvents(list, club, state.data)
+                        onResult()
                     }
                     is State.Failed -> {
                         val message = "Event list fetching failed: ${state.message}"

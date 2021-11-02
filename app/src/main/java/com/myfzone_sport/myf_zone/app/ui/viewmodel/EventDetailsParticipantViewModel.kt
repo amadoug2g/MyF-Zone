@@ -1,15 +1,20 @@
 package com.myfzone_sport.myf_zone.app.ui.viewmodel
 
+import androidx.core.os.bundleOf
 import androidx.lifecycle.*
 import com.google.firebase.storage.StorageReference
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.TRACKING
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoach
 import com.myfzone_sport.myf_zone.domain.State
+import com.myfzone_sport.myf_zone.domain.chat.MessagingService
 import com.myfzone_sport.myf_zone.domain.event.Event
 import com.myfzone_sport.myf_zone.domain.event.EventOwner
 import com.myfzone_sport.myf_zone.domain.event.EventParticipant
 import com.myfzone_sport.myf_zone.usecases.detailevent.*
 import com.myfzone_sport.myf_zone.usecases.notification.GetOwnerTokenUseCase
 import com.myfzone_sport.myf_zone.usecases.user.GetImageReferenceUseCase
+import com.myfzone_sport.myf_zone.util.Tracking
+import com.myfzone_sport.myf_zone.util.Tracking.ALERT_ERROR
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -42,14 +47,13 @@ class EventDetailsParticipantViewModel(
     val userImagePath: LiveData<StorageReference> = _userImagePath
 
     private val _eventParticipants = MutableLiveData<MutableList<EventParticipant>>()
-    val eventParticipants = _eventParticipants
+
+    private val _eventParticipantsValid = MutableLiveData<MutableList<EventParticipant>>()
+    val eventParticipantsValid: LiveData<MutableList<EventParticipant>> = _eventParticipantsValid
 
     private val eventId = MutableLiveData<String>()
-    private val coachEventStatus = MutableLiveData<String>()
-    val validParticipantCount = MutableLiveData(0)
-    private val validParticipantList = MutableLiveData<MutableList<EventParticipant>>()
 
-    private val _isUserParticipating = MutableLiveData(false)
+    private val _isUserParticipating = MutableLiveData<Boolean>()
     val isUserParticipating: LiveData<Boolean> = _isUserParticipating
 
     private val _isLoading = MutableLiveData<Boolean>()
@@ -67,7 +71,7 @@ class EventDetailsParticipantViewModel(
         getParticipants(eventId)
     }
 
-    private fun getEvent(eventId: String = this.eventId.value!!) {
+    private fun getEvent(eventId: String) {
         viewModelScope.launch {
             getEventFromIdUseCase.invoke(eventId).collect { state ->
                 when (state) {
@@ -75,8 +79,10 @@ class EventDetailsParticipantViewModel(
                         startLoading()
                     }
                     is State.Success -> {
+                        val event = state.data
+
+                        _event.postValue(event)
                         onResult()
-                        _event.postValue(state.data)
                     }
                     is State.Failed -> {
                         val message = "Event fetching failure: ${state.message}"
@@ -93,7 +99,7 @@ class EventDetailsParticipantViewModel(
         }
     }
 
-    private fun getOwner(eventId: String = this.eventId.value!!) {
+    private fun getOwner(eventId: String) {
         viewModelScope.launch {
             getOwnerFromEventUseCase.invoke(eventId).collect { state ->
                 when (state) {
@@ -101,8 +107,10 @@ class EventDetailsParticipantViewModel(
                         startLoading()
                     }
                     is State.Success -> {
+                        val owner = state.data
+
+                        _eventOwner.postValue(owner)
                         onResult()
-                        _eventOwner.postValue(state.data)
                     }
                     is State.Failed -> {
                         val message = "Event owner fetching failure: ${state.message}"
@@ -113,7 +121,7 @@ class EventDetailsParticipantViewModel(
         }
     }
 
-    fun getOwnerToken(ownerId: String = this._eventOwner.value!!.coachId) {
+    fun getOwnerToken(ownerId: String) {
         viewModelScope.launch {
             getOwnerTokenUseCase.invoke(ownerId).collect { state ->
                 when (state) {
@@ -122,7 +130,9 @@ class EventDetailsParticipantViewModel(
                     }
                     is State.Success -> {
                         onResult()
-                        _eventOwnerToken.postValue(state.data)
+                        val tokenList = state.data
+
+                        _eventOwnerToken.postValue(tokenList)
                     }
                     is State.Failed -> {
                         val message = "Event owner token fetching failure: ${state.message}"
@@ -133,7 +143,7 @@ class EventDetailsParticipantViewModel(
         }
     }
 
-    private fun getParticipants(eventId: String = this.eventId.value!!) {
+    private fun getParticipants(eventId: String) {
         viewModelScope.launch {
             getAllParticipantsFromEventUseCase.invoke(eventId).collect { state ->
                 when (state) {
@@ -142,21 +152,37 @@ class EventDetailsParticipantViewModel(
                     }
                     is State.Success -> {
                         onResult()
-                        _eventParticipants.postValue(state.data)
-                        getValidCount(state.data)
-                        getValidList(state.data)
-                        isCoachParticipant(state.data)
+                        val participantList = state.data
+
+                        _eventParticipants.postValue(participantList)
+                        assignValidParticipants(participantList)
+                        isCoachParticipant(participantList)
                     }
                     is State.Failed -> {
                         val message = "Event participants fetching failure: ${state.message}"
                         onResult(message)
+
+                        val bundleTracking =
+                            bundleOf("Event participants fetching failure" to state.message)
+                        TRACKING.logEvent(ALERT_ERROR, bundleTracking)
                     }
                 }
             }
         }
     }
 
-    fun joinEvent(eventId: String = this.eventId.value!!, participant: EventParticipant) {
+    private fun assignValidParticipants(list: MutableList<EventParticipant>) {
+        val result = mutableListOf<EventParticipant>()
+
+        for (participant in list)
+            if (participant.status == "validate") {
+                result.add(participant)
+            }
+
+        _eventParticipantsValid.postValue(result)
+    }
+
+    fun joinEvent(eventId: String, participant: EventParticipant) {
         viewModelScope.launch {
             joinEventUseCase.invoke(eventId, participant).collect { state ->
                 when (state) {
@@ -164,8 +190,10 @@ class EventDetailsParticipantViewModel(
                         startLoading()
                     }
                     is State.Success -> {
+                        _isUserParticipating.postValue(true)
+//                        MessagingService.eventParticipation(_event.value!!, _eventOwner.value!!)
+//                        TRACKING.logEvent(Tracking.EVENT_DETAILS_OWNER_ACCEPT_PARTICIPATION, null)
                         onResult()
-                        coachEventStatus.postValue("User joined event")
                     }
                     is State.Failed -> {
                         val message = "Failed to join event: ${state.message}"
@@ -176,7 +204,7 @@ class EventDetailsParticipantViewModel(
         }
     }
 
-    fun leaveEvent(eventId: String = this.eventId.value!!) {
+    fun leaveEvent(eventId: String) {
         viewModelScope.launch {
             leaveEventUseCase.invoke(eventId).collect { state ->
                 when (state) {
@@ -184,8 +212,10 @@ class EventDetailsParticipantViewModel(
                         startLoading()
                     }
                     is State.Success -> {
+                        _isUserParticipating.postValue(false)
+//                        TRACKING.logEvent(Tracking.EVENT_DETAILS_OWNER_ACCEPT_PARTICIPATION, null)
+                        getParticipants(eventId)
                         onResult()
-                        coachEventStatus.postValue("User left event")
                     }
                     is State.Failed -> {
                         val message = "Failed to leave event: ${state.message}"
@@ -196,33 +226,13 @@ class EventDetailsParticipantViewModel(
         }
     }
 
-    private fun getValidCount(list: MutableList<EventParticipant>) {
-        for (participant in list)
-            if (participant.status == "valid") validParticipantCount.value?.plus(1)
-    }
-
-    private fun getValidList(list: MutableList<EventParticipant>) {
-        for (participant in list)
-            if (participant.status == "valid") validParticipantList.value?.add(participant)
-    }
-
-    fun isCoachParticipant(list: MutableList<EventParticipant> = _eventParticipants.value!!) {
+    private fun isCoachParticipant(list: MutableList<EventParticipant>) {
         var result = false
 
         for (participant in list)
             if (participant.coachId == activeCoach?.id) result = true
 
         _isUserParticipating.postValue(result)
-    }
-
-    fun coachStatus(value: Boolean) {
-        _isUserParticipating.postValue(value)
-    }
-
-    fun isCoachInParticipantList(): Boolean {
-        for (participant in eventParticipants.value!!)
-            if (participant.coachId == activeCoach?.id) return true
-        return false
     }
     //endregion
 

@@ -1,5 +1,6 @@
 package com.myfzone_sport.myf_zone.app.ui.fragment
 
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
@@ -17,6 +18,7 @@ import com.myfzone_sport.myf_zone.R
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoach
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoachClub
 import com.myfzone_sport.myf_zone.app.framework.RemoteDataSourceImpl
+import com.myfzone_sport.myf_zone.app.ui.activity.MainActivity
 import com.myfzone_sport.myf_zone.app.ui.adapter.CategoryListEventAdapter
 import com.myfzone_sport.myf_zone.app.ui.adapter.UserEventAdapter
 import com.myfzone_sport.myf_zone.app.ui.viewmodel.*
@@ -33,6 +35,7 @@ class ProfileFragment : Fragment() {
 
     //region Variables
     companion object {
+        private val TAG = ProfileFragment::class.java.simpleName
         private var coachId: String? = null
         private lateinit var binding: FragmentProfile2Binding
         private lateinit var viewModel: ProfileViewModel
@@ -42,9 +45,14 @@ class ProfileFragment : Fragment() {
     }
     //endregion
 
-    //region Override Methods
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        Log.d(TAG, "onAttach: fun frag")
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d(TAG, "onCreate: fun frag")
 
         arguments?.let {
             coachId = it.getString(ARG_PARAM1)
@@ -58,6 +66,7 @@ class ProfileFragment : Fragment() {
         binding = DataBindingUtil.inflate(
             inflater, R.layout.fragment_profile2, container, false
         )
+        Log.d(TAG, "onCreateView: fun frag")
 
         setupViewModel()
         setupViews()
@@ -65,6 +74,47 @@ class ProfileFragment : Fragment() {
 
         return binding.root
     }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        Log.d(TAG, "onViewCreated: fun frag")
+    }
+
+    override fun onStart() {
+        super.onStart()
+        Log.d(TAG, "onStart: fun frag")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d(TAG, "onResume: fun frag")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d(TAG, "onPause: fun frag")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Log.d(TAG, "onStop: fun frag")
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        Log.d(TAG, "onDestroyView: fun frag")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d(TAG, "onDestroy: fun frag")
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        Log.d(TAG, "onDetach: fun frag")
+    }
+
     //endregion
 
     //region Setups

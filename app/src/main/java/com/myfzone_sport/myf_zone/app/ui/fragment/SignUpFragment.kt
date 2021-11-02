@@ -143,10 +143,10 @@ class SignUpFragment : Fragment() {
         viewModel.successfulSignUp.observe(viewLifecycleOwner, { state ->
             if (state) {
                 toast(getString(R.string.account_creation_msg))
-//                val bundle = bundleOf("page" to R.id.signUpFragment)
-//                navigate(R.id.globalToAffiliation, bundle)
+                val bundle = bundleOf("page" to R.id.signUpFragment)
+                navigate(R.id.globalToAffiliation, bundle)
 
-//                TRACKING.logEvent(Tracking.SIGN_UP_DONE, null)
+                TRACKING.logEvent(Tracking.SIGN_UP_DONE, null)
 
 //                navigate(R.id.signInFragment2ToAffiliationRequestFragment)
             }

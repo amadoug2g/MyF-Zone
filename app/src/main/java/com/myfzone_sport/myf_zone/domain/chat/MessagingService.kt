@@ -23,8 +23,8 @@ import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.myfzone_sport.myf_zone.R
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoach
 import com.myfzone_sport.myf_zone.fragments.message.MessageService
-import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth
 import com.myfzone_sport.myf_zone.domain.event.Event
 import com.myfzone_sport.myf_zone.domain.event.EventOwner
 import com.myfzone_sport.myf_zone.domain.event.EventParticipant
@@ -110,7 +110,7 @@ class MessagingService : FirebaseMessagingService() {
             functions = Firebase.functions
             val type = notificationEventParticipation()
             val title = notificationEventTitle(event)
-            val message = notificationEventParticipationMessage(ManagerAuth.activeCoach!!)
+            val message = notificationEventParticipationMessage(activeCoach!!)
 
             val data = hashMapOf(
                 "env" to Constants.ENV,

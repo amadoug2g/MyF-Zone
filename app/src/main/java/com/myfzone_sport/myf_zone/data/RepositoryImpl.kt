@@ -84,12 +84,12 @@ class RepositoryImpl(
         remoteDataSource.sendClubSuggestion()
     }
 
-    override fun acceptParticipant() {
-        remoteDataSource.acceptParticipant()
+    override fun acceptParticipant(eventId: String, participant: EventParticipant): Flow<State<EventParticipant>> {
+        return remoteDataSource.acceptParticipant(eventId,participant)
     }
 
-    override fun refuseParticipant() {
-        remoteDataSource.refuseParticipant()
+    override fun refuseParticipant(eventId: String, participant: EventParticipant): Flow<State<EventParticipant>> {
+        return remoteDataSource.refuseParticipant(eventId, participant)
     }
 
     override fun joinEvent(eventId: String, participant: EventParticipant): Flow<State<EventParticipant>> {

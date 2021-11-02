@@ -111,9 +111,11 @@
     <string name="delete_event">Delete Event</string>
     <string name="delete_txt">Delete</string>
     <string name="participation_title">Participation</string>
-    <string name="participation_support_text">Allow this coach to join your event?</string>
+    <string name="accept_coach_text">Allow this coach to join your event?</string>
+    <string name="refuse_coach_text">Remove this coach from your event?</string>
     <string name="participation_neutral">Cancel</string>
     <string name="participation_decline">Refuse</string>
+    <string name="participation_refuse">Remove</string>
     <string name="participation_accept">Accept</string>
     <string name="delete_event_confirmation">You are about to delete this event. Proceed?</string>
     <string name="edit_event_confirmation">You are about to edit this event. Proceed?</string>

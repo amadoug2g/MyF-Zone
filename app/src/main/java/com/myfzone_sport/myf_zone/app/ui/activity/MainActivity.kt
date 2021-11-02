@@ -20,9 +20,9 @@ import com.myfzone_sport.myf_zone.usecases.user.*
 
 class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedListener {
 
-    //region Variables
     lateinit var navController: NavController
 
+    //region Variables
     companion object {
         private val TAG = MainActivity::class.java.simpleName
         private lateinit var binding: ActivityMainBinding
@@ -41,20 +41,28 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         super.onCreate(savedInstanceState)
 
         setupViews()
-        initViewModels()
+        setupViewModel()
+        setupObservers()
+
+        if (viewModel.getUserStatus()) {
+            navController.setGraph(R.navigation.home)
+        } else {
+            navController.setGraph(R.navigation.main_start)
+        }
     }
 
     override fun onStart() {
         super.onStart()
-        viewModel.getUserStatus()
-        viewModel.checkUserStatus()
-
-        setupObservers()
-
 //        LocalBroadcastManager.getInstance(this).registerReceiver(
 //            messageReceiver,
 //            IntentFilter("MyData")
 //        )
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        viewModel.checkUserStatus()
     }
 
     override fun onStop() {
@@ -85,7 +93,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
     }
     //endregion
 
-    //region Init
+    //region Setups
     private fun setupViews() {
         setTheme(R.style.AppTheme)
 
@@ -111,19 +119,15 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 //        setupActionBarWithNavController(findNavController(R.id.fragmentNavHostView))
     }
 
-    private fun initViewModels() {
+    private fun setupViewModel() {
         val remoteDataSource = RemoteDataSourceImpl()
         val repository = RepositoryImpl(remoteDataSource)
 
-        //Activity View Model
         val getUserStatusUseCase = GetUserStatusUseCase(repository)
 
-        viewModel = ViewModelProvider(this, ActivityViewModelFactory(getUserStatusUseCase)).get(ActivityViewModel::class.java)
-
-
-//        val navHostFragment: NavHostFragment =
-//            supportFragmentManager.findFragmentById(R.id.fragmentNavHost) as NavHostFragment
-//        navHostFragment.childFragmentManager.fragments[0]
+        viewModel = ViewModelProvider(this, ActivityViewModelFactory(getUserStatusUseCase)).get(
+            ActivityViewModel::class.java
+        )
     }
 
     private fun setupObservers() {

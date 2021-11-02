@@ -1,6 +1,7 @@
 package com.myfzone_sport.myf_zone.domain.event
 
-import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoach
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoachClubAffiliation
 
 data class EventParticipant(
     var clubLogo: String,
@@ -53,19 +54,19 @@ data class EventParticipant(
 
     fun confirm(): EventParticipant {
         return EventParticipant().apply {
-            clubLogo = ManagerAuth.activeCoachClubAffiliation!!.clubLogo
-            clubAcronym = ManagerAuth.activeCoachClubAffiliation!!.clubAcronym
-            coachId = ManagerAuth.activeCoach!!.id
+            clubLogo = activeCoachClubAffiliation!!.clubLogo
+            clubAcronym = activeCoachClubAffiliation!!.clubAcronym
+            coachId = activeCoach!!.id
             coachFullname =
-                "${ManagerAuth.activeCoach!!.firstName} ${ManagerAuth.activeCoach!!.lastName}"
-            sportId = ManagerAuth.activeCoachClubAffiliation!!.sportId
-            sportName = ManagerAuth.activeCoachClubAffiliation!!.sportName
-            if (!ManagerAuth.activeCoachClubAffiliation!!.categoryId.isNullOrEmpty()) {
-                categoryId = ManagerAuth.activeCoachClubAffiliation!!.categoryId
-                categoryName = ManagerAuth.activeCoachClubAffiliation!!.categoryName
-                if (!ManagerAuth.activeCoachClubAffiliation!!.subCategoryId.isNullOrEmpty()) {
-                    subCategoryId = ManagerAuth.activeCoachClubAffiliation!!.subCategoryId
-                    subCategoryName = ManagerAuth.activeCoachClubAffiliation!!.subCategoryName
+                "${activeCoach!!.firstName} ${activeCoach!!.lastName}"
+            sportId = activeCoachClubAffiliation!!.sportId
+            sportName = activeCoachClubAffiliation!!.sportName
+            if (!activeCoachClubAffiliation!!.categoryId.isNullOrEmpty()) {
+                categoryId = activeCoachClubAffiliation!!.categoryId
+                categoryName = activeCoachClubAffiliation!!.categoryName
+                if (!activeCoachClubAffiliation!!.subCategoryId.isNullOrEmpty()) {
+                    subCategoryId = activeCoachClubAffiliation!!.subCategoryId
+                    subCategoryName = activeCoachClubAffiliation!!.subCategoryName
                 }
             }
             status = "pending"

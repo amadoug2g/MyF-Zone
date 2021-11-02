@@ -110,11 +110,8 @@ class EventParticipantsFragment : Fragment() {
             }
 
             override fun onDataChanged() {
-                binding.validCoachRecyclerView.visibility =
-                    if (itemCount == 0) View.VISIBLE else View.GONE
-
                 val params = binding.validCoachRecyclerView.layoutParams
-                params.height = 320 * itemCount
+                params.height = 120 * itemCount
                 binding.validCoachRecyclerView.layoutParams = params
             }
         }

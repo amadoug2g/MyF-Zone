@@ -15,6 +15,8 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.MapsInitializer
 import com.google.android.gms.maps.model.MarkerOptions
@@ -22,13 +24,14 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.myfzone_sport.myf_zone.R
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.TRACKING
-import com.myfzone_sport.myf_zone.app.framework.FirebaseService.isConnected
 import com.myfzone_sport.myf_zone.app.framework.RemoteDataSourceImpl
+import com.myfzone_sport.myf_zone.app.ui.adapter.ParticipantsPreviewAdapter
 import com.myfzone_sport.myf_zone.app.ui.viewmodel.EventDetailsParticipantViewModel
 import com.myfzone_sport.myf_zone.app.ui.viewmodel.EventDetailsParticipantViewModelFactory
 import com.myfzone_sport.myf_zone.data.RepositoryImpl
 import com.myfzone_sport.myf_zone.databinding.FragmentEventDetailsBinding
 import com.myfzone_sport.myf_zone.domain.event.Event
+import com.myfzone_sport.myf_zone.domain.event.EventParticipant
 import com.myfzone_sport.myf_zone.glide.GlideApp
 import com.myfzone_sport.myf_zone.usecases.detailevent.*
 import com.myfzone_sport.myf_zone.usecases.notification.GetOwnerTokenUseCase
@@ -45,6 +48,7 @@ class EventDetailsParticipantFragment : Fragment() {
         private lateinit var binding: FragmentEventDetailsBinding
         private lateinit var viewModel: EventDetailsParticipantViewModel
         private lateinit var viewModelFactory: EventDetailsParticipantViewModelFactory
+        private lateinit var participantPreviewAdapter: ParticipantsPreviewAdapter
         private var eventId: String? = null
     }
     //endregion
@@ -72,10 +76,19 @@ class EventDetailsParticipantFragment : Fragment() {
         )
 
         setupViews(savedInstanceState)
-
         setupObservers()
 
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        binding.eventDetailsParticipantShimmerLayout.startShimmer()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        binding.eventDetailsParticipantShimmerLayout.stopShimmer()
     }
     //endregion
 
@@ -107,67 +120,37 @@ class EventDetailsParticipantFragment : Fragment() {
     }
 
     private fun setupViews(savedInstanceState: Bundle?) {
-        binding.backArrow.background = null
-
-        binding.backArrow.setOnClickListener {
-            requireActivity().onBackPressed()
+        binding.backArrow.apply {
+            background = null
+            setOnClickListener { requireActivity().onBackPressed() }
         }
-
-        if (isConnected) {
-            binding.eventDetailBtnLayout.visibility = View.VISIBLE
-            binding.eventDetailContactLayout.visibility = View.VISIBLE
-//            viewModel.isCoachParticipant()
-        } else {
-            binding.eventDetailBtnLayout.visibility = View.GONE
-            binding.eventDetailContactLayout.visibility = View.GONE
-        }
-
-//        viewModel.isUserParticipating.observe(viewLifecycleOwner, { isParticipant ->
-//            if (isParticipant) {
-//                binding.eventDetailParticipateBtn.text = "Quitter l'évènement"
-//            } else {
-//                binding.eventDetailParticipateBtn.text = "Participer à cet évènement"
-//            }
-//
-//            binding.eventDetailParticipateBtn.setOnClickListener {
-//                if (isParticipant) {
-//                    joinEventDialog()
-//                } else {
-//                    leaveEventDialog()
-//                }
-//            }
-//        })
-
-        viewModel.eventParticipants
 
         binding.eventDetailParticipateBtn.setOnClickListener {
-//            if (viewModel.is)
+            joinEventDialog()
+        }
+
+        binding.eventDetailLeaveBtn.setOnClickListener {
+            leaveEventDialog()
         }
 
         binding.eventDetailContactLayout.setOnClickListener {
             navigate(R.id.eventDetailsToMessageFragment)
         }
 
+        binding.participantRecyclerview.suppressLayout(true)
+
         setupEvent(savedInstanceState)
+        setUpParticipantRecycler()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             binding.eventDetailDescription.justificationMode = JUSTIFICATION_MODE_INTER_WORD
         }
 
         val bundle = bundleOf("eventId" to eventId)
-        binding.participantList.setOnClickListener {
-            navigate(
-                R.id.eventDetailsToEventParticipants,
-//                R.id.eventDetailsToHome,
-                bundle
-            )
-        }
 
-        viewModel.event.observe(viewLifecycleOwner, { event ->
-            val participantCount =
-                "Participants (${viewModel.validParticipantCount.value}/${event.nbTeam})"
-            binding.participantCount.text = participantCount
-        })
+        binding.participantRecyclerview.setOnClickListener {
+            navigate(R.id.eventDetailsToEventParticipants, bundle)
+        }
     }
 
     private fun setupObservers() {
@@ -178,6 +161,18 @@ class EventDetailsParticipantFragment : Fragment() {
         viewModel.isLoading.observe(viewLifecycleOwner, { contentIsLoading ->
             if (contentIsLoading) loadingStart() else loadingStop()
         })
+
+        viewModel.isUserParticipating.observe(viewLifecycleOwner, {
+            if (it) {
+                binding.eventDetailParticipateBtn.visibility = View.GONE
+                binding.eventDetailLeaveBtn.visibility = View.VISIBLE
+            } else {
+                binding.eventDetailParticipateBtn.visibility = View.VISIBLE
+                binding.eventDetailLeaveBtn.visibility = View.GONE
+            }
+        })
+
+        viewModel
     }
     //endregion
 
@@ -186,7 +181,14 @@ class EventDetailsParticipantFragment : Fragment() {
         viewModel.event.observe(viewLifecycleOwner, { event ->
             binding.event = event
             mapPreview(event, savedInstanceState)
+
+//            val participantCount = "Participants (${viewModel.validParticipantCount.value}/${event.nbTeam})"
+//            binding.participantCount.text = participantCount
         })
+
+//        viewModel.validParticipantCount.observe(viewLifecycleOwner, {
+//            binding.validCount = it
+//        })
 
         viewModel.userImagePath.observe(viewLifecycleOwner, {
             displayUserImage()
@@ -201,18 +203,12 @@ class EventDetailsParticipantFragment : Fragment() {
     private fun joinEventDialog() {
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(getString(R.string.participation_title))
-            .setMessage(getString(R.string.participation_support_text))
-            .setNegativeButton(getString(R.string.participation_decline)) { _: DialogInterface, _: Int ->
-                // Respond to negative button press
-
-//                TRACKING.logEvent(Tracking.EVENT_DETAILS_OWNER_REFUSE_PARTICIPATION, null)
-
-            }
+            .setMessage(getString(R.string.enter_event_msg))
+            .setNeutralButton(getString(R.string.cancel_message)) { _: DialogInterface, _: Int -> }
             .setPositiveButton(getString(R.string.participation_accept)) { _: DialogInterface, _: Int ->
-                // Respond to positive button press
-                viewModel.coachStatus(true)
+                val participant = EventParticipant()
 
-                TRACKING.logEvent(Tracking.EVENT_DETAILS_OWNER_ACCEPT_PARTICIPATION, null)
+                viewModel.joinEvent(eventId!!, participant.confirm())
             }
             .show()
     }
@@ -220,13 +216,10 @@ class EventDetailsParticipantFragment : Fragment() {
     private fun leaveEventDialog() {
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(getString(R.string.participation_title))
-            .setMessage(getString(R.string.participation_support_text))
-            .setNegativeButton(getString(R.string.participation_decline)) { _: DialogInterface, _: Int ->
-//                TRACKING.logEvent(Tracking.EVENT_DETAILS_OWNER_REFUSE_PARTICIPATION, null)
-            }
-            .setPositiveButton(getString(R.string.participation_accept)) { _: DialogInterface, _: Int ->
-                viewModel.coachStatus(false)
-//                TRACKING.logEvent(Tracking.EVENT_DETAILS_OWNER_ACCEPT_PARTICIPATION, null)
+            .setMessage(getString(R.string.exit_event_msg))
+            .setNeutralButton(getString(R.string.cancel_message)) { _: DialogInterface, _: Int -> }
+            .setPositiveButton(getString(R.string.exit_text)) { _: DialogInterface, _: Int ->
+                viewModel.leaveEvent(eventId!!)
             }
             .show()
     }
@@ -264,6 +257,26 @@ class EventDetailsParticipantFragment : Fragment() {
     }
     //endregion
 
+    //region RecyclerView
+    private fun setUpParticipantRecycler() {
+        val remoteDataSource = RemoteDataSourceImpl()
+        val repository = RepositoryImpl(remoteDataSource)
+
+        val getImageReferenceUseCase = GetImageReferenceUseCase(repository)
+
+        participantPreviewAdapter = ParticipantsPreviewAdapter(getImageReferenceUseCase, eventId!!)
+        binding.participantRecyclerview.adapter = participantPreviewAdapter
+        binding.participantRecyclerview.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        binding.participantRecyclerview.setChildDrawingOrderCallback(BackwardsDrawingOrderCallback())
+
+        viewModel.eventParticipantsValid.observe(viewLifecycleOwner, {
+            participantPreviewAdapter.setData(it)
+            binding.validCount = it.size
+        })
+    }
+    //endregion
+
     //region Navigation
     private fun navigate(destination: Int, extra: Bundle? = null) {
         Navigation
@@ -284,14 +297,12 @@ class EventDetailsParticipantFragment : Fragment() {
 
     //region View Methods
     private fun loadingStart() {
-//        binding.progressBar.visibility = View.VISIBLE
         binding.eventDetailsParticipantShimmerLayout.startShimmer()
         binding.eventDetailsParticipantShimmerLayout.visibility = View.VISIBLE
         binding.eventDetailsParticipantLayout.visibility = View.GONE
     }
 
     private fun loadingStop() {
-//        binding.progressBar.visibility = View.INVISIBLE
         binding.eventDetailsParticipantShimmerLayout.stopShimmer()
         binding.eventDetailsParticipantShimmerLayout.visibility = View.GONE
         binding.eventDetailsParticipantLayout.visibility = View.VISIBLE
@@ -316,4 +327,8 @@ class EventDetailsParticipantFragment : Fragment() {
         }
     }
     //endregion
+
+    class BackwardsDrawingOrderCallback : RecyclerView.ChildDrawingOrderCallback {
+        override fun onGetChildDrawingOrder(childCount: Int, i: Int) = childCount - i - 1
+    }
 }
