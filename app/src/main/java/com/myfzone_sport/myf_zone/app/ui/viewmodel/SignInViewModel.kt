@@ -2,6 +2,7 @@ package com.myfzone_sport.myf_zone.app.ui.viewmodel
 
 import android.text.TextUtils
 import androidx.lifecycle.*
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.checkUserStatus
 import com.myfzone_sport.myf_zone.domain.State
 import com.myfzone_sport.myf_zone.usecases.registration.*
 import kotlinx.coroutines.Dispatchers
@@ -87,6 +88,7 @@ class SignInViewModel(
 
     private fun signInComplete() {
         _successfulSignIn.postValue(true)
+        checkUserStatus()
     }
     //endregion
 }

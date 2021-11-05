@@ -220,7 +220,7 @@ class HomeViewModel(
                     is State.Success -> {
                         val coachEventList = state.data
 
-                        sortOwnerEvents(list, club, state.data)
+                        sortOwnerEvents(list, club, coachEventList)
                         onResult()
                     }
                     is State.Failed -> {

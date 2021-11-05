@@ -27,10 +27,21 @@
                 android:layout_height="match_parent">
 
                 <ImageView
+                    android:id="@+id/category_image"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@color/colorDesign1Transparent75"
-                    android:contentDescription="event map"
+                    android:background="@color/colorTransparent"
+                    android:backgroundTint="@color/colorTransparent"
+                    android:contentDescription="event image"
+                    android:scaleType="centerCrop" />
+
+                <ImageView
+                    android:id="@+id/category_blur"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/colorBlur"
+                    android:backgroundTint="@color/colorBlur"
+                    android:contentDescription="event blur"
                     android:scaleType="centerCrop" />
 
                 <TextView

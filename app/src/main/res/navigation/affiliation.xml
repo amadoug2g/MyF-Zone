@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/affiliation"
+    app:startDestination="@id/affiliationRequestListFragment">
+
+    <fragment
+        android:id="@+id/affiliationRequestListFragment"
+        android:name="com.myfzone_sport.myf_zone.app.ui.fragment.AffiliationRequestListFragment"
+        android:label="AffiliationRequestListFragment"
+        tools:layout="@layout/fragment_affiliation_request_list">
+        <action
+            android:id="@+id/affiliationRequestToAffiliationCode"
+            app:destination="@id/affiliationCodeFragment" />
+        <action
+            android:id="@+id/affiliationRequestToAffiliationSuccess"
+            app:destination="@id/affiliationSuccessFragment" />
+        <action
+            android:id="@+id/affiliationRequestToSettings"
+            app:destination="@id/settings2" />
+    </fragment>
+    <fragment
+        android:id="@+id/affiliationCodeFragment"
+        android:name="com.myfzone_sport.myf_zone.app.ui.fragment.AffiliationRequestCodeFragment"
+        android:label="@string/affiliation_text"
+        tools:layout="@layout/fragment_affiliation_request_code">
+        <action
+            android:id="@+id/affiliationCodeToSettings"
+            app:destination="@id/settings2" />
+    </fragment>
+    <fragment
+        android:id="@+id/affiliationSuccessFragment"
+        android:name="com.myfzone_sport.myf_zone.app.ui.fragment.AffiliationSuccessFragment"
+        android:label="@string/affiliation_text"
+        tools:layout="@layout/fragment_affiliation_success2">
+        <action
+            android:id="@+id/affiliationSuccessToSettings"
+            app:destination="@id/settings2" />
+    </fragment>
+    <include app:graph="@navigation/settings2" />
+</navigation>

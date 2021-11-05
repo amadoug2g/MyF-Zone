@@ -34,6 +34,9 @@
         <action
             android:id="@+id/homeFragmentToEventDetailsOwner"
             app:destination="@id/event_details_for_owner" />
+        <action
+            android:id="@+id/homeFragmentToAffiliationRequest"
+            app:destination="@id/affiliation" />
     </fragment>
     <include app:graph="@navigation/category_list" />
     <include app:graph="@navigation/registration" />
@@ -43,4 +46,5 @@
     <include app:graph="@navigation/map2" />
     <include app:graph="@navigation/event_details_for_participant" />
     <include app:graph="@navigation/event_details_for_owner" />
+    <include app:graph="@navigation/affiliation" />
 </navigation>

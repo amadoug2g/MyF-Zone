@@ -12,7 +12,6 @@ import com.myfzone_sport.myf_zone.usecases.detailevent.GetAllParticipantsFromEve
 import com.myfzone_sport.myf_zone.usecases.detailevent.GetEventFromIdUseCase
 import com.myfzone_sport.myf_zone.usecases.user.GetImageReferenceUseCase
 import com.myfzone_sport.myf_zone.util.Constants.EVENT_PATH
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
@@ -61,8 +60,10 @@ class EventParticipantsViewModel(
                         startLoading()
                     }
                     is State.Success -> {
+                        val event = state.data
+
+                        _event.postValue(event)
                         onResult()
-                        _event.postValue(state.data)
                     }
                     is State.Failed -> {
                         val message = "Event fetching failure: ${state.message}"
@@ -81,10 +82,11 @@ class EventParticipantsViewModel(
                         startLoading()
                     }
                     is State.Success -> {
-                        onResult()
-                        eventParticipants.postValue(state.data)
+                        val participantList = state.data
+                        eventParticipants.postValue(participantList)
 
-                        assignValidParticipants(state.data)
+                        assignValidParticipants(participantList)
+                        onResult()
                     }
                     is State.Failed -> {
                         val message = "Event participants fetching failure: ${state.message}"
@@ -110,10 +112,8 @@ class EventParticipantsViewModel(
             .collection("Participant")
     }
 
-    fun getImageReference(path: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            _userImagePath.postValue(getImageReferenceUseCase.invoke(path))
-        }
+    fun getImageReference(path: String): StorageReference {
+        return getImageReferenceUseCase.invoke(path)
     }
     //endregion
 

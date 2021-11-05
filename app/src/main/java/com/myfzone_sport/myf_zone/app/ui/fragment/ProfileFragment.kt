@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.storage.StorageReference
 import com.myfzone_sport.myf_zone.R
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoach
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoachClub
@@ -45,6 +46,7 @@ class ProfileFragment : Fragment() {
     }
     //endregion
 
+    //region Override Methods
     override fun onAttach(context: Context) {
         super.onAttach(context)
         Log.d(TAG, "onAttach: fun frag")
@@ -52,11 +54,12 @@ class ProfileFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d(TAG, "onCreate: fun frag")
 
         arguments?.let {
             coachId = it.getString(ARG_PARAM1)
         }
+
+        setupViewModel()
     }
 
     override fun onCreateView(
@@ -66,64 +69,16 @@ class ProfileFragment : Fragment() {
         binding = DataBindingUtil.inflate(
             inflater, R.layout.fragment_profile2, container, false
         )
-        Log.d(TAG, "onCreateView: fun frag")
 
-        setupViewModel()
         setupViews()
         setupObservers()
 
         return binding.root
     }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        Log.d(TAG, "onViewCreated: fun frag")
-    }
-
-    override fun onStart() {
-        super.onStart()
-        Log.d(TAG, "onStart: fun frag")
-    }
-
-    override fun onResume() {
-        super.onResume()
-        Log.d(TAG, "onResume: fun frag")
-    }
-
-    override fun onPause() {
-        super.onPause()
-        Log.d(TAG, "onPause: fun frag")
-    }
-
-    override fun onStop() {
-        super.onStop()
-        Log.d(TAG, "onStop: fun frag")
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        Log.d(TAG, "onDestroyView: fun frag")
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d(TAG, "onDestroy: fun frag")
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        Log.d(TAG, "onDetach: fun frag")
-    }
-
     //endregion
 
     //region Setups
     private fun setupViewModel() {
-        binding.apply {
-            lifecycleOwner = this@ProfileFragment
-            executePendingBindings()
-        }
-
         val remoteDataSource = RemoteDataSourceImpl()
         val repository = RepositoryImpl(remoteDataSource)
 
@@ -149,11 +104,14 @@ class ProfileFragment : Fragment() {
     }
 
     private fun setupViews() {
+        binding.apply {
+            lifecycleOwner = this@ProfileFragment
+            executePendingBindings()
+        }
+
         setupProfile()
         setUpUserEventsRecycler()
         setUpParticipationEventsRecycler()
-
-        viewModel.getImageReference(activeCoachClub!!.logo)
 
         binding.userEventLayout.showAll.setOnClickListener {
             val bundle = bundleOf("listType" to "userEvent")
@@ -195,7 +153,7 @@ class ProfileFragment : Fragment() {
         binding.userEventLayout.layout.visibility = View.VISIBLE
 
         viewModel.userImagePath.observe(viewLifecycleOwner, {
-            displayUserImage()
+            displayUserImage(it)
         })
 
         try {
@@ -205,9 +163,9 @@ class ProfileFragment : Fragment() {
         }
     }
 
-    private fun displayUserImage() {
+    private fun displayUserImage(path: StorageReference) {
         GlideApp.with(this).apply {
-            load(viewModel.userImagePath.value)
+            load(path)
                 .centerCrop()
                 .into(binding.profileClubImage)
         }
@@ -236,8 +194,8 @@ class ProfileFragment : Fragment() {
         binding.participationRecyclerView.adapter = adapterUserParticipations
         binding.participationRecyclerView.layoutManager =
             LinearLayoutManager(requireContext())
-        binding.userEventLayout.recyclerView.setHasFixedSize(false)
-        binding.userEventLayout.recyclerView.isNestedScrollingEnabled = false
+        binding.participationRecyclerView.setHasFixedSize(false)
+        binding.participationRecyclerView.isNestedScrollingEnabled = false
 
         viewModel.participationList.observe(viewLifecycleOwner, {
             if (it.isNotEmpty()) {

@@ -9,7 +9,7 @@
         android:orientation="vertical">
 
         <ProgressBar
-            android:id="@+id/profileProgressBar"
+            android:id="@+id/progress_bar"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -24,7 +24,7 @@
             android:layout_height="wrap_content">
 
             <ImageView
-                android:id="@+id/exitProfile"
+                android:id="@+id/exit"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_alignParentStart="true"
@@ -41,7 +41,7 @@
 
                 <ImageView
 
-                    android:id="@+id/profileSettings"
+                    android:id="@+id/settings"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:layout_marginEnd="16dp"
@@ -59,12 +59,14 @@
             tools:context=".app.ui.fragment.AffiliationRequestListFragment">
 
             <ImageView
+                android:id="@+id/club_image"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:layout_gravity="center"
                 android:layout_marginTop="32dp"
                 android:layout_marginBottom="32dp"
-                android:src="@mipmap/ic_pffc_logo" />
+                android:contentDescription="@string/image_club"
+                android:src="@drawable/ic_account" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -87,8 +89,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:gravity="bottom"
                 android:layout_marginBottom="30dp"
+                android:gravity="bottom"
                 android:orientation="vertical">
 
                 <com.google.android.material.button.MaterialButton

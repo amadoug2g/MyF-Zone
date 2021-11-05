@@ -56,6 +56,10 @@ class RepositoryImpl(
         return remoteDataSource.getClubFromCode()
     }
 
+    override fun getClubFromId(clubId: String): Flow<State<Club>> {
+        return remoteDataSource.getClubFromId(clubId)
+    }
+
     override fun getCategoryList(sportId: String): Flow<State<MutableList<Category>>> {
         return remoteDataSource.getCategoryList(sportId)
     }

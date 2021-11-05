@@ -14,6 +14,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.MapsInitializer
 import com.google.android.gms.maps.model.MarkerOptions
@@ -21,6 +22,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.myfzone_sport.myf_zone.R
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.TRACKING
 import com.myfzone_sport.myf_zone.app.framework.RemoteDataSourceImpl
+import com.myfzone_sport.myf_zone.app.ui.adapter.ParticipantsPreviewAdapter
 import com.myfzone_sport.myf_zone.app.ui.viewmodel.EventDetailsOwnerViewModel
 import com.myfzone_sport.myf_zone.app.ui.viewmodel.EventDetailsOwnerViewModelFactory
 import com.myfzone_sport.myf_zone.data.RepositoryImpl
@@ -43,6 +45,7 @@ class EventDetailsOwnerFragment : Fragment() {
         private lateinit var binding: FragmentEventDetailsOwner2Binding
         private lateinit var viewModel: EventDetailsOwnerViewModel
         private lateinit var viewModelFactory: EventDetailsOwnerViewModelFactory
+        private lateinit var participantPreviewAdapter: ParticipantsPreviewAdapter
         private var eventId: String? = null
     }
     //endregion
@@ -109,6 +112,7 @@ class EventDetailsOwnerFragment : Fragment() {
         }
 
         setupEvent(savedInstanceState)
+        setUpParticipantRecycler()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             binding.eventDetailDescription.justificationMode = JUSTIFICATION_MODE_INTER_WORD
@@ -116,6 +120,10 @@ class EventDetailsOwnerFragment : Fragment() {
 
         val bundle = bundleOf("eventId" to eventId)
         binding.participantList.setOnClickListener {
+            navigate(R.id.eventDetailsOwnerToEventParticipantsOwner, bundle)
+        }
+
+        binding.eventDetailShareBtn.setOnClickListener {
             navigate(R.id.eventDetailsOwnerToEventParticipantsOwner, bundle)
         }
     }
@@ -182,6 +190,26 @@ class EventDetailsOwnerFragment : Fragment() {
                 setOnMarkerClickListener { true }
             }
         }
+    }
+    //endregion
+
+    //region RecyclerView
+    private fun setUpParticipantRecycler() {
+        val remoteDataSource = RemoteDataSourceImpl()
+        val repository = RepositoryImpl(remoteDataSource)
+
+        val getImageReferenceUseCase = GetImageReferenceUseCase(repository)
+
+        participantPreviewAdapter = ParticipantsPreviewAdapter(getImageReferenceUseCase, eventId!!)
+        binding.participantRecyclerview.adapter = participantPreviewAdapter
+        binding.participantRecyclerview.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+//        binding.participantRecyclerview.setChildDrawingOrderCallback(BackwardsDrawingOrderCallback())
+
+        viewModel.eventParticipantsValid.observe(viewLifecycleOwner, {
+            participantPreviewAdapter.setData(it)
+            binding.validCount = it.size
+        })
     }
     //endregion
 

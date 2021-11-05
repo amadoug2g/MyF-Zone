@@ -2,6 +2,7 @@ package com.myfzone_sport.myf_zone.app.ui.fragment
 
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +16,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.myfzone_sport.myf_zone.R
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.isConnectedLive
 import com.myfzone_sport.myf_zone.app.framework.RemoteDataSourceImpl
+import com.myfzone_sport.myf_zone.app.ui.activity.MainActivity
 import com.myfzone_sport.myf_zone.app.ui.adapter.CategoryEventAdapter
 import com.myfzone_sport.myf_zone.app.ui.adapter.CloseToClubEventAdapter
 import com.myfzone_sport.myf_zone.app.ui.adapter.UserEventAdapter
@@ -24,13 +26,17 @@ import com.myfzone_sport.myf_zone.data.RepositoryImpl
 import com.myfzone_sport.myf_zone.databinding.FragmentHomeBinding
 import com.myfzone_sport.myf_zone.usecases.event.*
 import com.myfzone_sport.myf_zone.usecases.user.*
+import dagger.hilt.android.AndroidEntryPoint
 import org.jetbrains.anko.support.v4.toast
 import java.util.*
+import javax.inject.Inject
 
 class HomeFragment : Fragment() {
 
     //region Variables
+
     companion object {
+        private val TAG = HomeFragment::class.java.simpleName
         private lateinit var binding: FragmentHomeBinding
         private lateinit var adapterCloseToClub: CloseToClubEventAdapter
         private lateinit var adapterCategory: CategoryEventAdapter
@@ -59,7 +65,7 @@ class HomeFragment : Fragment() {
             false
         )
 
-        setupViews()
+        setupViews(savedInstanceState)
         setupObservers()
 
         return binding.root
@@ -95,7 +101,7 @@ class HomeFragment : Fragment() {
             .get(HomeViewModel::class.java)
     }
 
-    private fun setupViews() {
+    private fun setupViews(savedInstanceState: Bundle?) {
         greeting = when (Calendar.HOUR_OF_DAY) {
             in 5..17 -> {
                 "Bonjour"
@@ -110,7 +116,7 @@ class HomeFragment : Fragment() {
             executePendingBindings()
         }
 
-        setUpRecyclerViews()
+        setUpRecyclerViews(savedInstanceState)
         binding.homeLogo.setImageResource(R.mipmap.logo_updated_white)
         binding.homeChatBtn.setImageResource(R.mipmap.ic_nounchat_noir_2x)
 
@@ -132,9 +138,9 @@ class HomeFragment : Fragment() {
             checkStatusDestination("chat")
         }
 
-        binding.homeCreateEventBtn.setOnClickListener {
-            checkStatusDestination("new event")
-        }
+//        binding.homeCreateEventBtn.setOnClickListener {
+//            checkStatusDestination("new event")
+//        }
     }
 
     private fun setupObservers() {
@@ -163,14 +169,14 @@ class HomeFragment : Fragment() {
     //endregion
 
     //region RecyclerView
-    private fun setUpRecyclerViews() {
-        setUpCloseToClubRecycler()
+    private fun setUpRecyclerViews(savedInstanceState: Bundle?) {
+        setUpCloseToClubRecycler(savedInstanceState)
         setUpCategoryRecycler()
         setUpUserEventsRecycler()
     }
 
-    private fun setUpCloseToClubRecycler() {
-        adapterCloseToClub = CloseToClubEventAdapter()
+    private fun setUpCloseToClubRecycler(savedInstanceState: Bundle?) {
+        adapterCloseToClub = CloseToClubEventAdapter(requireContext(), savedInstanceState)
         binding.closeToClubLayout.recyclerView.adapter = adapterCloseToClub
         binding.closeToClubLayout.recyclerView.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
@@ -196,10 +202,12 @@ class HomeFragment : Fragment() {
         binding.userEventLayout.recyclerView.adapter = adapterUserEvents
         binding.userEventLayout.recyclerView.layoutManager =
             LinearLayoutManager(requireContext())
+        binding.userEventLayout.recyclerView.setHasFixedSize(false)
+//        binding.userEventLayout.recyclerView.isNestedScrollingEnabled = false
 
         viewModel.userEventsList.observe(viewLifecycleOwner, {
             adapterUserEvents.setData(it)
-            binding.userEventLayout.title.text = "Vos évènements (${it.size})"
+//            binding.userEventLayout.title.text = "Vos évènements (${it.size})"
         })
     }
     //endregion
@@ -222,11 +230,12 @@ class HomeFragment : Fragment() {
                     }
                 }
                 "chat" -> {
-                    if (it) {
-                        navigate(R.id.homeFragmentToMessageFragment)
-                    } else {
-                        navigate(R.id.homeFragmentToRegistrationFragment)
-                    }
+                    navigate(R.id.homeFragmentToAffiliationRequest)
+//                    if (it) {
+//                        navigate(R.id.homeFragmentToMessageFragment)
+//                    } else {
+//                        navigate(R.id.homeFragmentToRegistrationFragment)
+//                    }
                 }
                 "new event" -> {
                     if (it) {

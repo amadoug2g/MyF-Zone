@@ -36,9 +36,9 @@
                 android:id="@+id/back_arrow"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
                 android:layout_centerVertical="true"
-                android:src="@drawable/ic_round_arrow_back_ios_new"/>
+                android:layout_marginStart="16dp"
+                android:src="@drawable/ic_round_arrow_back_ios_new" />
 
             <TextView
                 android:id="@+id/page_title"
@@ -55,6 +55,7 @@
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -106,7 +107,7 @@
                             layout="@layout/event_map_preview"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent"/>
+                            app:layout_constraintTop_toTopOf="parent" />
 
                         <ImageView
                             android:id="@+id/event_detail_date"
@@ -164,8 +165,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/nuber_next_demi_bold_wide"
-                            android:text="@{event.title}"
                             android:paddingBottom="2dp"
+                            android:text="@{event.title}"
                             android:textColor="@color/colorDesign1"
                             android:textSize="16sp"
                             app:layout_constraintEnd_toEndOf="parent"
@@ -196,9 +197,9 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_alignParentEnd="true"
-                                android:fontFamily="@font/gilroy_semi_bold"
                                 android:layout_marginStart="16dp"
                                 android:drawablePadding="4dp"
+                                android:fontFamily="@font/gilroy_semi_bold"
                                 android:gravity="center"
                                 android:text="@{event.eventDateToHour}"
                                 android:textColor="@color/colorDesign1Transparent75"
@@ -402,7 +403,7 @@
                                 <androidx.recyclerview.widget.RecyclerView
                                     android:id="@+id/participant_recyclerview"
                                     android:layout_width="128dp"
-                                    android:layout_height="48dp"/>
+                                    android:layout_height="48dp" />
 
                             </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -412,10 +413,10 @@
 
                     <androidx.appcompat.widget.LinearLayoutCompat
                         android:id="@+id/event_detail_btn_layout"
-                        app:layout_constraintTop_toBottomOf="@id/event_detail_event_info"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical">
+                        android:orientation="vertical"
+                        app:layout_constraintTop_toBottomOf="@id/event_detail_event_info">
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/event_detail_participate_btn"
@@ -434,7 +435,6 @@
                             android:id="@+id/event_detail_leave_btn"
                             android:layout_width="match_parent"
                             android:layout_height="48dp"
-                            android:visibility="gone"
                             android:layout_marginStart="40dp"
                             android:layout_marginTop="40dp"
                             android:layout_marginEnd="40dp"
@@ -442,7 +442,8 @@
                             android:fontFamily="@font/nuber_next_bold"
                             android:text="Quitter l'évènement"
                             android:textAllCaps="false"
-                            android:textSize="16sp" />
+                            android:textSize="16sp"
+                            android:visibility="gone" />
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
                     <TextView
@@ -455,10 +456,10 @@
                         android:text="Partager"
                         android:textColor="@color/colorDesign1Transparent75"
                         android:textSize="14sp"
+                        app:drawableStartCompat="@mipmap/ic_share_2x"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/event_detail_btn_layout"
-                        app:drawableStartCompat="@mipmap/ic_share_2x" />
+                        app:layout_constraintTop_toBottomOf="@+id/event_detail_btn_layout" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 

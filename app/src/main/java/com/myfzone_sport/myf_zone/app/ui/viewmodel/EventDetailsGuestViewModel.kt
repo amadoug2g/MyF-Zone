@@ -2,13 +2,13 @@ package com.myfzone_sport.myf_zone.app.ui.viewmodel
 
 import androidx.lifecycle.*
 import com.google.firebase.storage.StorageReference
-import com.myfzone_sport.myf_zone.app.framework.FirebaseService
 import com.myfzone_sport.myf_zone.domain.State
 import com.myfzone_sport.myf_zone.domain.event.Event
 import com.myfzone_sport.myf_zone.domain.event.EventOwner
 import com.myfzone_sport.myf_zone.domain.event.EventParticipant
-import com.myfzone_sport.myf_zone.usecases.detailevent.*
-import com.myfzone_sport.myf_zone.usecases.notification.GetOwnerTokenUseCase
+import com.myfzone_sport.myf_zone.usecases.detailevent.GetAllParticipantsFromEventUseCase
+import com.myfzone_sport.myf_zone.usecases.detailevent.GetEventFromIdUseCase
+import com.myfzone_sport.myf_zone.usecases.detailevent.GetOwnerFromEventUseCase
 import com.myfzone_sport.myf_zone.usecases.user.GetImageReferenceUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
@@ -39,15 +39,11 @@ class EventDetailsGuestViewModel(
     val userImagePath: LiveData<StorageReference> = _userImagePath
 
     private val _eventParticipants = MutableLiveData<MutableList<EventParticipant>>()
-    val eventParticipants = _eventParticipants
+
+    private val _eventParticipantsValid = MutableLiveData<MutableList<EventParticipant>>()
+    val eventParticipantsValid: LiveData<MutableList<EventParticipant>> = _eventParticipantsValid
 
     private val eventId = MutableLiveData<String>()
-    private val coachEventStatus = MutableLiveData<String>()
-    val validParticipantCount = MutableLiveData(0)
-    private val validParticipantList = MutableLiveData<MutableList<EventParticipant>>()
-
-    private val _isUserParticipating = MutableLiveData(false)
-    val isUserParticipating: LiveData<Boolean> = _isUserParticipating
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading = _isLoading
@@ -72,8 +68,10 @@ class EventDetailsGuestViewModel(
                         startLoading()
                     }
                     is State.Success -> {
+                        val event = state.data
+
+                        _event.postValue(event)
                         onResult()
-                        _event.postValue(state.data)
                     }
                     is State.Failed -> {
                         val message = "Event fetching failure: ${state.message}"
@@ -98,8 +96,10 @@ class EventDetailsGuestViewModel(
                         startLoading()
                     }
                     is State.Success -> {
+                        val owner = state.data
+
+                        _eventOwner.postValue(owner)
                         onResult()
-                        _eventOwner.postValue(state.data)
                     }
                     is State.Failed -> {
                         val message = "Event owner fetching failure: ${state.message}"
@@ -118,10 +118,11 @@ class EventDetailsGuestViewModel(
                         startLoading()
                     }
                     is State.Success -> {
+                        val participantList = state.data
+
+                        _eventParticipants.postValue(participantList)
+                        assignValidParticipants(participantList)
                         onResult()
-                        _eventParticipants.postValue(state.data)
-                        getValidCount(state.data)
-                        getValidList(state.data)
                     }
                     is State.Failed -> {
                         val message = "Event participants fetching failure: ${state.message}"
@@ -132,14 +133,15 @@ class EventDetailsGuestViewModel(
         }
     }
 
-    private fun getValidCount(list: MutableList<EventParticipant>) {
-        for (participant in list)
-            if (participant.status == "valid") validParticipantCount.value?.plus(1)
-    }
+    private fun assignValidParticipants(list: MutableList<EventParticipant>) {
+        val result = mutableListOf<EventParticipant>()
 
-    private fun getValidList(list: MutableList<EventParticipant>) {
         for (participant in list)
-            if (participant.status == "valid") validParticipantList.value?.add(participant)
+            if (participant.status == "validate") {
+                result.add(participant)
+            }
+
+        _eventParticipantsValid.postValue(result)
     }
     //endregion
 

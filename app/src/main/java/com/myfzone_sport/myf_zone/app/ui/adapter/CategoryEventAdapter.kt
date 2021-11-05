@@ -1,18 +1,14 @@
 package com.myfzone_sport.myf_zone.app.ui.adapter
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.navigation.Navigation
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.myfzone_sport.myf_zone.R
 import com.myfzone_sport.myf_zone.databinding.HomeCategoryCardviewBinding
-import com.myfzone_sport.myf_zone.domain.event.Event
 
 /**
  * Created by Amadou on 04/09/2021, 02:19
@@ -45,6 +41,20 @@ class CategoryEventAdapter : RecyclerView.Adapter<CategoryEventAdapter.MyViewHol
             with(binding) {
                 binding.category = category
             }
+
+            binding.categoryImage.setImageResource(
+                when (category) {
+                    "Matches Amicaux" -> {
+                        R.drawable.friendly
+                    }
+                    "Tournois" -> {
+                        R.drawable.tourney
+                    }
+                    else -> {
+                        R.drawable.plateau
+                    }
+                }
+            )
 
             binding.cardView.setOnClickListener {
                 when (category) {

@@ -6,11 +6,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.navigation.Navigation
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.storage.StorageReference
 import com.myfzone_sport.myf_zone.R
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.isAffiliated
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.isConnected
 import com.myfzone_sport.myf_zone.databinding.ParticipantsPreviewLayoutBinding
 import com.myfzone_sport.myf_zone.domain.event.EventParticipant
 import com.myfzone_sport.myf_zone.glide.GlideApp
@@ -59,7 +63,14 @@ class ParticipantsPreviewAdapter(private val getImageReferenceUseCase: GetImageR
             val bundle = bundleOf("eventId" to eventId)
 
             binding.participantImage.setOnClickListener {
-                navigate(R.id.eventDetailsToEventParticipants, bundle, it)
+                when (it.findNavController().currentDestination?.label) {
+                    "Event Details Participant" -> {
+                        navigate(R.id.eventDetailsToEventParticipants, bundle, it)
+                    }
+                    "Event Details Guest" -> {
+                        navigate(R.id.eventDetailsGuestToEventParticipants, bundle, it)
+                    }
+                }
             }
 
             GlideApp.with(binding.participantImage).apply {

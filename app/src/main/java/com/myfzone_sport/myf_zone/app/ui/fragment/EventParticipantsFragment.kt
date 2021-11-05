@@ -2,7 +2,6 @@ package com.myfzone_sport.myf_zone.app.ui.fragment
 
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -52,15 +51,10 @@ class EventParticipantsFragment : Fragment() {
                 binding.participant = participant
                 binding.eventParticipantActionButton.visibility = View.GONE
 
-                try {
-                    GlideApp.with(itemView).apply {
-                        load(viewModel.getImageReference(participant.clubLogo))
-                            .placeholder(R.drawable.ic_account)
-                            .centerCrop()
-                            .into(binding.eventParticipantImage)
-                    }
-                } catch (e: Exception) {
-                    Log.e("List ParticipantHolder", "Image could not load: $e")
+                GlideApp.with(itemView).apply {
+                    load(viewModel.getImageReference(participant.clubLogo))
+                        .centerCrop()
+                        .into(binding.eventParticipantImage)
                 }
             }
         }
@@ -88,7 +82,10 @@ class EventParticipantsFragment : Fragment() {
         viewModel.assignEventId(eventId!!)
 
         val recyclerValidOptions = FirestoreRecyclerOptions.Builder<EventParticipant>()
-            .setQuery(viewModel.getQuery(eventId!!).whereEqualTo("status", "validate"), EventParticipant::class.java)
+            .setQuery(
+                viewModel.getQuery(eventId!!).whereEqualTo("status", "validate"),
+                EventParticipant::class.java
+            )
             .setLifecycleOwner(this)
             .build()
 
@@ -165,7 +162,6 @@ class EventParticipantsFragment : Fragment() {
     }
 
     private fun setupViews() {
-//        setVisibleRecyclers()
         binding.backArrow.background = null
 
         binding.backArrow.setOnClickListener {

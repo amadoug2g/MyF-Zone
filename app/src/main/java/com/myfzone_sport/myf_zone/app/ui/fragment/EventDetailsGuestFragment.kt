@@ -15,12 +15,14 @@ import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.MapsInitializer
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.snackbar.Snackbar
 import com.myfzone_sport.myf_zone.R
 import com.myfzone_sport.myf_zone.app.framework.RemoteDataSourceImpl
+import com.myfzone_sport.myf_zone.app.ui.adapter.ParticipantsPreviewAdapter
 import com.myfzone_sport.myf_zone.app.ui.viewmodel.EventDetailsGuestViewModel
 import com.myfzone_sport.myf_zone.app.ui.viewmodel.EventDetailsGuestViewModelFactory
 import com.myfzone_sport.myf_zone.app.ui.viewmodel.EventDetailsParticipantViewModel
@@ -44,6 +46,7 @@ class EventDetailsGuestFragment : Fragment() {
         private lateinit var binding: FragmentEventDetailsGuest2Binding
         private lateinit var viewModel: EventDetailsGuestViewModel
         private lateinit var viewModelFactory: EventDetailsGuestViewModelFactory
+        private lateinit var participantPreviewAdapter: ParticipantsPreviewAdapter
         private var eventId: String? = null
     }
     //endregion
@@ -100,6 +103,11 @@ class EventDetailsGuestFragment : Fragment() {
     }
 
     private fun setupViews(savedInstanceState: Bundle?) {
+        binding.apply {
+            lifecycleOwner = this@EventDetailsGuestFragment
+            executePendingBindings()
+        }
+
         binding.backArrow.background = null
 
         binding.backArrow.setOnClickListener {
@@ -107,6 +115,7 @@ class EventDetailsGuestFragment : Fragment() {
         }
 
         setupEvent(savedInstanceState)
+        setUpParticipantRecycler()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             binding.eventDetailDescription.justificationMode = JUSTIFICATION_MODE_INTER_WORD
@@ -114,18 +123,12 @@ class EventDetailsGuestFragment : Fragment() {
 
         val bundle = bundleOf("eventId" to eventId)
         binding.participantList.setOnClickListener {
-            navigate(
-                R.id.eventDetailsToEventParticipants,
-//                R.id.eventDetailsToHome,
-                bundle
-            )
+            navigate(R.id.eventDetailsGuestToEventParticipants, bundle)
         }
 
-        viewModel.event.observe(viewLifecycleOwner, { event ->
-            val participantCount =
-                "Participants (${viewModel.validParticipantCount.value}/${event.nbTeam})"
-            binding.participantCount.text = participantCount
-        })
+        binding.eventDetailShareBtn.setOnClickListener {
+            navigate(R.id.eventDetailsGuestToEventParticipants, bundle)
+        }
     }
 
     private fun setupObservers() {
@@ -187,6 +190,26 @@ class EventDetailsGuestFragment : Fragment() {
                 setOnMarkerClickListener { true }
             }
         }
+    }
+    //endregion
+
+    //region RecyclerView
+    private fun setUpParticipantRecycler() {
+        val remoteDataSource = RemoteDataSourceImpl()
+        val repository = RepositoryImpl(remoteDataSource)
+
+        val getImageReferenceUseCase = GetImageReferenceUseCase(repository)
+
+        participantPreviewAdapter = ParticipantsPreviewAdapter(getImageReferenceUseCase, eventId!!)
+        binding.participantRecyclerview.adapter = participantPreviewAdapter
+        binding.participantRecyclerview.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+//        binding.participantRecyclerview.setChildDrawingOrderCallback(BackwardsDrawingOrderCallback())
+
+        viewModel.eventParticipantsValid.observe(viewLifecycleOwner, {
+            participantPreviewAdapter.setData(it)
+            binding.validCount = it.size
+        })
     }
     //endregion
 

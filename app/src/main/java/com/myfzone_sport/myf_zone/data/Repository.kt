@@ -38,6 +38,8 @@ interface Repository {
 
     fun getClubFromCode(): Club
 
+    fun getClubFromId(clubId: String): Flow<State<Club>>
+
     fun getCategoryList(sportId: String): Flow<State<MutableList<Category>>>
 
     fun getCategoryId(): String

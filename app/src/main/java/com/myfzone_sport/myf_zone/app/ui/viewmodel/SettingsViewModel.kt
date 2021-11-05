@@ -3,7 +3,9 @@ package com.myfzone_sport.myf_zone.app.ui.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.TRACKING
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.checkUserStatus
 import com.myfzone_sport.myf_zone.usecases.user.SignOutUseCase
 import com.myfzone_sport.myf_zone.util.Tracking.LOGOUT
 
@@ -20,6 +22,7 @@ class SettingsViewModel(private val signOutUseCase: SignOutUseCase) : ViewModel(
         signOutUseCase.invoke()
         _successfulSignOut.postValue(true)
         TRACKING.logEvent(LOGOUT, null)
+        checkUserStatus()
     }
 }
 

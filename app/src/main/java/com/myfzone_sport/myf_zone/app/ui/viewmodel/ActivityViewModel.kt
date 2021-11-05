@@ -4,21 +4,29 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.myfzone_sport.myf_zone.app.framework.FirebaseService
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoach
-import com.myfzone_sport.myf_zone.domain.State
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoachClub
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoachClubAffiliation
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoachEvents
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.affiliationNbr
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.firebaseUser
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.isAffiliated
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.isConnected
 import com.myfzone_sport.myf_zone.domain.club.Club
 import com.myfzone_sport.myf_zone.domain.coach.ClubAffiliation
 import com.myfzone_sport.myf_zone.domain.coach.Coach
-import com.myfzone_sport.myf_zone.usecases.user.*
+import com.myfzone_sport.myf_zone.usecases.user.GetUserStatusUseCase
 import com.myfzone_sport.myf_zone.util.Constants
-import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
+import com.myfzone_sport.myf_zone.util.Constants.COACH_PATH
+import com.myfzone_sport.myf_zone.util.Constants.DB
+
+//@HiltViewModel
+//class ActivityViewModel @Inject constructor(
+//     private val getUserStatusUseCase: GetUserStatusUseCase
+//) : ViewModel() {
 
 class ActivityViewModel(
     private val getUserStatusUseCase: GetUserStatusUseCase
@@ -38,29 +46,29 @@ class ActivityViewModel(
 
     fun checkUserStatus() {
         try {
-            if (FirebaseService.firebaseUser != null) {
-                FirebaseService.isConnected = true
+            if (firebaseUser != null) {
+                isConnected = true
 
                 val mAffiliationPath = Firebase.firestore
-                    .collection(Constants.COACH_PATH + "/${FirebaseService.firebaseUser.uid}/ClubAffiliation")
+                    .collection(COACH_PATH + "/${firebaseUser.uid}/ClubAffiliation")
 
                 mAffiliationPath.get().addOnSuccessListener {
                     if (it.documents.size > 0) {
-                        FirebaseService.isAffiliated = true
-                        getActiveCoach(FirebaseService.firebaseUser)
-                        getActiveClubAffiliation(FirebaseService.firebaseUser)
+                        isAffiliated = true
+                        getActiveCoach(firebaseUser)
+                        getActiveClubAffiliation(firebaseUser)
                     } else {
-                        FirebaseService.activeCoachEvents = mutableListOf()
-                        FirebaseService.isAffiliated = false
-                        FirebaseService.activeCoachClubAffiliation = null
+                        activeCoachEvents = mutableListOf()
+                        isAffiliated = false
+                        activeCoachClubAffiliation = null
                     }
                 }
             } else {
-                FirebaseService.activeCoachEvents = mutableListOf()
-                FirebaseService.isConnected = false
-                FirebaseService.isAffiliated = false
+                activeCoachEvents = mutableListOf()
+                isConnected = false
+                isAffiliated = false
                 activeCoach = null
-                FirebaseService.activeCoachClubAffiliation = null
+                activeCoachClubAffiliation = null
             }
         } catch (e: Exception) {
             Log.e("ManagerAuth", "Check Status Error: ${e.localizedMessage}")
@@ -68,7 +76,7 @@ class ActivityViewModel(
     }
 
     private fun getActiveCoach(user: FirebaseUser?) {
-        val mUserQuery = Constants.DB.document(Constants.COACH_PATH + "/${user?.uid}")
+        val mUserQuery = DB.document(COACH_PATH + "/${user?.uid}")
 
         mUserQuery.get().addOnSuccessListener {
             activeCoach = it.toObject(Coach::class.java)
@@ -76,33 +84,35 @@ class ActivityViewModel(
     }
 
     private fun getActiveClubAffiliation(user: FirebaseUser?) {
-        val mClubQuery = Constants.DB.collection(Constants.COACH_PATH + "/${user?.uid}/ClubAffiliation")
+        val mClubQuery =
+            DB.collection(COACH_PATH + "/${user?.uid}/ClubAffiliation")
 
         mClubQuery.get().addOnSuccessListener {
-            val snapshot = it.documents[FirebaseService.affiliationNbr]
-            FirebaseService.activeCoachClubAffiliation = snapshot.toObject(ClubAffiliation::class.java)
+            val snapshot = it.documents[affiliationNbr]
+            activeCoachClubAffiliation =
+                snapshot.toObject(ClubAffiliation::class.java)
 
-            getActiveClub(FirebaseService.activeCoachClubAffiliation)
-            getEventsList(user, FirebaseService.activeCoachClubAffiliation)
+            getActiveClub(activeCoachClubAffiliation)
+            getEventsList(user, activeCoachClubAffiliation)
         }
     }
 
     private fun getActiveClub(affiliation: ClubAffiliation?) {
-        val mClubQuery = Constants.DB.document(Constants.CLUB_PATH + "/${affiliation?.clubId}")
+        val mClubQuery = DB.document(Constants.CLUB_PATH + "/${affiliation?.clubId}")
 
         mClubQuery.get().addOnSuccessListener {
-            FirebaseService.activeCoachClub = it.toObject(Club::class.java)
+            activeCoachClub = it.toObject(Club::class.java)
         }
     }
 
     private fun getEventsList(user: FirebaseUser?, affiliation: ClubAffiliation?) {
-        FirebaseService.activeCoachEvents = mutableListOf()
+        activeCoachEvents = mutableListOf()
         val mEventsQuery =
-            Constants.DB.collection(Constants.COACH_PATH + "/${user?.uid}/ClubAffiliation/${affiliation?.clubId}/CoachEvent")
+            DB.collection(COACH_PATH + "/${user?.uid}/ClubAffiliation/${affiliation?.clubId}/CoachEvent")
 
         mEventsQuery.get().addOnSuccessListener {
             for (doc in it) {
-                FirebaseService.activeCoachEvents.add(doc.id)
+                activeCoachEvents.add(doc.id)
             }
         }
     }

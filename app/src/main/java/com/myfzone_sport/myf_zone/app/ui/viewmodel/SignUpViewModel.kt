@@ -2,6 +2,8 @@ package com.myfzone_sport.myf_zone.app.ui.viewmodel
 
 import android.text.TextUtils
 import androidx.lifecycle.*
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.checkUserStatus
 import com.myfzone_sport.myf_zone.domain.State
 import com.myfzone_sport.myf_zone.domain.coach.Coach
 import com.myfzone_sport.myf_zone.usecases.registration.*
@@ -149,7 +151,7 @@ class SignUpViewModel(
 
     private fun signUpComplete() {
         _successfulSignUp.postValue(true)
-
+        checkUserStatus()
     }
     //endregion
 }

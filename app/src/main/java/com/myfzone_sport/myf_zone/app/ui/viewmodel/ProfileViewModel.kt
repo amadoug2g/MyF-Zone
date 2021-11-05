@@ -85,11 +85,13 @@ class ProfileViewModel(
                         startLoading()
                     }
                     is State.Success -> {
-                        onResult()
+                        val coach = state.data
+
                         getUserClub()
                         getUserClubAffiliation()
-                        _coach.postValue(state.data)
-                        getAllEvents(state.data)
+                        _coach.postValue(coach)
+                        getAllEvents(coach)
+                        onResult()
                     }
                     is State.Failed -> {
                         val message = "User update failed: ${state.message}"
@@ -108,10 +110,15 @@ class ProfileViewModel(
                         startLoading()
                     }
                     is State.Success -> {
-                        onResult()
+                        val club = state.data
 
-                        Log.i("TAG","state.data club: ${state.data}")
-                        _coachClub.postValue(state.data!!)
+                        if (club != null) {
+                            _coachClub.postValue(club)
+                            getImageReference(club.logo)
+                            onResult()
+                        } else {
+                            onResult("Club null")
+                        }
                     }
                     is State.Failed -> {
                         val message = "Club update failed: ${state.message}"
@@ -151,9 +158,11 @@ class ProfileViewModel(
                         startLoading()
                     }
                     is State.Success -> {
+                        val eventList = state.data
+
+                        _allEventsList.postValue(eventList)
+                        getAllEventsNotOwned(coach, eventList)
                         onResult()
-                        _allEventsList.postValue(state.data)
-                        getAllEventsNotOwned(coach, state.data)
                     }
                     is State.Failed -> {
                         val message = "All events fetching failed: ${state.message}"
@@ -219,7 +228,7 @@ class ProfileViewModel(
         _userEventsList.postValue(result)
     }
 
-    fun getImageReference(path: String) {
+    private fun getImageReference(path: String) {
         viewModelScope.launch(Dispatchers.IO) {
             _userImagePath.postValue(getImageReferenceUseCase.invoke(path))
         }

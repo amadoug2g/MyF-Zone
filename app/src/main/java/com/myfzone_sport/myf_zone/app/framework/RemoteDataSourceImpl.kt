@@ -95,11 +95,13 @@ class RemoteDataSourceImpl : RemoteDataSource {
     override fun getClubList() = flow<State<MutableList<Club>>> {
         emit(State.loading())
 
-        val mSportQuery = firebaseFirestore.collection(CLUB_PATH)
+        val mSportQuery = firebaseFirestore.collection(CLUB_PATH).orderBy("name")
 
         val snapshot = mSportQuery.get().await()
 
-        if (!snapshot.isEmpty) emit(State.success(snapshot.toObjects(Club::class.java)))
+        val clubList = snapshot.toObjects(Club::class.java)
+
+        emit(State.success(clubList))
     }.catch {
         emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
     }.flowOn(Dispatchers.IO)
@@ -112,6 +114,24 @@ class RemoteDataSourceImpl : RemoteDataSource {
         TODO("Not yet implemented")
     }
 
+    override fun getClubFromId(clubId: String)= flow<State<Club>> {
+        emit(State.loading())
+
+        val mClubListQuery = DB.collection(CLUB_PATH)
+
+        val snapshot = mClubListQuery.get().await().documents
+
+        snapshot.forEach {
+            val club: Club = it.toObject()!!
+            if (club.id == clubId) {
+                emit(State.success(club))
+                return@flow
+            }
+        }
+    }.catch {
+        emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
+    }.flowOn(Dispatchers.IO)
+
     override fun getCategoryList(sportId: String) = flow<State<MutableList<Category>>> {
         emit(State.loading())
 
@@ -120,7 +140,9 @@ class RemoteDataSourceImpl : RemoteDataSource {
 
         val snapshot = mCategoryQuery.get().await()
 
-        if (!snapshot.isEmpty) emit(State.success(snapshot.toObjects(Category::class.java)))
+        val categoryList = snapshot.toObjects(Category::class.java)
+
+        emit(State.success(categoryList))
     }.catch {
         emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
     }.flowOn(Dispatchers.IO)
@@ -151,11 +173,13 @@ class RemoteDataSourceImpl : RemoteDataSource {
     override fun getSportList() = flow<State<MutableList<Sport>>> {
         emit(State.loading())
 
-        val mSportQuery = firebaseFirestore.collection(SPORT_PATH)
+        val mSportQuery = firebaseFirestore.collection(SPORT_PATH).orderBy("rank")
 
         val snapshot = mSportQuery.get().await()
 
-        if (!snapshot.isEmpty) emit(State.success(snapshot.toObjects(Sport::class.java)))
+        val sportList = snapshot.toObjects(Sport::class.java)
+
+        emit(State.success(sportList))
     }.catch {
         emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
     }.flowOn(Dispatchers.IO)
@@ -342,7 +366,7 @@ class RemoteDataSourceImpl : RemoteDataSource {
         snapshot.forEach {
             val event = it.toObject<Event>()
 //            if (event.date.time > now.time)
-            eventList.add(event)
+                eventList.add(event)
         }
 
 //        eventList.forEach { event ->
@@ -438,11 +462,11 @@ class RemoteDataSourceImpl : RemoteDataSource {
     ): ListenerRegistration? {
         val now = Calendar.getInstance().time
 
-        val mUserChatQuery = DB
+        val mEventQuery = DB
             .collection(EVENT_PATH)
         return try {
-            mUserChatQuery
-//                .orderBy("createdDate")
+            mEventQuery
+                .orderBy("createdDate")
                 .addSnapshotListener { value, error ->
                     if (error != null) {
                         Log.e(TAG, "Error in addEventListener", error)
@@ -765,7 +789,7 @@ class RemoteDataSourceImpl : RemoteDataSource {
 
         val club = snapshotClub.documents[0].toObject(Club::class.java)
 
-        Log.i("TAG","state club! $club")
+        Log.i("TAG", "state club! $club")
 
         emit(State.Success(club))
     }.catch {
@@ -782,7 +806,7 @@ class RemoteDataSourceImpl : RemoteDataSource {
 
         val affiliation = snapshotAffiliation.toObject(ClubAffiliation::class.java)
 
-        Log.i("TAG","state affiliation! $affiliation")
+        Log.i("TAG", "state affiliation! $affiliation")
 
         emit(State.Success(affiliation))
     }.catch {

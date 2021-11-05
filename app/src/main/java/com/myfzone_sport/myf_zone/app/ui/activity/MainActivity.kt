@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.*
 import androidx.navigation.fragment.NavHostFragment
 import com.myfzone_sport.myf_zone.R
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.checkUserStatus
 import com.myfzone_sport.myf_zone.app.framework.RemoteDataSourceImpl
 import com.myfzone_sport.myf_zone.app.ui.viewmodel.*
 import com.myfzone_sport.myf_zone.data.RepositoryImpl
@@ -18,9 +19,12 @@ import com.myfzone_sport.myf_zone.usecases.event.*
 import com.myfzone_sport.myf_zone.usecases.registration.*
 import com.myfzone_sport.myf_zone.usecases.user.*
 
+//@AndroidEntryPoint
 class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedListener {
 
-    lateinit var navController: NavController
+//    val viewModel: ActivityViewModel by viewModels()
+
+    private lateinit var navController: NavController
 
     //region Variables
     companion object {
@@ -42,7 +46,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
         setupViews()
         setupViewModel()
-        setupObservers()
+//        setupObservers()
 
         if (viewModel.getUserStatus()) {
             navController.setGraph(R.navigation.home)
@@ -62,7 +66,8 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
     override fun onResume() {
         super.onResume()
 
-        viewModel.checkUserStatus()
+        checkUserStatus()
+//        viewModel.checkUserStatus()
     }
 
     override fun onStop() {
@@ -77,6 +82,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
     ) {
         when (destination.id) {
             R.id.loginFragment2 -> {
+//                checkUserStatus()
                 hideBar()
             }
             R.id.homeFragment -> {

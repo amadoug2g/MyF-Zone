@@ -43,6 +43,8 @@ class CategoryListFragment : Fragment() {
         arguments?.let {
             listType = it.getString(ARG_PARAM1)
         }
+
+        setupViewModel()
     }
 
     override fun onCreateView(
@@ -54,7 +56,6 @@ class CategoryListFragment : Fragment() {
             R.layout.fragment_category_list, container, false
         )
 
-        setupViewModel()
         setupViews()
         setupObservers()
 
@@ -64,11 +65,6 @@ class CategoryListFragment : Fragment() {
 
     //region Setups
     private fun setupViewModel() {
-        binding.apply {
-            lifecycleOwner = this@CategoryListFragment
-            executePendingBindings()
-        }
-
         val remoteDataSource = RemoteDataSourceImpl()
         val repository = RepositoryImpl(remoteDataSource)
 

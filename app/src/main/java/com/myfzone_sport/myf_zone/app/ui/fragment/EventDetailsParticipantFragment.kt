@@ -151,6 +151,10 @@ class EventDetailsParticipantFragment : Fragment() {
         binding.participantRecyclerview.setOnClickListener {
             navigate(R.id.eventDetailsToEventParticipants, bundle)
         }
+
+        binding.eventDetailShareBtn.setOnClickListener {
+            navigate(R.id.eventDetailsToEventParticipants, bundle)
+        }
     }
 
     private fun setupObservers() {
@@ -181,14 +185,7 @@ class EventDetailsParticipantFragment : Fragment() {
         viewModel.event.observe(viewLifecycleOwner, { event ->
             binding.event = event
             mapPreview(event, savedInstanceState)
-
-//            val participantCount = "Participants (${viewModel.validParticipantCount.value}/${event.nbTeam})"
-//            binding.participantCount.text = participantCount
         })
-
-//        viewModel.validParticipantCount.observe(viewLifecycleOwner, {
-//            binding.validCount = it
-//        })
 
         viewModel.userImagePath.observe(viewLifecycleOwner, {
             displayUserImage()
@@ -268,7 +265,7 @@ class EventDetailsParticipantFragment : Fragment() {
         binding.participantRecyclerview.adapter = participantPreviewAdapter
         binding.participantRecyclerview.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-        binding.participantRecyclerview.setChildDrawingOrderCallback(BackwardsDrawingOrderCallback())
+//        binding.participantRecyclerview.setChildDrawingOrderCallback(BackwardsDrawingOrderCallback())
 
         viewModel.eventParticipantsValid.observe(viewLifecycleOwner, {
             participantPreviewAdapter.setData(it)

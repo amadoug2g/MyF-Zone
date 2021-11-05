@@ -6,8 +6,9 @@ import com.myfzone_sport.myf_zone.domain.State
 import com.myfzone_sport.myf_zone.domain.event.Event
 import com.myfzone_sport.myf_zone.domain.event.EventOwner
 import com.myfzone_sport.myf_zone.domain.event.EventParticipant
-import com.myfzone_sport.myf_zone.usecases.detailevent.*
-import com.myfzone_sport.myf_zone.usecases.notification.GetOwnerTokenUseCase
+import com.myfzone_sport.myf_zone.usecases.detailevent.GetAllParticipantsFromEventUseCase
+import com.myfzone_sport.myf_zone.usecases.detailevent.GetEventFromIdUseCase
+import com.myfzone_sport.myf_zone.usecases.detailevent.GetOwnerFromEventUseCase
 import com.myfzone_sport.myf_zone.usecases.user.GetImageReferenceUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
@@ -22,14 +23,14 @@ class EventDetailsOwnerViewModel(
     private val getImageReferenceUseCase: GetImageReferenceUseCase,
     private val getOwnerFromEventUseCase: GetOwnerFromEventUseCase,
     private val getAllParticipantsFromEventUseCase: GetAllParticipantsFromEventUseCase,
-): ViewModel() {
+) : ViewModel() {
 
     //region Variables
     private val _event = MutableLiveData<Event>()
-    val event = _event
+    val event: LiveData<Event> = _event
 
     private val _eventOwner = MutableLiveData<EventOwner>()
-    val eventOwner = _eventOwner
+    val eventOwner: LiveData<EventOwner> = _eventOwner
 
     private val _eventOwnerToken = MutableLiveData<MutableList<String>>()
     val eventOwnerToken: LiveData<MutableList<String>> = _eventOwnerToken
@@ -38,14 +39,15 @@ class EventDetailsOwnerViewModel(
     val userImagePath: LiveData<StorageReference> = _userImagePath
 
     private val _eventParticipants = MutableLiveData<MutableList<EventParticipant>>()
-    val eventParticipants = _eventParticipants
+
+    private val _eventParticipantsValid = MutableLiveData<MutableList<EventParticipant>>()
+    val eventParticipantsValid: LiveData<MutableList<EventParticipant>> = _eventParticipantsValid
 
     private val eventId = MutableLiveData<String>()
     val validParticipantCount = MutableLiveData(0)
-    private val validParticipantList = MutableLiveData<MutableList<EventParticipant>>()
 
     private val _isLoading = MutableLiveData<Boolean>()
-    val isLoading = _isLoading
+    val isLoading: LiveData<Boolean> = _isLoading
 
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String> = _errorMessage
@@ -67,8 +69,10 @@ class EventDetailsOwnerViewModel(
                         startLoading()
                     }
                     is State.Success -> {
+                        val event = state.data
+
+                        _event.postValue(event)
                         onResult()
-                        _event.postValue(state.data)
                     }
                     is State.Failed -> {
                         val message = "Event fetching failure: ${state.message}"
@@ -93,8 +97,10 @@ class EventDetailsOwnerViewModel(
                         startLoading()
                     }
                     is State.Success -> {
+                        val owner = state.data
+
+                        _eventOwner.postValue(owner)
                         onResult()
-                        _eventOwner.postValue(state.data)
                     }
                     is State.Failed -> {
                         val message = "Event owner fetching failure: ${state.message}"
@@ -114,9 +120,10 @@ class EventDetailsOwnerViewModel(
                     }
                     is State.Success -> {
                         onResult()
-                        _eventParticipants.postValue(state.data)
-                        getValidCount(state.data)
-                        getValidList(state.data)
+                        val participantList = state.data
+
+                        _eventParticipants.postValue(participantList)
+                        assignValidParticipants(participantList)
                     }
                     is State.Failed -> {
                         val message = "Event participants fetching failure: ${state.message}"
@@ -127,14 +134,15 @@ class EventDetailsOwnerViewModel(
         }
     }
 
-    private fun getValidCount(list: MutableList<EventParticipant>) {
-        for (participant in list)
-            if (participant.status == "valid") validParticipantCount.value?.plus(1)
-    }
+    private fun assignValidParticipants(list: MutableList<EventParticipant>) {
+        val result = mutableListOf<EventParticipant>()
 
-    private fun getValidList(list: MutableList<EventParticipant>) {
         for (participant in list)
-            if (participant.status == "valid") validParticipantList.value?.add(participant)
+            if (participant.status == "validate") {
+                result.add(participant)
+            }
+
+        _eventParticipantsValid.postValue(result)
     }
     //endregion
 

@@ -14,6 +14,7 @@
     <color name="colorDark">#000</color>
     <color name="colorShimmer">#DDDDDD</color>
     <color name="colorTransparent">#88FFFFFF</color>
+    <color name="colorBlur">#88000000</color>
     <color name="colorTransparentDiscreet">#88B9B9B9</color>
     <color name="colorTransparentMessage">#EEEEEE</color>
     <color name="colorCoral">#FF7F50</color>

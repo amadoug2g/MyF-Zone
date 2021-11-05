@@ -9,7 +9,7 @@
         android:orientation="vertical">
 
         <ProgressBar
-            android:id="@+id/profileProgressBar"
+            android:id="@+id/progress_bar"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -24,7 +24,7 @@
             android:layout_height="wrap_content">
 
             <ImageView
-                android:id="@+id/exitProfile"
+                android:id="@+id/exit"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_alignParentStart="true"
@@ -41,7 +41,7 @@
 
                 <ImageView
 
-                    android:id="@+id/profileSettings"
+                    android:id="@+id/settings"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:layout_marginEnd="16dp"

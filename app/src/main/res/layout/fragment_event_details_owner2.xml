@@ -10,6 +10,14 @@
             type="com.myfzone_sport.myf_zone.domain.event.Event" />
 
         <variable
+            name="validCount"
+            type="Integer" />
+
+        <variable
+            name="validCount2"
+            type="Integer" />
+
+        <variable
             name="owner"
             type="com.myfzone_sport.myf_zone.domain.event.EventOwner" />
 
@@ -385,7 +393,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="@font/gilroy_semi_bold"
-                                android:text="Participants (24/24)"
+                                android:text="@{`Participants (` + String.valueOf(validCount) + `/` + String.valueOf(event.nbTeam) + `)`}"
                                 android:textColor="@color/colorDesign2"
                                 android:textSize="11sp" />
 
@@ -396,13 +404,12 @@
                                 android:layout_marginTop="8dp"
                                 android:gravity="center">
 
-                                <ImageView
-                                    android:layout_width="48dp"
-                                    android:layout_height="48dp"
-                                    android:src="@mipmap/logo_updated_white" />
+                                <androidx.recyclerview.widget.RecyclerView
+                                    android:id="@+id/participant_recyclerview"
+                                    android:layout_width="128dp"
+                                    android:layout_height="48dp" />
 
                             </androidx.appcompat.widget.LinearLayoutCompat>
-
                         </androidx.appcompat.widget.LinearLayoutCompat>
 
                     </androidx.appcompat.widget.LinearLayoutCompat>

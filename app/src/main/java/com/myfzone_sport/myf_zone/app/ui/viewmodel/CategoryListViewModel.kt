@@ -85,7 +85,6 @@ class CategoryListViewModel(
                         startLoading()
                     }
                     is State.Success -> {
-                        onResult()
                         _allEventsList.postValue(state.data)
 //                        sortOwnerEvents(state.data)
                         getAllEventsNotOwned(state.data)
@@ -95,6 +94,7 @@ class CategoryListViewModel(
                         getTourneyEventsNotOwned(state.data)
                         getPlateauEvents(state.data)
                         getPlateauEventsNotOwned(state.data)
+                        onResult()
                     }
                     is State.Failed -> {
                         val message = "All events fetching failed: ${state.message}"
