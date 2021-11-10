@@ -24,7 +24,7 @@
             android:layout_height="wrap_content">
 
             <ImageView
-                android:id="@+id/exit_affiliation_request"
+                android:id="@+id/exit"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_alignParentStart="true"
@@ -197,7 +197,7 @@
                     app:cornerRadius="8dp" />
 
                 <TextView
-                    android:id="@+id/login_skip_btn"
+                    android:id="@+id/affiliation_skip_btn"
                     style="@style/Widget.MaterialComponents.Button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

@@ -44,6 +44,7 @@
     <string name="affiliationRequestComment">This club received your application for membership and will answer you shortly</string>
     <string name="laterTextButton">Maybe later</string>
     <string name="affiliate">Affiliate</string>
+    <string name="affiliate_msg">S\'affilier auprès de ce club ?</string>
     <string name="membership">Membership</string>
     <string name="title_new_affiliation">New request</string>
     <string name="title_affiliation_list">Request list</string>
@@ -199,6 +200,7 @@
     <string name="participants_info_desc">You can withdraw your participation by pressing the button next to your name in the list below.</string>
     <string name="participants_info_title">Check the status of your participation with the coloured dots:</string>
     <string name="code_affiliation_txt">Je m’affilie avec un code</string>
+    <string name="user_not_connected">You are not connected</string>
 
 
     <!--    <string-array name="typeList">-->

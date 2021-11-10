@@ -22,26 +22,11 @@ class RepositoryImpl(
 //    private val localDataSource: LocalDataSource,
     private val remoteDataSource: RemoteDataSource
 ) : Repository {
-    override fun affiliateCoach(
-        code: String,
-        affiliationSport: String,
-        affiliationCategory: String?,
-        affiliationSubCategory: String?
-    ) {
-        remoteDataSource.affiliateCoach(
-            code,
-            affiliationSport,
-            affiliationCategory,
-            affiliationSubCategory
-        )
-    }
 
-    override fun sendRequestToClub(
-        clubId: String,
-        affiliationRequest: HashMap<String, Any?>,
-        removeListener: Boolean
-    ) {
-        remoteDataSource.sendRequestToClub(clubId, affiliationRequest, removeListener)
+    override fun affiliateCoach(club: Club, sport: Sport, category: Category?, subCategory: SubCategory?) {
+        remoteDataSource.affiliateCoach(
+            club, sport, category, subCategory
+        )
     }
 
     override fun getClubList(): Flow<State<MutableList<Club>>> {
@@ -248,12 +233,12 @@ class RepositoryImpl(
         return remoteDataSource.getUser()
     }
 
-    override fun getUserAffiliation(): Flow<State<ClubAffiliation?>> {
-        return remoteDataSource.getUserAffiliation()
+    override fun getUserClub(clubAffiliation: ClubAffiliation): Flow<State<Club?>> {
+        return remoteDataSource.getUserClub(clubAffiliation)
     }
 
-    override fun getUserClub(): Flow<State<Club?>> {
-        return remoteDataSource.getUserClub()
+    override fun getUserAffiliation(coach: Coach): Flow<State<ClubAffiliation?>> {
+        return remoteDataSource.getUserAffiliation(coach)
     }
 
     override fun getUserEventList(): Flow<State<MutableList<String>>> {

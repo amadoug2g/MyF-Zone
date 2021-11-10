@@ -2,7 +2,6 @@ package com.myfzone_sport.myf_zone.app.ui.fragment
 
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,9 +13,9 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.myfzone_sport.myf_zone.R
-import com.myfzone_sport.myf_zone.app.framework.FirebaseService.isConnectedLive
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.isAffiliated
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.isConnected
 import com.myfzone_sport.myf_zone.app.framework.RemoteDataSourceImpl
-import com.myfzone_sport.myf_zone.app.ui.activity.MainActivity
 import com.myfzone_sport.myf_zone.app.ui.adapter.CategoryEventAdapter
 import com.myfzone_sport.myf_zone.app.ui.adapter.CloseToClubEventAdapter
 import com.myfzone_sport.myf_zone.app.ui.adapter.UserEventAdapter
@@ -26,25 +25,20 @@ import com.myfzone_sport.myf_zone.data.RepositoryImpl
 import com.myfzone_sport.myf_zone.databinding.FragmentHomeBinding
 import com.myfzone_sport.myf_zone.usecases.event.*
 import com.myfzone_sport.myf_zone.usecases.user.*
-import dagger.hilt.android.AndroidEntryPoint
 import org.jetbrains.anko.support.v4.toast
 import java.util.*
-import javax.inject.Inject
 
 class HomeFragment : Fragment() {
 
     //region Variables
-
-    companion object {
-        private val TAG = HomeFragment::class.java.simpleName
-        private lateinit var binding: FragmentHomeBinding
-        private lateinit var adapterCloseToClub: CloseToClubEventAdapter
-        private lateinit var adapterCategory: CategoryEventAdapter
-        private lateinit var adapterUserEvents: UserEventAdapter
-        private lateinit var viewModel: HomeViewModel
-        private lateinit var viewModelFactory: HomeViewModelFactory
-        private lateinit var greeting: String
-    }
+    private val TAG = HomeFragment::class.java.simpleName
+    private lateinit var adapterCloseToClub: CloseToClubEventAdapter
+    private lateinit var binding: FragmentHomeBinding
+    private lateinit var adapterCategory: CategoryEventAdapter
+    private lateinit var adapterUserEvents: UserEventAdapter
+    private lateinit var viewModel: HomeViewModel
+    private lateinit var viewModelFactory: HomeViewModelFactory
+    private lateinit var greeting: String
     //endregion
 
     //region Override Methods
@@ -130,6 +124,10 @@ class HomeFragment : Fragment() {
             navigate(R.id.homeFragmentToCategoryListFragment, bundle)
         }
 
+        binding.closeToClubLayout.showAll.setOnClickListener {
+            navigate(R.id.homeFragmentToMapFragment)
+        }
+
         binding.homeProfileBtn.setOnClickListener {
             checkStatusDestination("profile")
         }
@@ -138,9 +136,9 @@ class HomeFragment : Fragment() {
             checkStatusDestination("chat")
         }
 
-//        binding.homeCreateEventBtn.setOnClickListener {
-//            checkStatusDestination("new event")
-//        }
+        binding.homeCreateEventBtn.setOnClickListener {
+            checkStatusDestination("new event")
+        }
     }
 
     private fun setupObservers() {
@@ -220,32 +218,48 @@ class HomeFragment : Fragment() {
     }
 
     private fun checkStatusDestination(destination: String) {
-        isConnectedLive.observe(viewLifecycleOwner, {
-            when (destination) {
-                "profile" -> {
-                    if (it) {
+        val bundle = bundleOf("page" to R.id.homeFragment)
+        when (destination) {
+            "profile" -> {
+                if (isConnected) {
+                    if (isAffiliated) {
                         navigate(R.id.homeFragmentToProfilFragment)
                     } else {
-                        navigate(R.id.homeFragmentToRegistrationFragment)
+                        toast(getString(R.string.user_not_affiliated))
+                        navigate(R.id.homeFragmentToAffiliationRequest, bundle)
                     }
-                }
-                "chat" -> {
-                    navigate(R.id.homeFragmentToAffiliationRequest)
-//                    if (it) {
-//                        navigate(R.id.homeFragmentToMessageFragment)
-//                    } else {
-//                        navigate(R.id.homeFragmentToRegistrationFragment)
-//                    }
-                }
-                "new event" -> {
-                    if (it) {
-                        navigate(R.id.homeFragmentToNewEventFragment)
-                    } else {
-                        navigate(R.id.homeFragmentToRegistrationFragment)
-                    }
+                } else {
+                    toast(getString(R.string.user_not_connected))
+                    navigate(R.id.homeFragmentToRegistrationFragment)
                 }
             }
-        })
+            "chat" -> {
+                if (isConnected) {
+                    if (isAffiliated) {
+                        navigate(R.id.homeFragmentToMessageFragment)
+                    } else {
+                        toast(getString(R.string.user_not_affiliated))
+                        navigate(R.id.homeFragmentToAffiliationRequest, bundle)
+                    }
+                } else {
+                    toast(getString(R.string.user_not_connected))
+                    navigate(R.id.homeFragmentToRegistrationFragment)
+                }
+            }
+            "new event" -> {
+                if (isConnected) {
+                    if (isAffiliated) {
+                        navigate(R.id.homeFragmentToNewEventFragment)
+                    } else {
+                        toast(getString(R.string.user_not_affiliated))
+                        navigate(R.id.homeFragmentToAffiliationRequest, bundle)
+                    }
+                } else {
+                    toast(getString(R.string.user_not_connected))
+                    navigate(R.id.homeFragmentToRegistrationFragment)
+                }
+            }
+        }
     }
     //endregion
 

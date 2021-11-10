@@ -2,7 +2,6 @@ package com.myfzone_sport.myf_zone.app.ui.viewmodel
 
 import android.text.TextUtils
 import androidx.lifecycle.*
-import com.myfzone_sport.myf_zone.app.framework.FirebaseService
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.checkUserStatus
 import com.myfzone_sport.myf_zone.domain.State
 import com.myfzone_sport.myf_zone.domain.coach.Coach
@@ -56,7 +55,7 @@ class SignUpViewModel(
         if (validateSignUpForm()) {
             signUpUser(signUpEmail.value!!, signUpPassword.value!!)
         } else {
-            onSignUpResult("Fill all sign up fields!")
+            onResult("Fill all sign up fields!")
         }
     }
 
@@ -81,7 +80,7 @@ class SignUpViewModel(
                     }
                     is State.Failed -> {
                         val message = "Sign in failure: ${state.message}"
-                        onSignUpResult(message)
+                        onResult(message)
                     }
                 }
             }
@@ -109,7 +108,7 @@ class SignUpViewModel(
                     }
                     is State.Failed -> {
                         val message = "Sign in failure: ${state.message}"
-                        onSignUpResult(message)
+                        onResult(message)
                     }
                 }
             }
@@ -125,18 +124,20 @@ class SignUpViewModel(
                     }
                     is State.Success -> {
                         signUpComplete()
-                        onSignUpResult()
+                        onResult()
                     }
                     is State.Failed -> {
                         val message = "Sign in failure: ${state.message}"
-                        onSignUpResult(message)
+                        onResult(message)
                     }
                 }
             }
         }
     }
+    //endregion
 
-    private fun onSignUpResult(message: String = "") {
+    //region Observers
+    private fun onResult(message: String = "") {
         _errorMessage.postValue(message)
         stopSignUpLoading()
     }
@@ -152,6 +153,13 @@ class SignUpViewModel(
     private fun signUpComplete() {
         _successfulSignUp.postValue(true)
         checkUserStatus()
+    }
+
+    fun resetFields() {
+        _errorMessageEmail.postValue(false)
+        _errorMessagePassword.postValue(false)
+        _errorMessageFirstName.postValue(false)
+        _errorMessageLastName.postValue(false)
     }
     //endregion
 }

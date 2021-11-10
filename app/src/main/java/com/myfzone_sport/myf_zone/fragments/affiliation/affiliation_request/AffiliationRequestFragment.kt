@@ -33,8 +33,8 @@ import org.jetbrains.anko.sdk27.coroutines.textChangedListener
 import org.jetbrains.anko.support.v4.intentFor
 import org.jetbrains.anko.support.v4.toast
 
-private const val ARG_PARAM1 = "page"
 
+private const val ARG_PARAM1 = "page"
 class AffiliationRequestFragment : Fragment() {
     companion object {
         private val TAG = this::class.java.simpleName

@@ -2,15 +2,13 @@ package com.myfzone_sport.myf_zone.app.ui.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.*
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.checkUserStatus
 import com.myfzone_sport.myf_zone.domain.State
 import com.myfzone_sport.myf_zone.domain.club.Club
 import com.myfzone_sport.myf_zone.domain.sport.Category
 import com.myfzone_sport.myf_zone.domain.sport.Sport
 import com.myfzone_sport.myf_zone.domain.sport.SubCategory
-import com.myfzone_sport.myf_zone.usecases.affiliation.GetCategoryListUseCase
-import com.myfzone_sport.myf_zone.usecases.affiliation.GetClubListUseCase
-import com.myfzone_sport.myf_zone.usecases.affiliation.GetSportListUseCase
-import com.myfzone_sport.myf_zone.usecases.affiliation.GetSubCategoryListUseCase
+import com.myfzone_sport.myf_zone.usecases.affiliation.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
@@ -23,7 +21,8 @@ class AffiliationRequestListViewModel(
     private val getSportListUseCase: GetSportListUseCase,
     private val getClubListUseCase: GetClubListUseCase,
     private val getCategoryListUseCase: GetCategoryListUseCase,
-    private val getSubCategoryListUseCase: GetSubCategoryListUseCase
+    private val getSubCategoryListUseCase: GetSubCategoryListUseCase,
+    private val affiliateCoachUseCase: AffiliateCoachUseCase
 ) : ViewModel() {
 
     //region Variables
@@ -64,6 +63,19 @@ class AffiliationRequestListViewModel(
         getSportList()
     }
 
+    fun checkAffiliation() {
+        affiliateCoach(_club.value!!, _sport.value!!,_category.value, _subCategory.value)
+        Log.i("tagging","club: ${_club.value}")
+        Log.i("tagging","sport: ${_sport.value}")
+        Log.i("tagging","category: ${_category.value}")
+        Log.i("tagging","subCategory: ${_subCategory.value}")
+        checkUserStatus()
+    }
+
+    private fun affiliateCoach(club: Club, sport: Sport, category: Category?, subCategory: SubCategory?) {
+        affiliateCoachUseCase.invoke(club, sport, category, subCategory)
+    }
+
     private fun getClubList() {
         viewModelScope.launch {
             getClubListUseCase.invoke().collect { state ->
@@ -89,11 +101,6 @@ class AffiliationRequestListViewModel(
                 }
             }
         }
-    }
-
-    fun getClubItem(club: String, clubList: MutableList<Club>) {
-        for (i in clubList)
-            if (i.name == club) _club.postValue(i)
     }
 
     fun assignClub(club: Club) {
@@ -127,16 +134,9 @@ class AffiliationRequestListViewModel(
         }
     }
 
-    fun getSportItem(sport: String, sportList: MutableList<Sport>) {
-        for (i in sportList)
-            if (i.name == sport) {
-                _sport.postValue(i)
-                getCategoryList(i.id)
-            }
-    }
-
     fun assignSport(sport: Sport) {
         _sport.postValue(sport)
+        getCategoryList(sport.id)
     }
 
     private fun getCategoryList(sportId: String) {
@@ -166,17 +166,9 @@ class AffiliationRequestListViewModel(
         }
     }
 
-    fun getCategoryItem(category: String, categoryList: MutableList<Category>) {
-        for (i in categoryList)
-            if (i.name == category) {
-                _category.postValue(i)
-//                getSubCategoryList(_sportSelected.value!!.id, i.id)
-            }
-    }
-
-
     fun assignCategory(category: Category) {
         _category.postValue(category)
+//        getSubCategoryList(sport.value!!.id, category.id)
     }
 
     private fun getSubCategoryList(sportId: String, categoryId: String) {
@@ -204,12 +196,6 @@ class AffiliationRequestListViewModel(
                 }
             }
         }
-    }
-
-    fun getSubCategoryItem(subCategory: String, subCategoryList: MutableList<SubCategory>) {
-        Log.d("tagging", "select sub cat 03")
-        for (i in subCategoryList)
-            if (i.name == subCategory) _subCategory.postValue(i)
     }
 
     fun assignSubCategory(subCategory: SubCategory) {
@@ -242,7 +228,8 @@ class AffiliationRequestListViewModelFactory(
     private val getSportListUseCase: GetSportListUseCase,
     private val getClubListUseCase: GetClubListUseCase,
     private val getCategoryListUseCase: GetCategoryListUseCase,
-    private val getSubCategoryListUseCase: GetSubCategoryListUseCase
+    private val getSubCategoryListUseCase: GetSubCategoryListUseCase,
+    private val affiliateCoachUseCase: AffiliateCoachUseCase
 ) :
     ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
@@ -251,12 +238,14 @@ class AffiliationRequestListViewModelFactory(
             GetClubListUseCase::class.java,
             GetCategoryListUseCase::class.java,
             GetSubCategoryListUseCase::class.java,
+            AffiliateCoachUseCase::class.java,
         )
             .newInstance(
                 getSportListUseCase,
                 getClubListUseCase,
                 getCategoryListUseCase,
                 getSubCategoryListUseCase,
+                affiliateCoachUseCase,
             )
     }
 

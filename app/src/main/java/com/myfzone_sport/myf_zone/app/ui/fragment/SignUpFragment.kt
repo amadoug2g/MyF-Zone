@@ -59,6 +59,11 @@ class SignUpFragment : Fragment() {
 
         return binding.root
     }
+
+    override fun onStop() {
+        super.onStop()
+        resetErrors()
+    }
     //endregion
 
     //region Setups
@@ -99,7 +104,7 @@ class SignUpFragment : Fragment() {
         viewModel.errorMessageEmail.observe(viewLifecycleOwner, {
             if (it) {
                 val bundleTracking = bundleOf("SignUp Email Error" to getString(R.string.hint_required))
-//                TRACKING.logEvent(ALERT_ERROR, bundleTracking)
+                TRACKING.logEvent(ALERT_ERROR, bundleTracking)
                 binding.signUpEmailLayout.error = getString(R.string.hint_required)
             } else {
                 binding.signUpEmailLayout.error = null
@@ -109,7 +114,7 @@ class SignUpFragment : Fragment() {
         viewModel.errorMessagePassword.observe(viewLifecycleOwner, {
             if (it) {
                 val bundleTracking = bundleOf("SignUp Password ${getString(R.string.error_msg)}" to getString(R.string.hint_required))
-//                TRACKING.logEvent(ALERT_ERROR, bundleTracking)
+                TRACKING.logEvent(ALERT_ERROR, bundleTracking)
                 binding.signUpPasswordLayout.error = getString(R.string.hint_required)
             } else {
                 binding.signUpPasswordLayout.error = null
@@ -119,7 +124,7 @@ class SignUpFragment : Fragment() {
         viewModel.errorMessageFirstName.observe(viewLifecycleOwner, {
             if (it) {
                 val bundleTracking = bundleOf("SignUp FirstName ${getString(R.string.error_msg)}" to getString(R.string.hint_required))
-//                TRACKING.logEvent(ALERT_ERROR, bundleTracking)
+                TRACKING.logEvent(ALERT_ERROR, bundleTracking)
                 binding.signUpFirstNameLayout.error = getString(R.string.hint_required)
             } else {
                 binding.signUpFirstNameLayout.error = null
@@ -129,7 +134,7 @@ class SignUpFragment : Fragment() {
         viewModel.errorMessageLastName.observe(viewLifecycleOwner, {
             if (it) {
                 val bundleTracking = bundleOf("SignUp LastName ${getString(R.string.error_msg)}" to getString(R.string.hint_required))
-//                TRACKING.logEvent(ALERT_ERROR, bundleTracking)
+                TRACKING.logEvent(ALERT_ERROR, bundleTracking)
                 binding.signUpLastNameLayout.error = getString(R.string.hint_required)
             } else {
                 binding.signUpLastNameLayout.error = null
@@ -143,12 +148,10 @@ class SignUpFragment : Fragment() {
         viewModel.successfulSignUp.observe(viewLifecycleOwner, { state ->
             if (state) {
                 toast(getString(R.string.account_creation_msg))
+
                 val bundle = bundleOf("page" to R.id.signUpFragment)
-                navigate(R.id.globalToAffiliation, bundle)
-
+                navigate(R.id.signUpFragment2ToAffiliationFragment, bundle)
                 TRACKING.logEvent(Tracking.SIGN_UP_DONE, null)
-
-//                navigate(R.id.signInFragment2ToAffiliationRequestFragment)
             }
         })
     }
@@ -157,66 +160,6 @@ class SignUpFragment : Fragment() {
     //region Functions
     private fun signUp() {
         viewModel.signUp()
-    }
-
-    private fun validateForm(): Boolean {
-        var valid = true
-
-        val email = binding.signUpEmailInput.text.toString()
-        val password = binding.signUpPasswordInput.text.toString()
-        val firstName = binding.signUpFirstNameInput.text.toString()
-        val lastName = binding.signUpLastNameInput.text.toString()
-
-        val emailLayout = binding.signUpEmailLayout
-        val passwordLayout = binding.signUpPasswordLayout
-        val firstNameLayout = binding.signUpFirstNameLayout
-        val lastNameLayout = binding.signUpLastNameLayout
-
-        if (TextUtils.isEmpty(email)) {
-            val bundleTracking =
-                bundleOf("SignUp Email ${getString(R.string.error_msg)}" to getString(R.string.hint_required))
-            TRACKING.logEvent(ALERT_ERROR, bundleTracking)
-
-            emailLayout.error = getString(R.string.hint_required)
-            valid = false
-        } else {
-            emailLayout.error = null
-        }
-
-        if (TextUtils.isEmpty(password)) {
-            val bundleTracking =
-                bundleOf("SignUp Password ${getString(R.string.error_msg)}" to getString(R.string.hint_required))
-            TRACKING.logEvent(Tracking.ALERT_ERROR, bundleTracking)
-
-            passwordLayout.error = getString(R.string.hint_required)
-            valid = false
-        } else {
-            passwordLayout.error = null
-        }
-
-        if (TextUtils.isEmpty(firstName)) {
-            val bundleTracking =
-                bundleOf("SignUp FirstName ${getString(R.string.error_msg)}" to getString(R.string.hint_required))
-            TRACKING.logEvent(Tracking.ALERT_ERROR, bundleTracking)
-
-            firstNameLayout.error = getString(R.string.hint_required)
-            valid = false
-        } else {
-            firstNameLayout.error = null
-        }
-
-        if (TextUtils.isEmpty(lastName)) {
-            val bundleTracking =
-                bundleOf("SignUp LastName ${getString(R.string.error_msg)}" to getString(R.string.hint_required))
-            TRACKING.logEvent(Tracking.ALERT_ERROR, bundleTracking)
-
-            lastNameLayout.error = getString(R.string.hint_required)
-            valid = false
-        } else {
-            lastNameLayout.error = null
-        }
-
-        return valid
     }
     //endregion
 
@@ -247,6 +190,10 @@ class SignUpFragment : Fragment() {
             .setTextColor(Color.WHITE)
             .setActionTextColor(Color.CYAN)
             .show()
+    }
+
+    private fun resetErrors() {
+        viewModel.resetFields()
     }
     //endregion
 }

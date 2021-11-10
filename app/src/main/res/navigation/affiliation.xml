@@ -5,6 +5,14 @@
     android:id="@+id/affiliation"
     app:startDestination="@id/affiliationRequestListFragment">
 
+
+    <action
+        android:id="@+id/globalToAffiliation2"
+        app:destination="@id/affiliationRequestListFragment"
+        app:launchSingleTop="true"
+        app:popUpTo="@id/affiliationRequestListFragment"
+        app:popUpToInclusive="true" />
+
     <fragment
         android:id="@+id/affiliationRequestListFragment"
         android:name="com.myfzone_sport.myf_zone.app.ui.fragment.AffiliationRequestListFragment"

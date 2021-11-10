@@ -29,18 +29,7 @@ interface RemoteDataSource {
 //        get() = Firebase.firestore
 
     //region Affiliation
-    fun affiliateCoach(
-        code: String,
-        affiliationSport: String,
-        affiliationCategory: String?,
-        affiliationSubCategory: String?
-    )
-
-    fun sendRequestToClub(
-        clubId: String,
-        affiliationRequest: HashMap<String, Any?>,
-        removeListener: Boolean = false
-    )
+    fun affiliateCoach(club: Club, sport: Sport, category: Category?, subCategory: SubCategory?)
 
     fun getClubList(): Flow<State<MutableList<Club>>>
 
@@ -163,9 +152,9 @@ interface RemoteDataSource {
 
     fun getUser(): Flow<State<Coach>>
 
-    fun getUserClub(): Flow<State<Club?>>
+    fun getUserClub(clubAffiliation: ClubAffiliation): Flow<State<Club?>>
 
-    fun getUserAffiliation(): Flow<State<ClubAffiliation?>>
+    fun getUserAffiliation(coach: Coach): Flow<State<ClubAffiliation?>>
 
     fun getUserEventList(): Flow<State<MutableList<String>>>
 

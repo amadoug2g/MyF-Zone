@@ -124,10 +124,9 @@ class SignInFragment : Fragment() {
             if (state) {
                 toast(getString(R.string.login_message))
 
+                val bundle = bundleOf("page" to R.id.signInFragment)
                 TRACKING.logEvent(Tracking.SIGN_IN_DONE, null)
-                startActivity(intentFor<MainActivity>().newTask().clearTask())
-
-//                navigate(R.id.signInFragment2ToAffiliationRequestFragment)
+                navigate(R.id.signInFragment2ToAffiliationFragment, bundle)
             }
         })
     }

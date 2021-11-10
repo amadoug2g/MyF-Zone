@@ -16,22 +16,17 @@ import com.google.firebase.storage.StorageReference
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoach
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoachClub
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoachClubAffiliation
-import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoachClubAffiliationLive
-import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoachClubLive
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoachEvents
-import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoachEventsLive
-import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoachLive
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.affiliationNbr
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.firebaseAuth
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.firebaseMsg
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.isAffiliated
-import com.myfzone_sport.myf_zone.app.framework.FirebaseService.isAffiliatedLive
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.isConnected
-import com.myfzone_sport.myf_zone.app.framework.FirebaseService.isConnectedLive
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.storageInstance
 import com.myfzone_sport.myf_zone.data.RemoteDataSource
 import com.myfzone_sport.myf_zone.domain.State
 import com.myfzone_sport.myf_zone.domain.chat.MessagingService
+import com.myfzone_sport.myf_zone.domain.club.AffiliationRequest
 import com.myfzone_sport.myf_zone.domain.club.Club
 import com.myfzone_sport.myf_zone.domain.coach.ClubAffiliation
 import com.myfzone_sport.myf_zone.domain.coach.Coach
@@ -60,21 +55,39 @@ class RemoteDataSourceImpl : RemoteDataSource {
     override val firebaseFirestore = Firebase.firestore
 
     override fun affiliateCoach(
-        code: String,
-        affiliationSport: String,
-        affiliationCategory: String?,
-        affiliationSubCategory: String?
+        club: Club,
+        sport: Sport,
+        category: Category?,
+        subCategory: SubCategory?
     ) {
-        TODO("Not yet implemented")
+        val user = firebaseAuth.currentUser!!
+
+        val affiliationRequest = AffiliationRequest().apply {
+            coachId = user.uid
+            coachFullname = user.displayName!!
+            sportName = sport.name
+            sportId = sport.id
+            if (category != null) {
+                categoryName = category.name
+                categoryId = category.id
+            }
+            if (subCategory != null) {
+                subCategoryName = subCategory.name
+                subCategoryId = subCategory.id
+            }
+            status = "validate"
+        }
+
+        sendRequestToClub(club, affiliationRequest.toMap())
     }
 
-    override fun sendRequestToClub(
-        clubId: String,
+    private fun sendRequestToClub(
+        club: Club,
         affiliationRequest: HashMap<String, Any?>,
-        removeListener: Boolean
+        removeListener: Boolean = false
     ) {
-        val docRef = firebaseFirestore.collection(CLUB_PATH)
-            .document(clubId)
+        val docRef = DB.collection(CLUB_PATH)
+            .document(club.id)
             .collection("AffiliationRequest")
             .add(affiliationRequest)
 
@@ -114,7 +127,7 @@ class RemoteDataSourceImpl : RemoteDataSource {
         TODO("Not yet implemented")
     }
 
-    override fun getClubFromId(clubId: String)= flow<State<Club>> {
+    override fun getClubFromId(clubId: String) = flow<State<Club>> {
         emit(State.loading())
 
         val mClubListQuery = DB.collection(CLUB_PATH)
@@ -366,7 +379,7 @@ class RemoteDataSourceImpl : RemoteDataSource {
         snapshot.forEach {
             val event = it.toObject<Event>()
 //            if (event.date.time > now.time)
-                eventList.add(event)
+            eventList.add(event)
         }
 
 //        eventList.forEach { event ->
@@ -778,37 +791,31 @@ class RemoteDataSourceImpl : RemoteDataSource {
         emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
     }.flowOn(Dispatchers.IO)
 
-    override fun getUserClub(): Flow<State<Club?>> = flow {
-        val user: FirebaseUser? = firebaseAuth.currentUser
-        val userId = activeCoach?.id
-        val mClubQuery = firebaseFirestore.collection(COACH_PATH + "/${userId}/ClubAffiliation")
-
-        emit(State.loading())
-
-        val snapshotClub = mClubQuery.get().await()
-
-        val club = snapshotClub.documents[0].toObject(Club::class.java)
-
-        Log.i("TAG", "state club! $club")
-
-        emit(State.Success(club))
-    }.catch {
-        emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
-    }.flowOn(Dispatchers.IO)
-
-    override fun getUserAffiliation(): Flow<State<ClubAffiliation?>> = flow {
+    override fun getUserClub(clubAffiliation: ClubAffiliation): Flow<State<Club?>> = flow {
         val mAffiliationClubQuery =
-            firebaseFirestore.document(CLUB_PATH + "/${activeCoachClubAffiliation?.clubId}")
+            firebaseFirestore.document(CLUB_PATH + "/${clubAffiliation.clubId}")
 
         emit(State.loading())
 
         val snapshotAffiliation = mAffiliationClubQuery.get().await()
 
-        val affiliation = snapshotAffiliation.toObject(ClubAffiliation::class.java)
-
-        Log.i("TAG", "state affiliation! $affiliation")
+        val affiliation = snapshotAffiliation.toObject(Club::class.java)
 
         emit(State.Success(affiliation))
+    }.catch {
+        emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
+    }.flowOn(Dispatchers.IO)
+
+    override fun getUserAffiliation(coach: Coach): Flow<State<ClubAffiliation?>> = flow {
+                val mClubQuery = firebaseFirestore.collection(COACH_PATH + "/${coach.id}/ClubAffiliation")
+
+        emit(State.loading())
+
+        val snapshotClub = mClubQuery.get().await()
+
+        val club = snapshotClub.documents[0].toObject(ClubAffiliation::class.java)
+
+        emit(State.Success(club))
     }.catch {
         emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
     }.flowOn(Dispatchers.IO)
@@ -888,7 +895,6 @@ class RemoteDataSourceImpl : RemoteDataSource {
         val user: FirebaseUser? = firebaseAuth.currentUser
         return if (user != null) {
             isConnected = true
-            isConnectedLive.postValue(true)
             getUserInfo()
 
             true
@@ -898,13 +904,6 @@ class RemoteDataSourceImpl : RemoteDataSource {
             isAffiliated = false
             activeCoach = null
             activeCoachClubAffiliation = null
-
-
-            activeCoachEventsLive.postValue(mutableListOf())
-            isAffiliatedLive.postValue(false)
-            isConnectedLive.postValue(false)
-            activeCoachLive.postValue(null)
-            activeCoachClubAffiliationLive.postValue(null)
 
             false
         }
@@ -944,8 +943,6 @@ class RemoteDataSourceImpl : RemoteDataSource {
             mAffiliationPath.get().addOnSuccessListener {
 
                 if (it.documents.size > 0) {
-
-                    isAffiliatedLive.postValue(true)
                     isAffiliated = true
                     getUser(user)
                     getUserAffiliation(user)
@@ -953,10 +950,6 @@ class RemoteDataSourceImpl : RemoteDataSource {
                     activeCoachEvents = mutableListOf()
                     isAffiliated = false
                     activeCoachClubAffiliation = null
-
-                    activeCoachEventsLive.postValue(mutableListOf())
-                    isAffiliatedLive.postValue(false)
-                    activeCoachClubAffiliationLive.postValue(null)
                 }
             }
             true
@@ -967,12 +960,6 @@ class RemoteDataSourceImpl : RemoteDataSource {
             activeCoach = null
             activeCoachClubAffiliation = null
 
-            activeCoachEventsLive.postValue(mutableListOf())
-            isAffiliatedLive.postValue(false)
-            isConnectedLive.postValue(false)
-            activeCoachLive.postValue(null)
-            activeCoachClubAffiliationLive.postValue(null)
-
             false
         }
     }
@@ -982,7 +969,6 @@ class RemoteDataSourceImpl : RemoteDataSource {
 
         mUserQuery.get().addOnSuccessListener {
             activeCoach = it.toObject(Coach::class.java)
-            activeCoachLive.postValue(it.toObject(Coach::class.java))
         }
     }
 
@@ -992,7 +978,6 @@ class RemoteDataSourceImpl : RemoteDataSource {
         mClubQuery.get().addOnSuccessListener {
             val snapshot = it.documents[affiliationNbr]
             activeCoachClubAffiliation = snapshot.toObject(ClubAffiliation::class.java)
-            activeCoachClubAffiliationLive.postValue(snapshot.toObject(ClubAffiliation::class.java))
 
             getUserClub(activeCoachClubAffiliation)
             getEventsList(user, activeCoachClubAffiliation)
@@ -1004,13 +989,11 @@ class RemoteDataSourceImpl : RemoteDataSource {
 
         mClubQuery.get().addOnSuccessListener {
             activeCoachClub = it.toObject(Club::class.java)
-            activeCoachClubLive.postValue(it.toObject(Club::class.java))
         }
     }
 
     private fun getEventsList(user: FirebaseUser?, affiliation: ClubAffiliation?) {
         activeCoachEvents = mutableListOf()
-        activeCoachEventsLive.postValue(mutableListOf())
 
         val mEventsQuery =
             firebaseFirestore.collection(COACH_PATH + "/${user?.uid}/ClubAffiliation/${affiliation?.clubId}/CoachEvent")
@@ -1018,9 +1001,6 @@ class RemoteDataSourceImpl : RemoteDataSource {
         mEventsQuery.get().addOnSuccessListener {
             for (doc in it) {
                 if (!activeCoachEvents.contains(doc.id)) activeCoachEvents.add(doc.id)
-                if (activeCoachEventsLive.value?.contains(doc.id) == false) activeCoachEventsLive.value?.add(
-                    doc.id
-                )
             }
         }
     }

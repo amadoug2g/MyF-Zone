@@ -94,7 +94,7 @@
                 android:orientation="vertical">
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/login_connect_btn"
+                    android:id="@+id/success.notification"
                     android:layout_width="match_parent"
                     android:layout_height="60dp"
                     android:layout_marginStart="25dp"
@@ -108,7 +108,7 @@
                     app:cornerRadius="8dp" />
 
                 <TextView
-                    android:id="@+id/login_skip_btn"
+                    android:id="@+id/success_skip_btn"
                     style="@style/Widget.MaterialComponents.Button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

@@ -13,6 +13,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.storage.StorageReference
 import com.myfzone_sport.myf_zone.R
 import com.myfzone_sport.myf_zone.app.framework.RemoteDataSourceImpl
+import com.myfzone_sport.myf_zone.app.ui.activity.MainActivity
 import com.myfzone_sport.myf_zone.app.ui.adapter.ParticipantsPreviewAdapter
 import com.myfzone_sport.myf_zone.app.ui.viewmodel.AffiliationSuccessViewModel
 import com.myfzone_sport.myf_zone.app.ui.viewmodel.AffiliationSuccessViewModelFactory
@@ -24,6 +25,9 @@ import com.myfzone_sport.myf_zone.databinding.FragmentEventDetailsGuest2Binding
 import com.myfzone_sport.myf_zone.glide.GlideApp
 import com.myfzone_sport.myf_zone.usecases.affiliation.GetClubIdUseCase
 import com.myfzone_sport.myf_zone.usecases.user.GetImageReferenceUseCase
+import org.jetbrains.anko.clearTask
+import org.jetbrains.anko.newTask
+import org.jetbrains.anko.support.v4.intentFor
 import org.jetbrains.anko.support.v4.toast
 
 private const val ARG_PARAM1 = "clubId"
@@ -91,6 +95,12 @@ class AffiliationSuccessFragment : Fragment() {
 
         binding.settings.setOnClickListener {
             navigate(R.id.affiliationSuccessToSettings)
+        }
+
+        binding.successNotification.setOnClickListener {  }
+
+        binding.successSkipBtn.setOnClickListener {
+            startActivity(intentFor<MainActivity>().newTask().clearTask())
         }
 
         viewModel.clubImagePath.observe(viewLifecycleOwner, {

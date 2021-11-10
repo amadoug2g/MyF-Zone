@@ -51,6 +51,7 @@
     <string name="affiliationRequestComment">Ce club a bien reçu votre demande d\'affiliation et vous répondra prochainement</string>
     <string name="laterTextButton">Plus tard</string>
     <string name="affiliate">S\'affilier</string>
+    <string name="affiliate_msg">S\'affilier auprès de ce club ?</string>
     <string name="membership">Affiliation</string>
     <string name="title_new_affiliation">Nouvelle demande</string>
     <string name="title_affiliation_list">Liste des demandes</string>
@@ -207,6 +208,7 @@
     <string name="participants_info_desc">Vous pouvez retirer votre participation en appuyant sur le bouton près de votre nom, présent dans la liste ci-dessous.</string>
     <string name="participants_info_title">Vérifiez le statut de votre participation à l\'aide des pastilles de couleur :</string>
     <string name="code_affiliation_txt">Je m’affilie avec un code</string>
+    <string name="user_not_connected">Vous n\'êtes pas connecté</string>
 
     <string-array name="sportList">
         <item>Football</item>

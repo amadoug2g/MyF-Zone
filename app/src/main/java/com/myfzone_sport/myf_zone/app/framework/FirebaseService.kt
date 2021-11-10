@@ -34,20 +34,13 @@ object FirebaseService {
     val TRACKING = Firebase.analytics
 //    val firebaseFirestore = Firebase.firestore
 
-    var isConnectedLive = MutableLiveData(false)
     var isConnected = false
-    var isAffiliatedLive = MutableLiveData(false)
     var isAffiliated = false
-    var affiliationNbrLive = 0
     var affiliationNbr = 0
 
-    var activeCoachLive = MutableLiveData<Coach?>()
     var activeCoach: Coach? = null
-    var activeCoachClubAffiliationLive = MutableLiveData<ClubAffiliation?>()
     var activeCoachClubAffiliation: ClubAffiliation? = null
-    var activeCoachClubLive = MutableLiveData<Club?>()
     var activeCoachClub: Club? = null
-    var activeCoachEventsLive = MutableLiveData(mutableListOf<String>())
     var activeCoachEvents = mutableListOf<String>()
 
     fun checkUserStatus() {

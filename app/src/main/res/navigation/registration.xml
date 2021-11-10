@@ -12,10 +12,17 @@
         <action
             android:id="@+id/signUpFragment2ToSignInFragment"
             app:destination="@id/signInFragment" />
+        <action
+            android:id="@+id/signUpFragment2ToAffiliationFragment"
+            app:destination="@id/affiliation" />
     </fragment>
     <fragment
         android:id="@+id/signInFragment"
         android:name="com.myfzone_sport.myf_zone.app.ui.fragment.SignInFragment"
-        tools:layout="@layout/fragment_sign_in" />
-
+        tools:layout="@layout/fragment_sign_in" >
+        <action
+            android:id="@+id/signInFragment2ToAffiliationFragment"
+            app:destination="@id/affiliation" />
+    </fragment>
+    <include app:graph="@navigation/affiliation" />
 </navigation>

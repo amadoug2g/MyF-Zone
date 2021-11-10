@@ -145,7 +145,10 @@ class ProfileFragment : Fragment() {
 
         viewModel.coachClub.observe(viewLifecycleOwner, {
             binding.club = it
-            Log.i("TAG","it! $it")
+        })
+
+        viewModel.coachAffiliation.observe(viewLifecycleOwner, {
+            viewModel.getImageReference(it.clubLogo)
         })
     }
 
@@ -155,12 +158,6 @@ class ProfileFragment : Fragment() {
         viewModel.userImagePath.observe(viewLifecycleOwner, {
             displayUserImage(it)
         })
-
-        try {
-            binding.coachInfo.text = activeCoach!!.getName()
-        } catch (e: Exception) {
-            Log.i("TAG", "Error: $e")
-        }
     }
 
     private fun displayUserImage(path: StorageReference) {

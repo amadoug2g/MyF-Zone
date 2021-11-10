@@ -1,5 +1,6 @@
 package com.myfzone_sport.myf_zone.app.ui.fragment
 
+import android.content.DialogInterface
 import android.graphics.Color
 import android.graphics.Paint
 import android.os.Bundle
@@ -12,9 +13,12 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.myfzone_sport.myf_zone.R
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.TRACKING
 import com.myfzone_sport.myf_zone.app.framework.RemoteDataSourceImpl
+import com.myfzone_sport.myf_zone.app.ui.activity.MainActivity
 import com.myfzone_sport.myf_zone.app.ui.adapter.AffiliationCategoryAdapter
 import com.myfzone_sport.myf_zone.app.ui.adapter.AffiliationClubAdapter
 import com.myfzone_sport.myf_zone.app.ui.adapter.AffiliationSportAdapter
@@ -23,16 +27,19 @@ import com.myfzone_sport.myf_zone.app.ui.viewmodel.AffiliationRequestListViewMod
 import com.myfzone_sport.myf_zone.app.ui.viewmodel.AffiliationRequestListViewModelFactory
 import com.myfzone_sport.myf_zone.data.RepositoryImpl
 import com.myfzone_sport.myf_zone.databinding.FragmentAffiliationRequestListBinding
-import com.myfzone_sport.myf_zone.usecases.affiliation.GetCategoryListUseCase
-import com.myfzone_sport.myf_zone.usecases.affiliation.GetClubListUseCase
-import com.myfzone_sport.myf_zone.usecases.affiliation.GetSportListUseCase
-import com.myfzone_sport.myf_zone.usecases.affiliation.GetSubCategoryListUseCase
-import com.myfzone_sport.myf_zone.usecases.user.GetImageReferenceUseCase
 import com.myfzone_sport.myf_zone.domain.club.Club
 import com.myfzone_sport.myf_zone.domain.sport.Category
 import com.myfzone_sport.myf_zone.domain.sport.Sport
 import com.myfzone_sport.myf_zone.domain.sport.SubCategory
+import com.myfzone_sport.myf_zone.usecases.affiliation.*
+import com.myfzone_sport.myf_zone.usecases.user.GetImageReferenceUseCase
+import com.myfzone_sport.myf_zone.util.Tracking
+import com.myfzone_sport.myf_zone.util.Tracking.AFFILIATION_TO_CLUB_MAYBE_LATER
+import org.jetbrains.anko.clearTask
+import org.jetbrains.anko.newTask
+import org.jetbrains.anko.support.v4.intentFor
 
+private const val ARG_PARAM1 = "page"
 
 class AffiliationRequestListFragment : Fragment() {
 
@@ -41,17 +48,18 @@ class AffiliationRequestListFragment : Fragment() {
         private lateinit var binding: FragmentAffiliationRequestListBinding
         private lateinit var viewModel: AffiliationRequestListViewModel
         private lateinit var viewModelFactory: AffiliationRequestListViewModelFactory
-
-        private var clubFirstPass = true
-        private var sportFirstPass = true
-        private var categoryFirstPass = true
-        private var subCategoryFirstPass = true
+        private var page: Int? = null
     }
     //endregion
 
     //region Override Methods
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        TRACKING.logEvent(Tracking.AFFILIATION_TO_CLUB, null)
+
+        arguments?.let {
+            page = it.getInt(ARG_PARAM1)
+        }
 
         setupViewModel()
     }
@@ -72,11 +80,6 @@ class AffiliationRequestListFragment : Fragment() {
 
         return binding.root
     }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-    }
     //endregion
 
     //region Setups
@@ -88,12 +91,14 @@ class AffiliationRequestListFragment : Fragment() {
         val getClubListUseCase = GetClubListUseCase(repository)
         val getCategoryListUseCase = GetCategoryListUseCase(repository)
         val getSubCategoryListUseCase = GetSubCategoryListUseCase(repository)
+        val affiliateCoachUseCas = AffiliateCoachUseCase(repository)
 
         viewModelFactory = AffiliationRequestListViewModelFactory(
             getSportListUseCase,
             getClubListUseCase,
             getCategoryListUseCase,
-            getSubCategoryListUseCase
+            getSubCategoryListUseCase,
+            affiliateCoachUseCas
         )
 
         viewModel = ViewModelProvider(this, viewModelFactory)
@@ -103,8 +108,15 @@ class AffiliationRequestListFragment : Fragment() {
     private fun setupViews() {
         binding.codeAffiliationLink.paintFlags = Paint.UNDERLINE_TEXT_FLAG
 
-        binding.exitAffiliationRequest.setOnClickListener {
-            requireActivity().onBackPressed()
+        when (page) {
+            R.id.signUpFragment2, R.id.signInFragment -> {
+                binding.exit.visibility = View.GONE
+            }
+            R.id.homeFragment -> {
+                binding.exit.setOnClickListener {
+                    requireActivity().onBackPressed()
+                }
+            }
         }
 
         binding.settings.setOnClickListener {
@@ -115,10 +127,22 @@ class AffiliationRequestListFragment : Fragment() {
             navigate(R.id.affiliationRequestToAffiliationCode)
         }
 
+        binding.affiliationSkipBtn.setOnClickListener {
+            when (page) {
+                R.id.signUpFragment2, R.id.signInFragment -> {
+                    startActivity(intentFor<MainActivity>().newTask().clearTask())
+                }
+                R.id.homeFragment -> {
+                    requireActivity().onBackPressed()
+                }
+            }
+
+            TRACKING.logEvent(AFFILIATION_TO_CLUB_MAYBE_LATER, null)
+        }
+
         viewModel.club.observe(viewLifecycleOwner, { club ->
             binding.affiliationBtn.setOnClickListener {
-                val bundle = bundleOf("clubId" to club.id)
-                navigate(R.id.affiliationRequestToAffiliationSuccess, bundle)
+                affiliateCoach(club)
             }
         })
 
@@ -152,7 +176,8 @@ class AffiliationRequestListFragment : Fragment() {
 
                 val getImageReferenceUseCase = GetImageReferenceUseCase(repository)
 
-                val adapter = AffiliationClubAdapter(requireContext(), clubList, getImageReferenceUseCase)
+                val adapter =
+                    AffiliationClubAdapter(requireContext(), clubList, getImageReferenceUseCase)
                 binding.clubSpinner.adapter = adapter
 
                 binding.clubSpinner.onItemSelectedListener =
@@ -160,9 +185,13 @@ class AffiliationRequestListFragment : Fragment() {
                         override fun onNothingSelected(p0: AdapterView<*>?) {
                         }
 
-                        override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                        override fun onItemSelected(
+                            parent: AdapterView<*>?,
+                            view: View?,
+                            position: Int,
+                            id: Long
+                        ) {
                             val club = parent?.getItemAtPosition(position) as Club
-//                            viewModel.getClubItem(club.name, clubList)
                             viewModel.assignClub(club)
                         }
                     }
@@ -183,9 +212,13 @@ class AffiliationRequestListFragment : Fragment() {
                         override fun onNothingSelected(p0: AdapterView<*>?) {
                         }
 
-                        override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                        override fun onItemSelected(
+                            parent: AdapterView<*>?,
+                            view: View?,
+                            position: Int,
+                            id: Long
+                        ) {
                             val sport = parent?.getItemAtPosition(position) as Sport
-//                            viewModel.getSportItem(sport.name, sportList)
                             viewModel.assignSport(sport)
                         }
                     }
@@ -206,9 +239,13 @@ class AffiliationRequestListFragment : Fragment() {
                         override fun onNothingSelected(p0: AdapterView<*>?) {
                         }
 
-                        override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                        override fun onItemSelected(
+                            parent: AdapterView<*>?,
+                            view: View?,
+                            position: Int,
+                            id: Long
+                        ) {
                             val category = parent?.getItemAtPosition(position) as Category
-//                            viewModel.getCategoryItem(category.name, categoryList)
                             viewModel.assignCategory(category)
                         }
                     }
@@ -229,7 +266,12 @@ class AffiliationRequestListFragment : Fragment() {
                         override fun onNothingSelected(p0: AdapterView<*>?) {
                         }
 
-                        override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                        override fun onItemSelected(
+                            parent: AdapterView<*>?,
+                            view: View?,
+                            position: Int,
+                            id: Long
+                        ) {
                             val subCategory = parent?.getItemAtPosition(position) as SubCategory
                             viewModel.assignSubCategory(subCategory)
                         }
@@ -240,6 +282,18 @@ class AffiliationRequestListFragment : Fragment() {
     //endregion
 
     //region Affiliation
+    private fun affiliateCoach(club: Club) {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(getString(R.string.title_new_affiliation))
+            .setMessage(getString(R.string.affiliate_msg))
+            .setNeutralButton(getString(R.string.cancel_message)) { _: DialogInterface, _: Int -> }
+            .setPositiveButton(getString(R.string.confirmation_message)) { _: DialogInterface, _: Int ->
+                viewModel.checkAffiliation()
+//                val bundle = bundleOf("clubId" to club.id)
+//                navigate(R.id.affiliationRequestToAffiliationSuccess, bundle)
+            }
+            .show()
+    }
     //endregion
 
     //region Navigation
@@ -261,7 +315,7 @@ class AffiliationRequestListFragment : Fragment() {
 
     private fun showError(message: String? = "") {
         Snackbar.make(
-            binding.exitAffiliationRequest,
+            binding.exit,
             if (!message.isNullOrEmpty()) message else viewModel.errorMessage.value.toString(),
             Snackbar.LENGTH_LONG
         )

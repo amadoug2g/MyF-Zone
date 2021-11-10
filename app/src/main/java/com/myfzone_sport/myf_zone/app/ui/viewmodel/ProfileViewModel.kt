@@ -1,10 +1,7 @@
 package com.myfzone_sport.myf_zone.app.ui.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.*
-import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.storage.StorageReference
-import com.myfzone_sport.myf_zone.app.framework.FirebaseService
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoachEvents
 import com.myfzone_sport.myf_zone.domain.State
 import com.myfzone_sport.myf_zone.domain.club.Club
@@ -16,7 +13,6 @@ import com.myfzone_sport.myf_zone.usecases.event.GetAllEventsUseCase
 import com.myfzone_sport.myf_zone.usecases.user.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 /**
@@ -58,10 +54,6 @@ class ProfileViewModel(
     private val _userEventsList = MutableLiveData<MutableList<Event>>()
     val userEventsList: LiveData<MutableList<Event>> = _userEventsList
 
-    val isUserConnected = MutableLiveData(false)
-    val isUserAffiliated = MutableLiveData(false)
-    val closeEventQuery: MutableLiveData<CollectionReference> = MutableLiveData()
-
     private val _userImagePath = MutableLiveData<StorageReference>()
     val userImagePath: LiveData<StorageReference> = _userImagePath
 
@@ -85,12 +77,12 @@ class ProfileViewModel(
                         startLoading()
                     }
                     is State.Success -> {
-                        val coach = state.data
+                        state.data.apply {
+                            _coach.postValue(this)
+                            getUserClubAffiliation(this)
+                            getAllEvents(this)
+                        }
 
-                        getUserClub()
-                        getUserClubAffiliation()
-                        _coach.postValue(coach)
-                        getAllEvents(coach)
                         onResult()
                     }
                     is State.Failed -> {
@@ -102,26 +94,22 @@ class ProfileViewModel(
         }
     }
 
-    private fun getUserClub() {
+    private fun getUserClubAffiliation(coach: Coach) {
         viewModelScope.launch {
-            getUserClubUseCase.invoke().collect { state ->
+            getUserAffiliationUseCase.invoke(coach).collect { state ->
                 when (state) {
                     is State.Loading -> {
                         startLoading()
                     }
                     is State.Success -> {
-                        val club = state.data
-
-                        if (club != null) {
-                            _coachClub.postValue(club)
-                            getImageReference(club.logo)
-                            onResult()
-                        } else {
-                            onResult("Club null")
+                        state.data?.let { affiliation ->
+                            _coachAffiliation.postValue(affiliation)
+                            getUserClub(affiliation)
                         }
+                        onResult()
                     }
                     is State.Failed -> {
-                        val message = "Club update failed: ${state.message}"
+                        val message = "Affiliation update failed: ${state.message}"
                         onResult(message)
                     }
                 }
@@ -129,20 +117,20 @@ class ProfileViewModel(
         }
     }
 
-    private fun getUserClubAffiliation() {
+    private fun getUserClub(clubAffiliation: ClubAffiliation) {
         viewModelScope.launch {
-            getUserAffiliationUseCase.invoke().collect { state ->
+            getUserClubUseCase.invoke(clubAffiliation).collect { state ->
                 when (state) {
                     is State.Loading -> {
                         startLoading()
                     }
                     is State.Success -> {
-                        onResult()
-                        Log.i("TAG","state.data aff: ${state.data}")
-                        _coachAffiliation.postValue(state.data!!)
+                        state.data?.let { club ->
+                            _coachClub.postValue(club)
+                        }
                     }
                     is State.Failed -> {
-                        val message = "Affiliation update failed: ${state.message}"
+                        val message = "Club update failed: ${state.message}"
                         onResult(message)
                     }
                 }
@@ -228,7 +216,7 @@ class ProfileViewModel(
         _userEventsList.postValue(result)
     }
 
-    private fun getImageReference(path: String) {
+    fun getImageReference(path: String) {
         viewModelScope.launch(Dispatchers.IO) {
             _userImagePath.postValue(getImageReferenceUseCase.invoke(path))
         }

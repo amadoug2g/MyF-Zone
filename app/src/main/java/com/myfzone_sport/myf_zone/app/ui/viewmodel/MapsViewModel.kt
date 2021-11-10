@@ -1,9 +1,10 @@
 package com.myfzone_sport.myf_zone.app.ui.viewmodel
 
 import android.location.Location
-import android.util.Log
-import androidx.lifecycle.*
-import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoachEvents
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.myfzone_sport.myf_zone.domain.State
 import com.myfzone_sport.myf_zone.domain.club.Club
 import com.myfzone_sport.myf_zone.domain.coach.ClubAffiliation
@@ -14,17 +15,17 @@ import com.myfzone_sport.myf_zone.usecases.user.GetUserClubAffiliationUseCase
 import com.myfzone_sport.myf_zone.usecases.user.GetUserClubUseCase
 import com.myfzone_sport.myf_zone.usecases.user.GetUserEventListUseCase
 import com.myfzone_sport.myf_zone.usecases.user.GetUserUseCase
-import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.*
 
 /**
- * Created by Amadou on 12/10/2021, 16:34
+ * Created by Amadou on 10/11/2021, 18:58
  */
 
-class HomeViewModel(
+class MapsViewModel(
     private val getAllEventsUseCase: GetAllEventsUseCase,
     private val getUserUseCase: GetUserUseCase,
     private val getUserEventListUseCase: GetUserEventListUseCase,
@@ -52,7 +53,6 @@ class HomeViewModel(
     val errorMessage: LiveData<String> = _errorMessage
     //endregion
 
-    //region Functions
     init {
         initializeHome()
     }
@@ -62,7 +62,7 @@ class HomeViewModel(
     }
 
     private fun getAllEvents() {
-        viewModelScope.launch(IO) {
+        viewModelScope.launch(Dispatchers.IO) {
             getAllEventsUseCase.invoke().collect { state ->
                 when (state) {
                     is State.Loading -> {
@@ -107,7 +107,7 @@ class HomeViewModel(
     }
 
     private fun getUserAffiliation(list: MutableList<Event>, coach: Coach) {
-        viewModelScope.launch(IO) {
+        viewModelScope.launch(Dispatchers.IO) {
             getUserAffiliationUseCase.invoke(coach).collect { state ->
                 when (state) {
                     is State.Loading -> {
@@ -131,7 +131,7 @@ class HomeViewModel(
     }
 
     private fun getUserClub(list: MutableList<Event>, clubAffiliation: ClubAffiliation) {
-        viewModelScope.launch(IO) {
+        viewModelScope.launch(Dispatchers.IO) {
             getUserClubUseCase.invoke(clubAffiliation).collect { state ->
                 when (state) {
                     is State.Loading -> {
@@ -154,7 +154,7 @@ class HomeViewModel(
     }
 
     private fun getUserEventList(list: MutableList<Event>, club: Club) {
-        viewModelScope.launch(IO) {
+        viewModelScope.launch(Dispatchers.IO) {
             getUserEventListUseCase.invoke().collect { state ->
                 when (state) {
                     is State.Loading -> {
@@ -238,31 +238,4 @@ class HomeViewModel(
         _isLoading.postValue(false)
     }
     //endregion
-}
-
-class HomeViewModelFactory(
-    private val getAllEventsUseCase: GetAllEventsUseCase,
-    private val getUserUseCase: GetUserUseCase,
-    private val getUserEventListUseCase: GetUserEventListUseCase,
-    private val getUserClubUseCase: GetUserClubUseCase,
-    private val getUserAffiliationUseCase: GetUserClubAffiliationUseCase
-) :
-    ViewModelProvider.Factory {
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        return modelClass.getConstructor(
-            GetAllEventsUseCase::class.java,
-            GetUserUseCase::class.java,
-            GetUserEventListUseCase::class.java,
-            GetUserClubUseCase::class.java,
-            GetUserClubAffiliationUseCase::class.java,
-        )
-            .newInstance(
-                getAllEventsUseCase,
-                getUserUseCase,
-                getUserEventListUseCase,
-                getUserClubUseCase,
-                getUserAffiliationUseCase
-            )
-    }
-
 }
