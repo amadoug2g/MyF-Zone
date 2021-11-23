@@ -97,6 +97,7 @@
                     android:layout_marginEnd="16dp"
                     android:hint="@string/input_password_hint"
                     android:transitionName="@string/email_trans"
+                    app:endIconMode="password_toggle"
                     app:boxBackgroundColor="@color/colorAccentTransparent">
 
                     <com.google.android.material.textfield.TextInputEditText

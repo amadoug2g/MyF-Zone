@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/message_list"
+    app:startDestination="@id/messageList">
+
+    <fragment
+        android:id="@+id/messageList"
+        android:name="com.myfzone_sport.myf_zone.app.ui.fragment.MessageListFragment"
+        tools:layout="@layout/fragment_message_list"
+        android:label="MessageFragment" >
+        <action
+            android:id="@+id/messageListToChat"
+            app:destination="@id/chat" />
+    </fragment>
+    <include app:graph="@navigation/chat" />
+</navigation>

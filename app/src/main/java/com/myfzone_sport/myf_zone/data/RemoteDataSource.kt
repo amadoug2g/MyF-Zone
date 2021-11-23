@@ -1,8 +1,10 @@
 package com.myfzone_sport.myf_zone.data
 
+import android.content.Context
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
@@ -18,6 +20,7 @@ import com.myfzone_sport.myf_zone.domain.event.EventParticipant
 import com.myfzone_sport.myf_zone.domain.sport.Category
 import com.myfzone_sport.myf_zone.domain.sport.Sport
 import com.myfzone_sport.myf_zone.domain.sport.SubCategory
+import com.xwray.groupie.kotlinandroidextensions.Item
 import kotlinx.coroutines.flow.Flow
 import java.util.HashMap
 
@@ -77,19 +80,22 @@ interface RemoteDataSource {
     //endregion
 
     //region Discussion
-    fun createChat()
+    fun addChatMessageListener(
+        chatCoachId: String, context: Context, onListen: (List<Item>) -> Unit): ListenerRegistration?
 
-    fun getDiscussionUser()
+    fun createChat(chatCoach: Coach, chatCoachClub: ClubAffiliation)
 
-    fun getOrCreateChat()
+    fun getDiscussionUser(chatCoachId: String): Flow<State<Coach>>
 
-    fun getDiscussionUserClub()
+    fun getOrCreateChat(chatCoach: Coach, chatCoachClub: ClubAffiliation, message: String, photo: String)
 
-    fun sendChatMessage()
+    fun getDiscussionUserClub(chatCoachId: String): Flow<State<ClubAffiliation>>
 
-    fun sendDiscussionRead()
+    fun sendChatMessage(chatCoach: Coach, message: String, photo: String)
 
-    fun sendDiscussionUnread()
+    fun setDiscussionRead(chatCoach: Coach)
+
+    fun setDiscussionUnread(chatCoach: Coach)
     //endregion
 
     //region Event Edit

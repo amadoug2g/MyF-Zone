@@ -24,10 +24,10 @@
             app:destination="@id/profil" />
         <action
             android:id="@+id/homeFragmentToMessageFragment"
-            app:destination="@id/message2" />
+            app:destination="@id/message_list" />
         <action
             android:id="@+id/homeFragmentToMapFragment"
-            app:destination="@id/map2" />
+            app:destination="@id/mapFragment" />
         <action
             android:id="@+id/homeFragmentToEventDetailsFragment"
             app:destination="@id/event_details_for_participant" />
@@ -38,13 +38,30 @@
             android:id="@+id/homeFragmentToAffiliationRequest"
             app:destination="@id/affiliation" />
     </fragment>
+
+    <fragment
+        android:id="@+id/mapFragment"
+        android:name="com.myfzone_sport.myf_zone.app.ui.fragment.MapsFragment"
+        tools:layout="@layout/fragment_maps2"
+        android:label="Map2">
+        <action
+            android:id="@+id/mapFragmentToEventDetailsFragment"
+            app:destination="@id/event_details_for_participant" />
+        <action
+            android:id="@+id/mapFragmentToEventDetailsGuestFragment"
+            app:destination="@id/event_details_for_guest" />
+        <argument
+            android:name="coachClub"
+            app:argType="com.myfzone_sport.myf_zone.domain.club.Club" />
+    </fragment>
+
     <include app:graph="@navigation/category_list" />
     <include app:graph="@navigation/registration" />
     <include app:graph="@navigation/new_event" />
     <include app:graph="@navigation/profil" />
-    <include app:graph="@navigation/message2" />
-    <include app:graph="@navigation/map2" />
+    <include app:graph="@navigation/message_list" />
     <include app:graph="@navigation/event_details_for_participant" />
     <include app:graph="@navigation/event_details_for_owner" />
+    <include app:graph="@navigation/event_details_for_guest" />
     <include app:graph="@navigation/affiliation" />
 </navigation>

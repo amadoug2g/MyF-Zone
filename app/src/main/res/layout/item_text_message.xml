@@ -27,12 +27,15 @@
                 android:id="@+id/textViewMessageText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/gilroy_medium"
                 android:maxWidth="250dp"
                 android:minWidth="120dp"
                 android:paddingStart="8dp"
                 android:paddingTop="4dp"
                 android:paddingEnd="8dp"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Body1"
+                android:textColor="@color/colorDesign1"
+                android:textSize="14sp"
                 tools:text="@{message.text}" />
 
             <TextView

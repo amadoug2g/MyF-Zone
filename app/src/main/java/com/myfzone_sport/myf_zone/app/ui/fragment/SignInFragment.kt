@@ -13,6 +13,7 @@ import androidx.navigation.Navigation
 import com.google.android.material.snackbar.Snackbar
 import com.myfzone_sport.myf_zone.R
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.TRACKING
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.checkUserStatus
 import com.myfzone_sport.myf_zone.app.framework.RemoteDataSourceImpl
 import com.myfzone_sport.myf_zone.app.ui.activity.MainActivity
 import com.myfzone_sport.myf_zone.app.ui.viewmodel.*
@@ -124,9 +125,11 @@ class SignInFragment : Fragment() {
             if (state) {
                 toast(getString(R.string.login_message))
 
-                val bundle = bundleOf("page" to R.id.signInFragment)
+//                val bundle = bundleOf("page" to R.id.signInFragment)
                 TRACKING.logEvent(Tracking.SIGN_IN_DONE, null)
-                navigate(R.id.signInFragment2ToAffiliationFragment, bundle)
+                checkUserStatus()
+//                navigate(R.id.signInFragment2ToAffiliationFragment, bundle)
+                startActivity(intentFor<MainActivity>().newTask().clearTask())
             }
         })
     }

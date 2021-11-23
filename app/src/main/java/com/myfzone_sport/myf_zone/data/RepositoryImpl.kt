@@ -1,7 +1,9 @@
 package com.myfzone_sport.myf_zone.data
 
+import android.content.Context
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.storage.StorageReference
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoachClubAffiliation
@@ -15,6 +17,7 @@ import com.myfzone_sport.myf_zone.domain.event.EventParticipant
 import com.myfzone_sport.myf_zone.domain.sport.Category
 import com.myfzone_sport.myf_zone.domain.sport.Sport
 import com.myfzone_sport.myf_zone.domain.sport.SubCategory
+import com.xwray.groupie.kotlinandroidextensions.Item
 import kotlinx.coroutines.flow.Flow
 import java.util.*
 
@@ -109,32 +112,39 @@ class RepositoryImpl(
         return remoteDataSource.getValidParticipantsCount()
     }
 
-    override fun createChat() {
-        remoteDataSource.createChat()
+    override fun addChatMessageListener(
+        chatCoachId: String,
+        context: Context,
+        onListen: (List<Item>) -> Unit): ListenerRegistration? {
+        return remoteDataSource.addChatMessageListener(chatCoachId, context, onListen)
     }
 
-    override fun getDiscussionUser() {
-        remoteDataSource.getDiscussionUser()
+    override fun createChat(chatCoach: Coach, chatCoachClub: ClubAffiliation) {
+        remoteDataSource.createChat(chatCoach, chatCoachClub)
     }
 
-    override fun getOrCreateChat() {
-        remoteDataSource.getOrCreateChat()
+    override fun getDiscussionUser(chatCoachId: String): Flow<State<Coach>> {
+        return remoteDataSource.getDiscussionUser(chatCoachId)
     }
 
-    override fun getDiscussionUserClub() {
-        remoteDataSource.getDiscussionUserClub()
+    override fun getOrCreateChat(chatCoach: Coach, chatCoachClub: ClubAffiliation, message: String, photo: String) {
+        remoteDataSource.getOrCreateChat(chatCoach, chatCoachClub, message, photo)
     }
 
-    override fun sendChatMessage() {
-        remoteDataSource.sendChatMessage()
+    override fun getDiscussionUserClub(chatCoachId: String): Flow<State<ClubAffiliation>> {
+        return remoteDataSource.getDiscussionUserClub(chatCoachId)
     }
 
-    override fun sendDiscussionRead() {
-        remoteDataSource.sendDiscussionRead()
+    override fun sendChatMessage(chatCoach: Coach, message: String, photo: String) {
+        remoteDataSource.sendChatMessage(chatCoach, message, photo)
     }
 
-    override fun sendDiscussionUnread() {
-        remoteDataSource.sendDiscussionUnread()
+    override fun setDiscussionRead(chatCoach: Coach) {
+        remoteDataSource.setDiscussionRead(chatCoach)
+    }
+
+    override fun setDiscussionUnread(chatCoach: Coach) {
+        remoteDataSource.setDiscussionUnread(chatCoach)
     }
 
     override fun updateEvent() {

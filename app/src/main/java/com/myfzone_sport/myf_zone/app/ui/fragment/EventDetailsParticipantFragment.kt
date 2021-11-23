@@ -134,7 +134,8 @@ class EventDetailsParticipantFragment : Fragment() {
         }
 
         binding.eventDetailContactLayout.setOnClickListener {
-            navigate(R.id.eventDetailsToMessageFragment)
+            val bundleCoach = bundleOf("coachId" to viewModel.eventOwner.value!!.coachId)
+            navigate(R.id.eventDetailsToChat, bundleCoach)
         }
 
         binding.participantRecyclerview.suppressLayout(true)

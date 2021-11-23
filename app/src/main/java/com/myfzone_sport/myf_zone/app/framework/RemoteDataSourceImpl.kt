@@ -1,5 +1,6 @@
 package com.myfzone_sport.myf_zone.app.framework
 
+import android.content.Context
 import android.location.Location
 import android.util.Log
 import com.google.android.gms.tasks.OnCompleteListener
@@ -25,7 +26,10 @@ import com.myfzone_sport.myf_zone.app.framework.FirebaseService.isConnected
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.storageInstance
 import com.myfzone_sport.myf_zone.data.RemoteDataSource
 import com.myfzone_sport.myf_zone.domain.State
+import com.myfzone_sport.myf_zone.domain.chat.Chat
+import com.myfzone_sport.myf_zone.domain.chat.Message
 import com.myfzone_sport.myf_zone.domain.chat.MessagingService
+import com.myfzone_sport.myf_zone.domain.chat.TextMessageItem
 import com.myfzone_sport.myf_zone.domain.club.AffiliationRequest
 import com.myfzone_sport.myf_zone.domain.club.Club
 import com.myfzone_sport.myf_zone.domain.coach.ClubAffiliation
@@ -42,6 +46,7 @@ import com.myfzone_sport.myf_zone.util.Constants.COACH_PATH
 import com.myfzone_sport.myf_zone.util.Constants.DB
 import com.myfzone_sport.myf_zone.util.Constants.EVENT_PATH
 import com.myfzone_sport.myf_zone.util.Constants.SPORT_PATH
+import com.xwray.groupie.kotlinandroidextensions.Item
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -327,32 +332,203 @@ class RemoteDataSourceImpl : RemoteDataSource {
         TODO("Not yet implemented")
     }
 
-    override fun createChat() {
-        TODO("Not yet implemented")
+    override fun addChatMessageListener(
+        chatCoachId: String, context: Context, onListen: (List<Item>) -> Unit
+    ): ListenerRegistration? {
+        val userId = firebaseAuth.currentUser?.uid
+
+        val mUserChatQuery = DB
+            .document(COACH_PATH + "/${userId}/Chat/${chatCoachId}")
+        return try {
+            mUserChatQuery
+                .collection("/Message").orderBy("createdDate")
+                .addSnapshotListener { value, error ->
+                    if (error != null) {
+                        Log.e(TAG, "Error in addChatMessageListener", error)
+                        return@addSnapshotListener
+                    }
+
+                    val items = mutableListOf<Item>()
+                    value?.documents?.forEach {
+                        try {
+                            items.add(TextMessageItem(it.toObject(Message::class.java)!!, context))
+                        } catch (e: Exception) {
+                            Log.i(TAG, "Error when fetching messages: $e")
+                        }
+                    }
+
+                    onListen(items)
+                }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in addChatMessageListener: ${e.localizedMessage}")
+            null
+        }
     }
 
-    override fun getDiscussionUser() {
-        TODO("Not yet implemented")
+    override fun createChat(chatCoach: Coach, chatCoachClub: ClubAffiliation) {
+        val time = Calendar.getInstance().time
+        val mUserChatQuery = DB
+            .document(COACH_PATH + "/${activeCoach!!.id}/Chat/${chatCoach.id}")
+
+        val mOtherUserChatQuery = DB
+            .document(COACH_PATH + "/${chatCoach.id}/Chat/${activeCoach!!.id}")
+
+        val newUserChat: Chat = Chat().apply {
+            coachId = chatCoach.id
+            fullname = chatCoach.getName()
+            clubLogo = chatCoachClub.clubLogo
+            isTyping = false
+            lastMessage = ""
+            unread = false
+            createdDate = time
+            updatedDate = time
+        }
+
+        val newOtherChat: Chat = Chat().apply {
+            coachId = activeCoach!!.id
+            fullname = activeCoach!!.getName()
+            clubLogo = activeCoachClubAffiliation!!.clubLogo
+            isTyping = false
+            lastMessage = ""
+            unread = false
+            createdDate = time
+            updatedDate = time
+        }
+
+        mUserChatQuery
+            .set(newUserChat.toMap())
+
+        mOtherUserChatQuery
+            .set(newOtherChat.toMap())
     }
 
-    override fun getOrCreateChat() {
-        TODO("Not yet implemented")
+    override fun getDiscussionUser(chatCoachId: String) = flow {
+        val mUserQuery = DB.document(COACH_PATH + "/${chatCoachId}")
+
+        emit(State.loading())
+
+        val snapshot = mUserQuery.get().await()
+        val coach = snapshot.toObject(Coach::class.java)
+
+        emit(State.success(coach!!))
+    }.catch {
+        emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
+    }.flowOn(Dispatchers.IO)
+
+    override fun getOrCreateChat(
+        chatCoach: Coach,
+        chatCoachClub: ClubAffiliation,
+        message: String,
+        photo: String
+    ) {
+        val mUserChatQuery = DB
+            .document(COACH_PATH + "/${activeCoach!!.id}/Chat/${chatCoach.id}")
+
+        mUserChatQuery.get().addOnSuccessListener {
+            if (!it.exists()) {
+                createChat(chatCoach, chatCoachClub)
+            }
+
+            sendChatMessage(chatCoach, message, photo)
+        }
     }
 
-    override fun getDiscussionUserClub() {
-        TODO("Not yet implemented")
+    override fun getDiscussionUserClub(chatCoachId: String) = flow {
+        val mClubQuery = DB
+            .collection(COACH_PATH + "/${chatCoachId}/ClubAffiliation")
+
+        emit(State.loading())
+
+        val snapshot = mClubQuery.get().await().documents[0]
+        val currentUserClub = snapshot.toObject(ClubAffiliation::class.java)
+
+        emit(State.success(currentUserClub!!))
+    }.catch {
+        emit(State.failed(it.localizedMessage?.toString() ?: it.message.toString()))
+    }.flowOn(Dispatchers.IO)
+
+    override fun sendChatMessage(chatCoach: Coach, message: String, photo: String) {
+        val time = Calendar.getInstance().time
+        val mUserChatQuery = DB
+            .document(COACH_PATH + "/${activeCoach!!.id}/Chat/${chatCoach.id}")
+
+        val mOtherUserChatQuery = DB
+            .document(COACH_PATH + "/${chatCoach.id}/Chat/${activeCoach!!.id}")
+
+        val messageId = mUserChatQuery.collection("Message").document().id
+
+        val updatedUserChat = hashMapOf(
+            "isTyping" to false,
+            "lastMessage" to message,
+            "unread" to false,
+            "updatedDate" to time
+        )
+
+        val updatedOtherChat = hashMapOf(
+            "isTyping" to false,
+            "lastMessage" to message,
+            "unread" to true,
+            "updatedDate" to time
+        )
+
+        mUserChatQuery
+            .set(updatedUserChat, SetOptions.merge())
+
+        mOtherUserChatQuery
+            .set(updatedOtherChat, SetOptions.merge())
+
+        val newMessage = Message().apply {
+            id = messageId
+            senderId = activeCoach!!.id
+            senderName = activeCoach!!.getName()
+            senderClubLogo = activeCoachClubAffiliation!!.clubLogo
+            text = message
+            image = photo
+            createdDate = time
+        }
+
+        val messageUserPath =
+            mUserChatQuery
+                .collection("Message")
+                .document(messageId)
+
+        messageUserPath.set(newMessage.toMap())
+
+        val messageOtherPath =
+            mOtherUserChatQuery
+                .collection("Message")
+                .document(messageId)
+
+        messageOtherPath.set(newMessage.toMap())
     }
 
-    override fun sendChatMessage() {
-        TODO("Not yet implemented")
+    override fun setDiscussionRead(chatCoach: Coach) {
+        val mUserChatQuery = DB
+            .document(COACH_PATH + "/${activeCoach!!.id}/Chat/${chatCoach.id}")
+
+        mUserChatQuery.get().addOnSuccessListener {
+            if (it.exists()) {
+                val updatedUserChat = hashMapOf(
+                    "unread" to false
+                )
+
+                mUserChatQuery
+                    .set(updatedUserChat, SetOptions.merge())
+
+            }
+        }
     }
 
-    override fun sendDiscussionRead() {
-        TODO("Not yet implemented")
-    }
+    override fun setDiscussionUnread(chatCoach: Coach) {
+        val mUserChatQuery = DB
+            .document(COACH_PATH + "/${activeCoach!!.id}/Chat/${chatCoach.id}")
 
-    override fun sendDiscussionUnread() {
-        TODO("Not yet implemented")
+        val updatedUserChat = hashMapOf(
+            "unread" to true
+        )
+
+        mUserChatQuery
+            .set(updatedUserChat, SetOptions.merge())
     }
 
     override fun updateEvent() {
@@ -807,7 +983,7 @@ class RemoteDataSourceImpl : RemoteDataSource {
     }.flowOn(Dispatchers.IO)
 
     override fun getUserAffiliation(coach: Coach): Flow<State<ClubAffiliation?>> = flow {
-                val mClubQuery = firebaseFirestore.collection(COACH_PATH + "/${coach.id}/ClubAffiliation")
+        val mClubQuery = firebaseFirestore.collection(COACH_PATH + "/${coach.id}/ClubAffiliation")
 
         emit(State.loading())
 

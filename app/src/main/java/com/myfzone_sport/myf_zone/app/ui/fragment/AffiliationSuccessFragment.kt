@@ -2,11 +2,11 @@ package com.myfzone_sport.myf_zone.app.ui.fragment
 
 import android.graphics.Color
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import com.google.android.material.snackbar.Snackbar
@@ -14,14 +14,10 @@ import com.google.firebase.storage.StorageReference
 import com.myfzone_sport.myf_zone.R
 import com.myfzone_sport.myf_zone.app.framework.RemoteDataSourceImpl
 import com.myfzone_sport.myf_zone.app.ui.activity.MainActivity
-import com.myfzone_sport.myf_zone.app.ui.adapter.ParticipantsPreviewAdapter
 import com.myfzone_sport.myf_zone.app.ui.viewmodel.AffiliationSuccessViewModel
 import com.myfzone_sport.myf_zone.app.ui.viewmodel.AffiliationSuccessViewModelFactory
-import com.myfzone_sport.myf_zone.app.ui.viewmodel.EventDetailsGuestViewModel
-import com.myfzone_sport.myf_zone.app.ui.viewmodel.EventDetailsGuestViewModelFactory
 import com.myfzone_sport.myf_zone.data.RepositoryImpl
 import com.myfzone_sport.myf_zone.databinding.FragmentAffiliationSuccess2Binding
-import com.myfzone_sport.myf_zone.databinding.FragmentEventDetailsGuest2Binding
 import com.myfzone_sport.myf_zone.glide.GlideApp
 import com.myfzone_sport.myf_zone.usecases.affiliation.GetClubIdUseCase
 import com.myfzone_sport.myf_zone.usecases.user.GetImageReferenceUseCase
@@ -97,7 +93,7 @@ class AffiliationSuccessFragment : Fragment() {
             navigate(R.id.affiliationSuccessToSettings)
         }
 
-        binding.successNotification.setOnClickListener {  }
+        binding.successNotification.setOnClickListener { }
 
         binding.successSkipBtn.setOnClickListener {
             startActivity(intentFor<MainActivity>().newTask().clearTask())

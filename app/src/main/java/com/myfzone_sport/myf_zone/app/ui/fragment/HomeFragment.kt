@@ -10,9 +10,13 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearSnapHelper
 import com.google.android.material.snackbar.Snackbar
 import com.myfzone_sport.myf_zone.R
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoach
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.checkUserStatus
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.isAffiliated
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.isConnected
 import com.myfzone_sport.myf_zone.app.framework.RemoteDataSourceImpl
@@ -69,6 +73,7 @@ class HomeFragment : Fragment() {
         super.onResume()
 
         viewModel.initializeHome()
+        checkUserStatus()
     }
     //endregion
 
@@ -125,7 +130,7 @@ class HomeFragment : Fragment() {
         }
 
         binding.closeToClubLayout.showAll.setOnClickListener {
-            navigate(R.id.homeFragmentToMapFragment)
+            navigateToMap()
         }
 
         binding.homeProfileBtn.setOnClickListener {
@@ -174,10 +179,12 @@ class HomeFragment : Fragment() {
     }
 
     private fun setUpCloseToClubRecycler(savedInstanceState: Bundle?) {
+        val snapHelper = LinearSnapHelper()
         adapterCloseToClub = CloseToClubEventAdapter(requireContext(), savedInstanceState)
         binding.closeToClubLayout.recyclerView.adapter = adapterCloseToClub
         binding.closeToClubLayout.recyclerView.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        snapHelper.attachToRecyclerView(binding.closeToClubLayout.recyclerView)
 
         viewModel.closeEventsList.observe(viewLifecycleOwner, {
             if (it.isNotEmpty()) adapterCloseToClub.setData(it)
@@ -219,47 +226,36 @@ class HomeFragment : Fragment() {
 
     private fun checkStatusDestination(destination: String) {
         val bundle = bundleOf("page" to R.id.homeFragment)
-        when (destination) {
-            "profile" -> {
-                if (isConnected) {
-                    if (isAffiliated) {
+
+        if (isConnected) {
+            if (isAffiliated) {
+                when (destination) {
+                    "profile" -> {
                         navigate(R.id.homeFragmentToProfilFragment)
-                    } else {
-                        toast(getString(R.string.user_not_affiliated))
-                        navigate(R.id.homeFragmentToAffiliationRequest, bundle)
                     }
-                } else {
-                    toast(getString(R.string.user_not_connected))
-                    navigate(R.id.homeFragmentToRegistrationFragment)
-                }
-            }
-            "chat" -> {
-                if (isConnected) {
-                    if (isAffiliated) {
-                        navigate(R.id.homeFragmentToMessageFragment)
-                    } else {
-                        toast(getString(R.string.user_not_affiliated))
-                        navigate(R.id.homeFragmentToAffiliationRequest, bundle)
+                    "chat" -> {
+                        val bundleChat = bundleOf("coachId" to activeCoach!!.id)
+                        navigate(R.id.homeFragmentToMessageFragment, bundleChat)
                     }
-                } else {
-                    toast(getString(R.string.user_not_connected))
-                    navigate(R.id.homeFragmentToRegistrationFragment)
-                }
-            }
-            "new event" -> {
-                if (isConnected) {
-                    if (isAffiliated) {
+                    "new event" -> {
                         navigate(R.id.homeFragmentToNewEventFragment)
-                    } else {
-                        toast(getString(R.string.user_not_affiliated))
-                        navigate(R.id.homeFragmentToAffiliationRequest, bundle)
                     }
-                } else {
-                    toast(getString(R.string.user_not_connected))
-                    navigate(R.id.homeFragmentToRegistrationFragment)
                 }
+            } else {
+                toast(getString(R.string.user_not_affiliated))
+                navigate(R.id.homeFragmentToAffiliationRequest, bundle)
             }
+        } else {
+            toast(getString(R.string.user_not_connected))
+            navigate(R.id.homeFragmentToRegistrationFragment)
         }
+    }
+
+    private fun navigateToMap() {
+        viewModel.coachClub.observe(viewLifecycleOwner, {
+            val action = HomeFragmentDirections.homeFragmentToMapFragment(it)
+            findNavController().navigate(action)
+        })
     }
     //endregion
 

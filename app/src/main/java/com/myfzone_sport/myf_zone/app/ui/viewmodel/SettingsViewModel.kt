@@ -1,11 +1,13 @@
 package com.myfzone_sport.myf_zone.app.ui.viewmodel
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.TRACKING
 import com.myfzone_sport.myf_zone.app.framework.FirebaseService.checkUserStatus
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.resetUserStatus
 import com.myfzone_sport.myf_zone.usecases.user.SignOutUseCase
 import com.myfzone_sport.myf_zone.util.Tracking.LOGOUT
 
@@ -16,13 +18,13 @@ import com.myfzone_sport.myf_zone.util.Tracking.LOGOUT
 class SettingsViewModel(private val signOutUseCase: SignOutUseCase) : ViewModel() {
 
     private val _successfulSignOut = MutableLiveData(false)
-    val successfulSignOut = _successfulSignOut
+    val successfulSignOut: LiveData<Boolean> = _successfulSignOut
 
     fun signOut() {
+        resetUserStatus()
         signOutUseCase.invoke()
         _successfulSignOut.postValue(true)
         TRACKING.logEvent(LOGOUT, null)
-        checkUserStatus()
     }
 }
 

@@ -1,5 +1,6 @@
 package com.myfzone_sport.myf_zone.fragments.maps
 
+//import org.jetbrains.anko.support.v4.toast
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
@@ -25,20 +26,19 @@ import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.maps.android.clustering.ClusterManager
 import com.myfzone_sport.myf_zone.R
 import com.myfzone_sport.myf_zone.databinding.FragmentMapsBinding
-import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth
-import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth.activeCoach
-import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth.isAffiliated
-import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth.isConnected
 import com.myfzone_sport.myf_zone.domain.State
 import com.myfzone_sport.myf_zone.domain.event.Event
 import com.myfzone_sport.myf_zone.domain.event.EventData
 import com.myfzone_sport.myf_zone.domain.maps.ClusterRenderer
 import com.myfzone_sport.myf_zone.domain.maps.MyClusterItem
+import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth
+import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth.activeCoach
+import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth.isAffiliated
+import com.myfzone_sport.myf_zone.fragments.user_sign.manager.ManagerAuth.isConnected
 import com.myfzone_sport.myf_zone.util.Constants.TRACKING
 import com.myfzone_sport.myf_zone.util.Tracking
 import kotlinx.android.synthetic.main.card_event_item.*
 import kotlinx.coroutines.flow.collect
-//import org.jetbrains.anko.support.v4.toast
 import java.util.*
 
 

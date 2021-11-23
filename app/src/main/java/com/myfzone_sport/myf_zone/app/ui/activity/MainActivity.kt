@@ -53,6 +53,8 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         } else {
             navController.setGraph(R.navigation.main_start)
         }
+
+        checkUserStatus()
     }
 
     override fun onStart() {
@@ -61,13 +63,6 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 //            messageReceiver,
 //            IntentFilter("MyData")
 //        )
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        checkUserStatus()
-//        viewModel.checkUserStatus()
     }
 
     override fun onStop() {

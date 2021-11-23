@@ -4,11 +4,14 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
+import androidx.navigation.NavDirections
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -17,8 +20,11 @@ import com.google.android.gms.maps.MapsInitializer
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.MarkerOptions
 import com.myfzone_sport.myf_zone.R
+import com.myfzone_sport.myf_zone.app.framework.FirebaseService.activeCoachClub
+import com.myfzone_sport.myf_zone.app.ui.fragment.HomeFragmentDirections
 import com.myfzone_sport.myf_zone.databinding.HomeCloseToClubCardviewBinding
 import com.myfzone_sport.myf_zone.domain.event.Event
+import java.lang.Exception
 
 /**
  * Created by Amadou on 03/09/2021, 21:51
@@ -90,7 +96,25 @@ class CloseToClubEventAdapter(val context: Context, val savedInstanceState: Bund
                     setPadding(0, 0, 0, 40)
                     addMarker(markerOptions)
                     moveCamera(CameraUpdateFactory.newLatLngZoom(event.getPosition(), 13f))
-                    setOnMarkerClickListener { true }
+                    setOnMapClickListener {
+                        val bundle = bundleOf("eventId" to event.id)
+                        navigate(R.id.homeFragmentToEventDetailsFragment, bundle, binding.eventDetailMap.eventDetailMap)
+
+//                        try {
+//                            activeCoachClub!!.let { club ->
+//                                val action = HomeFragmentDirections.homeFragmentToMapFragment(club)
+//                                navigate(action, binding.eventDetailMap.eventDetailMap)
+//                            }
+//                        } catch (e: Exception) {
+//                            Log.i("tagging","error: $e")
+//                        }
+                    }
+//                    setOnMarkerClickListener { true }
+                    setOnMarkerClickListener {
+                        val bundle = bundleOf("eventId" to event.id)
+                        navigate(R.id.homeFragmentToEventDetailsFragment, bundle, binding.eventDetailMap.eventDetailMap)
+                        false
+                    }
                 }
             }
         }
@@ -111,6 +135,12 @@ class CloseToClubEventAdapter(val context: Context, val savedInstanceState: Bund
             Navigation
                 .findNavController(view)
                 .navigate(destination, extra)
+        }
+
+        private fun navigate(action: NavDirections, view: View) {
+            Navigation
+                .findNavController(view)
+                .navigate(action)
         }
 
         companion object {

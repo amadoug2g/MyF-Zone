@@ -151,16 +151,6 @@ class EventParticipantsFragment : Fragment() {
             .get(EventParticipantsViewModel::class.java)
     }
 
-    private fun setupObservers() {
-        viewModel.errorMessage.observe(viewLifecycleOwner, {
-            if (it.isNotEmpty()) showError()
-        })
-
-        viewModel.isLoading.observe(viewLifecycleOwner, { contentIsLoading ->
-            if (contentIsLoading) loadingStart() else loadingStop()
-        })
-    }
-
     private fun setupViews() {
         binding.backArrow.background = null
 
@@ -176,6 +166,16 @@ class EventParticipantsFragment : Fragment() {
 
         viewModel.eventParticipantsValid.observe(viewLifecycleOwner, {
             binding.validCount = it.size
+        })
+    }
+
+    private fun setupObservers() {
+        viewModel.errorMessage.observe(viewLifecycleOwner, {
+            if (it.isNotEmpty()) showError()
+        })
+
+        viewModel.isLoading.observe(viewLifecycleOwner, { contentIsLoading ->
+            if (contentIsLoading) loadingStart() else loadingStop()
         })
     }
     //endregion

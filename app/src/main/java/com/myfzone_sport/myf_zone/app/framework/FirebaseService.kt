@@ -45,17 +45,18 @@ object FirebaseService {
 
     fun checkUserStatus() {
         try {
-            if (firebaseUser != null) {
+            val user : FirebaseUser? = firebaseAuth.currentUser
+            if (user != null) {
                 isConnected = true
 
                 val mAffiliationPath = Firebase.firestore
-                    .collection(COACH_PATH + "/${firebaseUser.uid}/ClubAffiliation")
+                    .collection(COACH_PATH + "/${user.uid}/ClubAffiliation")
 
                 mAffiliationPath.get().addOnSuccessListener {
                     if (it.documents.size > 0) {
                         isAffiliated = true
-                        getActiveCoach(firebaseUser)
-                        getActiveClubAffiliation(firebaseUser)
+                        getActiveCoach(user)
+                        getActiveClubAffiliation(user)
                     } else {
                         activeCoachEvents = mutableListOf()
                         isAffiliated = false
@@ -72,6 +73,8 @@ object FirebaseService {
         } catch (e: Exception) {
             Log.e("ManagerAuth", "$TAG Status Error: ${e.localizedMessage}")
         }
+
+        showStatus()
     }
 
     private fun getActiveCoach(user: FirebaseUser?) {
@@ -116,5 +119,28 @@ object FirebaseService {
 
     fun isCoachOwner(eventId: String): Boolean {
         return (activeCoachEvents.contains(eventId))
+    }
+
+    fun resetUserStatus() {
+        isConnected = false
+        isAffiliated = false
+        affiliationNbr = 0
+
+        activeCoach = null
+        activeCoachClubAffiliation = null
+        activeCoachClub = null
+        activeCoachEvents = mutableListOf()
+
+        showStatus()
+    }
+
+    fun showStatus() {
+        Log.i("tagging stat", "isConnected: $isConnected")
+        Log.i("tagging stat", "isAffiliated: $isAffiliated")
+        Log.i("tagging stat", "affiliationNbr: $affiliationNbr")
+        Log.i("tagging stat", "activeCoach: $activeCoach")
+        Log.i("tagging stat", "activeCoachClubAffiliation: $activeCoachClubAffiliation")
+        Log.i("tagging stat", "activeCoachClub: $activeCoachClub")
+        Log.i("tagging stat", "activeCoachEvents: $activeCoachEvents")
     }
 }

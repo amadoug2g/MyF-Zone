@@ -38,6 +38,7 @@ class HomeViewModel(
     private val _coachAffiliation = MutableLiveData<ClubAffiliation>()
 
     private val _coachClub = MutableLiveData<Club>()
+    val coachClub: LiveData<Club> = _coachClub
 
     private val _closeEventsList = MutableLiveData<MutableList<Event>>()
     val closeEventsList: LiveData<MutableList<Event>> = _closeEventsList
@@ -46,7 +47,7 @@ class HomeViewModel(
     val userEventsList: LiveData<MutableList<Event>> = _userEventsList
 
     private val _isLoading = MutableLiveData<Boolean>()
-    val isLoading: MutableLiveData<Boolean> = _isLoading
+    val isLoading: LiveData<Boolean> = _isLoading
 
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String> = _errorMessage
